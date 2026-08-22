@@ -1,20 +1,53 @@
 # US-5 — Design
 
-## Adapter
+## Stack
+
+| Layer | Choice | Role |
+|-------|--------|------|
+| Astro | `@astrojs/node` adapter, `output: 'server'` | HTTP pages (`/`, `/play`) + Node process |
+| Multiplayer | [Colyseus](https://colyseus.io/framework/) | Rooms, Schema state sync, matchmaking, messages |
+| Client SDK | `@colyseus/sdk` | `joinOrCreate`, listen to state, `room.send` |
+| Game UI | R3F island on `/play` | Consumes multiplayer adapter — no direct Colyseus imports in combat/scenario |
+
+## Architecture
+
+```mermaid
+flowchart LR
+  Browser["Browser /play"]
+  AstroNode["Astro Node server"]
+  Colyseus["Colyseus Room"]
+  Browser -->|"HTTP pages"| AstroNode
+  Browser -->|"WebSocket"| Colyseus
+  Colyseus -->|"Schema deltas"| Browser
+```
+
+- **Astro Node** serves the site (SSR/static hybrid as needed).
+- **Colyseus** runs in the same Node process (or sibling process sharing the HTTP server) — room matchmaking + authoritative game state.
+- Client connects with `@colyseus/sdk` to the Colyseus endpoint (env-configured URL).
+
+## Server layout
 
 ```
-// src/modules/multiplayer/adapters/playroom-adapter.ts
-initMatch(options) → { room, localPlayerId, players }
-syncTransform(id, { x, y, z, rotY, team, hp, eliminated })
-broadcastShot({ origin, direction })
-onPlayerUpdate(callback)
-onShotReceived(callback)
-syncRoundState(state) // host-authoritative round start/end
+src/
+├── pages/                 Astro routes
+└── modules/multiplayer/
+    ├── adapters/
+    │   └── colyseus-adapter.ts   # client-facing API used by GameCanvas
+    ├── rooms/
+    │   └── MatchRoom.ts          # Colyseus Room (server)
+    ├── schema/
+    │   ├── PlayerState.ts
+    │   └── MatchState.ts
+    └── stores/
+        └── multiplayer-store.ts
 ```
 
-## Player state (Playroom)
+Register rooms when the Node server boots (Colyseus `defineServer` / attach to Astro Node `createServer` hook — exact wiring TBD at implement time; keep adapter + room separation).
 
-```ts
+## Schema state
+
+```typescript
+// PlayerState (per client.sessionId)
 {
   x: number;
   y: number;
@@ -24,22 +57,70 @@ syncRoundState(state) // host-authoritative round start/end
   eliminated: boolean;
   team: 'argentina' | 'england';
 }
+
+// MatchState
+{
+  players: MapSchema<PlayerState>;
+  roundPhase: 'waiting' | 'in_progress' | 'ended';
+  winner: string; // team id or ''
+}
 ```
 
-## Round sync
+## Client adapter
 
-- Host runs `checkRoundEnd` and broadcasts round end when one team is wiped
-- Broadcast `{ winner: Team }` on round end
-- All clients reset HP and respawn on round start event
-- Team assignment synced at round start
+```typescript
+// src/modules/multiplayer/adapters/colyseus-adapter.ts
+initMatch() → { room, localPlayerId, players }
+syncTransform({ x, y, z, rotY })
+sendShot({ origin, direction })
+onPlayerUpdate(callback)
+onShotReceived(callback)
+onRoundUpdate(callback)
+```
+
+- `initMatch` → `client.joinOrCreate('match', options)`
+- Transforms: patch local player Schema fields (throttled ~20 Hz) or `room.send('move', …)` if server mutates state
+- Shots: `room.send('shot', payload)`; server validates / applies damage / mutates `hp` / `eliminated`
+- Round wipe: server runs `checkRoundEnd`; clients listen to `roundPhase` / `winner`
+
+## Round sync (server-authoritative)
+
+- Server assigns teams on join / round start
+- Server detects team wipe → sets `winner`, `roundPhase: 'ended'` → after delay, reset players and `roundPhase: 'in_progress'`
+- Clients react to Schema changes only — do not decide round winners locally in multiplayer mode
 
 ## Integration
 
 - `GameCanvas` calls adapter on mount
-- `FpsPlayer` syncs local transform each frame (throttled ~20 Hz)
-- `useShooting` broadcasts shot via RPC; hits only opposing team
-- `RemotePlayer` component renders other players' soldiers
+- `FpsPlayer` syncs local transform (throttled)
+- `useShooting` calls `sendShot`; opposing team only
+- `RemotePlayer` reads remote players from multiplayer store (fed by Schema callbacks)
+
+## Astro config (US-5)
+
+```js
+import node from '@astrojs/node';
+export default defineConfig({
+  output: 'server',
+  adapter: node({ mode: 'standalone' }),
+  // …
+});
+```
 
 ## Env
 
-`PUBLIC_PLAYROOM_GAME_ID` in `.env`
+| Variable | Purpose |
+|----------|---------|
+| `PUBLIC_COLYSEUS_URL` | Client WebSocket endpoint (e.g. `ws://localhost:2567` or same-origin path) |
+| `COLYSEUS_PORT` | Optional if Colyseus listens on a dedicated port |
+
+## Dependencies (US-5)
+
+- `colyseus`, `@colyseus/schema` (server)
+- `@colyseus/sdk` (client)
+- `@astrojs/node` (Astro adapter)
+
+## Out of scope (US-5)
+
+- Colyseus Cloud deployment (local / self-hosted Node first)
+- Playroom Kit (removed)

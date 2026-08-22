@@ -2,11 +2,11 @@
 
 ## Stack
 
-- **Astro 7** — pages, layout, SSG shell
+- **Astro 7** — pages, layout; **Node.js adapter** (`@astrojs/node`, `output: 'server'`) for multiplayer (US-5)
 - **Three.js** via **@react-three/fiber** + **drei** — game island on `/play`
 - **Zustand** — game session, health, players, round state
 - **Tailwind 4** — landing UI + HUD
-- **Playroom Kit** — real-time multiplayer (US-5)
+- **[Colyseus](https://colyseus.io/framework/)** — real-time rooms, Schema sync, matchmaking (US-5)
 
 ## Game loop (round-based)
 
@@ -31,7 +31,7 @@ stateDiagram-v2
 | Argentina | `argentina` | Patches / theme align with soldiers art |
 | England   | `england`   | Opposing team                           |
 
-Team assignment: random or balanced split in MVP; host decides in Playroom (US-5).
+Team assignment: random or balanced split in MVP; **server assigns teams** in Colyseus `MatchRoom` (US-5).
 
 ## Weapons (loadout)
 
@@ -56,7 +56,7 @@ src/
 │   ├── soldier/          Soldier registry, model, hitboxes
 │   ├── combat/           HP, zone damage, difficulty, elimination
 │   ├── weapons/          Loadout, pistol (MVP); knife/rifle later
-│   └── multiplayer/      Playroom adapter (US-5)
+│   └── multiplayer/      Colyseus adapter + MatchRoom / Schema (US-5)
 ├── layouts/              Base shell (SEO, fonts, atmosphere)
 └── styles/               Design tokens + landing/HUD utilities
 ```
@@ -91,6 +91,7 @@ useShooting (raycast) → hit zone from mesh userData
 
 ## Multiplayer (US-5)
 
-Playroom adapter syncs `{ x, y, z, rotY, hp, eliminated, team }` per player.
-Shooter-authoritative hitscan via RPC.
-Round state synced via room state or host authority.
+- Astro **Node adapter** serves the app; **Colyseus** rooms sync state over WebSocket.
+- Schema per player: `{ x, y, z, rotY, hp, eliminated, team }`.
+- Shots and round wipe are **server-authoritative** (room messages + Schema mutations).
+- Client uses `colyseus-adapter` only — game modules do not import Colyseus directly.

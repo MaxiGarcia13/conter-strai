@@ -1,10 +1,24 @@
 # US-5 — Tasks
 
-- [ ] Add `playroomkit` dependency
-- [ ] playroom-adapter implementation
-- [ ] multiplayer-store for remote players
+## Astro Node + Colyseus server
+
+- [ ] Add `@astrojs/node`; set `output: 'server'` + Node adapter in `astro.config.mjs`
+- [ ] Add `colyseus`, `@colyseus/schema`, `@colyseus/sdk`
+- [ ] Define `MatchState` / `PlayerState` Schema
+- [ ] Implement `MatchRoom` (join, leave, move, shot, round end / reset)
+- [ ] Wire Colyseus into Astro Node process (boot rooms with server)
+- [ ] Env: `PUBLIC_COLYSEUS_URL` (+ optional `COLYSEUS_PORT`)
+
+## Client adapter + game wiring
+
+- [ ] `colyseus-adapter` (`initMatch`, sync transform, send shot, listeners)
+- [ ] multiplayer-store for remote players + round phase
 - [ ] RemotePlayer component
-- [ ] Wire FpsPlayer transform sync
-- [ ] Wire useShooting RPC broadcast
-- [ ] Handle remote shot RPC → applyDamage on target
-- [ ] Init Playroom on /play mount
+- [ ] Wire FpsPlayer transform sync through adapter
+- [ ] Wire useShooting → `sendShot`; apply server HP / eliminated updates
+- [ ] Init Colyseus join on `/play` mount
+- [ ] Cap room at 2–8 players; assign Argentina / England on server
+
+## Verification
+
+- [ ] Two browsers join same room, teams assigned, shoot until one team eliminated; round resets

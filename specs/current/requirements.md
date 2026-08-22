@@ -45,6 +45,7 @@ Conter Strai is a **round-based team tactical shooter** inspired by Counter-Stri
 | NFR-5 | Works in latest Chrome/Firefox/Safari desktop                             |
 | NFR-6 | Astro pages + R3F island split — no Three.js on the landing route         |
 | NFR-7 | Unit tests for pure domain logic; skip testing Three.js render internals  |
+| NFR-8 | Multiplayer via **Colyseus** + Astro **`@astrojs/node`** (server output) — see US-5 |
 
 ## Out of scope (MVP)
 
@@ -52,4 +53,5 @@ Conter Strai is a **round-based team tactical shooter** inspired by Counter-Stri
 - Bomb defusal, hostage, and other objective modes beyond team elimination
 - Matchmaking, ranks, economy, buy menu
 - Mobile touch controls
-- Dedicated backend (Playroom handles multiplayer layer in US-5)
+- External BaaS (Colyseus self-hosted on Astro Node; Cloud optional later)
+- Playroom Kit (replaced by Colyseus)

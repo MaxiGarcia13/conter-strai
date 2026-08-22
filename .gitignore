@@ -1,0 +1,14 @@
+node_modules
+
+.env
+.env.*
+
+dist
+.astro
+
+.DS_Store
+
+test-results/
+coverage/
+
+.vercel

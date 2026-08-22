@@ -105,6 +105,9 @@ Navmesh, destructible walls, multi-level, roofs, LODs, prop models (trees etc. l
 ```
 src/modules/
 ├── game/       GameCanvas, FpsPlayer, useFpsControls, HUD crosshair
-├── scenario/   registries (texture, prop, scenario), ScenarioScene, arena-01
-└── soldier/    registry, SoldierModel, swat-guy
+├── scenarios/  registry + types, ScenarioScene, arena-01
+├── soldiers/   registry + types, SoldierModel, swat-guy
+├── textures/   registry + types
+├── props/      registry + types
+└── teams/      team definitions
 ```

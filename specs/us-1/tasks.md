@@ -14,7 +14,7 @@
 - [x] Add `site` to `astro.config.mjs`
 - [x] Build `LandingHero.astro` with shooter typography + CTA styling
 - [x] Wire `index.astro` with layout + SEO meta (title, description, OG image)
-- [ ] Point favicon to `/conter-strai.png`
+- [x] Point favicon to `/conter-strai.png`
 
 ## Verification
 

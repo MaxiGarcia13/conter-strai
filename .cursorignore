@@ -1,0 +1,3 @@
+# Compiled / nested agent dumps — never auto-inject into Rules context
+.cursor/skills/**/REFERENCE.md
+.cursor/skills/**/AGENTS.md

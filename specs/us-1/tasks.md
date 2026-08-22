@@ -6,12 +6,12 @@
 - [x] Add `@theme inline` mappings for `accent`, `surface`, `danger`, etc.
 - [x] Add `body` base styles (dark bg, antialiased)
 - [x] Add `.game-atmosphere` overlay; rename in `app.astro` (remove `gallery-atmosphere`)
-- [ ] Set dark `theme-color` meta in `app.astro`
+- [x] Set dark `theme-color` meta in `app.astro`
 
 ## Page & components
 
-- [ ] Fix layout CSS import in `app.astro` (`@/styles/global.css`)
-- [ ] Add `site` to `astro.config.mjs`
+- [x] Fix layout CSS import in `app.astro` (`@/styles/global.css`)
+- [x] Add `site` to `astro.config.mjs`
 - [ ] Build `LandingHero.astro` with shooter typography + CTA styling
 - [ ] Wire `index.astro` with layout + SEO meta (title, description, OG image)
 - [ ] Point favicon to `/conter-strai.png`

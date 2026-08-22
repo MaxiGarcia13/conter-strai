@@ -2,12 +2,12 @@
 
 ## Stack
 
-| Layer | Choice | Role |
-|-------|--------|------|
-| Astro | `@astrojs/node` adapter, `output: 'server'` | HTTP pages (`/`, `/play`) + Node process |
-| Multiplayer | [Colyseus](https://colyseus.io/framework/) | Rooms, Schema state sync, matchmaking, messages |
-| Client SDK | `@colyseus/sdk` | `joinOrCreate`, listen to state, `room.send` |
-| Game UI | R3F island on `/play` | Consumes multiplayer adapter — no direct Colyseus imports in combat/scenario |
+| Layer       | Choice                                      | Role                                                                         |
+| ----------- | ------------------------------------------- | ---------------------------------------------------------------------------- |
+| Astro       | `@astrojs/node` adapter, `output: 'server'` | HTTP pages (`/`, `/play`) + Node process                                     |
+| Multiplayer | [Colyseus](https://colyseus.io/framework/)  | Rooms, Schema state sync, matchmaking, messages                              |
+| Client SDK  | `@colyseus/sdk`                             | `joinOrCreate`, listen to state, `room.send`                                 |
+| Game UI     | R3F island on `/play`                       | Consumes multiplayer adapter — no direct Colyseus imports in combat/scenario |
 
 ## Architecture
 
@@ -68,7 +68,7 @@ Register rooms when the Node server boots (Colyseus `defineServer` / attach to A
 
 ## Client adapter
 
-```typescript
+```
 // src/modules/multiplayer/adapters/colyseus-adapter.ts
 initMatch() → { room, localPlayerId, players }
 syncTransform({ x, y, z, rotY })
@@ -100,6 +100,7 @@ onRoundUpdate(callback)
 
 ```js
 import node from '@astrojs/node';
+
 export default defineConfig({
   output: 'server',
   adapter: node({ mode: 'standalone' }),
@@ -109,10 +110,10 @@ export default defineConfig({
 
 ## Env
 
-| Variable | Purpose |
-|----------|---------|
+| Variable              | Purpose                                                                    |
+| --------------------- | -------------------------------------------------------------------------- |
 | `PUBLIC_COLYSEUS_URL` | Client WebSocket endpoint (e.g. `ws://localhost:2567` or same-origin path) |
-| `COLYSEUS_PORT` | Optional if Colyseus listens on a dedicated port |
+| `COLYSEUS_PORT`       | Optional if Colyseus listens on a dedicated port                           |
 
 ## Dependencies (US-5)
 

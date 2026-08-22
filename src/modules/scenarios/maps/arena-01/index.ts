@@ -1,5 +1,7 @@
-import type { ScenarioConfig } from './types';
+import type { ScenarioConfig } from '@/modules/scenarios/types';
+import { arena01Floors, arena01Walls } from './layout';
 
+/** Ruined Village — 100×50 m pistol TDM map. */
 export const arena01: ScenarioConfig = {
   id: 'arena-01',
   name: 'Ruined Village',
@@ -13,10 +15,13 @@ export const arena01: ScenarioConfig = {
     assetId: 'forrest_ground',
     repeat: [25, 12.5],
   },
+  floorZones: arena01Floors,
   walls: {
-    assetId: 'coral_fort_wall',
-    thickness: 0.5,
+    assetId: 'cliff_side',
+    thickness: 1.2,
+    height: 8,
   },
+  wallSegments: arena01Walls,
   props: [],
   teamSpawns: {
     puma: [

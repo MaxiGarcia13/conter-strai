@@ -1,0 +1,21 @@
+---
+import BaseLayout from '@/layouts/base-layout.astro';
+import { GameCanvas } from '@/modules/game/components';
+---
+
+<BaseLayout
+  title="Play — Conter Strai"
+  description="Deploy into Ruined Village. Move fast, hold angles, win the round."
+>
+  <main class="fixed inset-0 z-10 bg-black">
+    <GameCanvas client:only="react" />
+
+    <noscript>
+      <p
+        class="font-mono text-foreground flex h-dvh items-center justify-center text-center text-sm tracking-widest uppercase"
+      >
+        Conter Strai needs JavaScript to run.
+      </p>
+    </noscript>
+  </main>
+</BaseLayout>

@@ -1,4 +1,5 @@
 import type { Team } from '../teams';
+import type { TextureId } from '@/modules/textures';
 
 export type Vec3 = [number, number, number];
 
@@ -12,6 +13,23 @@ export interface ScenarioProp {
   collidable?: boolean;
 }
 
+export interface ScenarioFloorZone {
+  id: string;
+  assetId: TextureId;
+  /** Center on the ground plane (Y is ignored). */
+  position: Vec3;
+  size: [number, number];
+  repeat?: [number, number];
+}
+
+export interface ScenarioWallSegment {
+  id?: string;
+  start: Vec3;
+  end: Vec3;
+  height?: number;
+  assetId?: TextureId;
+}
+
 export interface ScenarioConfig {
   id: string;
   name: string;
@@ -22,18 +40,17 @@ export interface ScenarioConfig {
     wallHeight: number;
   };
   floor: {
-    assetId: string;
+    assetId: TextureId;
     repeat?: [number, number];
   };
+  floorZones?: ScenarioFloorZone[];
   walls: {
-    assetId: string;
+    assetId: TextureId;
     thickness?: number;
-  };
-  wallSegments?: {
-    start: Vec3;
-    end: Vec3;
+    /** Outer perimeter height (meters). Defaults to bounds.wallHeight. */
     height?: number;
-  }[];
+  };
+  wallSegments?: ScenarioWallSegment[];
   props?: ScenarioProp[];
   teamSpawns: Record<Team, Vec3[]>;
   spawnYaw?: Record<Team, number>;

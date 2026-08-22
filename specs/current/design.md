@@ -18,18 +18,18 @@ stateDiagram-v2
   RoundEnd --> RoundStart: declare winner, reset all
 ```
 
-| Phase           | Behavior                                                                               |
-| --------------- | -------------------------------------------------------------------------------------- |
-| **Round start** | Split players into Puma / Lion; teleport to team spawns; full HP; equip pistol |
-| **In progress** | PvP combat; eliminated players spectate or wait (no respawn)                           |
-| **Round end**   | One team wiped → opposing team wins; show banner; after brief delay, next round        |
+| Phase           | Behavior                                                                        |
+| --------------- | ------------------------------------------------------------------------------- |
+| **Round start** | Split players into Puma / Lion; teleport to team spawns; full HP; equip pistol  |
+| **In progress** | PvP combat; eliminated players spectate or wait (no respawn)                    |
+| **Round end**   | One team wiped → opposing team wins; show banner; after brief delay, next round |
 
 ## Teams
 
-| Team | ID     | Motif                                      |
-| ---- | ------ | ------------------------------------------ |
+| Team | ID     | Motif                                        |
+| ---- | ------ | -------------------------------------------- |
 | Puma | `puma` | Argentina — puma (national / regional fauna) |
-| Lion | `lion` | England — heraldic lion                    |
+| Lion | `lion` | England — heraldic lion                      |
 
 Team IDs are `puma` \| `lion` everywhere in code. Display names: **Puma** / **Lion**.
 

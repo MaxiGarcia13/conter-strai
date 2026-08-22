@@ -1,11 +1,13 @@
 # US-2 — Tasks
 
-- [ ] Create `/play` page with dynamic GameCanvas import
-- [ ] Scenario registry + `arena-01` config with **teamSpawns** (Puma / Lion)
+- [ ] Texture registry (`forrest_ground`, `coral_fort_wall` → `/assets/textures/…`)
+- [ ] Prop registry stub (empty or placeholder ids; ready for trees later)
+- [ ] Scenario registry + `arena-01` **Ruined Village**: 100×50×3.5 m, floor/walls, **teamSpawns** (Puma west / Lion east), `props: []`
 - [ ] Soldier registry + `swat-guy` definition
-- [ ] ScenarioScene with floor/walls + GLB materials
-- [ ] SoldierModel component
-- [ ] useFpsControls hook (WASD, mouse, collision)
-- [ ] FpsPlayer + GameCanvas wiring
+- [ ] `ScenarioScene`: floor + outer walls from config; generic `props` loop; texture repeat
+- [ ] Create `/play` page with dynamic `GameCanvas` import
+- [ ] `SoldierModel` component
+- [ ] `useFpsControls` hook (WASD, mouse, bounds collision)
+- [ ] `FpsPlayer` + `GameCanvas` wiring (lights from scenario defaults)
 - [ ] Crosshair HUD overlay
-- [ ] Vitest: registry lookup tests
+- [ ] Vitest: texture / scenario / soldier registry lookup; arena-01 bounds + spawn sides

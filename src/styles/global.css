@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+
+:root {
+  --background: hsl(40 8% 96%);
+  --background-deep: hsl(40 6% 90%);
+  --foreground: hsl(222 22% 12%);
+  --foreground-muted: hsl(215 8% 40%);
+  --accent: hsl(30 8% 28%);
+  --accent-soft: hsl(30 6% 42%);
+  --light-glow: hsl(40 20% 88%);
+  --frame-wood: hsl(28 18% 22%);
+  --frame-wood-deep: hsl(28 22% 14%);
+  --frame-wood-highlight: hsl(32 16% 34%);
+  --frame-metal: hsl(210 8% 28%);
+  --frame-metal-deep: hsl(215 10% 16%);
+  --frame-metal-edge: hsl(210 6% 48%);
+  --frame-mat: hsl(40 20% 96%);
+  --frame-mat-wide: hsl(40 14% 97%);
+  --shadow-soft: hsl(220 20% 20% / 0.12);
+
+  --font-display-family: 'Cormorant Garamond', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-body-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+
+  --space-page-x: clamp(1.25rem, 4vw, 3rem);
+  --space-page-y: clamp(1.5rem, 5vh, 3.5rem);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-deep: var(--background-deep);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-light-glow: var(--light-glow);
+  --color-frame-wood: var(--frame-wood);
+  --color-frame-mat: var(--frame-mat);
+  --color-shadow-soft: var(--shadow-soft);
+
+  --font-display: var(--font-display-family);
+  --font-sans: var(--font-body-family);
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    max-width: 100%;
+    min-height: 100%;
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+    scroll-behavior: smooth;
+  }
+}

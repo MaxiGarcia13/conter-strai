@@ -6,7 +6,7 @@
 - [x] Soldier registry + `swat-guy` definition
 - [x] `ScenarioScene`: floor + outer walls from config; generic `props` loop; texture repeat
 - [x] Create `/play` page with dynamic `GameCanvas` import
-- [ ] `SoldierModel` component
+- [x] `SoldierModel` component
 - [ ] `useFpsControls` hook (WASD, mouse, bounds collision)
 - [ ] `FpsPlayer` + `GameCanvas` wiring (lights from scenario defaults)
 - [ ] Crosshair HUD overlay

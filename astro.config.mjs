@@ -12,6 +12,20 @@ export default defineConfig({
   server: {
     port,
   },
-  vite: { plugins: [tailwindcss()] },
+  vite: {
+    plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'react-dom/client',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+      ],
+    },
+    resolve: {
+      dedupe: ['react', 'react-dom'],
+    },
+  },
   integrations: [sitemap(), react()],
 });

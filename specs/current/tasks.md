@@ -5,6 +5,7 @@ Work queue points to open US deltas. Tick tasks in the delta folder; ship into `
 ## Open deltas
 
 - [specs/us-1/tasks.md](../us-1/tasks.md) — Landing page
+  - In progress: Replace gallery tokens in `global.css` with shooter theme
 - [specs/us-2/tasks.md](../us-2/tasks.md) — 3D world + movement
 - [specs/us-3/tasks.md](../us-3/tasks.md) — Health & damage
 - [specs/us-4/tasks.md](../us-4/tasks.md) — PvP shooting

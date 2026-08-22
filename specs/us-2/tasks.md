@@ -7,7 +7,7 @@
 - [x] `ScenarioScene`: floor + outer walls from config; generic `props` loop; texture repeat
 - [x] Create `/play` page with dynamic `GameCanvas` import
 - [x] `SoldierModel` component
-- [ ] `useFpsControls` hook (WASD, mouse, bounds collision)
+- [x] `useFpsControls` hook (WASD, mouse, bounds collision)
 - [ ] `FpsPlayer` + `GameCanvas` wiring (lights from scenario defaults)
 - [ ] Crosshair HUD overlay
 - [ ] Vitest: texture / scenario / soldier registry lookup; arena-01 bounds + spawn sides

@@ -21,4 +21,8 @@ Head sphere, body box, limb boxes.
 
 ## Store
 
-`health-store.ts` — per-entity HP map, Zustand.
+`health-store.ts` — per-entity HP map, Zustand. HP resets on round end only (US-4 round service).
+
+## Round integration
+
+Elimination sets `eliminated: true` until `endRound()` resets all entities to full HP.

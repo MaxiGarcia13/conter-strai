@@ -1,7 +1,7 @@
 # US-2 — Tasks
 
 - [ ] Create `/play` page with dynamic GameCanvas import
-- [ ] Scenario registry + `arena-01` config
+- [ ] Scenario registry + `arena-01` config with **teamSpawns** (Argentina / England)
 - [ ] Soldier registry + `swat-guy` definition
 - [ ] ScenarioScene with floor/walls + GLB materials
 - [ ] SoldierModel component

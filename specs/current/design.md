@@ -4,19 +4,56 @@
 
 - **Astro 7** — pages, layout, SSG shell
 - **Three.js** via **@react-three/fiber** + **drei** — game island on `/play`
-- **Zustand** — game session, health, players
+- **Zustand** — game session, health, players, round state
 - **Tailwind 4** — landing UI + HUD
 - **Playroom Kit** — real-time multiplayer (US-5)
+
+## Game loop (round-based)
+
+```mermaid
+stateDiagram-v2
+  [*] --> RoundStart
+  RoundStart --> InProgress: assign teams, spawn, equip pistol
+  InProgress --> RoundEnd: one team eliminated
+  RoundEnd --> RoundStart: reset HP, respawn all, next round
+```
+
+| Phase | Behavior |
+|-------|----------|
+| **Round start** | Split players into Argentina / England; teleport to team spawns; full HP; equip pistol |
+| **In progress** | PvP combat; eliminated players spectate or wait (no respawn) |
+| **Round end** | Show round winner; after brief delay, start next round |
+
+## Teams
+
+| Team | ID | Notes |
+|------|-----|-------|
+| Argentina | `argentina` | Patches / theme align with soldiers art |
+| England | `england` | Opposing team |
+
+Team assignment: random or balanced split in MVP; host decides in Playroom (US-5).
+
+## Weapons (loadout)
+
+| Weapon | MVP | Future |
+|--------|-----|--------|
+| Pistol | Yes — default round start | — |
+| Knife | No | Melee, silent |
+| Rifle | No | Primary weapon |
+| Others | No | SMG, sniper, etc. |
+
+Weapon registry mirrors soldier/scenario pattern (`src/modules/weapons/` — future).
 
 ## Module map
 
 ```
 src/modules/
 ├── landing/      Hero, game info, Start Game CTA
-├── game/         Session shell, GameCanvas, FPS controls, HUD
-├── scenario/     Config-driven maps (arena-01)
+├── game/         Session shell, GameCanvas, FPS controls, HUD, round state
+├── scenario/     Config-driven maps (arena-01); team spawn points
 ├── soldier/      Soldier registry, model, hitboxes
-├── combat/       HP, zone damage, difficulty
+├── combat/       HP, zone damage, difficulty, elimination
+├── weapons/      Loadout, pistol (MVP); knife/rifle later
 └── multiplayer/  Playroom adapter (US-5)
 ```
 
@@ -32,10 +69,12 @@ src/modules/
 ```
 useShooting (raycast) → hit zone from mesh userData
   → applyDamage (service) → health store → HUD
-  → isEliminated → disable controls → respawn timer
+  → isEliminated → disable controls (no respawn this round)
+  → round service checks team wipe → round end → respawn all
 ```
 
 ## Multiplayer (US-5)
 
-Playroom adapter syncs `{ x, y, z, rotY, hp, eliminated }` per player.
+Playroom adapter syncs `{ x, y, z, rotY, hp, eliminated, team }` per player.
 Shooter-authoritative hitscan via RPC.
+Round state synced via room state or host authority.

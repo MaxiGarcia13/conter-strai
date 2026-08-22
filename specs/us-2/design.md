@@ -3,13 +3,15 @@
 ## Registry types
 
 ```typescript
+type Team = 'argentina' | 'england';
+
 type ScenarioConfig = {
   id: string;
   name: string;
   bounds: { width: number; depth: number; wallHeight: number };
   floor: { assetId: string };
   walls: { assetId: string };
-  spawnPoints: [number, number, number][];
+  teamSpawns: Record<Team, [number, number, number][]>;
 };
 
 type SoldierDefinition = {
@@ -29,4 +31,11 @@ type SoldierDefinition = {
 
 ## arena-01
 
-20×20 m arena, `worn_tile_floor` + `damaged_plaster`, 4 spawn points.
+20×20 m arena, `worn_tile_floor` + `damaged_plaster`.
+
+| Team | Spawn side | Points |
+|------|------------|--------|
+| Argentina | West (−X) | 2 spawns |
+| England | East (+X) | 2 spawns |
+
+Round start (US-4) picks a spawn per player on their team.

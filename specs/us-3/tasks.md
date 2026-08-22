@@ -6,4 +6,5 @@
 - [ ] health-store (Zustand)
 - [ ] Soldier hitbox meshes
 - [ ] HealthBar HUD component
+- [ ] Elimination persists until round end (no mid-round respawn)
 - [ ] Vitest: zone math, difficulty, elimination

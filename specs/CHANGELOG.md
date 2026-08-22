@@ -10,11 +10,11 @@
 
 | US | Summary |
 |----|---------|
-| **US-1** | Landing page — hero, soldiers art, Start Game CTA |
-| **US-2** | 3D arena scenario + FPS movement |
-| **US-3** | Zone-based health & difficulty damage |
-| **US-4** | Local PvP shooting loop |
-| **US-5** | Playroom Kit multiplayer sync |
+| **US-1** | Landing page — hero, soldiers art, Start Game CTA, game rules copy |
+| **US-2** | 3D arena scenario + FPS movement + team spawns |
+| **US-3** | Zone-based health & difficulty damage (round-permanent elimination) |
+| **US-4** | Round-based PvP — pistol, teams, no mid-round respawn |
+| **US-5** | Playroom Kit multiplayer sync + team rounds |
 
 ## Shipped
 

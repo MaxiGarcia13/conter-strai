@@ -6,7 +6,7 @@
 |----|-------------|
 | US-1.1 | Page at `/` uses `app.astro` layout |
 | US-1.2 | Hero displays title "Conter Strai", tagline, and `soldiers.png` |
-| US-1.3 | Short game info bullets (online PvP shooter) |
+| US-1.3 | Short game info bullets: online PvP, **Argentina vs England** teams, round-based elimination |
 | US-1.4 | **Start Game** button links to `/play` |
 | US-1.5 | **Shooter game theme** — see [Theme & visual identity](#theme--visual-identity) below |
 | US-1.6 | No Three.js bundle on landing |

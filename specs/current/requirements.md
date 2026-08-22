@@ -2,20 +2,37 @@
 
 Living product contract. Open deltas extend this until shipped.
 
+## Game rules
+
+Conter Strai is a **round-based team tactical shooter** inspired by Counter-Strike.
+
+| Rule | Detail |
+|------|--------|
+| **Teams** | Two sides — **Argentina** vs **England** — assigned at match/round start |
+| **Objective** | Eliminate the opposing team (team deathmatch). Future modes may add bomb defusal, capture, etc. |
+| **Maps** | Each game mode is played on a **designated map** (scenario). MVP: one map (`arena-01`) |
+| **Round flow** | Players fight until one team is eliminated or the round ends; **no respawn mid-round** |
+| **Between rounds** | Survivors and new round reset: full HP, respawn at team spawn points, weapons reset |
+| **Starting loadout** | **Pistol only** at round start. Knife, rifle, and other weapons — future US |
+| **Damage** | Zone-based (head / limbs / body). Difficulty presets scale incoming damage |
+| **Win condition (MVP)** | First team to eliminate all opponents wins the round |
+
 ## Functional
 
 | ID | Requirement |
 |----|-------------|
-| FR-1 | Landing shows game title, short description, `soldiers.png`, **Start Game** → `/play`, and **shooter game theme** (dark tactical UI — see US-1) |
+| FR-1 | Landing shows game title, short description, `soldiers.png`, **Start Game** → `/play`, and **shooter game theme** (dark tactical UI — see US-1). Copy reflects Argentina vs England teams and round-based PvP |
 | FR-2 | `/play` loads one 3D scenario with floor + walls from texture GLBs |
 | FR-3 | Local player moves with **WASD + mouse look** (FPS); pointer lock on click |
 | FR-4 | Soldier model is data-driven (`swat-guy` default); registry supports future models |
 | FR-5 | Scenario is data-driven (`arena-01` default); registry supports future maps |
-| FR-6 | Each soldier has **100 HP** (configurable max) |
+| FR-6 | Each soldier has **100 HP** (configurable max) at round start |
 | FR-7 | Bullet hits reduce HP by zone: **head 50%**, **limbs 15%**, **body 20%** of max HP |
 | FR-8 | Difficulty presets adjust incoming damage |
-| FR-9 | At 0 HP, soldier is **eliminated**; respawn after delay |
-| FR-10 | PvP: players can shoot and damage each other |
+| FR-9 | At 0 HP, soldier is **eliminated for the current round** — **no respawn until the round ends** |
+| FR-10 | PvP: two teams (Argentina / England) fight to eliminate each other |
+| FR-11 | Round start: assign team, spawn at team spawn point, equip **pistol** |
+| FR-12 | Round end: when one team is fully eliminated, declare winner and start next round (respawn all, reset HP) |
 
 ## Non-functional
 
@@ -31,6 +48,8 @@ Living product contract. Open deltas extend this until shipped.
 
 ## Out of scope (MVP)
 
-- Matchmaking, ranks, economy, multiple weapons
+- Knife, rifle, and additional weapons (pistol only for MVP)
+- Bomb defusal, hostage, and other objective modes beyond team elimination
+- Matchmaking, ranks, economy, buy menu
 - Mobile touch controls
 - Dedicated backend (Playroom handles multiplayer layer in US-5)

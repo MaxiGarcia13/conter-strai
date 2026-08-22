@@ -19,8 +19,9 @@ Mobile: stack vertically (copy first, art below).
 │  TACTICAL SHOOTER          ┌──────────────┐ │
 │  Conter Strai              │  soldiers    │ │
 │  tagline…                  │  .png        │ │
-│  • bullet                  │              │ │
-│  • bullet                  └──────────────┘ │
+│  • Argentina vs England    │              │ │
+│  • Round-based elimination │              │ │
+│  • Pistol loadout (MVP)    └──────────────┘ │
 │  [ Start Game ]                             │
 └─────────────────────────────────────────────┘
 ```

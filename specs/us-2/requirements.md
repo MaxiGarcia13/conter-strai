@@ -12,7 +12,8 @@
 | US-2.6 | Wall collision prevents walking through bounds |
 | US-2.7 | Minimal HUD crosshair |
 | US-2.8 | Scenario and soldier registries are data-driven |
+| US-2.9 | Scenario defines **team spawn points** — Argentina spawns vs England spawns (see game rules) |
 
 ## Acceptance
 
-Start Game → 3D arena loads, player moves and looks around, cannot walk through walls.
+Start Game → 3D arena loads, player moves and looks around, cannot walk through walls. Spawns are team-aware for round start (US-4).

@@ -24,7 +24,8 @@ syncRoundState(state) // host-authoritative round start/end
 
 ## Round sync
 
-- Host (or Playroom host) runs `checkRoundEnd` and broadcasts round end
+- Host runs `checkRoundEnd` and broadcasts round end when one team is wiped
+- Broadcast `{ winner: Team }` on round end
 - All clients reset HP and respawn on round start event
 - Team assignment synced at round start
 

@@ -3,7 +3,7 @@
 ## useShooting hook
 
 - Raycast from camera on mousedown (with cooldown)
-- Filter hits by `userData.hitZone`, `userData.entityId`, and **team** (no friendly fire in MVP, or spec as optional)
+- Filter hits by `userData.hitZone`, `userData.entityId`, and **team** (no friendly fire in MVP)
 - Call `applyDamage` via combat service
 - Update health store
 
@@ -17,11 +17,8 @@
 ```typescript
 type Team = 'argentina' | 'england';
 
-type RoundState = 'waiting' | 'in_progress' | 'ended';
-
-// round-store or game-session
 startRound() → assign teams, spawn, full HP, equip pistol
-checkRoundEnd() → if all argentina dead OR all england dead → endRound()
+checkRoundEnd() → if all argentina eliminated OR all england eliminated → endRound()
 endRound(winner) → show banner, delay, startRound()
 ```
 
@@ -31,10 +28,8 @@ Dummy soldier on **opposing team** at fixed position for shooting tests until US
 
 ## Elimination
 
-When `isEliminated`, disable FpsPlayer controls until `roundState === 'in_progress'` and player is respawned on next round.
-
-**No 3-second respawn timer** — contradicts game rules.
+When `isEliminated`, disable FpsPlayer controls until next `startRound()`.
 
 ## Vitest
 
-Test `resolveHitDamage` helper and `checkRoundEnd` (pure logic).
+Test `resolveHitDamage` and `checkRoundEnd` (pure logic).

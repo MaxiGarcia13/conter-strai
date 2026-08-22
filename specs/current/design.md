@@ -14,15 +14,15 @@
 stateDiagram-v2
   [*] --> RoundStart
   RoundStart --> InProgress: assign teams, spawn, equip pistol
-  InProgress --> RoundEnd: one team eliminated
-  RoundEnd --> RoundStart: reset HP, respawn all, next round
+  InProgress --> RoundEnd: one team fully eliminated
+  RoundEnd --> RoundStart: declare winner, reset all
 ```
 
 | Phase | Behavior |
 |-------|----------|
 | **Round start** | Split players into Argentina / England; teleport to team spawns; full HP; equip pistol |
 | **In progress** | PvP combat; eliminated players spectate or wait (no respawn) |
-| **Round end** | Show round winner; after brief delay, start next round |
+| **Round end** | One team wiped → opposing team wins; show banner; after brief delay, next round |
 
 ## Teams
 

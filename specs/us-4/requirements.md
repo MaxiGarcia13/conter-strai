@@ -15,4 +15,4 @@
 
 ## Acceptance
 
-Two teams fight with pistols; elimination is round-permanent; round ends when one team is wiped; next round resets everyone.
+Two teams fight with pistols until one team is eliminated; round resets and repeats.

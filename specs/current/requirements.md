@@ -11,11 +11,11 @@ Conter Strai is a **round-based team tactical shooter** inspired by Counter-Stri
 | **Teams** | Two sides — **Argentina** vs **England** — assigned at match/round start |
 | **Objective** | Eliminate the opposing team (team deathmatch). Future modes may add bomb defusal, capture, etc. |
 | **Maps** | Each game mode is played on a **designated map** (scenario). MVP: one map (`arena-01`) |
-| **Round flow** | Players fight until one team is eliminated or the round ends; **no respawn mid-round** |
-| **Between rounds** | Survivors and new round reset: full HP, respawn at team spawn points, weapons reset |
+| **Round flow** | Players fight until **one team is fully eliminated**; **no respawn mid-round** |
+| **Between rounds** | All players reset: full HP, respawn at team spawn points, weapons reset |
 | **Starting loadout** | **Pistol only** at round start. Knife, rifle, and other weapons — future US |
 | **Damage** | Zone-based (head / limbs / body). Difficulty presets scale incoming damage |
-| **Win condition (MVP)** | First team to eliminate all opponents wins the round |
+| **Win condition (MVP)** | When all players on one team are eliminated, the **other team wins** the round |
 
 ## Functional
 
@@ -32,7 +32,7 @@ Conter Strai is a **round-based team tactical shooter** inspired by Counter-Stri
 | FR-9 | At 0 HP, soldier is **eliminated for the current round** — **no respawn until the round ends** |
 | FR-10 | PvP: two teams (Argentina / England) fight to eliminate each other |
 | FR-11 | Round start: assign team, spawn at team spawn point, equip **pistol** |
-| FR-12 | Round end: when one team is fully eliminated, declare winner and start next round (respawn all, reset HP) |
+| FR-12 | Round end: when **one team is fully eliminated**, declare winner and start next round (respawn all, reset HP) |
 
 ## Non-functional
 

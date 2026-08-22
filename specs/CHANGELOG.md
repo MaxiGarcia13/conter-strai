@@ -19,4 +19,4 @@
 
 | US | Summary |
 |----|---------|
-| **US-1** | Landing page — hero, soldiers art, Start Game CTA, shooter theme, SEO |
+| **US-1** | Landing page — hero, soldiers art, Start Game CTA, GitHub contribute footer, shooter theme, SEO |

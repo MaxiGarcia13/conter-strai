@@ -47,26 +47,31 @@ Weapon registry mirrors soldier/scenario pattern (`src/modules/weapons/` — fut
 ## Module map
 
 ```
-src/modules/
-├── landing/      Hero, game info, Start Game CTA
-├── game/         Session shell, GameCanvas, FPS controls, HUD, round state
-├── scenario/     Config-driven maps (arena-01); team spawn points
-├── soldier/      Soldier registry, model, hitboxes
-├── combat/       HP, zone damage, difficulty, elimination
-├── weapons/      Loadout, pistol (MVP); knife/rifle later
-└── multiplayer/  Playroom adapter (US-5)
+src/
+├── pages/index.astro     Landing (hero, CTA, GitHub footer) — Astro-only
+├── components/           Shared Astro UI (GithubIcon, …)
+├── modules/              (US-2+)
+│   ├── game/             Session shell, GameCanvas, FPS controls, HUD, round state
+│   ├── scenario/         Config-driven maps (arena-01); team spawn points
+│   ├── soldier/          Soldier registry, model, hitboxes
+│   ├── combat/           HP, zone damage, difficulty, elimination
+│   ├── weapons/          Loadout, pistol (MVP); knife/rifle later
+│   └── multiplayer/      Playroom adapter (US-5)
+├── layouts/              Base shell (SEO, fonts, atmosphere)
+└── styles/               Design tokens + landing/HUD utilities
 ```
 
 ## Landing (`/`)
 
-| Piece | Detail |
-| ----- | ------ |
-| Files | `src/pages/index.astro`, `src/layouts/base-layout.astro`, `src/modules/landing/components/LandingHero.astro`, `src/styles/global.css` |
-| Layout | Full-viewport hero: copy + CTA left, `soldiers.png` right; stack on mobile |
-| Theme | Near-black surfaces; CS amber accent (`--accent`); `.game-atmosphere` vignette/glow; Barlow Condensed + Rajdhani |
-| CTA | **Start Game** → `/play` (high-contrast accent clip-path button) |
-| SEO | Title, description, OG/Twitter image (`/soldiers.png`), dark `theme-color`, favicon `/conter-strai.png` |
-| Bundle | Astro-only — no Three.js / R3F on this route |
+| Piece  | Detail                                                                                                                             |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Files  | `src/pages/index.astro`, `src/layouts/base-layout.astro`, `src/components/GithubIcon.astro`, `src/styles/global.css`               |
+| Layout | Full-viewport: status strip → hero (copy + CTA left, `soldiers.png` right) → footer; stack on mobile                               |
+| Theme  | Near-black surfaces; CS amber accent (`--accent`); `.game-atmosphere` vignette/glow; Barlow Condensed + Rajdhani + Share Tech Mono |
+| CTA    | **Start Game** → `/play` (high-contrast accent clip-path button)                                                                   |
+| Footer | **Contribute on GitHub** → repo from `package.json` `homepage` (opens in new tab; `GithubIcon`)                                    |
+| SEO    | Title, description, OG/Twitter image (`/soldiers.png`), dark `theme-color`, favicon `/conter-strai.png`                            |
+| Bundle | Astro-only — no Three.js / R3F on this route                                                                                       |
 
 ## Routes
 

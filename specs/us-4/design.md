@@ -14,7 +14,7 @@
 
 ## Round service
 
-```typescript
+```
 type Team = 'argentina' | 'england';
 
 startRound() → assign teams, spawn, full HP, equip pistol

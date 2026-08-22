@@ -18,29 +18,29 @@ stateDiagram-v2
   RoundEnd --> RoundStart: declare winner, reset all
 ```
 
-| Phase | Behavior |
-|-------|----------|
+| Phase           | Behavior                                                                               |
+| --------------- | -------------------------------------------------------------------------------------- |
 | **Round start** | Split players into Argentina / England; teleport to team spawns; full HP; equip pistol |
-| **In progress** | PvP combat; eliminated players spectate or wait (no respawn) |
-| **Round end** | One team wiped → opposing team wins; show banner; after brief delay, next round |
+| **In progress** | PvP combat; eliminated players spectate or wait (no respawn)                           |
+| **Round end**   | One team wiped → opposing team wins; show banner; after brief delay, next round        |
 
 ## Teams
 
-| Team | ID | Notes |
-|------|-----|-------|
+| Team      | ID          | Notes                                   |
+| --------- | ----------- | --------------------------------------- |
 | Argentina | `argentina` | Patches / theme align with soldiers art |
-| England | `england` | Opposing team |
+| England   | `england`   | Opposing team                           |
 
 Team assignment: random or balanced split in MVP; host decides in Playroom (US-5).
 
 ## Weapons (loadout)
 
-| Weapon | MVP | Future |
-|--------|-----|--------|
-| Pistol | Yes — default round start | — |
-| Knife | No | Melee, silent |
-| Rifle | No | Primary weapon |
-| Others | No | SMG, sniper, etc. |
+| Weapon | MVP                       | Future            |
+| ------ | ------------------------- | ----------------- |
+| Pistol | Yes — default round start | —                 |
+| Knife  | No                        | Melee, silent     |
+| Rifle  | No                        | Primary weapon    |
+| Others | No                        | SMG, sniper, etc. |
 
 Weapon registry mirrors soldier/scenario pattern (`src/modules/weapons/` — future).
 
@@ -59,9 +59,9 @@ src/modules/
 
 ## Routes
 
-| Route | Owner |
-|-------|-------|
-| `/` | Astro landing — no Three.js |
+| Route   | Owner                                                 |
+| ------- | ----------------------------------------------------- |
+| `/`     | Astro landing — no Three.js                           |
 | `/play` | Astro shell + R3F `GameCanvas` island (`client:load`) |
 
 ## Data flow (combat)

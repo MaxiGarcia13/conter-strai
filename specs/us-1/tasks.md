@@ -18,6 +18,6 @@
 
 ## Verification
 
-- [ ] Visual check: landing reads as tactical shooter (dark, green CTA, soldiers art)
-- [ ] No gallery-named CSS tokens left in `global.css` / layout
-- [ ] Playwright smoke (optional): landing renders, CTA navigates to `/play`
+- [x] Visual check: landing reads as tactical shooter (dark, amber CTA, soldiers art)
+- [x] No gallery-named CSS tokens left in `global.css` / layout
+- [x] Playwright smoke (optional): landing renders, CTA navigates to `/play`

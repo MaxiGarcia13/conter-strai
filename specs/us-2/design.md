@@ -5,20 +5,20 @@
 ```typescript
 type Team = 'argentina' | 'england';
 
-type ScenarioConfig = {
+interface ScenarioConfig {
   id: string;
   name: string;
   bounds: { width: number; depth: number; wallHeight: number };
   floor: { assetId: string };
   walls: { assetId: string };
   teamSpawns: Record<Team, [number, number, number][]>;
-};
+}
 
-type SoldierDefinition = {
+interface SoldierDefinition {
   id: string;
   modelUrl: string;
   scale: number;
-};
+}
 ```
 
 ## Components
@@ -33,9 +33,9 @@ type SoldierDefinition = {
 
 20×20 m arena, `worn_tile_floor` + `damaged_plaster`.
 
-| Team | Spawn side | Points |
-|------|------------|--------|
-| Argentina | West (−X) | 2 spawns |
-| England | East (+X) | 2 spawns |
+| Team      | Spawn side | Points   |
+| --------- | ---------- | -------- |
+| Argentina | West (−X)  | 2 spawns |
+| England   | East (+X)  | 2 spawns |
 
 Round start (US-4) picks a spawn per player on their team.

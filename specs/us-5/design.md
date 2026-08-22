@@ -2,7 +2,7 @@
 
 ## Adapter
 
-```typescript
+```
 // src/modules/multiplayer/adapters/playroom-adapter.ts
 initMatch(options) → { room, localPlayerId, players }
 syncTransform(id, { x, y, z, rotY, team, hp, eliminated })
@@ -14,10 +14,14 @@ syncRoundState(state) // host-authoritative round start/end
 
 ## Player state (Playroom)
 
-```typescript
+```ts
 {
-  x: number; y: number; z: number; rotY: number;
-  hp: number; eliminated: boolean;
+  x: number;
+  y: number;
+  z: number;
+  rotY: number;
+  hp: number;
+  eliminated: boolean;
   team: 'argentina' | 'england';
 }
 ```

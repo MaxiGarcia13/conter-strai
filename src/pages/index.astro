@@ -1,7 +1,16 @@
 ---
+import { getImage, Image } from 'astro:assets';
 import GithubIcon from '@/components/GithubIcon.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
 import { homepage } from '@/package.json';
+import soldiersImg from '../assets/soldiers.png';
+
+const ogImage = await getImage({
+  src: soldiersImg,
+  width: 1200,
+  height: 800,
+  format: 'png',
+});
 
 const title = 'Conter Strai';
 const description =
@@ -17,7 +26,7 @@ const bullets = [
 <BaseLayout
   title={title}
   description={description}
-  image="/soldiers.png"
+  image={ogImage.src}
   imageAlt="Soldiers geared up for deployment"
 >
   <section class="relative z-10 flex min-h-dvh flex-col">
@@ -90,10 +99,12 @@ const bullets = [
           aria-hidden="true"
         >
         </div>
-        <img
-          src="/soldiers.png"
+        <Image
+          src={soldiersImg}
           alt="Soldiers geared up for deployment"
-          class="relative z-10 mx-auto max-h-[min(70vh,40rem)] w-auto object-contain drop-shadow-2xl"
+          widths={[480, 768, 960, 1200]}
+          sizes="(max-width: 1024px) 90vw, 960px"
+          class="relative z-10 mx-auto h-auto max-h-[min(70vh,40rem)] w-auto object-contain drop-shadow-2xl"
           loading="eager"
           decoding="async"
         />

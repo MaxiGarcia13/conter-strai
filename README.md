@@ -1,6 +1,6 @@
 # Conter Strai
 
-Browser-based tactical shooter inspired by Counter-Strike. **Argentina** vs **England**, round-based team elimination, no install.
+Browser-based tactical shooter inspired by Counter-Strike. **Puma** vs **Lion**, round-based team elimination, no install.
 
 > Lock in, squad up, and hold the line.
 
@@ -14,11 +14,11 @@ Browser-based tactical shooter inspired by Counter-Strike. **Argentina** vs **En
 | 3D arena + FPS movement (`/play`)                                     | In progress (US-2) |
 | Zone damage & difficulty                                              | In progress (US-3) |
 | Round-based PvP (pistol, teams)                                       | In progress (US-4) |
-| Online sync via Playroom Kit                                          | In progress (US-5) |
+| Online sync via Colyseus (Astro Node)                                 | In progress (US-5) |
 
 ## Game rules (MVP)
 
-- **Teams:** Argentina vs England
+- **Teams:** Puma vs Lion (Argentina / England national animals)
 - **Mode:** Team deathmatch — eliminate the other side
 - **Rounds:** No mid-round respawn; full reset between rounds
 - **Loadout:** Pistol only at round start
@@ -27,11 +27,11 @@ Browser-based tactical shooter inspired by Counter-Strike. **Argentina** vs **En
 
 ## Stack
 
-- [Astro](https://astro.build) — pages & landing (no Three.js on `/`)
+- [Astro](https://astro.build) — pages & landing (no Three.js on `/`); Node adapter for multiplayer
 - [React](https://react.dev) + [React Three Fiber](https://docs.pmnd.rs/react-three-fiber) + [Three.js](https://threejs.org) — game island
 - [Tailwind CSS](https://tailwindcss.com) — styling
 - [Zustand](https://zustand-demo.pmnd.rs) — client state
-- [Playroom Kit](https://joinplayroom.com) — multiplayer (US-5)
+- [Colyseus](https://colyseus.io/framework/) — multiplayer rooms (US-5)
 - [Vitest](https://vitest.dev) + [Playwright](https://playwright.dev) — unit & e2e tests
 
 ## Getting started

@@ -20,16 +20,18 @@ stateDiagram-v2
 
 | Phase           | Behavior                                                                               |
 | --------------- | -------------------------------------------------------------------------------------- |
-| **Round start** | Split players into Argentina / England; teleport to team spawns; full HP; equip pistol |
+| **Round start** | Split players into Puma / Lion; teleport to team spawns; full HP; equip pistol |
 | **In progress** | PvP combat; eliminated players spectate or wait (no respawn)                           |
 | **Round end**   | One team wiped → opposing team wins; show banner; after brief delay, next round        |
 
 ## Teams
 
-| Team      | ID          | Notes                                   |
-| --------- | ----------- | --------------------------------------- |
-| Argentina | `argentina` | Patches / theme align with soldiers art |
-| England   | `england`   | Opposing team                           |
+| Team | ID     | Motif                                      |
+| ---- | ------ | ------------------------------------------ |
+| Puma | `puma` | Argentina — puma (national / regional fauna) |
+| Lion | `lion` | England — heraldic lion                    |
+
+Team IDs are `puma` \| `lion` everywhere in code. Display names: **Puma** / **Lion**.
 
 Team assignment: random or balanced split in MVP; **server assigns teams** in Colyseus `MatchRoom` (US-5).
 

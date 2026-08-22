@@ -12,7 +12,7 @@
 | US-2.6 | Wall collision prevents walking through bounds                                               |
 | US-2.7 | Minimal HUD crosshair                                                                        |
 | US-2.8 | Scenario and soldier registries are data-driven                                              |
-| US-2.9 | Scenario defines **team spawn points** — Argentina spawns vs England spawns (see game rules) |
+| US-2.9 | Scenario defines **team spawn points** — Puma spawns vs Lion spawns (see game rules) |
 
 ## Acceptance
 

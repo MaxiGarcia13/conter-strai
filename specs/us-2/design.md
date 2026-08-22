@@ -3,7 +3,7 @@
 ## Registry types
 
 ```typescript
-type Team = 'argentina' | 'england';
+type Team = 'puma' | 'lion';
 
 interface ScenarioConfig {
   id: string;
@@ -35,7 +35,7 @@ interface SoldierDefinition {
 
 | Team      | Spawn side | Points   |
 | --------- | ---------- | -------- |
-| Argentina | West (−X)  | 2 spawns |
-| England   | East (+X)  | 2 spawns |
+| Puma | West (−X) | 2 spawns |
+| Lion | East (+X) | 2 spawns |
 
 Round start (US-4) picks a spawn per player on their team.

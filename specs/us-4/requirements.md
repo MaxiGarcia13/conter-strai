@@ -11,7 +11,7 @@
 | US-4.5 | Eliminated player cannot move/shoot for remainder of round                                                                                        |
 | US-4.6 | **No mid-round respawn** — eliminated until round ends                                                                                            |
 | US-4.7 | **Round service**: when all players on one team are eliminated, end round, declare winner, reset HP, respawn all at team spawns, start next round |
-| US-4.8 | Round start: assign Argentina / England, spawn at team points, equip pistol                                                                       |
+| US-4.8 | Round start: assign Puma / Lion, spawn at team points, equip pistol                                                                               |
 
 ## Acceptance
 

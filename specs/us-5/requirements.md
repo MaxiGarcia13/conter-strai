@@ -8,12 +8,12 @@
 | US-5.2 | **Colyseus** game server handles rooms, matchmaking, and real-time state sync |
 | US-5.3 | After **Start Game**, client joins or creates a Colyseus room (`joinOrCreate`) |
 | US-5.4 | Sync player transforms (position, rotation) via Colyseus Schema state |
-| US-5.5 | Sync health, eliminated state, and **team** (`argentina` \| `england`) |
+| US-5.5 | Sync health, eliminated state, and **team** (`puma` \| `lion`) |
 | US-5.6 | Shot events via Colyseus room messages (server-authoritative or validated) |
 | US-5.7 | Remote soldiers rendered for other players |
 | US-5.8 | Adapter pattern isolates Colyseus from game modules (`colyseus-adapter`) |
 | US-5.9 | Round state synced across clients (round start/end, team wipe) — server-authoritative |
-| US-5.10 | 2–8 players split across Argentina and England per match (`maxClients`) |
+| US-5.10 | 2–8 players split across Puma and Lion per match (`maxClients`) |
 
 ## Acceptance
 

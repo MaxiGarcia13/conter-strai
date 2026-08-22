@@ -17,7 +17,7 @@
 - [ ] Wire FpsPlayer transform sync through adapter
 - [ ] Wire useShooting → `sendShot`; apply server HP / eliminated updates
 - [ ] Init Colyseus join on `/play` mount
-- [ ] Cap room at 2–8 players; assign Argentina / England on server
+- [ ] Cap room at 2–8 players; assign Puma / Lion on server
 
 ## Verification
 

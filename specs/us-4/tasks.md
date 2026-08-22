@@ -1,7 +1,7 @@
 # US-4 — Tasks
 
 - [ ] Round store / service: `startRound`, `endRound`, `checkRoundEnd`
-- [ ] Team assignment (Argentina / England) + team spawn from scenario config
+- [ ] Team assignment (Puma / Lion) + team spawn from scenario config
 - [ ] Pistol weapon config (hitscan, fire rate, range)
 - [ ] useShooting hook (raycast, cooldown, hit resolution, team filter)
 - [ ] resolveHitDamage utility (testable)

@@ -15,10 +15,10 @@
 ## Round service
 
 ```
-type Team = 'argentina' | 'england';
+type Team = 'puma' | 'lion';
 
 startRound() → assign teams, spawn, full HP, equip pistol
-checkRoundEnd() → if all argentina eliminated OR all england eliminated → endRound()
+checkRoundEnd() → if all puma eliminated OR all lion eliminated → endRound()
 endRound(winner) → show banner, delay, startRound()
 ```
 

@@ -55,7 +55,7 @@ Register rooms when the Node server boots (Colyseus `defineServer` / attach to A
   rotY: number;
   hp: number;
   eliminated: boolean;
-  team: 'argentina' | 'england';
+  team: 'puma' | 'lion';
 }
 
 // MatchState

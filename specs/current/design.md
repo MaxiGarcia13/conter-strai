@@ -57,6 +57,17 @@ src/modules/
 └── multiplayer/  Playroom adapter (US-5)
 ```
 
+## Landing (`/`)
+
+| Piece | Detail |
+| ----- | ------ |
+| Files | `src/pages/index.astro`, `src/layouts/base-layout.astro`, `src/modules/landing/components/LandingHero.astro`, `src/styles/global.css` |
+| Layout | Full-viewport hero: copy + CTA left, `soldiers.png` right; stack on mobile |
+| Theme | Near-black surfaces; CS amber accent (`--accent`); `.game-atmosphere` vignette/glow; Barlow Condensed + Rajdhani |
+| CTA | **Start Game** → `/play` (high-contrast accent clip-path button) |
+| SEO | Title, description, OG/Twitter image (`/soldiers.png`), dark `theme-color`, favicon `/conter-strai.png` |
+| Bundle | Astro-only — no Three.js / R3F on this route |
+
 ## Routes
 
 | Route   | Owner                                                 |

@@ -10,7 +10,6 @@
 
 | US | Summary |
 |----|---------|
-| **US-1** | Landing page — hero, soldiers art, Start Game CTA, game rules copy |
 | **US-2** | 3D arena scenario + FPS movement + team spawns |
 | **US-3** | Zone-based health & difficulty damage (round-permanent elimination) |
 | **US-4** | Round-based PvP — pistol, teams, eliminate opposing team to win |
@@ -20,3 +19,4 @@
 
 | US | Summary |
 |----|---------|
+| **US-1** | Landing page — hero, soldiers art, Start Game CTA, shooter theme, SEO |

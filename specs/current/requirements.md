@@ -21,7 +21,7 @@ Conter Strai is a **round-based team tactical shooter** inspired by Counter-Stri
 
 | ID    | Requirement                                                                                                                                                                                                   |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| FR-1  | Landing shows game title, short description, `soldiers.png`, **Start Game** → `/play`, and **shooter game theme** (dark tactical UI — see US-1). Copy reflects Argentina vs England teams and round-based PvP |
+| FR-1  | Landing at `/` shows title **Conter Strai**, tagline, `soldiers.png`, game info (online PvP, Argentina vs England, round-based), **Start Game** → `/play`, SEO meta, and a **dark tactical shooter theme** (amber accent, CSS atmosphere, no Three.js on landing) |
 | FR-2  | `/play` loads one 3D scenario with floor + walls from texture GLBs                                                                                                                                            |
 | FR-3  | Local player moves with **WASD + mouse look** (FPS); pointer lock on click                                                                                                                                    |
 | FR-4  | Soldier model is data-driven (`swat-guy` default); registry supports future models                                                                                                                            |

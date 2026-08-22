@@ -12,8 +12,8 @@
 
 - [x] Fix layout CSS import in `app.astro` (`@/styles/global.css`)
 - [x] Add `site` to `astro.config.mjs`
-- [ ] Build `LandingHero.astro` with shooter typography + CTA styling
-- [ ] Wire `index.astro` with layout + SEO meta (title, description, OG image)
+- [x] Build `LandingHero.astro` with shooter typography + CTA styling
+- [x] Wire `index.astro` with layout + SEO meta (title, description, OG image)
 - [ ] Point favicon to `/conter-strai.png`
 
 ## Verification

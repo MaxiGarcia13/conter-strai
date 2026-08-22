@@ -1,27 +1,28 @@
 @import 'tailwindcss';
 
 :root {
-  /* Surfaces */
-  --background: hsl(220 15% 6%);
-  --background-deep: hsl(220 18% 4%);
-  --surface: hsl(220 12% 12%);
-  --surface-border: hsl(220 10% 20%);
+  /* Surfaces — CS2 menu / dark industrial */
+  --background: hsl(0 0% 4%);
+  --background-deep: hsl(0 0% 2%);
+  --surface: hsl(0 0% 9%);
+  --surface-border: hsl(0 0% 16%);
 
   /* Text */
-  --foreground: hsl(210 15% 92%);
-  --foreground-muted: hsl(215 10% 60%);
+  --foreground: hsl(40 12% 93%);
+  --foreground-muted: hsl(35 8% 68%);
 
-  /* Accents — tactical FPS */
-  --accent: hsl(145 60% 45%);
-  --accent-soft: hsl(145 40% 35%);
-  --accent-glow: hsl(145 70% 50% / 0.3);
-  --danger: hsl(0 70% 55%);
+  /* Accents — CS amber (matches soldiers rim light) */
+  --accent: hsl(36 82% 52%);
+  --accent-soft: hsl(36 78% 42%);
+  --accent-glow: hsl(36 90% 50% / 0.35);
+  --danger: hsl(4 78% 52%);
 
   /* Shadows */
-  --shadow-soft: hsl(220 30% 5% / 0.6);
+  --shadow-soft: hsl(0 0% 0% / 0.65);
 
-  --font-display-family: 'Cormorant Garamond', ui-serif, Georgia, 'Times New Roman', serif;
-  --font-body-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-display-family: 'Barlow Condensed', 'Arial Narrow', ui-sans-serif, sans-serif;
+  --font-body-family: 'Rajdhani', ui-sans-serif, system-ui, sans-serif;
+  --font-mono-family: 'Share Tech Mono', ui-monospace, monospace;
 
   --space-page-x: clamp(1.25rem, 4vw, 3rem);
   --space-page-y: clamp(1.5rem, 5vh, 3.5rem);
@@ -42,6 +43,7 @@
 
   --font-display: var(--font-display-family);
   --font-sans: var(--font-body-family);
+  --font-mono: var(--font-mono-family);
 }
 
 @layer components {
@@ -49,10 +51,103 @@
     position: fixed;
     inset: 0;
     pointer-events: none;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 0%, hsl(145 40% 20% / 0.15), transparent),
-      radial-gradient(ellipse 60% 40% at 80% 100%, hsl(220 30% 15% / 0.3), transparent);
     z-index: 0;
+    background:
+      radial-gradient(ellipse 55% 45% at 72% 52%, hsl(36 80% 42% / 0.16), transparent 70%),
+      radial-gradient(ellipse 40% 35% at 12% 88%, hsl(0 0% 0% / 0.55), transparent 70%),
+      radial-gradient(ellipse 100% 70% at 50% 120%, hsl(0 0% 0% / 0.85), transparent 55%);
+  }
+
+  .game-atmosphere::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+  }
+
+  .game-atmosphere::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.22;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      hsl(0 0% 0% / 0.35) 2px 3px
+    );
+    box-shadow: inset 0 0 120px 40px hsl(0 0% 0% / 0.55);
+  }
+
+  .hud-corners {
+    position: relative;
+  }
+
+  .hud-corners::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.55;
+    background:
+      linear-gradient(var(--accent), var(--accent)) 0 0 / 1.75rem 2px no-repeat,
+      linear-gradient(var(--accent), var(--accent)) 0 0 / 2px 1.75rem no-repeat,
+      linear-gradient(var(--accent), var(--accent)) 100% 0 / 1.75rem 2px no-repeat,
+      linear-gradient(var(--accent), var(--accent)) 100% 0 / 2px 1.75rem no-repeat,
+      linear-gradient(var(--accent), var(--accent)) 0 100% / 1.75rem 2px no-repeat,
+      linear-gradient(var(--accent), var(--accent)) 0 100% / 2px 1.75rem no-repeat,
+      linear-gradient(var(--accent), var(--accent)) 100% 100% / 1.75rem 2px no-repeat,
+      linear-gradient(var(--accent), var(--accent)) 100% 100% / 2px 1.75rem no-repeat;
+  }
+
+  .hero-art-grid {
+    background-image:
+      linear-gradient(hsl(0 0% 100% / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(0 0% 100% / 0.05) 1px, transparent 1px);
+    background-size: 2rem 2rem;
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 75%);
+  }
+
+  .cs-cta {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.75rem;
+    border: 0;
+    background: transparent;
+    padding: 0.75rem 2.25rem 0.75rem 1.5rem;
+    font-family: var(--font-display-family);
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: var(--background-deep);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .cs-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--accent);
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);
+  }
+
+  .cs-cta:hover::before {
+    background: color-mix(in srgb, var(--accent) 82%, white);
+  }
+
+  .cs-cta:hover {
+    box-shadow: 0 0 28px var(--accent-glow);
+  }
+
+  .cs-cta:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
   }
 }
 
@@ -74,7 +169,31 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
+    font-family: var(--font-body-family);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--background-deep);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    .cs-cta:hover {
+      box-shadow: none;
+    }
   }
 }

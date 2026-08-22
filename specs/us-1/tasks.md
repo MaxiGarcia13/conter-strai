@@ -2,7 +2,7 @@
 
 ## Theme & layout
 
-- [ ] Replace gallery tokens in `global.css` with shooter theme (see `design.md` tokens)
+- [x] Replace gallery tokens in `global.css` with shooter theme (see `design.md` tokens)
 - [ ] Add `@theme inline` mappings for `accent`, `surface`, `danger`, etc.
 - [ ] Add `body` base styles (dark bg, antialiased)
 - [ ] Add `.game-atmosphere` overlay; rename in `app.astro` (remove `gallery-atmosphere`)

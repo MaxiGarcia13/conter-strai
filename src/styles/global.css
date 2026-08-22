@@ -30,10 +30,14 @@
 @theme inline {
   --color-background: var(--background);
   --color-background-deep: var(--background-deep);
+  --color-surface: var(--surface);
+  --color-surface-border: var(--surface-border);
   --color-foreground: var(--foreground);
   --color-foreground-muted: var(--foreground-muted);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-accent-glow: var(--accent-glow);
+  --color-danger: var(--danger);
   --color-shadow-soft: var(--shadow-soft);
 
   --font-display: var(--font-display-family);

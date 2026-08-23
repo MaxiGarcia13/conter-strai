@@ -40,9 +40,9 @@ Compile check only — confirms flat `ScenarioConfig` composition is backward-co
 
 Update map data, registries, and authoring helpers — not just type-check consumers.
 
-- [ ] Update `maps/arena-01/layout.ts` + `pieces/*` imports → `scenarios/types.ts`
-- [ ] Confirm `scenario-registry.ts` + `maps/index.ts` exports unchanged (keep `ScenarioId` / `ScenarioConfig`; no `arena-registry` rename in MVP)
-- [ ] **(Optional)** Refactor `maps/arena-01/index.ts` to compose from named sub-objects:
+- [x] Update `maps/arena-01/layout.ts` + `pieces/*` imports → `scenarios/types.ts`
+- [x] Confirm `scenario-registry.ts` + `maps/index.ts` exports unchanged (keep `ScenarioId` / `ScenarioConfig`; no `arena-registry` rename in MVP)
+- [x] **(Optional)** Refactor `maps/arena-01/index.ts` to compose from named sub-objects:
 
   ```typescript
   export const arena01: ScenarioConfig = {
@@ -56,10 +56,10 @@ Update map data, registries, and authoring helpers — not just type-check consu
 
   Same runtime shape; clearer authoring when a second map lands.
 
-- [ ] Add `collisionSegments` for `arena-01` (or `buildCollisionSegments(wallSegments, houses)` helper)
+- [x] Add `collisionSegments` for `arena-01` (or `buildCollisionSegments(wallSegments, houses)` helper)
   - Derive from `wallSegments` + house doorway hole metadata
   - Feeds US-2 interior wall collision
-- [ ] Add `scenario-registry.test.ts` (Vitest) — bounds, spawn sides, texture ids
+- [x] Add `scenario-registry.test.ts` (Vitest) — bounds, spawn sides, texture ids
 
 ---
 

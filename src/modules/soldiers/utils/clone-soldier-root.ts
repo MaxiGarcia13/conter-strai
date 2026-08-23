@@ -32,11 +32,3 @@ export function cloneSoldierRoot(scene: Object3D, scaleMultiplier = 1): Object3D
   refreshSkinnedMeshes(clone);
   return clone;
 }
-
-export function updateSoldierSkeleton(root: Object3D): void {
-  root.traverse((child) => {
-    if (child instanceof SkinnedMesh) {
-      child.skeleton.update();
-    }
-  });
-}

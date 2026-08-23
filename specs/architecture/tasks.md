@@ -90,10 +90,10 @@ Target: single [`src/modules/soldiers/types.ts`](../../src/modules/soldiers/type
 
 Add `types.ts` **with the first runtime file** in each module — no empty module shells.
 
-- [ ] `combat/types.ts` + `apply-damage.ts` (US-3) — `DamageData`, `HealthState`, `HealthSystem`
+- [x] `combat/types.ts` + `apply-damage.ts` (US-3) — `DamageData`, `HealthState`, `HealthSystem`
   - `DamageData`: `attackerId`, `targetId`, `zone`, optional `weaponId`, `team`
-- [ ] `weapons/types.ts` + pistol config (US-4) — `BulletHitResult`, `PistolWeaponConfig`, `Loadout`
-- [ ] `game/types.ts` — `GameMode` (`'team-elimination'`), `RoundPhase` (before round service)
+- [x] `weapons/types.ts` + pistol config (US-4) — `BulletHitResult`, `PistolWeaponConfig`, `Loadout`
+- [x] `game/types.ts` — `GameMode` (`'team-elimination'`), `RoundPhase` (before round service)
 
 No `types/` subfolders or barrel-only modules.
 
@@ -108,9 +108,9 @@ No `types/` subfolders or barrel-only modules.
 
 ## 8. Verification
 
-- [ ] `npm run build` passes
-- [ ] `npm run dev` — arena-01 renders; NPC soldiers + FPS view model unchanged
-- [ ] `soldier-registry.test.ts` — `swat-guy` → `meshData.modelUrl`, clip names, `hitboxPresetId`
+- [x] `npm run build` passes
+- [x] `npm run dev` — arena-01 renders; NPC soldiers + FPS view model unchanged
+- [x] `soldier-skin-registry.test.ts` (née `soldier-registry.test.ts`) — `swat-guy` → `meshData.modelUrl`, clip names, `hitboxPresetId`
 
 ---
 

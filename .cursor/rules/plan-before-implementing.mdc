@@ -1,0 +1,25 @@
+---
+description: Plan and ask before implementing game/3D features; no speculative stacks
+alwaysApply: true
+---
+
+# Plan Before Implementing
+
+## Before writing code for a new feature or fix
+
+1. **State the goal** in one sentence (user-visible outcome).
+2. **List unknowns** (asset format, clip names, root motion, R3F lifecycle).
+3. **Ask 1–3 questions** if evidence is missing — do not guess.
+4. **Propose a short plan** (steps + files); get alignment if scope is large.
+5. **One change per hypothesis** when fixing bugs.
+
+## For 3D / animation work specifically
+
+- Inspect the GLB (clips, bone names, root motion) before wiring AnimationMixer.
+- Prefer asset fixes (clip names, in-place walk) over offset/bone hacks.
+- Avoid parallel render paths (smoke test + FPS + debug body) unless each has a clear lifecycle.
+
+## Forbid
+
+- Implementing smoke tests, pose hacks, and animation in the same PR without verification.
+- Hardcoding vendor names (`mixamo.com`) without registry mapping or documented asset contract.

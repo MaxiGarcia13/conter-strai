@@ -10,18 +10,6 @@ export function spawnYawFor(scenario: ScenarioConfig, team: Team, position: Vec3
   return scenario.spawnYaw?.[team] ?? faceCenterYaw(position);
 }
 
-export interface TeamSpawn {
-  position: Vec3;
-  yaw: number;
-}
-
-export function getTeamSpawn(scenario: ScenarioConfig, team: Team, index = 0): TeamSpawn {
-  const positions = scenario.teamSpawns[team];
-  const safeIndex = index < positions.length ? index : 0;
-  const position = positions[safeIndex];
-  return { position, yaw: spawnYawFor(scenario, team, position) };
-}
-
 export function spawnKey(team: Team, index: number): string {
   return `${team}-${index}`;
 }

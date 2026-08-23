@@ -8,7 +8,7 @@ Remove or stop exporting symbols with no callers (grep `src/` before deleting).
 
 - [x] `measureFeetGroundOffset` — `src/modules/soldiers/utils/strip-root-motion.ts`
 - [x] `updateSoldierSkeleton` — `src/modules/soldiers/utils/clone-soldier-root.ts`
-- [ ] `getTeamSpawn` (+ `TeamSpawn` if unused) — `src/modules/scenarios/utils/spawn-helpers.ts`
+- [x] `getTeamSpawn` (+ `TeamSpawn` if unused) — `src/modules/scenarios/utils/spawn-helpers.ts`
 - [ ] `applyUvRepeat` — un-export (only used inside `use-scenario-material.ts`)
 
 ## Scenario piece catalog (unused scaffolding)

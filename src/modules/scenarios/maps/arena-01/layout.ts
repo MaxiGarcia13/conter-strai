@@ -10,11 +10,11 @@ const HOLE = WALL_HOLE_WIDTH;
 
 /** Street grid matching the ruined-village diagram (green rectangles). */
 export const arena01Streets: ScenarioFloorZone[] = [
-  floorZone('street-main', 'cobblestone_embedded_asphalt', 0, -8, 92, 6),
-  floorZone('street-v-left', 'cobblestone_embedded_asphalt', -22, 6, 6, 28),
-  floorZone('street-v-right', 'cobblestone_embedded_asphalt', 26, 5, 6, 30),
-  floorZone('street-bl', 'cobblestone_embedded_asphalt', -36, 17, 26, 6),
-  floorZone('street-r-spur', 'cobblestone_embedded_asphalt', 39, 14, 18, 6),
+  floorZone('street-main', 'asphalt', 0, -8, 92, 6),
+  floorZone('street-v-left', 'asphalt', -22, 6, 6, 28),
+  floorZone('street-v-right', 'asphalt', 26, 5, 6, 30),
+  floorZone('street-bl', 'asphalt', -36, 17, 26, 6),
+  floorZone('street-r-spur', 'asphalt', 39, 14, 18, 6),
 ];
 
 /** House footprints matching the diagram (white rectangles). */

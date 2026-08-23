@@ -17,16 +17,16 @@ export const WALL_LENGTH = {
 export const FLOOR_TILE_SIZE = 4;
 export const STREET_WIDTH = 8;
 
-export type WallMaterialId = Extract<TextureId, 'coral_fort_wall' | 'damaged_plaster' | 'cliff_side'>;
+export type WallMaterialId = Extract<TextureId, 'castle_brick_broken' | 'broken_brick' | 'cliff_side'>;
 
 export const WALL_MATERIAL = {
-  fort: 'coral_fort_wall',
-  plaster: 'damaged_plaster',
+  fort: 'castle_brick_broken',
+  plaster: 'broken_brick',
   cliff: 'cliff_side',
 } as const satisfies Record<string, WallMaterialId>;
 
 export const FLOOR_MATERIAL = {
   forest: 'forrest_ground',
-  street: 'cobblestone_embedded_asphalt',
+  street: 'asphalt',
   tile: 'brown_floor_tiles',
 } as const satisfies Record<string, TextureId>;

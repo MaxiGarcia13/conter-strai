@@ -2,7 +2,7 @@ import type { PlayLoaderState } from './play-loader';
 import type { ScenarioId } from '@/modules/scenarios';
 import { Canvas } from '@react-three/fiber';
 
-import { Suspense, useMemo } from 'react';
+import { Suspense, useCallback, useMemo, useState } from 'react';
 import {
   getScenarioById,
   ScenarioScene,
@@ -27,11 +27,22 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
   const scenario = useMemo(() => getScenarioById(scenarioId), [scenarioId]);
   const lighting = scenario.lighting ?? DEFAULT_LIGHTING;
   const localSpawnKey = spawnKey(DEFAULT_LOCAL_TEAM, DEFAULT_LOCAL_SPAWN_INDEX);
+  const [trackLoading, setTrackLoading] = useState(Boolean(onLoaderChange));
+
+  const handleLoaderChange = useCallback(
+    (state: PlayLoaderState | null) => {
+      onLoaderChange?.(state);
+      if (state === null) {
+        setTrackLoading(false);
+      }
+    },
+    [onLoaderChange],
+  );
 
   return (
     <div className="fixed inset-0">
       <Canvas shadows className="h-full w-full" camera={{ fov: 75, near: 0.1, far: 300 }}>
-        {onLoaderChange && <LoadingReporter onLoaderChange={onLoaderChange} />}
+        {trackLoading && onLoaderChange && <LoadingReporter onLoaderChange={handleLoaderChange} />}
         <ambientLight intensity={lighting.ambient} />
         <directionalLight
           castShadow

@@ -12,7 +12,7 @@ export interface FloorPieceTemplate {
 export const FLOOR_PIECES = {
   streetMain: {
     id: 'street-main',
-    assetId: 'cobblestone_embedded_asphalt',
+    assetId: 'asphalt',
     size: [96, 8],
   },
   houseSmall: {

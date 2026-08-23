@@ -14,8 +14,8 @@ export interface TextureDefinition {
 
 export type TextureId
   = 'forrest_ground'
-    | 'cobblestone_embedded_asphalt'
+    | 'asphalt'
     | 'brown_floor_tiles'
-    | 'coral_fort_wall'
-    | 'damaged_plaster'
+    | 'castle_brick_broken'
+    | 'broken_brick'
     | 'cliff_side';

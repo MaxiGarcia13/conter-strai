@@ -9,12 +9,12 @@ export const textures: Record<TextureId, TextureDefinition> = {
       roughness: '/assets/textures/maps/forrest_ground/roughness.png',
     },
   },
-  cobblestone_embedded_asphalt: {
-    id: 'cobblestone_embedded_asphalt',
+  asphalt: {
+    id: 'asphalt',
     maps: {
-      color: '/assets/textures/maps/cobblestone_embedded_asphalt/color.jpg',
-      normal: '/assets/textures/maps/cobblestone_embedded_asphalt/normal.png',
-      roughness: '/assets/textures/maps/cobblestone_embedded_asphalt/roughness.png',
+      color: '/assets/textures/maps/asphalt/color.jpg',
+      normal: '/assets/textures/maps/asphalt/normal.png',
+      roughness: '/assets/textures/maps/asphalt/roughness.png',
     },
   },
   brown_floor_tiles: {
@@ -25,20 +25,20 @@ export const textures: Record<TextureId, TextureDefinition> = {
       roughness: '/assets/textures/maps/brown_floor_tiles/roughness.png',
     },
   },
-  coral_fort_wall: {
-    id: 'coral_fort_wall',
+  castle_brick_broken: {
+    id: 'castle_brick_broken',
     maps: {
-      color: '/assets/textures/maps/coral_fort_wall/color.jpg',
-      normal: '/assets/textures/maps/coral_fort_wall/normal.png',
-      roughness: '/assets/textures/maps/coral_fort_wall/roughness.png',
+      color: '/assets/textures/maps/castle_brick_broken/color.jpg',
+      normal: '/assets/textures/maps/castle_brick_broken/normal.png',
+      roughness: '/assets/textures/maps/castle_brick_broken/roughness.png',
     },
   },
-  damaged_plaster: {
-    id: 'damaged_plaster',
+  broken_brick: {
+    id: 'broken_brick',
     maps: {
-      color: '/assets/textures/maps/damaged_plaster/color.jpg',
-      normal: '/assets/textures/maps/damaged_plaster/normal.png',
-      roughness: '/assets/textures/maps/damaged_plaster/roughness.png',
+      color: '/assets/textures/maps/broken_brick/color.jpg',
+      normal: '/assets/textures/maps/broken_brick/normal.png',
+      roughness: '/assets/textures/maps/broken_brick/roughness.png',
     },
   },
   cliff_side: {

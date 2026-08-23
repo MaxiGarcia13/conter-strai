@@ -13,7 +13,7 @@ Maps stay data-driven so future arenas (and props like trees) are config-only, n
 | **Texture**  | Floor/wall GLB materials under `/assets/textures/` | `forrest_ground`, `coral_fort_wall` |
 | **Prop**     | Placeable objects (trees, barrels, cover)          | `tree` (later)                      |
 | **Scenario** | Map layout: bounds, materials, props, team spawns  | `arena-01`                          |
-| **Soldier**  | Player model definitions                           | `swat-guy`                          |
+| **Soldier skin** | Visual presets (`SoldierSkin`); hitbox via `hitboxPresetId` | `swat-guy`                   |
 
 ## Registry types
 
@@ -57,14 +57,13 @@ interface ScenarioConfig {
   lighting?: { ambient: number; sunIntensity: number };
 }
 
-interface SoldierDefinition {
-  id: string;
-  modelUrl: string;
-  scale: number;
+interface SoldierSkin {
+  meshData: CharacterMeshData; // modelUrl, scale, viewModelScale?, animations
+  hitboxPresetId: HitboxPresetId; // owned by combat/ — not mesh-bound
 }
 ```
 
-New arena = new `ScenarioConfig` entry. New tree/object = prop registry entry + placements in `props[]`. `ScenarioScene` only reads config.
+New arena = new `ScenarioConfig` entry. New tree/object = prop registry entry + placements in `props[]`. `ScenarioScene` only reads config. Type layout: [`specs/current/design.md#module-types`](../current/design.md#module-types).
 
 ## Components
 
@@ -142,10 +141,12 @@ Navmesh, destructible walls, multi-level, roofs, LODs, prop models (trees etc. l
 
 ```
 src/modules/
-├── game/       GameCanvas, LocalPlayer, useFpsControls, CameraHud, crosshair (later)
-├── scenarios/  registry + types, ScenarioScene, arena-01, wall collision data
-├── soldiers/   registry + types, SoldierModel, useSoldierLocomotion, swat-guy
-├── textures/   registry + types
-├── props/      registry + types
-└── teams/      team definitions
+├── game/       GameCanvas, LocalPlayer, useFpsControls, CameraHud, RoundPhase types
+├── scenarios/  types.ts + registry, ScenarioScene, arena-01, collisionSegments
+├── soldiers/   types.ts + soldier-skin-registry, SoldierModel, useSoldierLocomotion
+├── combat/     HitboxPreset registry (US-3 meshes); types only for US-2 consumers
+├── weapons/    pistol types + registry (wired in US-4)
+├── textures/   types.ts + registry
+├── props/      types.ts + registry
+└── teams/      Team = 'puma' | 'lion'
 ```

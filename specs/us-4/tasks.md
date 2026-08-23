@@ -1,12 +1,38 @@
 # US-4 — Tasks
 
-- [ ] Round store / service: `startRound`, `endRound`, `checkRoundEnd`
-- [ ] Team assignment (Puma / Lion) + team spawn from scenario config
-- [ ] Pistol weapon config (hitscan, fire rate, range)
-- [ ] useShooting hook (raycast, cooldown, hit resolution, team filter)
-- [ ] resolveHitDamage utility (testable)
-- [ ] Wire shooting → combat → health store
-- [ ] Opposing-team dummy or bot for local testing
-- [ ] Elimination disables controls until round end
-- [ ] Round-end UI banner (winner team)
-- [ ] Vitest: resolveHitDamage + checkRoundEnd
+Post type-split: weapon contracts in `weapons/`, round phase types in `game/`, damage via `combat/`. See [`specs/current/design.md#module-types`](../current/design.md#module-types).
+
+## Done (architecture foundation)
+
+- [x] `PistolWeaponConfig`, `BulletHitResult`, `Loadout` in `weapons/types.ts`
+- [x] `weapon-registry.ts` — MVP pistol (`fireCooldownSeconds`; damage stays in combat)
+- [x] `GameMode`, `RoundPhase` in `game/types.ts` (`'team-elimination'`, `'live' | 'round-end'`)
+- [x] Scenario `teamSpawns` on `arena-01` (consume in round start)
+- [x] Teams module (`puma` | `lion`)
+
+## Round service
+
+- [ ] Round store / service: `startRound`, `endRound`, `checkRoundEnd` using `RoundPhase`
+- [ ] Team assignment (Puma / Lion) + pick spawn from `ScenarioConfig.teamSpawns`
+- [ ] On `startRound`: full HP via health store `resetAll`, equip pistol from `Loadout` / weapon registry
+- [ ] `checkRoundEnd` → if all puma **or** all lion eliminated → `endRound(winner)`
+- [ ] Round-end UI banner (winner team); delay; `startRound()` again
+
+## Shooting
+
+- [ ] `useShooting` hook — raycast from camera on mousedown; cooldown from `PistolWeaponConfig.fireCooldownSeconds`
+- [ ] Filter hits by `userData.hitZone`, `userData.entityId`, and **team** (no friendly fire in MVP)
+- [ ] Build `DamageData` → combat `applyDamage` / health store `applyDamage`
+- [ ] Pure `resolveHitDamage` (or thin wrapper) Vitest-covered alongside `checkRoundEnd`
+- [ ] Opposing-team dummy / bot at fixed spawn for local tests until US-5
+- [ ] When `HealthState.isEliminated`, disable FPS controls until next `startRound()`
+
+## Verification
+
+- [ ] Vitest: hit → HP path + `checkRoundEnd`
+- [ ] Manual: shoot dummy → HP drops by zone; team wipe ends round and resets
+
+## Out of scope here
+
+- Colyseus / server authority (US-5)
+- Knife / rifle loadouts

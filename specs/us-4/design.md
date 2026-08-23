@@ -1,25 +1,28 @@
 # US-4 — Design
 
+Builds on combat health + weapon type contracts from the architecture type split.
+
 ## useShooting hook
 
-- Raycast from camera on mousedown (with cooldown)
+- Raycast from camera on mousedown (cooldown from `PistolWeaponConfig.fireCooldownSeconds`)
 - Filter hits by `userData.hitZone`, `userData.entityId`, and **team** (no friendly fire in MVP)
-- Call `applyDamage` via combat service
+- Build `DamageData` → health store / `applyDamage`
 - Update health store
 
 ## Weapons (MVP)
 
-- **Pistol only** — single hitscan weapon at round start
-- Future: knife (melee), rifle (primary), loadout registry
+- **Pistol only** — `weapons/weapon-registry.ts`; damage percentages stay in combat
+- Future: knife (melee), rifle (primary), richer `Loadout`
 
 ## Round service
 
 ```
 type Team = 'puma' | 'lion';
+type RoundPhase = 'live' | 'round-end'; // game/types.ts
 
-startRound() → assign teams, spawn, full HP, equip pistol
+startRound() → assign teams, spawn from ScenarioConfig.teamSpawns, resetAll HP, equip pistol
 checkRoundEnd() → if all puma eliminated OR all lion eliminated → endRound()
-endRound(winner) → show banner, delay, startRound()
+endRound(winner) → RoundPhase 'round-end', banner, delay, startRound()
 ```
 
 ## Local PvP stub
@@ -28,8 +31,8 @@ Dummy soldier on **opposing team** at fixed position for shooting tests until US
 
 ## Elimination
 
-When `isEliminated`, disable FpsPlayer controls until next `startRound()`.
+When `HealthState.isEliminated`, disable FPS controls until next `startRound()`.
 
 ## Vitest
 
-Test `resolveHitDamage` and `checkRoundEnd` (pure logic).
+Test pure damage/hit resolution and `checkRoundEnd`.

@@ -4,10 +4,12 @@
 
 | Layer       | Choice                                      | Role                                                                         |
 | ----------- | ------------------------------------------- | ---------------------------------------------------------------------------- |
-| Astro       | `@astrojs/node` adapter, `output: 'server'` | HTTP pages (`/`, `/play`) + Node process                                     |
+| Astro       | `@astrojs/node` adapter, `output: 'server'` | HTTP pages (`/`, `/play`) + Node process — **already configured**            |
 | Multiplayer | [Colyseus](https://colyseus.io/framework/)  | Rooms, Schema state sync, matchmaking, messages                              |
 | Client SDK  | `@colyseus/sdk`                             | `joinOrCreate`, listen to state, `room.send`                                 |
-| Game UI     | R3F island on `/play`                       | Consumes multiplayer adapter — no direct Colyseus imports in combat/scenario |
+| Game UI     | R3F island on `/play`                       | Consumes `multiplayer/` adapter only — no Colyseus imports in combat / scenarios / soldiers / weapons |
+
+Client domains reuse post type-split contracts: `HealthState` / `HitZone` (combat), `RoundPhase` (game), `Team`, `SoldierSkin`, `PistolWeaponConfig`.
 
 ## Architecture
 
@@ -61,6 +63,8 @@ Register rooms when the Node server boots (Colyseus `defineServer` / attach to A
 // MatchState
 {
   players: MapSchema<PlayerState>;
+  // Align client RoundPhase where useful: 'live' | 'round-end'
+  // Schema may keep waiting/in_progress/ended for lobby; map in adapter
   roundPhase: 'waiting' | 'in_progress' | 'ended';
   winner: string; // team id or ''
 }
@@ -92,7 +96,7 @@ onRoundUpdate(callback)
 ## Integration
 
 - `GameCanvas` calls adapter on mount
-- `FpsPlayer` syncs local transform (throttled)
+- `LocalPlayer` / FPS controls sync local transform (throttled)
 - `useShooting` calls `sendShot`; opposing team only
 - `RemotePlayer` reads remote players from multiplayer store (fed by Schema callbacks)
 

@@ -15,7 +15,7 @@ MVP scope: no AI stubs, no objectives manager, no soldier classes, no deprecated
 Target: single [`src/modules/scenarios/types.ts`](../../src/modules/scenarios/types.ts) with comment sections (Layout / Spawns / Environment / Config).
 
 - [x] Types defined: `ArenaLayout`, floor/wall/prop types, `CollisionSegment`, `SpawnerConfig`, `ArenaEnvironment`, `ScenarioConfig` flat composition
-- [ ] **Consolidate** from `scenarios/types/` multi-file split → one `types.ts` (§9)
+- [x] **Consolidate** from `scenarios/types/` multi-file split → one `types.ts` (§9)
 
 **Cut for MVP:** no objectives, hazards, fog/skybox stubs.
 
@@ -68,7 +68,7 @@ Update map data, registries, and authoring helpers — not just type-check consu
 Target: single [`src/modules/soldiers/types.ts`](../../src/modules/soldiers/types.ts) with comment sections (Skin / Hitbox / Controller / Entity).
 
 - [x] Types defined: `CharacterMeshData`, `SoldierSkin`, `HitboxPreset`, `SoldierController`, `EntityId`, `Soldier`
-- [ ] **Consolidate** from `soldiers/types/` multi-file split → one `types.ts` (§9)
+- [x] **Consolidate** from `soldiers/types/` multi-file split → one `types.ts` (§9)
 
 **Cut for MVP:** no class, voice, or AI controller types.
 
@@ -79,10 +79,10 @@ Target: single [`src/modules/soldiers/types.ts`](../../src/modules/soldiers/type
 - [x] `soldierSkins` + `hitboxPresets` in registry with `meshData` + `hitboxPresetId`
 - [x] `getSoldierSkinById`; `SoldierSkinId` replaces `SoldierId`
 - [x] `SoldierModel`, `FpsViewModel`, locomotion utils use `skin.meshData`
-- [ ] **Split registries** into separate files at module root (§9):
+- [x] **Split registries** into separate files at module root (§9):
   - `soldier-skin-registry.ts`
   - `hitbox-preset-registry.ts`
-- [ ] Remove dead `get-soldier-by-id.ts` / `SoldierDefinition` if any references remain
+- [x] Remove dead `get-soldier-by-id.ts` / `SoldierDefinition` if any references remain
 
 ---
 
@@ -120,24 +120,24 @@ Consolidate multi-file `types/` folders to single `types.ts` per module. Logical
 
 ### Scenarios
 
-- [ ] Merge `scenarios/types/{layout,spawner,environment,arena,index}.ts` → `scenarios/types.ts`
-- [ ] Delete `scenarios/types/` directory
-- [ ] Update imports: `../types`, `@/modules/scenarios/types` → resolve to `types.ts`
-- [ ] Confirm `scenarios/index.ts` still `export * from './types'`
+- [x] Merge `scenarios/types/{layout,spawner,environment,arena,index}.ts` → `scenarios/types.ts`
+- [x] Delete `scenarios/types/` directory
+- [x] Update imports: `../types`, `@/modules/scenarios/types` → resolve to `types.ts`
+- [x] Confirm `scenarios/index.ts` still `export * from './types'`
 
 ### Soldiers
 
-- [ ] Merge `soldiers/types/{skin,hitbox,controller,entity,index}.ts` → `soldiers/types.ts`
-- [ ] Delete `soldiers/types/` directory
-- [ ] Update imports across `soldiers/` and `game/components/fps-view-model.tsx`
-- [ ] Extract `hitbox-preset-registry.ts` from `soldier-registry.ts` (optional but recommended)
-- [ ] Rename `soldier-registry.ts` → `soldier-skin-registry.ts` (optional; update imports)
+- [x] Merge `soldiers/types/{skin,hitbox,controller,entity,index}.ts` → `soldiers/types.ts`
+- [x] Delete `soldiers/types/` directory
+- [x] Update imports across `soldiers/` and `game/components/fps-view-model.tsx`
+- [x] Extract `hitbox-preset-registry.ts` from `soldier-registry.ts` (optional but recommended)
+- [x] Rename `soldier-registry.ts` → `soldier-skin-registry.ts` (optional; update imports)
 
 ### Acceptance
 
-- [ ] Each module has at most one `types.ts` (no `types/` folder)
-- [ ] Same exported type names — refactor is move-only, no API change
-- [ ] `npm run build` passes after consolidation
+- [x] Each module has at most one `types.ts` (no `types/` folder)
+- [x] Same exported type names — refactor is move-only, no API change
+- [x] `npm run build` passes after consolidation
 
 **When to re-split:** only if a `types.ts` grows past ~200 lines or a second map/class/weapon family needs clear ownership.
 

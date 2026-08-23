@@ -1,4 +1,4 @@
-import type { HitboxPreset, HitboxPresetId, SoldierSkin, SoldierSkinId } from './types';
+import type { SoldierSkin, SoldierSkinId } from './types';
 import { useGLTF } from '@react-three/drei';
 
 export const soldierSkins: Record<SoldierSkinId, SoldierSkin> = {
@@ -14,17 +14,6 @@ export const soldierSkins: Record<SoldierSkinId, SoldierSkin> = {
       },
     },
     hitboxPresetId: 'humanoid-standard',
-  },
-};
-
-export const hitboxPresets: Record<HitboxPresetId, HitboxPreset> = {
-  'humanoid-standard': {
-    id: 'humanoid-standard',
-    parts: [
-      { zone: 'head', kind: 'sphere', offset: [0, 1.55, 0], radius: 0.14 },
-      { zone: 'body', kind: 'box', offset: [0, 1.05, 0], size: [0.45, 0.6, 0.28] },
-      { zone: 'limb', kind: 'box', offset: [0, 0.35, 0], size: [0.5, 0.7, 0.32] },
-    ],
   },
 };
 

@@ -1,5 +1,5 @@
 import type { SoldierSkin, SoldierSkinId } from './types';
-import { soldierSkins } from './soldier-registry';
+import { soldierSkins } from './soldier-skin-registry';
 
 export function getSoldierSkinById(id: SoldierSkinId): SoldierSkin {
   if (!(id in soldierSkins)) {

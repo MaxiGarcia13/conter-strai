@@ -2,6 +2,10 @@
 
 Work queue points to open US deltas. Tick tasks in the delta folder; ship into `current/` when acceptance passes.
 
+## Tech debt
+
+- [specs/tech-debt.md](../tech-debt.md) — dead exports, unused scenario scaffolding, dependency hygiene
+
 ## Open deltas
 
 - [specs/us-2/tasks.md](../us-2/tasks.md) — 3D world + movement

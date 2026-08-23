@@ -94,11 +94,13 @@ Landing lives in `src/pages/index.astro` (no Three.js). Game logic lives in `src
 
 **Module types & conventions:** [`specs/current/design.md`](./specs/current/design.md#module-types) — `ScenarioConfig`, `SoldierSkin`, `HitboxPreset`, registries.
 
+**Agent / AI contributors:** start at [`AGENTS.md`](./AGENTS.md) (specs workflow, module layout, commands, do-nots). Cursor rules live in [`.cursor/rules/`](./.cursor/rules/).
+
 Specs land before code for each user story. Read `specs/current/` and the open `specs/us-*/` delta you are implementing.
 
 ## Contributing
 
-1. Read [`specs/current/`](./specs/current/) and the open [`specs/us-*/`](./specs/) delta you are implementing.
+1. Read [`AGENTS.md`](./AGENTS.md), then [`specs/current/`](./specs/current/) and the open [`specs/us-*/`](./specs/) delta you are implementing.
 2. Follow module conventions: one `types.ts` per module, data registries at module root — see [design.md](./specs/current/design.md#module-types).
 3. Prefer small modules and pure domain services over render-coupled logic.
 4. Unit-test domain logic; skip Three.js render internals.

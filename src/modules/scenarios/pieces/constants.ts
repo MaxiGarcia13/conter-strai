@@ -7,15 +7,7 @@ export const WALL_HEIGHT = {
   low: 1.5,
 } as const;
 
-/** Common reusable wall lengths (meters). */
-export const WALL_LENGTH = {
-  short: 6,
-  medium: 8,
-  long: 12,
-} as const;
-
 export const FLOOR_TILE_SIZE = 4;
-export const STREET_WIDTH = 8;
 
 export type WallMaterialId = Extract<TextureId, 'castle_brick_broken' | 'broken_brick' | 'cliff_side'>;
 

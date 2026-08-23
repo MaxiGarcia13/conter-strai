@@ -70,9 +70,47 @@ New arena = new `ScenarioConfig` entry. New tree/object = prop registry entry + 
 
 - `GameCanvas.tsx` — R3F Canvas, lights (from scenario or defaults), camera
 - `ScenarioScene.tsx` — floor + outer walls + optional `wallSegments` + generic `props` render
-- `SoldierModel.tsx` — loads `swat-soldier.glb` (soldier id `swat-guy`)
-- `FpsPlayer.tsx` — camera + movement hook
-- `useFpsControls.ts` — WASD, mouse, collision against bounds (+ collidable props later)
+- `SoldierModel.tsx` — loads `swat-soldier.glb` (soldier id `swat-guy`); NPC spawns
+- `LocalPlayer.tsx` — single local soldier + animation mixer; rig follows camera mode
+- `useFpsControls.ts` — WASD, mouse, locomotion state, collision (bounds + interior walls)
+- `useSoldierLocomotion.ts` — idle / walk / run crossfade on skinned root
+- `CameraHud.tsx` — active camera mode label
+
+## Camera modes (F to cycle)
+
+| Mode | Role | Tunables (m) |
+| ---- | ---- | ------------ |
+| **First-person** | Eye-level view; view model for arms; max immersion / aim precision | `PLAYER_EYE_HEIGHT`, view-model offset |
+| **Over-the-shoulder** | Close behind one shoulder; character + aim context visible | distance ~1.75, height ~1.55, shoulder offset ~0.42 |
+| **Third-person** | Farther behind and above; max situational awareness | distance ~3.6, height ~2.4, pitch scale on look |
+
+Shared state: ground `origin` [x, 0, z], `yaw`, `pitch`, `mode`. Camera positioned each frame from mode + origin — not by moving the soldier root independently in third person.
+
+## Locomotion animations
+
+| Input | Clip | Notes |
+| ----- | ---- | ----- |
+| Stand still | `idle` | Default |
+| WASD | `walk` | In-place; hips root motion stripped in code |
+| WASD + Space | `run` | Faster move speed + run clip |
+
+One `AnimationMixer` per local soldier. Scenario NPCs stay on `idle` until US-4+.
+
+## Interior wall collision
+
+- **Visual**: `wallSegments` from `arena-01/layout.ts` (house footprints + holes via `WALL_HOLE_WIDTH`).
+- **Collision**: derive axis-aligned blocking segments from the same config; subtract centered **hole** spans on sides marked `{ hole: width }`.
+- **Player**: circle cast / clamp with `PLAYER_RADIUS` (~0.4 m). Resolve after intended WASD step; outer bounds clamp last.
+- **Holes**: widen default gap (currently 1.4 m) so passage feels intentional, not tight.
+
+## Testing
+
+| Layer | Scope |
+| ----- | ----- |
+| **Vitest** | Registry lookup; `resolveSoldierClips` / `stripHipsTranslation`; GLB JSON contract on `swat-soldier.glb`; pure locomotion state fn; scenario/collision math when added |
+| **Playwright** | `/play` canvas visible, loader dismissed, no `PropertyBinding` console errors; optional `window.__PLAY_TEST__` hook for soldier count + mixer + active clip |
+
+Unit tests avoid WebGL; E2E does not rely on pixel assertions.
 
 ## arena-01 — Ruined Village
 
@@ -104,9 +142,9 @@ Navmesh, destructible walls, multi-level, roofs, LODs, prop models (trees etc. l
 
 ```
 src/modules/
-├── game/       GameCanvas, FpsPlayer, useFpsControls, HUD crosshair
-├── scenarios/  registry + types, ScenarioScene, arena-01
-├── soldiers/   registry + types, SoldierModel, swat-guy
+├── game/       GameCanvas, LocalPlayer, useFpsControls, CameraHud, crosshair (later)
+├── scenarios/  registry + types, ScenarioScene, arena-01, wall collision data
+├── soldiers/   registry + types, SoldierModel, useSoldierLocomotion, swat-guy
 ├── textures/   registry + types
 ├── props/      registry + types
 └── teams/      team definitions

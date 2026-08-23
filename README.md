@@ -6,7 +6,7 @@ Browser-based tactical shooter inspired by Counter-Strike. **Puma** vs **Lion**,
 
 ## Status
 
-**US-1 (landing)** is shipped. Arena FPS, combat, rounds, and multiplayer are in progress — see [`specs/`](./specs/).
+**US-1 (landing)** is shipped. Module type layout and registries (scenarios, soldiers, combat, weapons) are in place — see [CHANGELOG](./specs/CHANGELOG.md). Arena FPS, combat runtime, rounds, and multiplayer are in progress.
 
 | Feature                                                               | State              |
 | --------------------------------------------------------------------- | ------------------ |
@@ -71,26 +71,39 @@ Optional env:
 src/
   components/       # Shared Astro UI (e.g. GithubIcon)
   layouts/          # Shared Astro shell (SEO, fonts, atmosphere)
-  modules/          # Feature modules (game, combat, …) — added with US-2+
+  modules/          # Feature modules — one types.ts per module, registries at root
+    game/           # GameCanvas, FPS controls, round types
+    scenarios/      # Maps (arena-01), ScenarioConfig, spawn helpers
+    soldiers/       # SoldierSkin registry, model, locomotion
+    combat/         # Hitbox presets, zone damage, apply-damage
+    weapons/        # Pistol config & weapon registry
+    teams/          # Puma / Lion
+    textures/       # PBR map assets
+    props/          # Scenario prop registry (stub)
   pages/            # Routes (`/` landing, `/play`, …)
   styles/           # Global CSS / design tokens
 specs/
-  current/          # Living product contract
+  current/          # Living product contract (design, tasks)
   us-*/             # Open user-story deltas
-  CHANGELOG.md      # Shipped vs open US
-public/             # Static assets (brand art, models, …)
+  CHANGELOG.md      # Shipped US + cross-cutting refactors
+public/             # Static assets (brand art, GLB models, textures, …)
 tests/              # E2E specs
 ```
 
-Landing lives in `src/pages/index.astro` (no Three.js). Domain logic for the game will live in `services/` / `utils/` without Three.js. Specs land before code for each user story.
+Landing lives in `src/pages/index.astro` (no Three.js). Game logic lives in `src/modules/` — domain services (e.g. `combat/apply-damage.ts`) stay free of Three.js where possible. Visual skins reference hitbox presets by id; combat owns collider layout.
+
+**Module types & conventions:** [`specs/current/design.md`](./specs/current/design.md#module-types) — `ScenarioConfig`, `SoldierSkin`, `HitboxPreset`, registries.
+
+Specs land before code for each user story. Read `specs/current/` and the open `specs/us-*/` delta you are implementing.
 
 ## Contributing
 
-1. Read `specs/current/` and the open `specs/us-*/` delta you are implementing.
-2. Prefer small modules and pure domain services over render-coupled logic.
-3. Unit-test domain logic; skip Three.js render internals.
-4. Pre-commit runs `lint-staged` (ESLint fix on staged files).
-5. The landing footer links to this repo — PRs welcome.
+1. Read [`specs/current/`](./specs/current/) and the open [`specs/us-*/`](./specs/) delta you are implementing.
+2. Follow module conventions: one `types.ts` per module, data registries at module root — see [design.md](./specs/current/design.md#module-types).
+3. Prefer small modules and pure domain services over render-coupled logic.
+4. Unit-test domain logic; skip Three.js render internals.
+5. Pre-commit runs `lint-staged` (ESLint fix on staged files).
+6. The landing footer links to this repo — PRs welcome.
 
 ## License
 

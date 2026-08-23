@@ -48,22 +48,46 @@ Weapon registry mirrors soldier/scenario pattern (`src/modules/weapons/` — fut
 
 ## Module map
 
-Type architecture — scenario/arena, soldier skin/hitbox/controller/entity, combat & weapons type contracts: [architecture/types.md](../architecture/types.md).
-
 ```
 src/
 ├── pages/index.astro     Landing (hero, CTA, GitHub footer) — Astro-only
 ├── components/           Shared Astro UI (GithubIcon, …)
-├── modules/              (US-2+)
+├── modules/
 │   ├── game/             Session shell, GameCanvas, FPS controls, HUD, round state
-│   ├── scenario/         Config-driven maps (arena-01); team spawn points
-│   ├── soldier/          Soldier registry, model, hitboxes
-│   ├── combat/           HP, zone damage, difficulty, elimination
+│   ├── scenarios/        Config-driven maps (arena-01); team spawn points
+│   ├── soldiers/         Skin registry, model, locomotion
+│   ├── combat/           Hitboxes, HP, zone damage, difficulty
 │   ├── weapons/          Loadout, pistol (MVP); knife/rifle later
 │   └── multiplayer/      Colyseus adapter + MatchRoom / Schema (US-5)
 ├── layouts/              Base shell (SEO, fonts, atmosphere)
 └── styles/               Design tokens + landing/HUD utilities
 ```
+
+## Module types
+
+One `types.ts` per module (same as `textures/`, `teams/`, `props/`). Registries at module root; no `types/` subfolders until a file exceeds ~200 lines.
+
+```
+src/modules/
+├── scenarios/types.ts          ScenarioConfig (flat composition), ArenaLayout, spawns
+├── soldiers/types.ts           SoldierSkin, controller, entity (hitboxPresetId only)
+├── soldiers/soldier-skin-registry.ts
+├── combat/types.ts             HitZone, HitboxPreset, DamageData, HealthSystem
+├── combat/hitbox-preset-registry.ts
+├── combat/apply-damage.ts
+├── weapons/types.ts            PistolWeaponConfig, BulletHitResult, Loadout
+└── game/types.ts               GameMode, RoundPhase
+```
+
+| Domain | Key types | Notes |
+|--------|-----------|-------|
+| **Scenario** | `ScenarioConfig`, `ArenaLayout`, `SpawnerConfig` | Flat access (`scenario.bounds`); maps under `scenarios/maps/` |
+| **Soldier** | `SoldierSkin`, `CharacterMeshData`, `Soldier`, `SoldierController` | Visual preset decoupled from hitbox via `hitboxPresetId` |
+| **Combat** | `HitboxPreset`, `HitZone`, `DamageData`, `HealthSystem` | Owns collider presets and raycast zones |
+| **Weapons** | `PistolWeaponConfig`, `Loadout` | Damage math in combat, not per-weapon |
+| **Game** | `GameMode`, `RoundPhase` | `'team-elimination'`; `'live' \| 'round-end'` |
+
+Shipped 2026-08-23 — see [CHANGELOG](../CHANGELOG.md#shipped--other).
 
 ## Landing (`/`)
 

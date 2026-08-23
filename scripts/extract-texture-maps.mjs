@@ -1,21 +1,23 @@
 /**
  * Extracts PBR map images from texture GLBs into public/assets/textures/maps/<id>/.
- * Run after compress-assets.mjs: node scripts/extract-texture-maps.mjs
+ * Run: node scripts/extract-texture-maps.mjs
  */
 import { Buffer } from 'node:buffer';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { NodeIO } from '@gltf-transform/core';
+import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
+import draco3d from 'draco3dgltf';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const TEXTURES = [
   { id: 'forrest_ground', glb: 'public/assets/textures/floor/forrest_ground.glb' },
-  { id: 'cobblestone_embedded_asphalt', glb: 'public/assets/textures/floor/cobblestone_embedded_asphalt.glb' },
+  { id: 'asphalt', glb: 'public/assets/textures/floor/asphalt.glb' },
   { id: 'brown_floor_tiles', glb: 'public/assets/textures/floor/brown_floor_tiles.glb' },
-  { id: 'coral_fort_wall', glb: 'public/assets/textures/wall/coral_fort_wall.glb' },
-  { id: 'damaged_plaster', glb: 'public/assets/textures/wall/damaged_plaster.glb' },
+  { id: 'castle_brick_broken', glb: 'public/assets/textures/wall/castle_brick_broken.glb' },
+  { id: 'broken_brick', glb: 'public/assets/textures/wall/broken_brick.glb' },
   { id: 'cliff_side', glb: 'public/assets/textures/wall/cliff_side.glb' },
 ];
 
@@ -49,7 +51,12 @@ function extensionForMime(mime) {
   return 'bin';
 }
 
-const io = new NodeIO();
+const io = new NodeIO()
+  .registerExtensions([KHRDracoMeshCompression])
+  .registerDependencies({
+    'draco3d.decoder': await draco3d.createDecoderModule(),
+    'draco3d.encoder': await draco3d.createEncoderModule(),
+  });
 
 for (const { id, glb } of TEXTURES) {
   const input = path.join(ROOT, glb);

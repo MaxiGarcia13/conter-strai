@@ -12,11 +12,10 @@ const TEXTURE_SIZE = 1024;
 
 const TARGETS = [
   'public/assets/textures/floor/forrest_ground.glb',
-  'public/assets/textures/floor/cobblestone_embedded_asphalt.glb',
+  'public/assets/textures/floor/asphalt.glb',
   'public/assets/textures/floor/brown_floor_tiles.glb',
-  'public/assets/textures/floor/worn_tile_floor.glb',
-  'public/assets/textures/wall/coral_fort_wall.glb',
-  'public/assets/textures/wall/damaged_plaster.glb',
+  'public/assets/textures/wall/castle_brick_broken.glb',
+  'public/assets/textures/wall/broken_brick.glb',
   'public/assets/textures/wall/cliff_side.glb',
   'public/assets/soldiers/swat-guy.glb',
 ];

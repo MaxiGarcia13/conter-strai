@@ -9,16 +9,13 @@ export const WALL_HEIGHT = {
 
 export const FLOOR_TILE_SIZE = 4;
 
-export type WallMaterialId = Extract<TextureId, 'castle_brick_broken' | 'broken_brick' | 'cliff_side'>;
+export type WallMaterialId = Extract<TextureId, 'castle_brick_broken' | 'broken_brick'>;
 
 export const WALL_MATERIAL = {
   fort: 'castle_brick_broken',
   plaster: 'broken_brick',
-  cliff: 'cliff_side',
 } as const satisfies Record<string, WallMaterialId>;
 
 export const FLOOR_MATERIAL = {
-  forest: 'forrest_ground',
-  street: 'asphalt',
   tile: 'brown_floor_tiles',
 } as const satisfies Record<string, TextureId>;

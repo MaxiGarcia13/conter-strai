@@ -1,6 +1,15 @@
+export interface TextureMapSet {
+  color?: string;
+  normal?: string;
+  roughness?: string;
+  ao?: string;
+}
+
 export interface TextureDefinition {
   id: string;
-  url: string;
+  maps: TextureMapSet;
+  roughness?: number;
+  metalness?: number;
 }
 
 export type TextureId

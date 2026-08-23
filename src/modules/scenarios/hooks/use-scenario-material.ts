@@ -1,11 +1,9 @@
-import type { GLTF } from 'three-stdlib';
 import type { TextureId } from '@/modules/textures';
-import { useGLTF } from '@react-three/drei';
-import { useMemo } from 'react';
 import * as THREE from 'three';
-import { getTextureById } from '@/modules/textures';
 
 const MAP_KEYS = ['map', 'normalMap', 'roughnessMap', 'aoMap'] as const;
+
+const materialRepeatCache = new Map<string, THREE.MeshStandardMaterial>();
 
 function cloneMapsWithRepeat(
   material: THREE.MeshStandardMaterial,
@@ -25,53 +23,42 @@ function cloneMapsWithRepeat(
   }
 }
 
-export function standardMaterialFromGltf(gltf: GLTF, url: string): THREE.MeshStandardMaterial {
-  let source: THREE.MeshStandardMaterial | undefined;
-  gltf.scene.traverse((object) => {
-    if (source || !(object instanceof THREE.Mesh)) {
-      return;
-    }
-    const material = object.material;
-    const candidate = Array.isArray(material) ? material[0] : material;
-    if (candidate instanceof THREE.MeshStandardMaterial) {
-      source = candidate;
-    }
-  });
-  if (!source) {
-    throw new Error(`No standard material found in ${url}`);
+/** Scale plane UVs so one material can tile without cloning texture maps. */
+export function applyUvRepeat(geometry: THREE.BufferGeometry, repeat: [number, number]): void {
+  const uv = geometry.getAttribute('uv');
+  if (!(uv instanceof THREE.BufferAttribute)) {
+    return;
   }
-  return new THREE.MeshStandardMaterial({
-    map: source.map,
-    normalMap: source.normalMap,
-    roughnessMap: source.roughnessMap,
-    aoMap: source.aoMap,
-    roughness: source.roughness,
-    metalness: source.metalness,
-  });
+  const [repeatU, repeatV] = repeat;
+  for (let i = 0; i < uv.count; i++) {
+    uv.setXY(i, uv.getX(i) * repeatU, uv.getY(i) * repeatV);
+  }
+  uv.needsUpdate = true;
 }
 
-export function useScenarioMaterial(
-  assetId: TextureId,
-  repeat?: [number, number],
-): THREE.MeshStandardMaterial {
-  const { url } = getTextureById(assetId);
-  const gltf = useGLTF(url);
-  return useMemo(() => {
-    const material = standardMaterialFromGltf(gltf, url);
-    if (repeat) {
-      cloneMapsWithRepeat(material, repeat);
-    }
-    return material;
-  }, [gltf, url, repeat?.[0], repeat?.[1]]);
+export function createTiledPlaneGeometry(
+  width: number,
+  depth: number,
+  repeat: [number, number],
+): THREE.PlaneGeometry {
+  const geometry = new THREE.PlaneGeometry(width, depth);
+  applyUvRepeat(geometry, repeat);
+  return geometry;
 }
 
-/** Clone a base wall/floor material with independent UV tiling. */
+/** Clone a base wall/floor material with independent UV tiling (cached by repeat key). */
 export function materialWithRepeat(
   source: THREE.MeshStandardMaterial,
   repeat: [number, number],
 ): THREE.MeshStandardMaterial {
+  const key = `${source.uuid}:${repeat[0]}:${repeat[1]}`;
+  const cached = materialRepeatCache.get(key);
+  if (cached) {
+    return cached;
+  }
   const material = source.clone();
   cloneMapsWithRepeat(material, repeat);
+  materialRepeatCache.set(key, material);
   return material;
 }
 

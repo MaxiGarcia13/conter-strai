@@ -1,0 +1,87 @@
+---
+interface Props {
+  id?: string;
+  label?: string;
+}
+
+const { id = 'play-boot', label = 'Loading engine' } = Astro.props;
+---
+
+<!-- Instant feedback before React / Three.js download (client:only renders nothing). -->
+<div id={id} class="play-loader" aria-live="polite" aria-busy="true">
+  <p class="play-loader-label">{label}</p>
+  <div class="play-loader-track">
+    <div class="play-loader-indeterminate"></div>
+  </div>
+</div>
+
+<style is:global>
+  /* Shared by this static boot shell and the React PlayLoader overlay. */
+  .play-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: #000;
+    text-align: center;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #fff;
+    pointer-events: none;
+  }
+
+  .play-loader-label {
+    margin: 0;
+  }
+
+  .play-loader-track {
+    width: 10rem;
+    height: 0.25rem;
+    overflow: hidden;
+    border-radius: 9999px;
+    background: rgb(255 255 255 / 0.2);
+  }
+
+  .play-loader-indeterminate {
+    height: 100%;
+    width: 33%;
+    border-radius: 9999px;
+    background: #fff;
+    animation: play-loader-pulse 1.2s ease-in-out infinite;
+  }
+
+  .play-loader-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: #fff;
+    transition: width 150ms ease;
+  }
+
+  .play-loader-percent {
+    margin: 0;
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  @keyframes play-loader-pulse {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(300%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .play-loader-indeterminate {
+      animation: none;
+      width: 33%;
+    }
+  }
+</style>

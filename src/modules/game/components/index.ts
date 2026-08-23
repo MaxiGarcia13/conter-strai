@@ -1,1 +1,1 @@
-export * from './game-canvas';
+export * from './game-canvas-island';

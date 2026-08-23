@@ -1,14 +1,18 @@
 ---
+import PlayLoader from '@/components/play-loader.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
-import { GameCanvas } from '@/modules/game/components';
+import { GameCanvasIsland } from '@/modules/game/components/game-canvas-island';
 ---
 
 <BaseLayout
   title="Play — Conter Strai"
   description="Deploy into Ruined Village. Move fast, hold angles, win the round."
+  minimal
 >
   <main class="fixed inset-0 z-10 bg-black">
-    <GameCanvas client:only="react" />
+    <PlayLoader />
+
+    <GameCanvasIsland client:only="react" />
 
     <noscript>
       <p

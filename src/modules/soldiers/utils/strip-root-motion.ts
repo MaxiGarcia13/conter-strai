@@ -1,5 +1,5 @@
 import type { Object3D, Vector3 } from 'three';
-import { AnimationClip, Box3 } from 'three';
+import { AnimationClip } from 'three';
 
 /** Mixamo hips translation drives root motion — strip for in-place locomotion. */
 function isHipsTranslationTrack(trackName: string): boolean {
@@ -44,11 +44,4 @@ export function lockHipsBindPosition(root: Object3D): void {
   if (hips && bind) {
     hips.position.copy(bind);
   }
-}
-
-/** World-space Y lift so the lowest vertex sits on the rig origin (ground). */
-export function measureFeetGroundOffset(root: Object3D): number {
-  root.updateMatrixWorld(true);
-  const box = new Box3().setFromObject(root);
-  return -box.min.y;
 }

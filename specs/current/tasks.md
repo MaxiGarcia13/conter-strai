@@ -6,6 +6,10 @@ Work queue points to open US deltas. Tick tasks in the delta folder; ship into `
 
 - [specs/tech-debt.md](../tech-debt.md) — dead exports, unused scenario scaffolding, dependency hygiene
 
+## Architecture
+
+- [specs/architecture/tasks.md](../architecture/tasks.md) — type split (scenario / soldier / combat / weapons)
+
 ## Open deltas
 
 - [specs/us-2/tasks.md](../us-2/tasks.md) — 3D world + movement

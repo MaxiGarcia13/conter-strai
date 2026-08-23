@@ -76,7 +76,7 @@ function wallSegmentsAlongZ(
 }
 
 /** Floor zone + perimeter walls with optional small holes per side. */
-export function houseFootprint(house: HouseFootprint): {
+function houseFootprint(house: HouseFootprint): {
   floor: ScenarioFloorZone;
   walls: ScenarioWallSegment[];
 } {

@@ -6,6 +6,7 @@ import { useThree } from '@react-three/fiber';
 import { useLayoutEffect, useMemo, useRef } from 'react';
 
 import { getSoldierById } from '@/modules/soldiers/get-soldier-by-id';
+import { cloneSoldierRoot } from '@/modules/soldiers/utils/clone-soldier-root';
 import { prepareFpsViewModel } from '@/modules/soldiers/utils/prepare-fps-view-model';
 
 import { VIEWMODEL_OFFSET, VIEWMODEL_ROTATION_Y } from '../constants/player';
@@ -20,15 +21,15 @@ export function FpsViewModel({ soldierId = 'swat-guy' }: FpsViewModelProps) {
   const pivotRef = useRef<Group>(null);
   const definition = useMemo(() => getSoldierById(soldierId), [soldierId]);
   const gltf = useGLTF(definition.modelUrl);
+  const viewModelScale = definition.viewModelScale ?? definition.scale;
   const model = useMemo(() => {
-    const clone = gltf.scene.clone(true);
+    const clone = cloneSoldierRoot(gltf.scene, viewModelScale);
     prepareFpsViewModel(clone);
-    clone.scale.setScalar(definition.scale);
     clone.traverse((child) => {
       child.frustumCulled = false;
     });
     return clone;
-  }, [definition.scale, gltf]);
+  }, [gltf, viewModelScale]);
 
   useLayoutEffect(() => {
     const pivot = pivotRef.current;

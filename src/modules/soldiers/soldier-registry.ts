@@ -4,8 +4,14 @@ import { useGLTF } from '@react-three/drei';
 export const soldiers: Record<SoldierId, SoldierDefinition> = {
   'swat-guy': {
     id: 'swat-guy',
-    modelUrl: '/assets/soldiers/swat-guy.glb',
-    scale: 0.01,
+    modelUrl: '/assets/soldiers/swat-soldier.glb',
+    scale: 1,
+    viewModelScale: 1.15,
+    animations: {
+      idle: 'idle',
+      walk: 'walk',
+      run: 'run',
+    },
   },
 };
 

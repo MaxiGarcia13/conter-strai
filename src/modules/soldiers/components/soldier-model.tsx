@@ -1,9 +1,12 @@
+import type { Group } from 'three';
 import type { SoldierId } from '../types';
-import { useGLTF } from '@react-three/drei';
+import { Clone, useGLTF } from '@react-three/drei';
 
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
 import { getSoldierById } from '../get-soldier-by-id';
+import { useSoldierLocomotion } from '../hooks/use-soldier-locomotion';
+import { getSoldierArmature, soldierScaleVector } from '../utils/clone-soldier-root';
 
 interface SoldierModelProps {
   id?: SoldierId;
@@ -11,18 +14,30 @@ interface SoldierModelProps {
   position?: [number, number, number];
   /** Yaw in radians; 0 faces +Z. */
   rotationY?: number;
+  /** Play idle / walk clips from the soldier registry. */
+  animated?: boolean;
 }
 
-export function SoldierModel({ id = 'swat-guy', position = [0, 0, 0], rotationY = 0 }: SoldierModelProps) {
+export function SoldierModel({
+  id = 'swat-guy',
+  position = [0, 0, 0],
+  rotationY = 0,
+  animated = true,
+}: SoldierModelProps) {
+  const modelRef = useRef<Group>(null);
   const definition = useMemo(() => getSoldierById(id), [id]);
   const gltf = useGLTF(definition.modelUrl);
-  const model = useMemo(() => gltf.scene.clone(true), [gltf]);
+  const animations = useMemo(() => gltf.animations, [gltf]);
+  const source = useMemo(() => getSoldierArmature(gltf.scene), [gltf]);
+  const scale = useMemo(() => soldierScaleVector(source, definition.scale), [definition.scale, source]);
+
+  useSoldierLocomotion(modelRef, animations, definition.animations, {
+    enabled: animated,
+  });
+
   return (
-    <primitive
-      object={model}
-      position={position}
-      rotation={[0, rotationY, 0]}
-      scale={definition.scale}
-    />
+    <group position={position} rotation={[0, rotationY, 0]}>
+      <Clone ref={modelRef} object={source} scale={scale} />
+    </group>
   );
 }

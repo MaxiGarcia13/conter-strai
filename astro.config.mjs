@@ -14,17 +14,27 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
-    optimizeDeps: {
-      include: [
-        'react',
-        'react-dom',
-        'react-dom/client',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-      ],
+    // Avoid a Vite dep-optimizer race (Astro #16766) that can drop react/jsx-dev-runtime
+    // from the client pre-bundle and cause intermittent "jsxDEV is not a function".
+    environments: {
+      client: {
+        optimizeDeps: {
+          noDiscovery: true,
+          include: [
+            'react',
+            'react-dom',
+            'react-dom/client',
+            'react/jsx-runtime',
+            'react/jsx-dev-runtime',
+            '@react-three/fiber',
+            '@react-three/drei',
+            'three',
+          ],
+        },
+      },
     },
     resolve: {
-      dedupe: ['react', 'react-dom'],
+      dedupe: ['react', 'react-dom', 'three'],
     },
   },
   integrations: [sitemap(), react()],

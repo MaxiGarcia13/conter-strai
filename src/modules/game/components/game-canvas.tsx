@@ -41,7 +41,7 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
 
   return (
     <div className="fixed inset-0">
-      <Canvas shadows className="h-full w-full" camera={{ fov: 75, near: 0.1, far: 300 }}>
+      <Canvas shadows="percentage" className="h-full w-full" camera={{ fov: 75, near: 0.1, far: 300 }}>
         {trackLoading && onLoaderChange && <LoadingReporter onLoaderChange={handleLoaderChange} />}
         <ambientLight intensity={lighting.ambient} />
         <directionalLight

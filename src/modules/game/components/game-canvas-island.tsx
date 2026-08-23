@@ -1,6 +1,5 @@
 import type { PlayLoaderState } from './play-loader';
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
-
 import { PlayLoader } from './play-loader';
 
 const GameCanvas = lazy(async () => {

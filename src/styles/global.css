@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './fonts.css';
 
 :root {
   /* Surfaces — CS2 menu / dark industrial */
@@ -21,7 +22,7 @@
   --shadow-soft: hsl(0 0% 0% / 0.65);
 
   --font-display-family: 'Barlow Condensed', 'Arial Narrow', ui-sans-serif, sans-serif;
-  --font-body-family: 'Rajdhani', ui-sans-serif, system-ui, sans-serif;
+  --font-body-family: 'Barlow Condensed', ui-sans-serif, system-ui, sans-serif;
   --font-mono-family: 'Share Tech Mono', ui-monospace, monospace;
 
   --space-page-x: clamp(1.25rem, 4vw, 3rem);

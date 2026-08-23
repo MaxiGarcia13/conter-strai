@@ -11,7 +11,9 @@ const site = process.env.SITE ?? `http://localhost:${port}`;
 export default defineConfig({
   output: 'server',
   site,
+
   server: {
+    host: '0.0.0.0',
     port,
   },
 

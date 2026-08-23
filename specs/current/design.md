@@ -48,6 +48,8 @@ Weapon registry mirrors soldier/scenario pattern (`src/modules/weapons/` — fut
 
 ## Module map
 
+Type architecture — scenario/arena, soldier skin/hitbox/controller/entity, combat & weapons type contracts: [architecture/types.md](../architecture/types.md).
+
 ```
 src/
 ├── pages/index.astro     Landing (hero, CTA, GitHub footer) — Astro-only

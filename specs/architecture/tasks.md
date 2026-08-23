@@ -101,7 +101,7 @@ No `types/` subfolders or barrel-only modules.
 
 ## 7. Documentation
 
-- [ ] Link [types.md](./types.md) from [specs/current/design.md](../current/design.md) module map section
+- [x] Link [types.md](./types.md) from [specs/current/design.md](../current/design.md) module map section
 - [x] Link from [specs/current/tasks.md](../current/tasks.md)
 
 ---

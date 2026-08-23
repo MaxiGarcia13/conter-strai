@@ -24,12 +24,12 @@ Create `src/modules/scenarios/types/`:
 
 ## 2. Scenarios — verify consumers
 
-- [ ] Confirm all scenario consumers compile unchanged (`scenario.bounds`, `teamSpawns`, etc.)
+- [x] Confirm all scenario consumers compile unchanged (`scenario.bounds`, `teamSpawns`, etc.)
   - `scenario-scene.tsx`, `scenario-floor.tsx`, `scenario-walls.tsx`, `scenario-soldiers.tsx`
   - `use-fps-controls.ts`, `fps-controls.tsx`
   - `spawn-helpers.ts`, `get-scenario-texture-ids.ts`, `use-scenario-texture-library.ts`
   - `scenario-registry.ts`, `maps/arena-01/index.ts`
-- [ ] Grep: no imports bypass the `types/` barrel
+- [x] Grep: no imports bypass the `types/` barrel
 
 ---
 

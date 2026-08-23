@@ -9,7 +9,7 @@ Remove or stop exporting symbols with no callers (grep `src/` before deleting).
 - [x] `measureFeetGroundOffset` — `src/modules/soldiers/utils/strip-root-motion.ts`
 - [x] `updateSoldierSkeleton` — `src/modules/soldiers/utils/clone-soldier-root.ts`
 - [x] `getTeamSpawn` (+ `TeamSpawn` if unused) — `src/modules/scenarios/utils/spawn-helpers.ts`
-- [ ] `applyUvRepeat` — un-export (only used inside `use-scenario-material.ts`)
+- [x] `applyUvRepeat` — un-export (only used inside `use-scenario-material.ts`)
 
 ## Scenario piece catalog (unused scaffolding)
 
@@ -29,22 +29,14 @@ Keep if the next US needs it; document or implement so it is not misleading dead
 - [ ] **`game/index.ts` barrel** — nothing imports `@/modules/game`; either use the barrel from `play.astro` / islands or delete the re-export file.
 - [ ] **`scenarios/index.ts` re-exports `./pieces`** — broad public API unused outside map authoring; narrow exports or document as map-authoring surface only.
 
-## Dependencies
-
-- [ ] **`zustand`** — listed in `package.json` and README; zero imports in `src/`. Remove until US-3 health store lands, or add the store and drop this item.
-
-## Tooling
-
-- [ ] Add [Knip](https://knip.dev/) (or equivalent) to CI / pre-commit to catch unused exports, files, and dependencies after the manual cleanup above.
-
 ## Complexity hotspots (watch, not urgent)
 
 No god files today (~150 lines max). Prefer small extractions when editing these:
 
-| File | Why |
-|------|-----|
-| `house-helpers.ts` | Wall segments with doorway holes |
-| `use-fps-controls.ts` | Pointer lock + WASD + bounds clamp |
-| `scenario-walls.tsx` | Outer perimeter + segments + UV tiling |
-| `use-scenario-texture-library.ts` | PBR map load + material assembly |
-| `use-soldier-locomotion.ts` | Mixer lifecycle + crossfade + hips lock |
+| File                              | Why                                     |
+| --------------------------------- | --------------------------------------- |
+| `house-helpers.ts`                | Wall segments with doorway holes        |
+| `use-fps-controls.ts`             | Pointer lock + WASD + bounds clamp      |
+| `scenario-walls.tsx`              | Outer perimeter + segments + UV tiling  |
+| `use-scenario-texture-library.ts` | PBR map load + material assembly        |
+| `use-soldier-locomotion.ts`       | Mixer lifecycle + crossfade + hips lock |

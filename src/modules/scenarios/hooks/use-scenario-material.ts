@@ -24,7 +24,7 @@ function cloneMapsWithRepeat(
 }
 
 /** Scale plane UVs so one material can tile without cloning texture maps. */
-export function applyUvRepeat(geometry: THREE.BufferGeometry, repeat: [number, number]): void {
+function applyUvRepeat(geometry: THREE.BufferGeometry, repeat: [number, number]): void {
   const uv = geometry.getAttribute('uv');
   if (!(uv instanceof THREE.BufferAttribute)) {
     return;

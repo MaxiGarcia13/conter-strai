@@ -1,4 +1,5 @@
 import process from 'node:process';
+import node from '@astrojs/node';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
@@ -8,10 +9,12 @@ const port = Number(process.env.PORT ?? 4321);
 const site = process.env.SITE ?? `http://localhost:${port}`;
 
 export default defineConfig({
+  output: 'server',
   site,
   server: {
     port,
   },
+
   vite: {
     plugins: [tailwindcss()],
     // Avoid a Vite dep-optimizer race (Astro #16766) that can drop react/jsx-dev-runtime
@@ -37,5 +40,10 @@ export default defineConfig({
       dedupe: ['react', 'react-dom', 'three'],
     },
   },
+
   integrations: [sitemap(), react()],
+
+  adapter: node({
+    mode: 'standalone',
+  }),
 });

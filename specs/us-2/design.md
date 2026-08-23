@@ -70,7 +70,7 @@ New arena = new `ScenarioConfig` entry. New tree/object = prop registry entry + 
 
 - `GameCanvas.tsx` — R3F Canvas, lights (from scenario or defaults), camera
 - `ScenarioScene.tsx` — floor + outer walls + optional `wallSegments` + generic `props` render
-- `SoldierModel.tsx` — loads swat-guy.glb
+- `SoldierModel.tsx` — loads `swat-soldier.glb` (soldier id `swat-guy`)
 - `FpsPlayer.tsx` — camera + movement hook
 - `useFpsControls.ts` — WASD, mouse, collision against bounds (+ collidable props later)
 

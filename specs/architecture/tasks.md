@@ -12,11 +12,11 @@ MVP scope: no AI stubs, no objectives manager, no soldier classes, no deprecated
 
 Create `src/modules/scenarios/types/`:
 
-- [ ] `layout.ts` — `ArenaLayout`, floor/wall/prop types, `CollisionSegment` (for US-2 interior wall collision)
-- [ ] `spawner.ts` — `SpawnerConfig`, `SpawnPoint`
-- [ ] `environment.ts` — `ArenaEnvironment` (`lighting` only for MVP)
-- [ ] `arena.ts` — `ScenarioConfig` as flat composition (`ScenarioMeta & ArenaLayout & SpawnerConfig & ArenaEnvironment`)
-- [ ] `index.ts` — barrel; replace monolithic `scenarios/types.ts` with thin re-export
+- [x] `layout.ts` — `ArenaLayout`, floor/wall/prop types, `CollisionSegment` (for US-2 interior wall collision)
+- [x] `spawner.ts` — `SpawnerConfig`, `SpawnPoint`
+- [x] `environment.ts` — `ArenaEnvironment` (`lighting` only for MVP)
+- [x] `arena.ts` — `ScenarioConfig` as flat composition (`ScenarioMeta & ArenaLayout & SpawnerConfig & ArenaEnvironment`)
+- [x] `index.ts` — barrel; replace monolithic `scenarios/types.ts` with thin re-export
 
 **Cut for MVP:** no `objectives.ts`, no hazards/interactives/fog/skybox stubs.
 

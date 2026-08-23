@@ -1,9 +1,6 @@
-import type { Team } from '../teams';
 import type { TextureId } from '@/modules/textures';
 
 export type Vec3 = [number, number, number];
-
-export type ScenarioId = 'arena-01';
 
 export interface ScenarioProp {
   id: string;
@@ -30,10 +27,14 @@ export interface ScenarioWallSegment {
   assetId?: TextureId;
 }
 
-export interface ScenarioConfig {
-  id: string;
-  name: string;
-  theme?: string;
+/** Interior collider line — blocks movement without rendering a wall. */
+export interface CollisionSegment {
+  start: Vec3;
+  end: Vec3;
+  height?: number;
+}
+
+export interface ArenaLayout {
   bounds: {
     width: number;
     depth: number;
@@ -52,10 +53,5 @@ export interface ScenarioConfig {
   };
   wallSegments?: ScenarioWallSegment[];
   props?: ScenarioProp[];
-  teamSpawns: Record<Team, Vec3[]>;
-  spawnYaw?: Record<Team, number>;
-  lighting?: {
-    ambient: number;
-    sunIntensity: number;
-  };
+  collisionSegments?: CollisionSegment[];
 }

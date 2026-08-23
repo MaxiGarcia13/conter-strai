@@ -1,15 +1,15 @@
 import type { Group } from 'three';
-import type { SoldierId } from '../types';
+import type { SoldierSkinId } from '../types';
 import { Clone, useGLTF } from '@react-three/drei';
 
 import { useMemo, useRef } from 'react';
 
-import { getSoldierById } from '../get-soldier-by-id';
+import { getSoldierSkinById } from '../get-soldier-skin-by-id';
 import { useSoldierLocomotion } from '../hooks/use-soldier-locomotion';
 import { getSoldierArmature, soldierScaleVector } from '../utils/clone-soldier-root';
 
 interface SoldierModelProps {
-  id?: SoldierId;
+  id?: SoldierSkinId;
   /** World position in meters; Y is ground level. */
   position?: [number, number, number];
   /** Yaw in radians; 0 faces +Z. */
@@ -25,13 +25,16 @@ export function SoldierModel({
   animated = true,
 }: SoldierModelProps) {
   const modelRef = useRef<Group>(null);
-  const definition = useMemo(() => getSoldierById(id), [id]);
-  const gltf = useGLTF(definition.modelUrl);
+  const skin = useMemo(() => getSoldierSkinById(id), [id]);
+  const gltf = useGLTF(skin.meshData.modelUrl);
   const animations = useMemo(() => gltf.animations, [gltf]);
   const source = useMemo(() => getSoldierArmature(gltf.scene), [gltf]);
-  const scale = useMemo(() => soldierScaleVector(source, definition.scale), [definition.scale, source]);
+  const scale = useMemo(
+    () => soldierScaleVector(source, skin.meshData.scale),
+    [skin.meshData.scale, source],
+  );
 
-  useSoldierLocomotion(modelRef, animations, definition.animations, {
+  useSoldierLocomotion(modelRef, animations, skin.meshData.animations, {
     enabled: animated,
   });
 

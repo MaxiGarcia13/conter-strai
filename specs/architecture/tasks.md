@@ -4,89 +4,142 @@ Introduce a three-domain type architecture (scenario/arena, soldier entity, skin
 
 Design reference: [types.md](./types.md).
 
+**Folder convention:** one `types.ts` per module (matches `textures/`, `teams/`, `props/`). See [types.md — Folder layout](./types.md#folder-layout-target) and §9 refactor.
+
 MVP scope: no AI stubs, no objectives manager, no soldier classes, no deprecated aliases — rename cleanly in one pass.
 
 ---
 
 ## 1. Scenarios — type split
 
-Create `src/modules/scenarios/types/`:
+Target: single [`src/modules/scenarios/types.ts`](../../src/modules/scenarios/types.ts) with comment sections (Layout / Spawns / Environment / Config).
 
-- [x] `layout.ts` — `ArenaLayout`, floor/wall/prop types, `CollisionSegment` (for US-2 interior wall collision)
-- [x] `spawner.ts` — `SpawnerConfig`, `SpawnPoint`
-- [x] `environment.ts` — `ArenaEnvironment` (`lighting` only for MVP)
-- [x] `arena.ts` — `ScenarioConfig` as flat composition (`ScenarioMeta & ArenaLayout & SpawnerConfig & ArenaEnvironment`)
-- [x] `index.ts` — barrel; replace monolithic `scenarios/types.ts` with thin re-export
+- [x] Types defined: `ArenaLayout`, floor/wall/prop types, `CollisionSegment`, `SpawnerConfig`, `ArenaEnvironment`, `ScenarioConfig` flat composition
+- [ ] **Consolidate** from `scenarios/types/` multi-file split → one `types.ts` (§9)
 
-**Cut for MVP:** no `objectives.ts`, no hazards/interactives/fog/skybox stubs.
+**Cut for MVP:** no objectives, hazards, fog/skybox stubs.
 
 ---
 
 ## 2. Scenarios — verify consumers
+
+Compile check only — confirms flat `ScenarioConfig` composition is backward-compatible. This is **not** map/registry migration (see §3).
 
 - [x] Confirm all scenario consumers compile unchanged (`scenario.bounds`, `teamSpawns`, etc.)
   - `scenario-scene.tsx`, `scenario-floor.tsx`, `scenario-walls.tsx`, `scenario-soldiers.tsx`
   - `use-fps-controls.ts`, `fps-controls.tsx`
   - `spawn-helpers.ts`, `get-scenario-texture-ids.ts`, `use-scenario-texture-library.ts`
   - `scenario-registry.ts`, `maps/arena-01/index.ts`
-- [x] Grep: no imports bypass the `types/` barrel
+- [x] Grep: imports resolve to module `types.ts` (after §9 refactor)
+
+**Note:** With flat composition, `arena-01/index.ts` does **not** require a structural change for MVP — the existing flat object satisfies `ScenarioConfig`. §3 covers explicit map authoring and collision data.
 
 ---
 
-## 3. Soldiers — type split
+## 3. Scenarios — map & registry migration
 
-Create `src/modules/soldiers/types/`:
+Update map data, registries, and authoring helpers — not just type-check consumers.
 
-- [ ] `skin.ts` — `CharacterMeshData`, `SoldierSkin`, `SoldierSkinId`, `SoldierAnimationClips`
-- [ ] `hitbox.ts` — `HitZone`, `HitboxPreset`, `HitboxPresetId`
-- [ ] `controller.ts` — `LocomotionIntent`, `LocomotionState`, `SoldierController`, `PlayerController`
-- [ ] `entity.ts` — `EntityId`, `Soldier` entity shell (id, team, skinId)
-- [ ] `index.ts` — barrel; replace monolithic `soldiers/types.ts`
+- [ ] Update `maps/arena-01/layout.ts` + `pieces/*` imports → `scenarios/types.ts`
+- [ ] Confirm `scenario-registry.ts` + `maps/index.ts` exports unchanged (keep `ScenarioId` / `ScenarioConfig`; no `arena-registry` rename in MVP)
+- [ ] **(Optional)** Refactor `maps/arena-01/index.ts` to compose from named sub-objects:
 
-**Cut for MVP:** no `class.ts`, no voice/customization stubs, no AI controller types.
+  ```typescript
+  export const arena01: ScenarioConfig = {
+    ...arena01Meta,
+    ...arena01Layout,
+    ...arena01Spawns,
+    ...arena01Environment,
+    props: [],
+  };
+  ```
+
+  Same runtime shape; clearer authoring when a second map lands.
+
+- [ ] Add `collisionSegments` for `arena-01` (or `buildCollisionSegments(wallSegments, houses)` helper)
+  - Derive from `wallSegments` + house doorway hole metadata
+  - Feeds US-2 interior wall collision
+- [ ] Add `scenario-registry.test.ts` (Vitest) — bounds, spawn sides, texture ids
 
 ---
 
-## 4. Soldiers — registry & consumer migration
+## 4. Soldiers — type split
 
-- [ ] Split `soldier-registry.ts`:
-  - `soldierSkins: Record<SoldierSkinId, SoldierSkin>` with `meshData` + `hitboxPresetId`
-  - `hitboxPresets: Record<HitboxPresetId, HitboxPreset>` — `humanoid-standard` stub for US-3
-- [ ] Rename `getSoldierById` → `getSoldierSkinById`; update `SoldierId` → `SoldierSkinId`
-- [ ] Update `SoldierModel` — read from `skin.meshData` (`modelUrl`, `scale`, `animations`)
-- [ ] Update `FpsViewModel` — read from `skin.meshData` (`modelUrl`, `viewModelScale`, `scale`)
-- [ ] Update `use-soldier-locomotion.ts`, `resolve-soldier-clips.ts` imports
-- [ ] Update `soldiers/index.ts` exports
+Target: single [`src/modules/soldiers/types.ts`](../../src/modules/soldiers/types.ts) with comment sections (Skin / Hitbox / Controller / Entity).
+
+- [x] Types defined: `CharacterMeshData`, `SoldierSkin`, `HitboxPreset`, `SoldierController`, `EntityId`, `Soldier`
+- [ ] **Consolidate** from `soldiers/types/` multi-file split → one `types.ts` (§9)
+
+**Cut for MVP:** no class, voice, or AI controller types.
 
 ---
 
-## 5. Combat, weapons, game — types only
+## 5. Soldiers — registry & consumer migration
 
-- [ ] `src/modules/combat/types/health.ts` — `DamageData`, `HealthState`, `HealthSystem`
+- [x] `soldierSkins` + `hitboxPresets` in registry with `meshData` + `hitboxPresetId`
+- [x] `getSoldierSkinById`; `SoldierSkinId` replaces `SoldierId`
+- [x] `SoldierModel`, `FpsViewModel`, locomotion utils use `skin.meshData`
+- [ ] **Split registries** into separate files at module root (§9):
+  - `soldier-skin-registry.ts`
+  - `hitbox-preset-registry.ts`
+- [ ] Remove dead `get-soldier-by-id.ts` / `SoldierDefinition` if any references remain
+
+---
+
+## 6. Combat, weapons, game — types only
+
+Add `types.ts` **with the first runtime file** in each module — no empty module shells.
+
+- [ ] `combat/types.ts` + `apply-damage.ts` (US-3) — `DamageData`, `HealthState`, `HealthSystem`
   - `DamageData`: `attackerId`, `targetId`, `zone`, optional `weaponId`, `team`
-  - Align with [specs/us-3/design.md](../us-3/design.md)
-- [ ] `src/modules/weapons/types/weapon.ts` — `BulletHitResult`, `PistolWeaponConfig`, `Loadout`
-  - Align with [specs/us-4/design.md](../us-4/design.md)
-- [ ] `src/modules/game/types/round.ts` — `GameMode` (`'team-elimination'`), `RoundPhase`
-- [ ] Barrel `index.ts` for each new module
+- [ ] `weapons/types.ts` + pistol config (US-4) — `BulletHitResult`, `PistolWeaponConfig`, `Loadout`
+- [ ] `game/types.ts` — `GameMode` (`'team-elimination'`), `RoundPhase` (before round service)
 
-No runtime implementations in this task — interfaces only.
+No `types/` subfolders or barrel-only modules.
 
 ---
 
-## 6. Documentation
+## 7. Documentation
 
-- [ ] Link [specs/architecture/types.md](./types.md) from [specs/current/design.md](../current/design.md) module map section
-- [ ] Link from [specs/current/tasks.md](../current/tasks.md)
+- [ ] Link [types.md](./types.md) from [specs/current/design.md](../current/design.md) module map section
+- [x] Link from [specs/current/tasks.md](../current/tasks.md)
 
 ---
 
-## 7. Verification
+## 8. Verification
 
 - [ ] `npm run build` passes
 - [ ] `npm run dev` — arena-01 renders; NPC soldiers + FPS view model unchanged
-- [ ] Add `soldier-registry.test.ts` (Vitest) — assert `swat-guy` skin resolves `meshData.modelUrl`, clip names, `hitboxPresetId`
-  - Depends on US-2 Vitest setup; skip if config not landed yet, but leave task open
+- [ ] `soldier-registry.test.ts` — `swat-guy` → `meshData.modelUrl`, clip names, `hitboxPresetId`
+
+---
+
+## 9. Folder structure refactor
+
+Consolidate multi-file `types/` folders to single `types.ts` per module. Logical domains stay as **comment sections**, not separate files.
+
+### Scenarios
+
+- [ ] Merge `scenarios/types/{layout,spawner,environment,arena,index}.ts` → `scenarios/types.ts`
+- [ ] Delete `scenarios/types/` directory
+- [ ] Update imports: `../types`, `@/modules/scenarios/types` → resolve to `types.ts`
+- [ ] Confirm `scenarios/index.ts` still `export * from './types'`
+
+### Soldiers
+
+- [ ] Merge `soldiers/types/{skin,hitbox,controller,entity,index}.ts` → `soldiers/types.ts`
+- [ ] Delete `soldiers/types/` directory
+- [ ] Update imports across `soldiers/` and `game/components/fps-view-model.tsx`
+- [ ] Extract `hitbox-preset-registry.ts` from `soldier-registry.ts` (optional but recommended)
+- [ ] Rename `soldier-registry.ts` → `soldier-skin-registry.ts` (optional; update imports)
+
+### Acceptance
+
+- [ ] Each module has at most one `types.ts` (no `types/` folder)
+- [ ] Same exported type names — refactor is move-only, no API change
+- [ ] `npm run build` passes after consolidation
+
+**When to re-split:** only if a `types.ts` grows past ~200 lines or a second map/class/weapon family needs clear ownership.
 
 ---
 
@@ -104,12 +157,13 @@ No runtime implementations in this task — interfaces only.
 
 ```mermaid
 flowchart LR
-  A[1 Scenarios split] --> B[2 Scenarios verify]
-  B --> C[3 Soldier types]
-  C --> D[4 Registry migrate]
-  D --> E[5 Combat weapons game types]
-  E --> F[6 Docs]
-  F --> G[7 Verify]
+  A[1 Scenarios types] --> B[2 Verify consumers]
+  B --> C[3 Map migrate]
+  D[4 Soldier types] --> E[5 Registry migrate]
+  C --> F[9 Folder refactor]
+  E --> F
+  F --> G[6 Combat weapons game types]
+  G --> H[8 Verify]
 ```
 
-Tasks 5 can run in parallel with 3–4 once soldier `EntityId` / `HitZone` shapes are settled.
+§9 can run as soon as §1 and §4 types are stable. §6 waits for US-3/4 runtime files. §3 `collisionSegments` aligns with [specs/us-2/tasks.md](../us-2/tasks.md).

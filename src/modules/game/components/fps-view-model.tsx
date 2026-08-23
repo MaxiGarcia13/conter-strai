@@ -1,27 +1,27 @@
 import type { Group } from 'three';
-import type { SoldierId } from '@/modules/soldiers';
+import type { SoldierSkinId } from '@/modules/soldiers';
 import { useGLTF } from '@react-three/drei';
 
 import { useThree } from '@react-three/fiber';
 import { useLayoutEffect, useMemo, useRef } from 'react';
 
-import { getSoldierById } from '@/modules/soldiers/get-soldier-by-id';
+import { getSoldierSkinById } from '@/modules/soldiers';
 import { cloneSoldierRoot } from '@/modules/soldiers/utils/clone-soldier-root';
 import { prepareFpsViewModel } from '@/modules/soldiers/utils/prepare-fps-view-model';
 
 import { VIEWMODEL_OFFSET, VIEWMODEL_ROTATION_Y } from '../constants/player';
 
 interface FpsViewModelProps {
-  soldierId?: SoldierId;
+  skinId?: SoldierSkinId;
 }
 
 /** First-person arms/hands rig parented to the active camera. */
-export function FpsViewModel({ soldierId = 'swat-guy' }: FpsViewModelProps) {
+export function FpsViewModel({ skinId = 'swat-guy' }: FpsViewModelProps) {
   const camera = useThree((state) => state.camera);
   const pivotRef = useRef<Group>(null);
-  const definition = useMemo(() => getSoldierById(soldierId), [soldierId]);
-  const gltf = useGLTF(definition.modelUrl);
-  const viewModelScale = definition.viewModelScale ?? definition.scale;
+  const skin = useMemo(() => getSoldierSkinById(skinId), [skinId]);
+  const gltf = useGLTF(skin.meshData.modelUrl);
+  const viewModelScale = skin.meshData.viewModelScale ?? skin.meshData.scale;
   const model = useMemo(() => {
     const clone = cloneSoldierRoot(gltf.scene, viewModelScale);
     prepareFpsViewModel(clone);

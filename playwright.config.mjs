@@ -5,16 +5,26 @@ const port = Number(process.env.PORT ?? 4326);
 
 export default defineConfig({
   testDir: 'tests/e2e',
-  fullyParallel: true,
-  reporter: 'list',
+  retries: 1,
+  workers: 1,
   use: {
     baseURL: `http://localhost:${port}`,
-    trace: 'on-first-retry',
+    headless: true,
   },
+  projects: [
+    {
+      name: 'chromium',
+      use: { browserName: 'chromium' },
+    },
+  ],
   webServer: {
-    command: 'npm run build && npm run preview',
-    url: `http://localhost:${port}`,
+    command: 'npm run dev',
     reuseExistingServer: true,
-    timeout: 120_000,
+    port,
+    env: {
+      ...process.env,
+      E2E: 'true',
+      PORT: String(port),
+    },
   },
 });

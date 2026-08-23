@@ -1,5 +1,4 @@
-import type { Difficulty } from './types';
-import type { HitZone } from '@/modules/soldiers';
+import type { Difficulty, HitZone } from './types';
 import { DAMAGE_ZONE_PCT } from './constants/damage-zones';
 import { DIFFICULTY_MULT } from './constants/difficulty';
 

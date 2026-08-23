@@ -1,4 +1,4 @@
-import type { HitZone } from '@/modules/soldiers';
+import type { HitZone } from '../types';
 
 /** Damage as a fraction of max HP per hit zone. */
 export const DAMAGE_ZONE_PCT = {

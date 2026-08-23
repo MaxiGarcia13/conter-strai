@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { hitboxPresets } from '@/modules/combat';
 import { getSoldierSkinById } from './get-soldier-skin-by-id';
-import { hitboxPresets } from './hitbox-preset-registry';
 import { soldierSkins } from './soldier-skin-registry';
 
 // Preload fires on import; hoisted above imports so the data test stays loader-free.

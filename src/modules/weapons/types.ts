@@ -1,4 +1,5 @@
-import type { EntityId, HitZone } from '@/modules/soldiers';
+import type { HitZone } from '@/modules/combat';
+import type { EntityId } from '@/modules/soldiers';
 
 export interface PistolWeaponConfig {
   id: string;

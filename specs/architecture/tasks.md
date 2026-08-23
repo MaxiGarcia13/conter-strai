@@ -20,7 +20,7 @@ MVP scope: no AI stubs, no objectives manager, no soldier classes, no deprecated
 | §6 | Combat / weapons / game types | done |
 | §7–§8 | Docs + verification | done |
 | §9 | Consolidate `types/` folders → `types.ts` | done |
-| **§10** | **Move hitbox types + registry → `combat/`** | **open** |
+| **§10** | **Move hitbox types + registry → `combat/`** | done |
 
 ---
 
@@ -59,8 +59,6 @@ Target: single [`src/modules/soldiers/types.ts`](../../src/modules/soldiers/type
 - [x] Types defined: `CharacterMeshData`, `SoldierSkin`, `HitboxPreset`, `SoldierController`, `EntityId`, `Soldier`
 - [x] Consolidate from `soldiers/types/` multi-file split → one `types.ts` (§9)
 
-**Remaining:** hitbox section moves to `combat/types.ts` in §10.
-
 ---
 
 ## 5. Soldiers — registry & consumer migration
@@ -70,8 +68,6 @@ Target: single [`src/modules/soldiers/types.ts`](../../src/modules/soldiers/type
 - [x] `SoldierModel`, `FpsViewModel`, locomotion utils use `skin.meshData`
 - [x] `soldier-skin-registry.ts` + `hitbox-preset-registry.ts` at module root
 - [x] Removed dead `get-soldier-by-id.ts` / `SoldierDefinition`
-
-**Remaining:** `hitbox-preset-registry.ts` moves to `combat/` in §10.
 
 ---
 
@@ -131,36 +127,36 @@ Hitbox colliders belong in **`combat/`**, not **`soldiers/`**. Visual skins refe
 
 ### Move types
 
-- [ ] Move from `soldiers/types.ts` → `combat/types.ts`:
+- [x] Move from `soldiers/types.ts` → `combat/types.ts`:
   - `HitZone`
   - `HitboxPresetId`
   - `HitboxPart`
   - `HitboxPreset`
-- [ ] Keep `SoldierSkin.hitboxPresetId` in `soldiers/types.ts`; import `HitboxPresetId` from `@/modules/combat`
-- [ ] Update `combat/apply-damage.ts` — import `HitZone` from `./types` (not `@/modules/soldiers`)
+- [x] Keep `SoldierSkin.hitboxPresetId` in `soldiers/types.ts`; import `HitboxPresetId` from `@/modules/combat`
+- [x] Update `combat/apply-damage.ts` — import `HitZone` from `./types` (not `@/modules/soldiers`)
 
 ### Move registry
 
-- [ ] Move `soldiers/hitbox-preset-registry.ts` → `combat/hitbox-preset-registry.ts`
-- [ ] Add `combat/index.ts` barrel (export types, registry, `applyDamage`) if other modules need clean imports
-- [ ] Update `soldier-skin-registry.ts` / tests — import `hitboxPresets` from combat if needed for validation
+- [x] Move `soldiers/hitbox-preset-registry.ts` → `combat/hitbox-preset-registry.ts`
+- [x] Add `combat/index.ts` barrel (export types, registry, `applyDamage`) if other modules need clean imports
+- [x] Update `soldier-skin-registry.ts` / tests — import `hitboxPresets` from combat if needed for validation
 
 ### Update dependents
 
-- [ ] `weapons/types.ts` — import `HitZone`, `EntityId` from combat (or keep `EntityId` in soldiers if still entity-owned)
-- [ ] `soldiers/index.ts` — stop re-exporting hitbox types if combat owns them; export only skin/entity/controller types
-- [ ] Grep `HitZone` / `HitboxPreset` imports across `src/` and point at `@/modules/combat`
+- [x] `weapons/types.ts` — import `HitZone`, `EntityId` from combat (or keep `EntityId` in soldiers if still entity-owned)
+- [x] `soldiers/index.ts` — stop re-exporting hitbox types if combat owns them; export only skin/entity/controller types
+- [x] Grep `HitZone` / `HitboxPreset` imports across `src/` and point at `@/modules/combat`
 
 ### Documentation
 
-- [ ] Update [types.md](./types.md) “Current” tree — remove “pending move” notes once done
-- [ ] Mark §10 complete in Status table above
+- [x] Update [types.md](./types.md) “Current” tree — remove “pending move” notes once done
+- [x] Mark §10 complete in Status table above
 
 ### Acceptance
 
-- [ ] `soldiers/types.ts` has no hitbox geometry types (only `hitboxPresetId` reference)
-- [ ] `combat/hitbox-preset-registry.ts` is the single source for `humanoid-standard` preset data
-- [ ] `npm run build` + unit tests pass
+- [x] `soldiers/types.ts` has no hitbox geometry types (only `hitboxPresetId` reference)
+- [x] `combat/hitbox-preset-registry.ts` is the single source for `humanoid-standard` preset data
+- [x] `npm run build` + unit tests pass
 
 ---
 
@@ -185,4 +181,4 @@ flowchart LR
   E --> F[10 Hitbox to combat]
 ```
 
-§10 is the remaining folder-alignment work. §3 `collisionSegments` aligns with [specs/us-2/tasks.md](../us-2/tasks.md).
+§10 was the remaining folder-alignment work. §3 `collisionSegments` aligns with [specs/us-2/tasks.md](../us-2/tasks.md).

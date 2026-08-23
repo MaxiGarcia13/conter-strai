@@ -17,13 +17,14 @@ src/modules/
 │   └── pieces/
 │       └── collision-helpers.ts
 ├── soldiers/
-│   ├── types.ts                 # skin, hitbox, controller, entity
+│   ├── types.ts                 # skin, controller, entity
 │   ├── soldier-skin-registry.ts
-│   ├── hitbox-preset-registry.ts   ← pending move to combat/ (§10)
 │   └── get-soldier-skin-by-id.ts
 ├── combat/
-│   ├── types.ts
+│   ├── index.ts                 # barrel: types, registry, applyDamage
+│   ├── types.ts                 # hitbox, health, difficulty
 │   ├── apply-damage.ts
+│   ├── hitbox-preset-registry.ts
 │   └── constants/
 │       ├── damage-zones.ts
 │       └── difficulty.ts
@@ -35,21 +36,7 @@ src/modules/
     └── constants/player.ts
 ```
 
-### Target (after §10)
-
-Hitbox **types** and **registry** move to `combat/` — colliders are a combat/raycast concern, not visual skin data.
-
-```
-combat/
-├── types.ts                 # + HitZone, HitboxPreset, HitboxPresetId, HitboxPart
-├── hitbox-preset-registry.ts
-├── apply-damage.ts
-└── constants/ …
-
-soldiers/
-├── types.ts                 # skin + controller + entity only; skin references HitboxPresetId from combat
-└── soldier-skin-registry.ts
-```
+Hitbox colliders live in `combat/` — skins reference a preset id; combat owns preset data and raycast zones.
 
 **Rules**
 
@@ -81,16 +68,17 @@ Map work: [tasks.md §3](./tasks.md#3-scenarios--map--registry-migration) (done)
 | Section | Types | Notes |
 |---------|-------|-------|
 | Skin | `CharacterMeshData`, `SoldierAnimationClips`, `SoldierSkinId`, `SoldierSkin` | `hitboxPresetId` refs combat preset |
-| Hitbox | `HitZone`, `HitboxPreset`, … | **Move to `combat/types.ts`** (§10) |
 | Controller | `LocomotionState`, `LocomotionIntent`, `SoldierController`, `PlayerController` | |
 | Entity | `EntityId`, `Soldier` | |
 
+Hitbox types (`HitZone`, `HitboxPreset`, …) moved to `combat/types.ts` — see [tasks.md §10](./tasks.md#10-module-ownership-alignment).
+
 **Registries at module root**
 
-| File | Module | Status |
-|------|--------|--------|
-| `soldier-skin-registry.ts` | `soldiers/` | done |
-| `hitbox-preset-registry.ts` | `soldiers/` today → `combat/` target | §10 |
+| File | Module |
+|------|--------|
+| `soldier-skin-registry.ts` | `soldiers/` |
+| `hitbox-preset-registry.ts` | `combat/` |
 
 ---
 
@@ -98,8 +86,10 @@ Map work: [tasks.md §3](./tasks.md#3-scenarios--map--registry-migration) (done)
 
 | Module | File | Types / runtime |
 |--------|------|-----------------|
-| `combat/` | `types.ts` | `DamageData`, `HealthState`, `HealthSystem`, `Difficulty` |
+| `combat/` | `index.ts` | Barrel — types, `hitboxPresets`, `applyDamage` |
+| `combat/` | `types.ts` | `HitZone`, `HitboxPresetId`, `HitboxPart`, `HitboxPreset`, `DamageData`, `HealthState`, `HealthSystem`, `Difficulty` |
 | `combat/` | `apply-damage.ts` | Pure zone/damage math (US-3) |
+| `combat/` | `hitbox-preset-registry.ts` | `humanoid-standard` preset data |
 | `combat/` | `constants/` | `DAMAGE_ZONE_PCT`, `DIFFICULTY_MULT` |
 | `weapons/` | `types.ts` | `PistolWeaponConfig`, `BulletHitResult`, `Loadout` |
 | `weapons/` | `weapon-registry.ts` | MVP pistol entry |
@@ -116,9 +106,6 @@ No AI controller, objectives manager, soldier classes, hazards, fog/skybox, or v
 ## Completed refactors
 
 - [x] `scenarios/types/` and `soldiers/types/` multi-file splits → single `types.ts` each ([tasks.md §9](./tasks.md#9-folder-structure-refactor))
-
-## Open work
-
-- [ ] Hitbox ownership → `combat/` ([tasks.md §10](./tasks.md#10-module-ownership-alignment))
+- [x] Hitbox ownership → `combat/` ([tasks.md §10](./tasks.md#10-module-ownership-alignment))
 
 See [tasks.md](./tasks.md) for the full checklist.

@@ -6,7 +6,7 @@
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | US-4.1  | LMB fires hitscan ray from camera center (**pistol** — only weapon in MVP)                                                                        |
 | US-4.2  | Fire rate ~2 shots/sec, range 100 m (pistol tuning)                                                                                               |
-| US-4.3  | Hit resolves zone → applyDamage → health store                                                                                                    |
+| US-4.3  | Hit resolves zone + **equipped `weaponId`** → applyDamage (weapon `damageByZone` × difficulty) → health store                                |
 | US-4.4  | Local test: dummy or second target on **opposing team**                                                                                           |
 | US-4.5  | Eliminated player cannot move/shoot for remainder of round                                                                                        |
 | US-4.6  | **No mid-round respawn** — eliminated until round ends                                                                                            |

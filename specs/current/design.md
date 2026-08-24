@@ -84,7 +84,7 @@ src/modules/
 | **Scenario** | `ScenarioConfig`, `ArenaLayout`, `SpawnerConfig`                   | Flat access (`scenario.bounds`); maps under `scenarios/maps/` |
 | **Soldier**  | `SoldierSkin`, `CharacterMeshData`, `Soldier`, `SoldierController` | Visual preset decoupled from hitbox via `hitboxPresetId`      |
 | **Combat**   | `HitboxPreset`, `HitZone`, `DamageData`, `HealthSystem`            | Owns collider presets and raycast zones                       |
-| **Weapons**  | `PistolWeaponConfig`, `Loadout`                                    | Damage math in combat, not per-weapon                         |
+| **Weapons**  | `PistolWeaponConfig` / `WeaponConfig`, `Loadout`               | Per-weapon `damageByZone`; combat applies × difficulty        |
 | **Game**     | `GameMode`, `RoundPhase`                                           | `'team-elimination'`; `'live' \| 'round-end'`                 |
 
 Shipped 2026-08-23 — see [CHANGELOG](../CHANGELOG.md#shipped--other).

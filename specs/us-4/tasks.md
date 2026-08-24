@@ -5,7 +5,7 @@ Post type-split: weapon contracts in `weapons/`, round phase types in `game/`, d
 ## Done (architecture foundation)
 
 - [x] `PistolWeaponConfig`, `BulletHitResult`, `Loadout` in `weapons/types.ts`
-- [x] `weapon-registry.ts` — MVP pistol (`fireCooldownSeconds`; damage stays in combat)
+- [x] `weapon-registry.ts` — MVP pistol (`fireCooldownSeconds`; **damageByZone** added in US-3)
 - [x] `GameMode`, `RoundPhase` in `game/types.ts` (`'team-elimination'`, `'live' | 'round-end'`)
 - [x] Scenario `teamSpawns` on `arena-01` (consume in round start)
 - [x] Teams module (`puma` | `lion`)
@@ -22,7 +22,7 @@ Post type-split: weapon contracts in `weapons/`, round phase types in `game/`, d
 
 - [ ] `useShooting` hook — raycast from camera on mousedown; cooldown from `PistolWeaponConfig.fireCooldownSeconds`
 - [ ] Filter hits by `userData.hitZone`, `userData.entityId`, and **team** (no friendly fire in MVP)
-- [ ] Build `DamageData` → combat `applyDamage` / health store `applyDamage`
+- [ ] Build `DamageData` (incl. **`weaponId`** of equipped weapon) → combat `applyDamage` / health store `applyDamage`
 - [ ] Pure `resolveHitDamage` (or thin wrapper) Vitest-covered alongside `checkRoundEnd`
 - [ ] Opposing-team dummy / bot at fixed spawn for local tests until US-5
 - [ ] When `HealthState.isEliminated`, disable FPS controls until next `startRound()`
@@ -48,7 +48,7 @@ Clip playback only (no ammo / hitscan required for these checkboxes).
 ## Verification
 
 - [ ] Vitest: hit → HP path + `checkRoundEnd`
-- [ ] Manual: shoot dummy → HP drops by zone; team wipe ends round and resets
+- [ ] Manual: shoot dummy → HP drops by **pistol** zone profile; team wipe ends round and resets
 
 ## Out of scope here
 

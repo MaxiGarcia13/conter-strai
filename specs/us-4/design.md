@@ -18,9 +18,10 @@ Builds on combat health + weapon type contracts from the architecture type split
 
 ## Weapons (MVP)
 
-- **Pistol only** — `weapons/weapon-registry.ts`; damage percentages stay in combat
+- **Pistol only** — `weapons/weapon-registry.ts` with `damageByZone` (see US-3); combat applies profile × difficulty
 - **Hand mesh:** load `pistol_a.glb` from registry `modelUrl`; parent under the soldier **RightHand** bone at runtime (local + NPCs). Grip offset is a small constant on the weapon config or attach helper — do not merge into `swat-soldier.glb`.
-- Future: knife (melee), rifle (primary), richer `Loadout`
+- Hits pass `weaponId` on `DamageData` so the health bar drops by that weapon’s injury amounts
+- Future: knife (melee), rifle (primary), richer `Loadout` — each gets its own `damageByZone`
 
 ## Round service
 

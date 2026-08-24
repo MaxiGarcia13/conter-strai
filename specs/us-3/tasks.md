@@ -8,8 +8,20 @@ Post type-split: health/hitbox types and pure damage math live in `src/modules/c
 - [x] `HitboxPreset` / `HitboxPresetId` / `HitboxPart` in `combat/types.ts` (`humanoid-standard`)
 - [x] `hitbox-preset-registry.ts`
 - [x] `combat/constants/damage-zones.ts` (`DAMAGE_ZONE_PCT`) + `difficulty.ts` (`DIFFICULTY_MULT`)
-- [x] Pure `applyDamage` in `combat/apply-damage.ts` (`DAMAGE_ZONE_PCT` × `DIFFICULTY_MULT` → next HP)
+- [x] Pure `applyDamage` in `combat/apply-damage.ts` (zone × difficulty → next HP; **extend for weapon profiles below**)
 - [x] `SoldierSkin.hitboxPresetId` on skin registry (no hitbox geometry on skin)
+
+## Weapon + body-zone damage
+
+Injury amount depends on **where** you are hit (head > body > limbs) **and** **which weapon** hit you (pistol now; knife later). Health bar still shows HP % — it drops more for a headshot than a limb hit, and differently per weapon.
+
+- [ ] Add `damageByZone: Record<HitZone, number>` to weapon config (`WeaponConfig` or extend `PistolWeaponConfig`)
+- [ ] Pistol registry entry: head `0.5`, body `0.2`, limb `0.15` (same numbers as today’s `DAMAGE_ZONE_PCT`)
+- [ ] Extend `applyDamage` to take `damageByZone` (from weapon); formula: `maxHp × damageByZone[zone] × DIFFICULTY_MULT`
+- [ ] Make `DamageData.weaponId` required; health store resolves profile via weapon registry; `zone` comes from hitbox `userData.hitZone`
+- [ ] Retire or narrow global `DAMAGE_ZONE_PCT` once pistol owns the profile (avoid two sources of truth)
+- [ ] Vitest: same weapon + difficulty, **different zones** → different HP deltas (head > body > limb)
+- [ ] Vitest: same zone + difficulty, **different weapons** → different HP deltas (pistol fixture now; knife fixture optional stub)
 
 ## Remaining
 
@@ -17,13 +29,14 @@ Post type-split: health/hitbox types and pure damage math live in `src/modules/c
 - [ ] `health-store.ts` (Zustand) — per-`EntityId` HP map; implement `HealthSystem` (`getHealth`, `applyDamage`, `resetAll`)
 - [ ] Soldier **hitbox meshes** — invisible colliders from `HitboxPreset.parts`, tagged `userData.hitZone` + `userData.entityId`
 - [ ] Attach hitboxes to world/NPC soldiers (and local player when third-person / raycast targets exist)
-- [ ] `HealthBar` HUD component (local player HP)
+- [ ] `HealthBar` HUD component (local player HP %)
 - [ ] Elimination persists until round end (no mid-round respawn) — store flag; disable controls when eliminated (full round reset in US-4)
 - [ ] Wire `dying` clip on elimination (clip already in `swat-soldier.glb`; deferred from US-2)
-- [ ] Vitest: `apply-damage.test.ts` — zone math, difficulty multipliers, HP floor at 0 / elimination
+- [ ] Vitest: `apply-damage.test.ts` — zone × weapon × difficulty, HP floor at 0 / elimination
 
 ## Out of scope here
 
 - Round start/end / team wipe (US-4)
-- Hitscan shooting (US-4)
+- Hitscan shooting / equipping knife mesh (US-4+)
+- Knife / rifle as playable loadout (future)
 - Server-authoritative HP (US-5)

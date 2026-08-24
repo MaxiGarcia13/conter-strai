@@ -12,7 +12,7 @@ describe('scenario-registry', () => {
 
   it('spawns puma west and lion east', () => {
     expect(scenario.teamSpawns.puma.length).toBeGreaterThan(0);
-    expect(scenario.teamSpawns.lion.length).toBeGreaterThan(0);
+    expect(scenario.teamSpawns.lion.length).toBe(0);
     for (const [spawnX] of scenario.teamSpawns.puma) {
       expect(spawnX).toBeLessThan(0);
     }

@@ -93,7 +93,7 @@ Today: player clamped to **outer arena bounds** only — can walk through house 
 - [x] `scenario-registry.test.ts` (bounds + spawn sides + texture ids)
 - [x] `resolve-soldier-clips.test.ts` — registry names resolve; `null` when a clip is missing; hips translation stripped on locomotion, kept on action clips
 - [x] `strip-root-motion.test.ts` — hips translation tracks removed from walk/run clips
-- [ ] `swat-soldier-glb.test.ts` — **asset contract** (parse GLB JSON chunk):
+- [x] `swat-soldier-glb.test.ts` — **asset contract** (parse GLB JSON chunk):
   - clips: `idle`, `walk`, `run`, `jump`, `kneel`, `reloading`, `shooting` (and `dying` present but optional)
   - nodes: `Armature`, `Soldier_body`, `Soldier_head`
   - bones: `mixamorig:Hips`, neck, hands (no PropertyBinding orphans vs idle channels)

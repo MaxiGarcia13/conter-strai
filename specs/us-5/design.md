@@ -2,11 +2,11 @@
 
 ## Stack
 
-| Layer       | Choice                                      | Role                                                                         |
-| ----------- | ------------------------------------------- | ---------------------------------------------------------------------------- |
-| Astro       | `@astrojs/node` adapter, `output: 'server'` | HTTP pages (`/`, `/play`) + Node process — **already configured**            |
-| Multiplayer | [Colyseus](https://colyseus.io/framework/)  | Rooms, Schema state sync, matchmaking, messages                              |
-| Client SDK  | `@colyseus/sdk`                             | `joinOrCreate`, listen to state, `room.send`                                 |
+| Layer       | Choice                                      | Role                                                                                                  |
+| ----------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Astro       | `@astrojs/node` adapter, `output: 'server'` | HTTP pages (`/`, `/play`) + Node process — **already configured**                                     |
+| Multiplayer | [Colyseus](https://colyseus.io/framework/)  | Rooms, Schema state sync, matchmaking, messages                                                       |
+| Client SDK  | `@colyseus/sdk`                             | `joinOrCreate`, listen to state, `room.send`                                                          |
 | Game UI     | R3F island on `/play`                       | Consumes `multiplayer/` adapter only — no Colyseus imports in combat / scenarios / soldiers / weapons |
 
 Client domains reuse post type-split contracts: `HealthState` / `HitZone` (combat), `RoundPhase` (game), `Team`, `SoldierSkin`, `PistolWeaponConfig`.

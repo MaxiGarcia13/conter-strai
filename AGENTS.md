@@ -8,15 +8,15 @@ Browser tactical shooter: **Puma** vs **Lion**, round-based team elimination. La
 
 ## Source of truth
 
-| Doc | Role |
-|-----|------|
-| [`specs/current/design.md`](./specs/current/design.md) | Living design + **module type layout** |
-| [`specs/current/tasks.md`](./specs/current/tasks.md) | Work queue → open US deltas |
-| [`specs/us-<n>/`](./specs/) | Open user-story deltas (requirements / design / tasks) |
-| [`specs/CHANGELOG.md`](./specs/CHANGELOG.md) | Shipped US + cross-cutting refactors |
-| [`specs/tech-debt.md`](./specs/tech-debt.md) | Hygiene backlog |
-| [`.cursor/rules/`](./.cursor/rules/) | Always-on and scoped coding rules |
-| [`.cursor/skills/`](./.cursor/skills/) | Domain skills (R3F, Three.js, Astro, a11y, …) |
+| Doc                                                    | Role                                                   |
+| ------------------------------------------------------ | ------------------------------------------------------ |
+| [`specs/current/design.md`](./specs/current/design.md) | Living design + **module type layout**                 |
+| [`specs/current/tasks.md`](./specs/current/tasks.md)   | Work queue → open US deltas                            |
+| [`specs/us-<n>/`](./specs/)                            | Open user-story deltas (requirements / design / tasks) |
+| [`specs/CHANGELOG.md`](./specs/CHANGELOG.md)           | Shipped US + cross-cutting refactors                   |
+| [`specs/tech-debt.md`](./specs/tech-debt.md)           | Hygiene backlog                                        |
+| [`.cursor/rules/`](./.cursor/rules/)                   | Always-on and scoped coding rules                      |
+| [`.cursor/skills/`](./.cursor/skills/)                 | Domain skills (R3F, Three.js, Astro, a11y, …)          |
 
 **Spec before code** for behavior changes. Update the relevant `specs/us-<n>/` (or `current/`) first; tick tasks only after acceptance passes.
 

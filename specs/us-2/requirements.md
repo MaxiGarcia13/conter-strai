@@ -2,28 +2,28 @@
 
 ## Requirements
 
-| ID      | Requirement                                                                                                                  |
-| ------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| US-2.1  | `/play` loads R3F canvas via dynamic import                                                                                  |
-| US-2.2  | Scenario `arena-01` (**Ruined Village**): **100×50 m** rectangular arena, outer walls only (abandoned village theme)         |
-| US-2.3  | Floor/wall materials from texture GLBs via texture registry (`forrest_ground`, `coral_fort_wall`)                            |
-| US-2.4  | Soldier `swat-guy` loaded at spawn point                                                                                     |
-| US-2.5  | WASD movement + mouse look; pointer lock on click                                                                            |
-| US-2.6  | Wall collision prevents walking through outer bounds                                                                         |
-| US-2.7  | Minimal HUD crosshair                                                                                                        |
-| US-2.8  | Scenario, texture, prop, and soldier registries are data-driven; new maps/props = config, not new scene components           |
-| US-2.9  | Scenario defines **team spawn points** — Puma (west) vs Lion (east); spawns face map center                                  |
-| US-2.10 | Scenario config supports optional `props[]` placements (trees/objects later) without changing `ScenarioScene` rendering path |
-| US-2.11 | World units: **1 unit = 1 meter**; floor textures use repeat/tiling appropriate for map size                                 |
-| US-2.12 | Three camera modes cycle with **C**: first-person, over-the-shoulder, standard third-person; HUD shows active mode            |
-| US-2.13 | Local soldier plays **idle** / **walk** / **run** from GLB clips matching stand / WASD / WASD+Space                           |
-| US-2.14 | Interior ruin walls block movement; player passes only through configured wall **holes** (holes wide enough to walk through) |
+| ID      | Requirement                                                                                                                        |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| US-2.1  | `/play` loads R3F canvas via dynamic import                                                                                        |
+| US-2.2  | Scenario `arena-01` (**Ruined Village**): **100×50 m** rectangular arena, outer walls only (abandoned village theme)               |
+| US-2.3  | Floor/wall materials from texture GLBs via texture registry (`forrest_ground`, `coral_fort_wall`)                                  |
+| US-2.4  | Soldier `swat-guy` loaded at spawn point                                                                                           |
+| US-2.5  | WASD movement + mouse look; pointer lock on click                                                                                  |
+| US-2.6  | Wall collision prevents walking through outer bounds                                                                               |
+| US-2.7  | Minimal HUD crosshair                                                                                                              |
+| US-2.8  | Scenario, texture, prop, and soldier registries are data-driven; new maps/props = config, not new scene components                 |
+| US-2.9  | Scenario defines **team spawn points** — Puma (west) vs Lion (east); spawns face map center                                        |
+| US-2.10 | Scenario config supports optional `props[]` placements (trees/objects later) without changing `ScenarioScene` rendering path       |
+| US-2.11 | World units: **1 unit = 1 meter**; floor textures use repeat/tiling appropriate for map size                                       |
+| US-2.12 | Three camera modes cycle with **C**: first-person, over-the-shoulder, standard third-person; HUD shows active mode                 |
+| US-2.13 | Local soldier plays **idle** / **walk** / **run** from GLB clips matching stand / WASD / WASD+Space                                |
+| US-2.14 | Interior ruin walls block movement; player passes only through configured wall **holes** (holes wide enough to walk through)       |
 | US-2.15 | Unit tests validate `swat-soldier.glb` animation contract and clip resolution (`idle` / `walk` / `run` / action clips; hips strip) |
-| US-2.16 | E2E smoke test on `/play` confirms canvas loads and soldier scene initializes without animation binding errors               |
-| US-2.17 | **F** plays one-shot **jump** clip (animation-only; no vertical physics in this story)                                       |
-| US-2.18 | **E** toggles **kneel** pose (cancel on WASD); clip clamps when finished                                                     |
-| US-2.19 | World aim marker: a small reticle at the camera look-ray hit on scene geometry (skip the local player meshes)                |
-| US-2.20 | FPS camera follows the local soldier **head bone**; one clone (no arms view-model); hide head mesh; arms pitch with mouse look |
+| US-2.16 | E2E smoke test on `/play` confirms canvas loads and soldier scene initializes without animation binding errors                     |
+| US-2.17 | **F** plays one-shot **jump** clip (animation-only; no vertical physics in this story)                                             |
+| US-2.18 | **E** toggles **kneel** pose (cancel on WASD); clip clamps when finished                                                           |
+| US-2.19 | World aim marker: a small reticle at the camera look-ray hit on scene geometry (skip the local player meshes)                      |
+| US-2.20 | FPS camera follows the local soldier **head bone**; one clone (no arms view-model); hide head mesh; arms pitch with mouse look     |
 
 ## Acceptance
 

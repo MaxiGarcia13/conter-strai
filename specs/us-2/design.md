@@ -8,12 +8,12 @@
 
 Maps stay data-driven so future arenas (and props like trees) are config-only, not new React scenes.
 
-| Registry     | Role                                               | Example ids                         |
-| ------------ | -------------------------------------------------- | ----------------------------------- |
-| **Texture**  | Floor/wall GLB materials under `/assets/textures/` | `forrest_ground`, `coral_fort_wall` |
-| **Prop**     | Placeable objects (trees, barrels, cover)          | `tree` (later)                      |
-| **Scenario** | Map layout: bounds, materials, props, team spawns  | `arena-01`                          |
-| **Soldier skin** | Visual presets (`SoldierSkin`); hitbox via `hitboxPresetId` | `swat-guy`                   |
+| Registry         | Role                                                        | Example ids                         |
+| ---------------- | ----------------------------------------------------------- | ----------------------------------- |
+| **Texture**      | Floor/wall GLB materials under `/assets/textures/`          | `forrest_ground`, `coral_fort_wall` |
+| **Prop**         | Placeable objects (trees, barrels, cover)                   | `tree` (later)                      |
+| **Scenario**     | Map layout: bounds, materials, props, team spawns           | `arena-01`                          |
+| **Soldier skin** | Visual presets (`SoldierSkin`); hitbox via `hitboxPresetId` | `swat-guy`                          |
 
 ## Registry types
 
@@ -79,11 +79,11 @@ New arena = new `ScenarioConfig` entry. New tree/object = prop registry entry + 
 
 ## Camera modes (C to cycle)
 
-| Mode | Role | Tunables (m) |
-| ---- | ---- | ------------ |
-| **First-person** | Camera on head bone; head mesh hidden; arms from the same clone, pitched with look; HUD crosshair + look-ray marker | head world pos, spine pitch |
-| **Over-the-shoulder** | Close behind one shoulder; character + aim context visible | distance ~1.75, height ~1.55, shoulder offset ~0.42 |
-| **Third-person** | Farther behind and above; max situational awareness | distance ~3.6, height ~2.4, pitch scale on look |
+| Mode                  | Role                                                                                                                | Tunables (m)                                        |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| **First-person**      | Camera on head bone; head mesh hidden; arms from the same clone, pitched with look; HUD crosshair + look-ray marker | head world pos, spine pitch                         |
+| **Over-the-shoulder** | Close behind one shoulder; character + aim context visible                                                          | distance ~1.75, height ~1.55, shoulder offset ~0.42 |
+| **Third-person**      | Farther behind and above; max situational awareness                                                                 | distance ~3.6, height ~2.4, pitch scale on look     |
 
 Shared state: ground `origin` [x, 0, z], `yaw`, `pitch`, `mode`. Camera positioned each frame from mode + origin — not by moving the soldier root independently in third person.
 
@@ -97,13 +97,13 @@ Bone/asset contract (`soldiers/utils/aim-body-rig.ts`): Mixamo bones appear as `
 
 ## Locomotion / action animations
 
-| Input | Clip | Notes |
-| ----- | ---- | ----- |
-| Stand still | `idle` | Default |
-| WASD | `walk` | In-place; hips root motion stripped in code |
-| WASD + Space | `run` | Faster move speed + run clip |
-| **F** | `jump` | One-shot; animation-only (no vertical physics) |
-| **E** | `kneel` | Toggle; `LoopOnce` + clamp; cancel on WASD |
+| Input        | Clip    | Notes                                          |
+| ------------ | ------- | ---------------------------------------------- |
+| Stand still  | `idle`  | Default                                        |
+| WASD         | `walk`  | In-place; hips root motion stripped in code    |
+| WASD + Space | `run`   | Faster move speed + run clip                   |
+| **F**        | `jump`  | One-shot; animation-only (no vertical physics) |
+| **E**        | `kneel` | Toggle; `LoopOnce` + clamp; cancel on WASD     |
 
 Priority (high → low): blocking one-shots (`reloading` / `jump` / `shooting` from US-4) → `kneel` → locomotion. One `AnimationMixer` on the local clone. Scenario NPCs stay on `idle` until US-4+.
 
@@ -118,10 +118,10 @@ Priority (high → low): blocking one-shots (`reloading` / `jump` / `shooting` f
 
 ## Testing
 
-| Layer | Scope |
-| ----- | ----- |
-| **Vitest** | Registry lookup; `resolveSoldierClips` / `stripHipsTranslation`; GLB JSON contract on `swat-soldier.glb`; FPS head/neck hide helper; pure locomotion state fn; scenario/collision math when added |
-| **Playwright** | `/play` canvas visible, loader dismissed, no `PropertyBinding` console errors; crosshair overlay; optional `window.__PLAY_TEST__` hook for soldier count + mixer + active clip |
+| Layer          | Scope                                                                                                                                                                                             |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vitest**     | Registry lookup; `resolveSoldierClips` / `stripHipsTranslation`; GLB JSON contract on `swat-soldier.glb`; FPS head/neck hide helper; pure locomotion state fn; scenario/collision math when added |
+| **Playwright** | `/play` canvas visible, loader dismissed, no `PropertyBinding` console errors; crosshair overlay; optional `window.__PLAY_TEST__` hook for soldier count + mixer + active clip                    |
 
 Unit tests avoid WebGL; E2E does not rely on pixel assertions.
 

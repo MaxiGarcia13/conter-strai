@@ -19,7 +19,7 @@ Post type-split: health/hitbox types and pure damage math live in `src/modules/c
 - [ ] Attach hitboxes to world/NPC soldiers (and local player when third-person / raycast targets exist)
 - [ ] `HealthBar` HUD component (local player HP)
 - [ ] Elimination persists until round end (no mid-round respawn) — store flag; disable controls when eliminated (full round reset in US-4)
-- [ ] Optional: wire `dying` clip on elimination (clip in GLB)
+- [ ] Wire `dying` clip on elimination (clip already in `swat-soldier.glb`; deferred from US-2)
 - [ ] Vitest: `apply-damage.test.ts` — zone math, difficulty multipliers, HP floor at 0 / elimination
 
 ## Out of scope here

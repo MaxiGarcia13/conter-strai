@@ -108,6 +108,73 @@ Shipped 2026-08-23 — see [CHANGELOG](../CHANGELOG.md#shipped--other).
 | `/`     | Astro landing — no Three.js                           |
 | `/play` | Astro shell + R3F `GameCanvas` island (`client:load`) |
 
+## Play island (`/play`) — shipped US-2
+
+Units: **1 world unit = 1 meter**.
+
+### Registries
+
+| Registry         | Role                                                        | Example ids                         |
+| ---------------- | ----------------------------------------------------------- | ----------------------------------- |
+| **Texture**      | Floor/wall GLB materials under `/assets/textures/`          | `forrest_ground`, `coral_fort_wall` |
+| **Prop**         | Placeable objects (trees, barrels, cover)                   | deferred (`props: []` on arena-01)  |
+| **Scenario**     | Map layout: bounds, materials, props, team spawns           | `arena-01`                          |
+| **Soldier skin** | Visual presets (`SoldierSkin`); hitbox via `hitboxPresetId` | `swat-guy`                          |
+
+`ScenarioScene` reads config only — new arena / prop = registry + placements, not a new React scene.
+
+### Key components
+
+- `GameCanvas` — R3F Canvas, lights, camera
+- `ScenarioScene` — floor + outer walls + `wallSegments` + generic `props`
+- `SoldierModel` — NPC spawns; `LocalPlayer` — one clone + mixer
+- `useFpsControls` — WASD, mouse, locomotion intent, collision
+- `useSoldierLocomotion` — idle / walk / run + jump / kneel
+- `CameraHud` / `CrosshairHud` — mode label + screen crosshair; world aim marker on look-ray hit
+
+### Camera modes (**C**)
+
+| Mode                  | Role                                                                                         |
+| --------------------- | -------------------------------------------------------------------------------------------- |
+| **First-person**      | Camera on head bone; head mesh hidden; spine pitch follows look; same clone (no view-model)  |
+| **Over-the-shoulder** | Close behind right shoulder (~1.75 m back, ~1.55 m up)                                       |
+| **Third-person**      | Farther behind/above (~3.6 m back, ~2.4 m up)                                                |
+
+Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-state.ts`). OTS/TPS boom height rides head-bone world Y after mixer update.
+
+### Locomotion / actions
+
+| Input        | Clip    | Notes                                       |
+| ------------ | ------- | ------------------------------------------- |
+| Stand still  | `idle`  | Default                                     |
+| WASD         | `walk`  | In-place; hips translation stripped         |
+| WASD + Space | `run`   | Faster move + run clip                      |
+| **F**        | `jump`  | One-shot; animation-only (no Y physics)     |
+| **E**        | `kneel` | Toggle; `LoopOnce` + clamp; cancel on WASD  |
+
+Priority: blocking one-shots (US-4 `reloading` / `shooting`, jump) → kneel → locomotion. `dying` clip is in the GLB; wire on elimination in **US-3**.
+
+### Interior collision
+
+Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`. Player circle (`PLAYER_RADIUS`) vs segments after intended move; outer bounds clamp last.
+
+### arena-01 — Ruined Village
+
+| Field        | Value                                                                      |
+| ------------ | -------------------------------------------------------------------------- |
+| **bounds**   | 100 m × 50 m; wall height 3.5 m                                            |
+| **floor**    | `forrest_ground`                                                           |
+| **walls**    | `coral_fort_wall` perimeter + interior ruin segments                       |
+| **spawns**   | Puma west (−X), Lion east (+X); face map center                            |
+| **props**    | `[]` — slots ready for trees / cover later                                 |
+
+### Testing
+
+| Layer          | Scope                                                                                          |
+| -------------- | ---------------------------------------------------------------------------------------------- |
+| **Vitest**     | Registries; clip resolve / hips strip; GLB JSON contract; locomotion state; collision; FPS hide |
+| **Playwright** | `/play` canvas, no `PropertyBinding` errors; crosshair; optional `__PLAY_TEST__` hook          |
+
 ## Data flow (combat)
 
 ```

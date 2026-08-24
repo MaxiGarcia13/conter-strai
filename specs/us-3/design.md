@@ -43,3 +43,5 @@ Invisible meshes on soldier tagged with `userData.hitZone` + `userData.entityId`
 ## Round integration
 
 Elimination sets `isEliminated: true` until `endRound()` / `resetAll` restores full HP.
+
+Optional visual: play `dying` from `swat-soldier.glb` when HP hits 0 (clip present; not wired in US-2).

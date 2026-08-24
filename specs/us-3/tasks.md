@@ -19,7 +19,7 @@ Injury amount depends on **where** you are hit (head > body > limbs) **and** **w
 - [x] Pistol registry entry: head `0.4`, body `0.2`, limb `0.15` (same numbers as today’s `DAMAGE_ZONE_PCT`)
 - [x] Extend `applyDamage` to take `damageByZone` (from weapon); formula: `maxHp × damageByZone[zone] × DIFFICULTY_MULT`
 - [x] Make `DamageData.weaponId` required; health store resolves profile via weapon registry; `zone` comes from hitbox `userData.hitZone`
-- [ ] Retire or narrow global `DAMAGE_ZONE_PCT` once pistol owns the profile (avoid two sources of truth)
+- [x] Retire or narrow global `DAMAGE_ZONE_PCT` once pistol owns the profile (avoid two sources of truth)
 - [ ] Vitest: same weapon + difficulty, **different zones** → different HP deltas (head > body > limb)
 - [ ] Vitest: same zone + difficulty, **different weapons** → different HP deltas (pistol fixture now; knife fixture optional stub)
 

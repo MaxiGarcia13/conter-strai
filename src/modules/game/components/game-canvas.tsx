@@ -11,10 +11,10 @@ import {
 import { resolveLocalSpawn } from '../utils/local-spawn';
 import { CameraHud } from './camera-hud';
 import { DeferredAfterLoad } from './deferred-after-load';
-import { FpsControls } from './fps-controls';
 import { LoadingReporter } from './loading-reporter';
 import { LocalPlayer } from './local-player';
 import { PlayTestHook } from './play-test-hook';
+import { PlayerControls } from './player-controls';
 
 const DEFAULT_SCENARIO_ID = 'arena-01' satisfies ScenarioId;
 const DEFAULT_LIGHTING = { ambient: 0.6, sunIntensity: 1.2 };
@@ -56,7 +56,8 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
           shadow-camera-bottom={-70}
           shadow-camera-far={200}
         />
-        <FpsControls scenario={scenario} spawn={localSpawn} />
+
+        <PlayerControls scenario={scenario} spawn={localSpawn} />
 
         {import.meta.env.E2E && <PlayTestHook />}
 

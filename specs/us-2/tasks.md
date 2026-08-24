@@ -58,7 +58,7 @@ Today: player clamped to **outer arena bounds** only — can walk through house 
 - [x] Player circle (`PLAYER_RADIUS`) vs wall segments: block solid spans; allow passage only through holes
 - [x] Integrate into `useFpsControls` (or `resolvePlayerCollision` util) **after** intended move, before commit
 - [x] Outer bounds clamp remains as final fallback
-- [ ] Acceptance: cannot clip through ruin walls; can walk through holes; holes feel wider than 1.4 m default
+- [x] Acceptance: cannot clip through ruin walls; can walk through holes; holes feel wider than 1.4 m default
 
 ## Testing — soldier render & locomotion
 

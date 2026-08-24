@@ -21,6 +21,7 @@ import {
   setPlayerLocomotion,
 } from '../state/player-state';
 import { applyCameraMode } from '../utils/apply-camera-mode';
+import { resolvePlayerCollision } from '../utils/resolve-player-collision';
 
 const MOVE_CODES = {
   forward: 'KeyW',
@@ -33,15 +34,17 @@ const MOVE_CODES = {
 
 interface UsePlayerControlsOptions {
   bounds: ScenarioConfig['bounds'];
+  collisionSegments: NonNullable<ScenarioConfig['collisionSegments']>;
+  wallThickness: number;
   spawn: LocalSpawn;
 }
 
 /**
  * Binds WASD + pointer-lock mouse look to the shared player transform and
- * positions the camera for the active mode each frame. Movement clamps
- * against the scenario's outer bounds.
+ * positions the camera for the active mode each frame. Movement resolves
+ * interior walls before clamping against the scenario's outer bounds.
  */
-export function usePlayerControls({ bounds, spawn }: UsePlayerControlsOptions) {
+export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickness }: UsePlayerControlsOptions) {
   const camera = useThree((state) => state.camera);
   const domElement = useThree((state) => state.gl.domElement);
   const [isPointerLocked, setIsPointerLocked] = useState(false);
@@ -149,13 +152,24 @@ export function usePlayerControls({ bounds, spawn }: UsePlayerControlsOptions) {
     setPlayerLocomotion(running ? 'run' : moving ? 'walk' : 'idle');
 
     if (moving) {
+      const previousPosition = { x: transform.x, z: transform.z };
       // Ground-plane basis for the current yaw (yaw 0 faces −Z); normalized so diagonals aren't faster.
       const inputLength = Math.hypot(strafe, forward);
       const speed = running ? RUN_SPEED : WALK_SPEED;
       const sinYaw = Math.sin(transform.yaw);
       const cosYaw = Math.cos(transform.yaw);
-      transform.x += ((-sinYaw * forward + cosYaw * strafe) / inputLength) * speed * delta;
-      transform.z += ((-cosYaw * forward - sinYaw * strafe) / inputLength) * speed * delta;
+      const intendedPosition = {
+        x: transform.x + ((-sinYaw * forward + cosYaw * strafe) / inputLength) * speed * delta,
+        z: transform.z + ((-cosYaw * forward - sinYaw * strafe) / inputLength) * speed * delta,
+      };
+      const resolvedPosition = resolvePlayerCollision(
+        intendedPosition,
+        collisionSegments,
+        PLAYER_RADIUS + wallThickness / 2,
+        previousPosition,
+      );
+      transform.x = resolvedPosition.x;
+      transform.z = resolvedPosition.z;
     }
 
     // Outer walls sit just outside bounds; keep the player body clear of them.

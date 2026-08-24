@@ -15,7 +15,7 @@ export function applyCameraMode(camera: Camera, mode: CameraMode, transform: Pla
     case 'fps':
       placeShoulderCamera(camera, transform, {
         distance: -0.25,
-        height: PLAYER_EYE_HEIGHT - 0.1,
+        height: PLAYER_EYE_HEIGHT - 0.08,
         shoulderOffset: 0,
       });
       break;

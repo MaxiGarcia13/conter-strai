@@ -7,6 +7,7 @@ export interface PlayerPosition {
 
 const COLLISION_EPSILON = 1e-8;
 const RESOLUTION_PASSES = 4;
+const MAX_COLLISION_STEP = 0.2;
 
 function clamp(value: number, minimum: number, maximum: number): number {
   return Math.max(minimum, Math.min(value, maximum));
@@ -54,8 +55,7 @@ function resolveSegment(
   position.z += normalZ * radius;
 }
 
-/** Pushes a player circle out of solid wall spans; missing spans remain open. */
-export function resolvePlayerCollision(
+function resolvePositionAgainstSegments(
   position: PlayerPosition,
   segments: CollisionSegment[],
   radius: number,
@@ -71,5 +71,31 @@ export function resolvePlayerCollision(
       break;
     }
   }
+  return resolved;
+}
+
+/** Sweeps a player circle through solid wall spans; missing spans remain open. */
+export function resolvePlayerCollision(
+  position: PlayerPosition,
+  segments: CollisionSegment[],
+  radius: number,
+  previousPosition: PlayerPosition = position,
+): PlayerPosition {
+  const deltaX = position.x - previousPosition.x;
+  const deltaZ = position.z - previousPosition.z;
+  const distance = Math.hypot(deltaX, deltaZ);
+  const stepCount = Math.max(Math.ceil(distance / MAX_COLLISION_STEP), 1);
+  const stepX = deltaX / stepCount;
+  const stepZ = deltaZ / stepCount;
+  let resolved = { ...previousPosition };
+
+  for (let step = 0; step < stepCount; step += 1) {
+    const intended = {
+      x: resolved.x + stepX,
+      z: resolved.z + stepZ,
+    };
+    resolved = resolvePositionAgainstSegments(intended, segments, radius, resolved);
+  }
+
   return resolved;
 }

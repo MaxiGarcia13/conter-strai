@@ -15,6 +15,7 @@ import {
 } from '../constants/player';
 import {
   cycleCameraMode,
+  getBodyAnchorY,
   getCameraMode,
   getPlayerPose,
   getPlayerTransform,
@@ -219,7 +220,7 @@ export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickn
     transform.x = clamp(transform.x, -halfWidth, halfWidth);
     transform.z = clamp(transform.z, -halfDepth, halfDepth);
 
-    applyCameraMode(camera, getCameraMode(), transform);
+    applyCameraMode(camera, getCameraMode(), transform, getBodyAnchorY());
   });
 
   return { isPointerLocked };

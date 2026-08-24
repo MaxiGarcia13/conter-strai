@@ -1,5 +1,7 @@
 /** First-person player tuning — meters, seconds, radians. */
 export const PLAYER_EYE_HEIGHT = 1.7;
+/** Rest head-bone world Y for the default skin; shoulder booms pivot on the live anchor. */
+export const DEFAULT_BODY_ANCHOR_Y = 1.57;
 export const PLAYER_RADIUS = 0.4;
 export const WALK_SPEED = 5;
 export const RUN_SPEED = 9;

@@ -1,37 +1,38 @@
 import type { Camera } from 'three';
 import type { PlayerTransform } from '../state/player-state';
 import type { CameraMode } from '../types';
-import { PLAYER_EYE_HEIGHT } from '../constants/player';
+import { DEFAULT_BODY_ANCHOR_Y, PLAYER_EYE_HEIGHT } from '../constants/player';
 
 /** Floor clearance so steep upward look cannot push shoulder cameras underground. */
 const MIN_CAMERA_HEIGHT = 0.25;
 
 /**
- * Positions the camera for the active mode from the shared player transform.
- * Called every frame — pure placement, no state writes.
+ * Positions the camera for the active mode from the shared player transform
+ * and the soldier's current head-anchor height. Called every frame — pure
+ * placement, no state writes.
  */
-export function applyCameraMode(camera: Camera, mode: CameraMode, transform: PlayerTransform): void {
+export function applyCameraMode(camera: Camera, mode: CameraMode, transform: PlayerTransform, bodyAnchorY: number): void {
   switch (mode) {
     case 'fps':
       // Pre-mount fallback only: once LocalPlayer resolves its head bone it
       // re-places the camera later in the same frame, overwriting this rig.
-      placeShoulderCamera(camera, transform, {
+      placeShoulderCamera(camera, transform, bodyAnchorY, {
         distance: -0.25,
-        height: PLAYER_EYE_HEIGHT - 0.08,
+        bodyLift: PLAYER_EYE_HEIGHT - 0.08 - DEFAULT_BODY_ANCHOR_Y,
         shoulderOffset: 0,
       });
       break;
     case 'ots':
-      placeShoulderCamera(camera, transform, {
+      placeShoulderCamera(camera, transform, bodyAnchorY, {
         distance: 0.75,
-        height: 2,
+        bodyLift: 0.43,
         shoulderOffset: 0,
       });
       break;
     case 'tps':
-      placeShoulderCamera(camera, transform, {
+      placeShoulderCamera(camera, transform, bodyAnchorY, {
         distance: 1.25,
-        height: 2.2,
+        bodyLift: 0.63,
         shoulderOffset: 0,
       });
       break;
@@ -41,8 +42,8 @@ export function applyCameraMode(camera: Camera, mode: CameraMode, transform: Pla
 interface ShoulderRig {
   /** Meters back along the look direction (shrinks as pitch rises). */
   distance: number;
-  /** Neutral camera height at level look (meters). */
-  height: number;
+  /** Neutral camera height above the body anchor at level look (meters). */
+  bodyLift: number;
   /** Lateral shift toward the right shoulder (meters). */
   shoulderOffset: number;
 }
@@ -50,6 +51,7 @@ interface ShoulderRig {
 function placeShoulderCamera(
   camera: Camera,
   transform: PlayerTransform,
+  bodyAnchorY: number,
   rig: ShoulderRig,
 ): void {
   const cosPitch = Math.cos(transform.pitch);
@@ -62,7 +64,7 @@ function placeShoulderCamera(
 
   camera.position.set(
     transform.x - dirX * rig.distance + rightX * rig.shoulderOffset,
-    Math.max(rig.height - dirY * rig.distance, MIN_CAMERA_HEIGHT),
+    Math.max(bodyAnchorY + rig.bodyLift - dirY * rig.distance, MIN_CAMERA_HEIGHT),
     transform.z - dirZ * rig.distance + rightZ * rig.shoulderOffset,
   );
   camera.rotation.set(transform.pitch, transform.yaw, 0);

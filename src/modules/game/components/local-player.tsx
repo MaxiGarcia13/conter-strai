@@ -4,12 +4,13 @@ import type { SoldierAimRig } from '@/modules/soldiers/utils/aim-body-rig';
 import { Clone, useGLTF } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
+import { Vector3 } from 'three';
 import { getSoldierSkinById } from '@/modules/soldiers';
 import { useSoldierLocomotion } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { applySoldierAimPose, resolveSoldierAimRig } from '@/modules/soldiers/utils/aim-body-rig';
 import { disableSkinnedMeshCulling, getSoldierArmature, soldierScaleVector } from '@/modules/soldiers/utils/clone-soldier-root';
 import { LOCAL_PLAYER_ROOT_NAME, MODEL_FORWARD_YAW_OFFSET } from '../constants/player';
-import { clearPlayerPoseIf, getCameraMode, getPlayerLocomotion, getPlayerPose, getPlayerTransform } from '../state/player-state';
+import { clearPlayerPoseIf, getCameraMode, getPlayerLocomotion, getPlayerPose, getPlayerTransform, setBodyAnchorY } from '../state/player-state';
 import { placeCameraAtHead } from '../utils/fps-head-camera';
 
 interface LocalPlayerProps {
@@ -18,6 +19,8 @@ interface LocalPlayerProps {
 
 // Stable identity: the locomotion mixer captures it once in its mount effect.
 const clearJumpPose = () => clearPlayerPoseIf('jump');
+
+const headWorldPosition = new Vector3();
 
 /**
  * The single local soldier: one clone, one mixer, driven by the shared player
@@ -83,6 +86,8 @@ export function LocalPlayer({ skinId = 'swat-guy' }: LocalPlayerProps) {
 
     const fpsActive = getCameraMode() === 'fps';
     applySoldierAimPose(aimRig, transform.pitch, fpsActive);
+    // Shoulder booms pivot on this; getWorldPosition refreshes the bone chain post-mixer.
+    setBodyAnchorY(aimRig.head.getWorldPosition(headWorldPosition).y);
     if (fpsActive) {
       placeCameraAtHead(camera, aimRig.head, transform);
     }

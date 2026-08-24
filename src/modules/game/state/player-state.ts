@@ -2,6 +2,8 @@ import type { CameraMode } from '../types';
 
 import type { LocomotionState, SoldierActionId } from '@/modules/soldiers';
 
+import { DEFAULT_BODY_ANCHOR_Y } from '../constants/player';
+
 /**
  * Hot-path player truth shared by controls, camera, and the local soldier rig.
  * Mutated per frame — consumers read it inside their own frame callbacks;
@@ -64,6 +66,21 @@ export function clearPlayerPoseIf(expected: SoldierActionId): void {
 
 export function getCameraMode(): CameraMode {
   return cameraMode;
+}
+
+/**
+ * World-Y of the local soldier's head anchor, written by LocalPlayer after
+ * each mixer update; shoulder-camera booms pivot on it so kneel/jump carry
+ * the camera. Read one frame behind by controls — smooth by design.
+ */
+let bodyAnchorY = DEFAULT_BODY_ANCHOR_Y;
+
+export function getBodyAnchorY(): number {
+  return bodyAnchorY;
+}
+
+export function setBodyAnchorY(y: number): void {
+  bodyAnchorY = y;
 }
 
 export function cycleCameraMode(): CameraMode {

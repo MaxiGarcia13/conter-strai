@@ -31,7 +31,8 @@ export interface DamageData {
   attackerId: EntityId;
   targetId: EntityId;
   zone: HitZone;
-  weaponId?: string;
+  /** Required for damage resolution — looks up weapon `damageByZone`. */
+  weaponId: string;
   /** Attacker's team; used to reject friendly fire. */
   team?: Team;
 }

@@ -7,13 +7,21 @@ import { useEffect, useMemo, useRef } from 'react';
 import { AnimationMixer, LoopRepeat } from 'three';
 
 import { resolveSoldierClips } from '../utils/resolve-soldier-clips';
-import { cacheHipsBindPosition, lockHipsBindPosition } from '../utils/strip-root-motion';
 
 const CROSSFADE_SECONDS = 0.2;
+
+const activeMixers = new Set<AnimationMixer>();
+
+/** Number of soldiers with a live locomotion mixer (e2e diagnostics). */
+export function countActiveSoldierMixers(): number {
+  return activeMixers.size;
+}
 
 interface UseSoldierLocomotionOptions {
   /** Fixed locomotion state (world soldiers default to idle). */
   state?: LocomotionState;
+  /** Per-frame state source (local player); wins over `state` when set. */
+  getLocomotionState?: () => LocomotionState;
   enabled?: boolean;
 }
 
@@ -34,26 +42,65 @@ export function useSoldierLocomotion(
   animationConfig: SoldierAnimationClips,
   options: UseSoldierLocomotionOptions = {},
 ): void {
-  const { enabled = true, state = 'idle' } = options;
+  const { enabled = true, state = 'idle', getLocomotionState } = options;
   const mixerRef = useRef<AnimationMixer | null>(null);
   const actionsRef = useRef<LocomotionActions | null>(null);
-  const readyRef = useRef(false);
+  const clipsRef = useRef(clips);
   const prevStateRef = useRef<LocomotionState>('idle');
+  clipsRef.current = clips;
   const clipsKey = useMemo(
     () => clips.map((clip) => clip.name).join('|'),
     [clips],
   );
 
   useEffect(() => {
-    readyRef.current = false;
     prevStateRef.current = 'idle';
+
     actionsRef.current?.idle.stop();
     actionsRef.current?.walk.stop();
     actionsRef.current?.run.stop();
     actionsRef.current = null;
-    mixerRef.current?.stopAllAction();
-    mixerRef.current = null;
-  }, [animationConfig.idle, animationConfig.run, animationConfig.walk, clipsKey, enabled]);
+
+    if (mixerRef.current) {
+      activeMixers.delete(mixerRef.current);
+      mixerRef.current.stopAllAction();
+      mixerRef.current = null;
+    }
+
+    if (!enabled || !modelRef.current) {
+      return;
+    }
+
+    const resolved = resolveSoldierClips(clipsRef.current, animationConfig);
+    if (!resolved) {
+      return;
+    }
+
+    const mixer = new AnimationMixer(modelRef.current);
+    const idle = mixer.clipAction(resolved.idle);
+    const walk = mixer.clipAction(resolved.walk);
+    const run = mixer.clipAction(resolved.run);
+    idle.loop = LoopRepeat;
+    walk.loop = LoopRepeat;
+    run.loop = LoopRepeat;
+    idle.reset().setEffectiveWeight(1).play();
+
+    mixerRef.current = mixer;
+    actionsRef.current = { idle, walk, run };
+    activeMixers.add(mixer);
+
+    return () => {
+      actionsRef.current?.idle.stop();
+      actionsRef.current?.walk.stop();
+      actionsRef.current?.run.stop();
+      activeMixers.delete(mixer);
+      mixer.stopAllAction();
+      if (mixerRef.current === mixer) {
+        mixerRef.current = null;
+        actionsRef.current = null;
+      }
+    };
+  }, [animationConfig.idle, animationConfig.run, animationConfig.walk, clipsKey, enabled, modelRef]);
 
   useFrame((_, delta) => {
     if (!enabled) {
@@ -65,43 +112,23 @@ export function useSoldierLocomotion(
       return;
     }
 
-    if (!readyRef.current) {
-      const resolved = resolveSoldierClips(clips, animationConfig);
-      if (!resolved) {
-        return;
-      }
-
-      cacheHipsBindPosition(model);
-      const mixer = new AnimationMixer(model);
-      const idle = mixer.clipAction(resolved.idle);
-      const walk = mixer.clipAction(resolved.walk);
-      const run = mixer.clipAction(resolved.run);
-      idle.loop = LoopRepeat;
-      walk.loop = LoopRepeat;
-      run.loop = LoopRepeat;
-      idle.reset().setEffectiveWeight(1).play();
-
-      mixerRef.current = mixer;
-      actionsRef.current = { idle, walk, run };
-      readyRef.current = true;
-      prevStateRef.current = 'idle';
-    }
-
     const mixer = mixerRef.current;
     const actions = actionsRef.current;
     if (!mixer || !actions) {
       return;
     }
 
-    if (state !== prevStateRef.current) {
+    const currentState = getLocomotionState?.() ?? state;
+
+    if (currentState !== prevStateRef.current) {
       const from = actionForState(actions, prevStateRef.current);
-      const to = actionForState(actions, state);
-      from.crossFadeTo(to, CROSSFADE_SECONDS);
-      to.play();
-      prevStateRef.current = state;
+      const to = actionForState(actions, currentState);
+
+      to.reset().setEffectiveWeight(1).play();
+      from.crossFadeTo(to, CROSSFADE_SECONDS, false);
+      prevStateRef.current = currentState;
     }
 
     mixer.update(delta);
-    lockHipsBindPosition(model);
   });
 }

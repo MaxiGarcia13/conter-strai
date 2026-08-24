@@ -23,16 +23,16 @@ Post type-split: use `SoldierSkin` / `soldier-skin-registry`, `ScenarioConfig` f
 
 ## Camera modes
 
-Cycle with **F**; HUD shows active mode. One local soldier clone — mode changes camera + rig placement only (no second model).
+Cycle with **F**; HUD shows active mode. One local soldier clone — mode changes camera + rig placement only (no second model). Shared hot-path truth lives in `game/state/player-state.ts`; only `mode` is React-subscribable.
 
-- [ ] **First-person (FPS)** — camera at eye height (`PLAYER_EYE_HEIGHT` ~1.7 m); view model visible; immersion + precise aim
-- [ ] **Over-the-shoulder (OTS)** — close behind right shoulder (~1.75 m back, ~1.55 m up, shoulder offset); character visible
-- [ ] **Standard third-person (TPS)** — tracked behind and above (~3.6 m back, ~2.4 m up); full character + surroundings
-- [ ] Shared player transform state (`origin`, `yaw`, `pitch`, `mode`) consumed by controls + local soldier rig
-- [ ] `applyCameraMode` (or equivalent) positions Three.js camera per mode each frame
-- [ ] `CameraHud` overlay: `[F] Camera: …` label
-- [ ] Unified `LocalPlayer` (single clone + single mixer); retire duplicate `FpsViewModel` + spawn-skip soldier once local rig is stable
-- [ ] Verify: mode cycle does not duplicate soldiers, teleport, or black-screen the canvas
+- [x] **First-person (FPS)** — camera at eye height (`PLAYER_EYE_HEIGHT` ~1.7 m); view model visible; immersion + precise aim
+- [x] **Over-the-shoulder (OTS)** — close behind right shoulder (~1.75 m back, ~1.55 m up, shoulder offset); character visible
+- [x] **Standard third-person (TPS)** — tracked behind and above (~3.6 m back, ~2.4 m up); full character + surroundings
+- [x] Shared player transform state (`origin`, `yaw`, `pitch`, `mode`) consumed by controls + local soldier rig
+- [x] `applyCameraMode` (or equivalent) positions Three.js camera per mode each frame
+- [x] `CameraHud` overlay: `[F] Camera: …` label
+- [x] Unified `LocalPlayer` (single clone + single mixer); FPS arms view model is mode-gated inside the rig (never on screen together with the body); NPC spawn-skip stays as slot reservation
+- [x] Verify: mode cycle does not duplicate soldiers, teleport, or black-screen the canvas (e2e asserts constant `soldierCount` across cycles)
 
 ## Locomotion animations
 
@@ -40,14 +40,14 @@ Clips in `swat-soldier.glb`: `idle`, `walk`, `run` (see `soldier-skin-registry`)
 
 Drive via `LocomotionState` / `LocomotionIntent` from `soldiers/types.ts` (controller abstraction).
 
-- [ ] Locomotion state: `idle` | `walk` | `run` driven by input each frame
-- [ ] **Idle** when not moving (no WASD)
-- [ ] **Walk** when moving with WASD (no Space)
-- [ ] **Run** when moving with WASD **and** Space held
-- [ ] Wire `useSoldierLocomotion` to local player with shared state from `useFpsControls`
-- [ ] Crossfade between clips (~0.2 s); in-place playback (hips translation stripped / locked)
-- [ ] Third-person modes: head + body visible; FPS: hide meshes that block the camera
-- [ ] `RUN_SPEED` constant (e.g. 9 m/s) distinct from `WALK_SPEED` (5 m/s) in `game/constants/player.ts`
+- [x] Locomotion state: `idle` | `walk` | `run` driven by input each frame
+- [x] **Idle** when not moving (no WASD)
+- [x] **Walk** when moving with WASD (no Space)
+- [x] **Run** when moving with WASD **and** Space held
+- [x] Wire `useSoldierLocomotion` to local player with shared state from `useFpsControls`
+- [x] Crossfade between clips (~0.2 s); in-place playback (hips translation stripped / locked)
+- [x] Third-person modes: head + body visible; FPS: hide meshes that block the camera
+- [x] `RUN_SPEED` constant (e.g. 9 m/s) distinct from `WALK_SPEED` (5 m/s) in `game/constants/player.ts`
 
 ## Interior wall collision
 
@@ -78,9 +78,9 @@ Today: player clamped to **outer arena bounds** only — can walk through house 
 
 ### E2E (Playwright)
 
-- [ ] `tests/e2e/play.spec.ts` — `/play` loads: `<canvas>` visible, boot/deploy loader dismissed, no `PropertyBinding` console errors
-- [ ] Optional dev hook `window.__PLAY_TEST__` (`soldierCount`, `mixerReady`, `activeClip`) when `E2E=true`
-- [ ] E2E asserts hook: at least one soldier in scene after load; mixer ready; clip is `idle` at spawn
+- [x] `tests/e2e/play.spec.ts` — `/play` loads: `<canvas>` visible, boot/deploy loader dismissed, no `PropertyBinding` console errors
+- [x] Optional dev hook `window.__PLAY_TEST__` (`soldierCount`, `mixerReady`, `activeClip`) when `E2E=true`
+- [x] E2E asserts hook: at least one soldier in scene after load; mixer ready; clip is `idle` at spawn
 
 ### Acceptance
 

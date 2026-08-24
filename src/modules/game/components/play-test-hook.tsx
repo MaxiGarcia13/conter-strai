@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 import { countActiveSoldierMixers as countLocomotionMixers } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { SOLDIER_ROOT_NAME } from '@/modules/soldiers/utils/clone-soldier-root';
-import { getPlayerLocomotion } from '../state/player-state';
+import { getPlayerLocomotion, getPlayerPose } from '../state/player-state';
 
 const POLL_INTERVAL_MS = 250;
 
@@ -36,7 +36,7 @@ export function PlayTestHook() {
       window.__PLAY_TEST__ = {
         soldierCount,
         mixerReady: countLocomotionMixers() > 0,
-        activeClip: getPlayerLocomotion(),
+        activeClip: getPlayerPose() ?? getPlayerLocomotion(),
       };
     };
     update();

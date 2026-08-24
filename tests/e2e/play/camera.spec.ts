@@ -20,15 +20,15 @@ test('/play cycles camera modes without duplicating the local soldier', async ({
   await expect(hud).toContainText('First-person');
 
   await page.mouse.click(640, 400);
-  await page.keyboard.press('F');
+  await page.keyboard.press('C');
   await expect(hud).toContainText('Over-the-shoulder');
   expect((await readPlayTest(page))?.soldierCount).toBe(atSpawn?.soldierCount);
 
-  await page.keyboard.press('F');
+  await page.keyboard.press('C');
   await expect(hud).toContainText('Third-person');
   expect((await readPlayTest(page))?.soldierCount).toBe(atSpawn?.soldierCount);
 
-  await page.keyboard.press('F');
+  await page.keyboard.press('C');
   await expect(hud).toContainText('First-person');
   expect((await readPlayTest(page))?.soldierCount).toBe(atSpawn?.soldierCount);
 

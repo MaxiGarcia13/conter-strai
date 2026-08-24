@@ -16,9 +16,11 @@ import {
 import {
   cycleCameraMode,
   getCameraMode,
+  getPlayerPose,
   getPlayerTransform,
   resetPlayerTransform,
   setPlayerLocomotion,
+  setPlayerPose,
 } from '../state/player-state';
 import { applyCameraMode } from '../utils/apply-camera-mode';
 import { resolvePlayerCollision } from '../utils/resolve-player-collision';
@@ -28,9 +30,17 @@ const MOVE_CODES = {
   back: 'KeyS',
   left: 'KeyA',
   right: 'KeyD',
-  cameraCycle: 'KeyF',
+  cameraCycle: 'KeyC',
+  jump: 'KeyF',
+  kneelToggle: 'KeyE',
   runModifier: 'Space',
 } as const;
+
+const MOVE_KEY_CODES = [MOVE_CODES.forward, MOVE_CODES.back, MOVE_CODES.left, MOVE_CODES.right] as const;
+
+function isMovePressed(pressed: Set<string>): boolean {
+  return MOVE_KEY_CODES.some((code) => pressed.has(code));
+}
 
 interface UsePlayerControlsOptions {
   bounds: ScenarioConfig['bounds'];
@@ -58,11 +68,37 @@ export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickn
   }, [camera, spawn]);
 
   useEffect(() => {
+    const requestJump = () => {
+      // Busy until the mixer finishes; LocalPlayer clears the pose on completion.
+      if (getPlayerPose() === null) {
+        setPlayerPose('jump');
+      }
+    };
+
+    const toggleKneel = () => {
+      const pose = getPlayerPose();
+      if (pose === 'kneel') {
+        setPlayerPose(null);
+        return;
+      }
+      if (pose === null && !isMovePressed(pressedCodesRef.current)) {
+        setPlayerPose('kneel');
+      }
+    };
+
     const onKeyDown = (event: KeyboardEvent) => {
       pressedCodesRef.current.add(event.code);
 
-      if (event.code === MOVE_CODES.cameraCycle && !event.repeat) {
+      if (event.repeat) {
+        return;
+      }
+
+      if (event.code === MOVE_CODES.cameraCycle) {
         cycleCameraMode();
+      } else if (event.code === MOVE_CODES.jump) {
+        requestJump();
+      } else if (event.code === MOVE_CODES.kneelToggle) {
+        toggleKneel();
       }
     };
 
@@ -148,6 +184,11 @@ export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickn
     const transform = getPlayerTransform();
     const moving = strafe !== 0 || forward !== 0;
     const running = moving && pressed.has(MOVE_CODES.runModifier);
+
+    // Kneeling is a stationary pose; movement cancels it before locomotion is written.
+    if (moving && getPlayerPose() === 'kneel') {
+      setPlayerPose(null);
+    }
 
     setPlayerLocomotion(running ? 'run' : moving ? 'walk' : 'idle');
 

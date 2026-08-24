@@ -1,6 +1,6 @@
 import type { CameraMode } from '../types';
 
-import type { LocomotionState } from '@/modules/soldiers';
+import type { LocomotionState, SoldierActionId } from '@/modules/soldiers';
 
 /**
  * Hot-path player truth shared by controls, camera, and the local soldier rig.
@@ -22,6 +22,7 @@ const CAMERA_MODE_CYCLE: CameraMode[] = ['fps', 'ots', 'tps'];
 
 const transform: PlayerTransform = { x: 0, z: 0, yaw: 0, pitch: 0 };
 let locomotion: LocomotionState = 'idle';
+let pose: SoldierActionId | null = null;
 let cameraMode: CameraMode = 'fps';
 const modeListeners = new Set<CameraModeListener>();
 
@@ -43,6 +44,22 @@ export function getPlayerLocomotion(): LocomotionState {
 
 export function setPlayerLocomotion(next: LocomotionState): void {
   locomotion = next;
+}
+
+/** Active jump/kneel pose; wins over locomotion until cleared. */
+export function getPlayerPose(): SoldierActionId | null {
+  return pose;
+}
+
+export function setPlayerPose(next: SoldierActionId | null): void {
+  pose = next;
+}
+
+/** Clears only a still-current pose so a finished jump cannot cancel a newer one. */
+export function clearPlayerPoseIf(expected: SoldierActionId): void {
+  if (pose === expected) {
+    pose = null;
+  }
 }
 
 export function getCameraMode(): CameraMode {

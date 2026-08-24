@@ -38,7 +38,7 @@ const arena01Layout: ArenaLayout = {
 const arena01Spawns: SpawnerConfig = {
   teamSpawns: {
     puma: [[-46, 0, -8]],
-    lion: [],
+    lion: [[46, 0, -8]],
   },
 };
 

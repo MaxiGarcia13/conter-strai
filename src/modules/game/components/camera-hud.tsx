@@ -7,7 +7,7 @@ const CAMERA_MODE_LABELS: Record<CameraMode, string> = {
   tps: 'Third-person',
 };
 
-/** DOM overlay showing the active camera mode; F cycles it. */
+/** DOM overlay showing the active camera mode; C cycles it. */
 export function CameraHud() {
   const mode = useCameraMode();
   return (
@@ -15,7 +15,7 @@ export function CameraHud() {
       role="status"
       className="pointer-events-none fixed top-4 left-4 z-10 border border-surface-border bg-background-deep/80 px-3 py-1.5 font-mono text-xs tracking-widest text-foreground uppercase"
     >
-      <span className="mr-2 text-accent">[F]</span>
+      <span className="mr-2 text-accent">[C]</span>
       Camera:
       {' '}
       {CAMERA_MODE_LABELS[mode]}

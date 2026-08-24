@@ -7,9 +7,27 @@ export interface ResolvedSoldierClips {
   idle: AnimationClip;
   walk: AnimationClip;
   run: AnimationClip;
+  jump: AnimationClip;
+  kneel: AnimationClip;
+  reloading: AnimationClip;
+  shooting: AnimationClip;
 }
 
-/** Resolves registry clip names and strips hips root motion for in-place playback. */
+const CLIP_KEYS = [
+  'idle',
+  'walk',
+  'run',
+  'jump',
+  'kneel',
+  'reloading',
+  'shooting',
+] as const;
+
+// Locomotion must play in place; action clips keep hips translation or the
+// body never crouches / leaves the ground.
+const LOCOMOTION_KEYS: readonly (keyof ResolvedSoldierClips)[] = ['idle', 'walk', 'run'];
+
+/** Resolves registry clip names; locomotion gets hips root motion stripped for in-place playback. */
 export function resolveSoldierClips(
   clips: AnimationClip[],
   config: SoldierAnimationClips,
@@ -19,17 +37,15 @@ export function resolveSoldierClips(
   }
 
   const byName = new Map(clips.map((clip) => [clip.name, clip]));
-  const idleSource = byName.get(config.idle);
-  const walkSource = byName.get(config.walk);
-  const runSource = byName.get(config.run);
+  const resolved = {} as ResolvedSoldierClips;
 
-  if (!idleSource || !walkSource || !runSource) {
-    return null;
+  for (const key of CLIP_KEYS) {
+    const source = byName.get(config[key]);
+    if (!source) {
+      return null;
+    }
+    resolved[key] = LOCOMOTION_KEYS.includes(key) ? stripHipsTranslation(source) : source;
   }
 
-  return {
-    idle: stripHipsTranslation(idleSource),
-    walk: stripHipsTranslation(walkSource),
-    run: stripHipsTranslation(runSource),
-  };
+  return resolved;
 }

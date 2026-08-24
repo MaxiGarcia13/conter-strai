@@ -7,11 +7,14 @@ import { getSoldierSkinById } from '@/modules/soldiers';
 import { useSoldierLocomotion } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { getSoldierArmature, soldierScaleVector } from '@/modules/soldiers/utils/clone-soldier-root';
 import { MODEL_FORWARD_YAW_OFFSET } from '../constants/player';
-import { getPlayerLocomotion, getPlayerTransform } from '../state/player-state';
+import { clearPlayerPoseIf, getPlayerLocomotion, getPlayerPose, getPlayerTransform } from '../state/player-state';
 
 interface LocalPlayerProps {
   skinId?: SoldierSkinId;
 }
+
+// Stable identity: the locomotion mixer captures it once in its mount effect.
+const clearJumpPose = () => clearPlayerPoseIf('jump');
 
 /**
  * The single local soldier: one clone, one mixer, driven by the shared player
@@ -37,6 +40,8 @@ export function LocalPlayer({ skinId = 'swat-guy' }: LocalPlayerProps) {
     skin.meshData.animations,
     {
       getLocomotionState: getPlayerLocomotion,
+      getPose: getPlayerPose,
+      onJumpFinished: clearJumpPose,
     },
   );
 

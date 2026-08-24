@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { hitboxPresets } from '@/modules/combat';
-import { getSoldierSkinById } from './get-soldier-skin-by-id';
-import { soldierSkins } from './soldier-skin-registry';
+import { getSoldierSkinById } from '@/modules/soldiers/get-soldier-skin-by-id';
+import { soldierSkins } from '@/modules/soldiers/soldier-skin-registry';
 
 // Preload fires on import; hoisted above imports so the data test stays loader-free.
 vi.mock('@react-three/drei', () => ({
@@ -17,11 +17,15 @@ describe('soldier-skin-registry', () => {
     expect(skin.meshData.modelUrl).toBe('/assets/soldiers/swat-soldier.glb');
   });
 
-  it('maps idle, walk, and run clip names', () => {
+  it('maps locomotion and action clip names', () => {
     expect(skin.meshData.animations).toEqual({
       idle: 'idle',
       walk: 'walk',
       run: 'run',
+      jump: 'jump',
+      kneel: 'kneel',
+      reloading: 'reloading',
+      shooting: 'shooting',
     });
   });
 

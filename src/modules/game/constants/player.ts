@@ -2,6 +2,7 @@
 export const PLAYER_EYE_HEIGHT = 1.7;
 export const PLAYER_RADIUS = 0.4;
 export const WALK_SPEED = 5;
+export const RUN_SPEED = 9;
 export const MOUSE_SENSITIVITY = 0.002;
 export const PITCH_LIMIT = Math.PI / 2 - 0.01;
 
@@ -9,6 +10,8 @@ export const PITCH_LIMIT = Math.PI / 2 - 0.01;
 export const VIEWMODEL_OFFSET: [number, number, number] = [0.12, -1.67, -0.35];
 /** swat-guy mesh faces +Z; camera looks −Z. */
 export const VIEWMODEL_ROTATION_Y = Math.PI;
+/** swat-guy faces +Z at yaw 0; offset aligns model forward with camera −Z. */
+export const MODEL_FORWARD_YAW_OFFSET = Math.PI;
 
 /** Caps physics spikes after tab switches / hitches. */
 export const MAX_FRAME_DELTA_SECONDS = 0.1;

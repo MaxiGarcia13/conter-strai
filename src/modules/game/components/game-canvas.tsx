@@ -7,13 +7,14 @@ import {
   getScenarioById,
   ScenarioScene,
   ScenarioSoldiers,
-  spawnKey,
 } from '@/modules/scenarios';
-import { DEFAULT_LOCAL_SPAWN_INDEX, DEFAULT_LOCAL_TEAM } from '../constants/player';
+import { resolveLocalSpawn } from '../utils/local-spawn';
+import { CameraHud } from './camera-hud';
 import { DeferredAfterLoad } from './deferred-after-load';
 import { FpsControls } from './fps-controls';
-import { FpsViewModel } from './fps-view-model';
 import { LoadingReporter } from './loading-reporter';
+import { LocalPlayer } from './local-player';
+import { PlayTestHook } from './play-test-hook';
 
 const DEFAULT_SCENARIO_ID = 'arena-01' satisfies ScenarioId;
 const DEFAULT_LIGHTING = { ambient: 0.6, sunIntensity: 1.2 };
@@ -26,7 +27,7 @@ interface GameCanvasProps {
 export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }: GameCanvasProps) {
   const scenario = useMemo(() => getScenarioById(scenarioId), [scenarioId]);
   const lighting = scenario.lighting ?? DEFAULT_LIGHTING;
-  const localSpawnKey = spawnKey(DEFAULT_LOCAL_TEAM, DEFAULT_LOCAL_SPAWN_INDEX);
+  const localSpawn = useMemo(() => resolveLocalSpawn(scenario), [scenario]);
   const [trackLoading, setTrackLoading] = useState(Boolean(onLoaderChange));
 
   const handleLoaderChange = useCallback(
@@ -55,17 +56,25 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
           shadow-camera-bottom={-70}
           shadow-camera-far={200}
         />
-        <FpsControls scenario={scenario} />
+        <FpsControls scenario={scenario} spawn={localSpawn} />
+
+        {import.meta.env.E2E && <PlayTestHook />}
+
         <Suspense fallback={null}>
           <ScenarioScene scenario={scenario} />
         </Suspense>
+
         <Suspense fallback={null}>
           <DeferredAfterLoad>
-            <ScenarioSoldiers scenario={scenario} skipKey={localSpawnKey} />
-            <FpsViewModel />
+            <ScenarioSoldiers
+              scenario={scenario}
+              skipKey={localSpawn.key}
+            />
+            <LocalPlayer />
           </DeferredAfterLoad>
         </Suspense>
       </Canvas>
+      <CameraHud />
     </div>
   );
 }

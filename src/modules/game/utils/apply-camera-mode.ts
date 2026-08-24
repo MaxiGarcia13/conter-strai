@@ -6,18 +6,6 @@ import { PLAYER_EYE_HEIGHT } from '../constants/player';
 /** Floor clearance so steep upward look cannot push shoulder cameras underground. */
 const MIN_CAMERA_HEIGHT = 0.25;
 
-/** First-person rig — meters behind the player's eyes. */
-const FPS_CAMERA_DISTANCE = -0.25;
-
-/** Over-the-shoulder rig — close behind the right shoulder (meters). */
-const OTS_CAMERA_DISTANCE = 1.75;
-const OTS_CAMERA_HEIGHT = 1.55;
-const OTS_SHOULDER_OFFSET = 0.42;
-
-/** Standard third-person rig — tracked behind and above (meters). */
-const TPS_CAMERA_DISTANCE = 3.6;
-const TPS_CAMERA_HEIGHT = 2.4;
-
 /**
  * Positions the camera for the active mode from the shared player transform.
  * Called every frame — pure placement, no state writes.
@@ -26,22 +14,22 @@ export function applyCameraMode(camera: Camera, mode: CameraMode, transform: Pla
   switch (mode) {
     case 'fps':
       placeShoulderCamera(camera, transform, {
-        distance: FPS_CAMERA_DISTANCE,
+        distance: -0.25,
         height: PLAYER_EYE_HEIGHT,
         shoulderOffset: 0,
       });
       break;
     case 'ots':
       placeShoulderCamera(camera, transform, {
-        distance: OTS_CAMERA_DISTANCE,
-        height: OTS_CAMERA_HEIGHT,
-        shoulderOffset: OTS_SHOULDER_OFFSET,
+        distance: 0.75,
+        height: 2,
+        shoulderOffset: 0,
       });
       break;
     case 'tps':
       placeShoulderCamera(camera, transform, {
-        distance: TPS_CAMERA_DISTANCE,
-        height: TPS_CAMERA_HEIGHT,
+        distance: 1.25,
+        height: 2.2,
         shoulderOffset: 0,
       });
       break;

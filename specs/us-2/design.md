@@ -70,8 +70,7 @@ New arena = new `ScenarioConfig` entry. New tree/object = prop registry entry + 
 - `GameCanvas.tsx` — R3F Canvas, lights (from scenario or defaults), camera
 - `ScenarioScene.tsx` — floor + outer walls + optional `wallSegments` + generic `props` render
 - `SoldierModel.tsx` — loads `swat-soldier.glb` (soldier id `swat-guy`); NPC spawns
-- `LocalPlayer.tsx` — world-body clone + mixer; hidden in FPS
-- `FpsViewModel.tsx` — camera-parented arms clone (`prepareFpsViewModel`); same locomotion state; follows mouse via camera yaw/pitch
+- `LocalPlayer.tsx` — one clone + mixer; FPS hides head/neck; look pitch applied to spine so arms follow mouse
 - `useFpsControls.ts` — WASD, mouse, locomotion state, collision (bounds + interior walls)
 - `useSoldierLocomotion.ts` — idle / walk / run + action clips (jump, kneel, …) on skinned root
 - `CameraHud.tsx` — active camera mode label
@@ -82,15 +81,15 @@ New arena = new `ScenarioConfig` entry. New tree/object = prop registry entry + 
 
 | Mode | Role | Tunables (m) |
 | ---- | ---- | ------------ |
-| **First-person** | Eye-level view; world body hidden; camera-parented arms; HUD crosshair + look-ray world marker | `PLAYER_EYE_HEIGHT`, `VIEWMODEL_OFFSET` |
+| **First-person** | Camera on head bone; head mesh hidden; arms from the same clone, pitched with look; HUD crosshair + look-ray marker | head world pos, spine pitch |
 | **Over-the-shoulder** | Close behind one shoulder; character + aim context visible | distance ~1.75, height ~1.55, shoulder offset ~0.42 |
 | **Third-person** | Farther behind and above; max situational awareness | distance ~3.6, height ~2.4, pitch scale on look |
 
 Shared state: ground `origin` [x, 0, z], `yaw`, `pitch`, `mode`. Camera positioned each frame from mode + origin — not by moving the soldier root independently in third person.
 
-**FPS clipping:** do not push the camera through the mesh. Hide the world body; parent arms to the camera so look pitch/yaw rotate them. FPS placement is `distance: 0`, `height: PLAYER_EYE_HEIGHT`.
+**FPS (one mesh):** after the mixer, place the camera at the head bone’s world position (not a fixed `PLAYER_EYE_HEIGHT` clip hack). Scale Head (and Neck if needed) to zero so the camera is not inside the helmet. Apply look pitch to spine/upper-body bones so arms follow the mouse; rig yaw stays as today. No second clone / `FpsViewModel`. `prepareFpsViewModel` (legs + head on a camera child) is unused.
 
-**Aim:** screen-center crosshair (camera look) plus a world marker at the first scene hit along that ray, excluding local player / view-model meshes.
+**Aim:** screen-center crosshair (camera look) plus a world marker at the first scene hit along that ray, excluding local player meshes.
 
 ## Locomotion / action animations
 
@@ -102,7 +101,9 @@ Shared state: ground `origin` [x, 0, z], `yaw`, `pitch`, `mode`. Camera position
 | **F** | `jump` | One-shot; animation-only (no vertical physics) |
 | **E** | `kneel` | Toggle; `LoopOnce` + clamp; cancel on WASD |
 
-Priority (high → low): blocking one-shots (`reloading` / `jump` / `shooting` from US-4) → `kneel` → locomotion. One mixer on the world body; FPS view-model clone has its own mixer driven by the same locomotion state. Scenario NPCs stay on `idle` until US-4+.
+Priority (high → low): blocking one-shots (`reloading` / `jump` / `shooting` from US-4) → `kneel` → locomotion. One `AnimationMixer` on the local clone. Scenario NPCs stay on `idle` until US-4+.
+
+**Hips tracks:** locomotion clips play in place (hips translation stripped); action clips keep their hips translation so the body visibly crouches (`kneel`) and leaves the ground (`jump`).
 
 ## Interior wall collision
 
@@ -115,7 +116,7 @@ Priority (high → low): blocking one-shots (`reloading` / `jump` / `shooting` f
 
 | Layer | Scope |
 | ----- | ----- |
-| **Vitest** | Registry lookup; `resolveSoldierClips` / `stripHipsTranslation`; GLB JSON contract on `swat-soldier.glb`; `prepareFpsViewModel` bone hide; pure locomotion state fn; scenario/collision math when added |
+| **Vitest** | Registry lookup; `resolveSoldierClips` / `stripHipsTranslation`; GLB JSON contract on `swat-soldier.glb`; FPS head/neck hide helper; pure locomotion state fn; scenario/collision math when added |
 | **Playwright** | `/play` canvas visible, loader dismissed, no `PropertyBinding` console errors; crosshair overlay; optional `window.__PLAY_TEST__` hook for soldier count + mixer + active clip |
 
 Unit tests avoid WebGL; E2E does not rely on pixel assertions.
@@ -150,7 +151,7 @@ Navmesh, destructible walls, multi-level, roofs, LODs, prop models (trees etc. l
 
 ```
 src/modules/
-├── game/       GameCanvas, LocalPlayer, FpsViewModel, CrosshairHud, useFpsControls, CameraHud, RoundPhase types
+├── game/       GameCanvas, LocalPlayer, CrosshairHud, useFpsControls, CameraHud, RoundPhase types
 ├── scenarios/  types.ts + registry, ScenarioScene, arena-01, collisionSegments
 ├── soldiers/   types.ts + soldier-skin-registry, SoldierModel, useSoldierLocomotion
 ├── combat/     HitboxPreset registry (US-3 meshes); types only for US-2 consumers

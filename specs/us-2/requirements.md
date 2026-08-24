@@ -22,10 +22,11 @@
 | US-2.16 | E2E smoke test on `/play` confirms canvas loads and soldier scene initializes without animation binding errors               |
 | US-2.17 | **F** plays one-shot **jump** clip (animation-only; no vertical physics in this story)                                       |
 | US-2.18 | **E** toggles **kneel** pose (cancel on WASD); clip clamps when finished                                                     |
-| US-2.19 | World aim marker: a small reticle at the camera look-ray hit on scene geometry (skip the local player / view-model meshes)   |
+| US-2.19 | World aim marker: a small reticle at the camera look-ray hit on scene geometry (skip the local player meshes)                |
+| US-2.20 | FPS camera follows the local soldier **head bone**; one clone (no arms view-model); hide head mesh; arms pitch with mouse look |
 
 ## Acceptance
 
-Start Game → Ruined Village loads (100×50 m, forest ground + ruin walls), player moves and looks around, cannot walk through outer **or interior** solid walls (only through holes). **C** cycles FPS → over-the-shoulder → third-person; FPS hides the world body and shows camera-parented arms that follow mouse look; HUD crosshair + world look-ray marker show aim. Locomotion + jump/kneel clips match input. Spawns are team-aware for round start (US-4). Adding a future arena or tree is a registry/config change.
+Start Game → Ruined Village loads (100×50 m, forest ground + ruin walls), player moves and looks around, cannot walk through outer **or interior** solid walls (only through holes). **C** cycles FPS → over-the-shoulder → third-person; FPS camera tracks the head bone on the single local clone (head hidden; arms follow mouse pitch); HUD crosshair + world look-ray marker show aim. Locomotion + jump/kneel clips match input. Spawns are team-aware for round start (US-4). Adding a future arena or tree is a registry/config change.
 
 `npm run test:unit` and `npm run test:e2e` cover soldier GLB contract, clip utilities, and `/play` load smoke (see tasks).

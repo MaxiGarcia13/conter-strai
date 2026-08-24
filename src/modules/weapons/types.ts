@@ -6,6 +6,8 @@ export interface PistolWeaponConfig {
   name: string;
   /** Minimum seconds between shots. */
   fireCooldownSeconds: number;
+  /** Fraction of max HP dealt per hit zone, before difficulty. */
+  damageByZone: Record<HitZone, number>;
 }
 
 export interface BulletHitResult {

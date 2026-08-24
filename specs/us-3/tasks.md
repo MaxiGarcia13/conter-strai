@@ -15,8 +15,8 @@ Post type-split: health/hitbox types and pure damage math live in `src/modules/c
 
 Injury amount depends on **where** you are hit (head > body > limbs) **and** **which weapon** hit you (pistol now; knife later). Health bar still shows HP % — it drops more for a headshot than a limb hit, and differently per weapon.
 
-- [ ] Add `damageByZone: Record<HitZone, number>` to weapon config (`WeaponConfig` or extend `PistolWeaponConfig`)
-- [ ] Pistol registry entry: head `0.5`, body `0.2`, limb `0.15` (same numbers as today’s `DAMAGE_ZONE_PCT`)
+- [x] Add `damageByZone: Record<HitZone, number>` to weapon config (`WeaponConfig` or extend `PistolWeaponConfig`)
+- [x] Pistol registry entry: head `0.4`, body `0.2`, limb `0.15` (same numbers as today’s `DAMAGE_ZONE_PCT`)
 - [ ] Extend `applyDamage` to take `damageByZone` (from weapon); formula: `maxHp × damageByZone[zone] × DIFFICULTY_MULT`
 - [ ] Make `DamageData.weaponId` required; health store resolves profile via weapon registry; `zone` comes from hitbox `userData.hitZone`
 - [ ] Retire or narrow global `DAMAGE_ZONE_PCT` once pistol owns the profile (avoid two sources of truth)

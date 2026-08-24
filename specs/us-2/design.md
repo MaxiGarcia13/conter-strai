@@ -70,20 +70,27 @@ New arena = new `ScenarioConfig` entry. New tree/object = prop registry entry + 
 - `GameCanvas.tsx` — R3F Canvas, lights (from scenario or defaults), camera
 - `ScenarioScene.tsx` — floor + outer walls + optional `wallSegments` + generic `props` render
 - `SoldierModel.tsx` — loads `swat-soldier.glb` (soldier id `swat-guy`); NPC spawns
-- `LocalPlayer.tsx` — single local soldier + animation mixer; rig follows camera mode
+- `LocalPlayer.tsx` — world-body clone + mixer; hidden in FPS
+- `FpsViewModel.tsx` — camera-parented arms clone (`prepareFpsViewModel`); same locomotion state; follows mouse via camera yaw/pitch
 - `useFpsControls.ts` — WASD, mouse, locomotion state, collision (bounds + interior walls)
 - `useSoldierLocomotion.ts` — idle / walk / run + action clips (jump, kneel, …) on skinned root
 - `CameraHud.tsx` — active camera mode label
+- `CrosshairHud.tsx` — centered DOM crosshair (US-2.7)
+- World aim marker — look-ray hit reticle in the canvas (US-2.19)
 
 ## Camera modes (C to cycle)
 
 | Mode | Role | Tunables (m) |
 | ---- | ---- | ------------ |
-| **First-person** | Eye-level view; view model for arms; max immersion / aim precision | `PLAYER_EYE_HEIGHT`, view-model offset |
+| **First-person** | Eye-level view; world body hidden; camera-parented arms; HUD crosshair + look-ray world marker | `PLAYER_EYE_HEIGHT`, `VIEWMODEL_OFFSET` |
 | **Over-the-shoulder** | Close behind one shoulder; character + aim context visible | distance ~1.75, height ~1.55, shoulder offset ~0.42 |
 | **Third-person** | Farther behind and above; max situational awareness | distance ~3.6, height ~2.4, pitch scale on look |
 
 Shared state: ground `origin` [x, 0, z], `yaw`, `pitch`, `mode`. Camera positioned each frame from mode + origin — not by moving the soldier root independently in third person.
+
+**FPS clipping:** do not push the camera through the mesh. Hide the world body; parent arms to the camera so look pitch/yaw rotate them. FPS placement is `distance: 0`, `height: PLAYER_EYE_HEIGHT`.
+
+**Aim:** screen-center crosshair (camera look) plus a world marker at the first scene hit along that ray, excluding local player / view-model meshes.
 
 ## Locomotion / action animations
 
@@ -95,7 +102,7 @@ Shared state: ground `origin` [x, 0, z], `yaw`, `pitch`, `mode`. Camera position
 | **F** | `jump` | One-shot; animation-only (no vertical physics) |
 | **E** | `kneel` | Toggle; `LoopOnce` + clamp; cancel on WASD |
 
-Priority (high → low): blocking one-shots (`reloading` / `jump` / `shooting` from US-4) → `kneel` → locomotion. One `AnimationMixer` per local soldier. Scenario NPCs stay on `idle` until US-4+.
+Priority (high → low): blocking one-shots (`reloading` / `jump` / `shooting` from US-4) → `kneel` → locomotion. One mixer on the world body; FPS view-model clone has its own mixer driven by the same locomotion state. Scenario NPCs stay on `idle` until US-4+.
 
 ## Interior wall collision
 
@@ -108,8 +115,8 @@ Priority (high → low): blocking one-shots (`reloading` / `jump` / `shooting` f
 
 | Layer | Scope |
 | ----- | ----- |
-| **Vitest** | Registry lookup; `resolveSoldierClips` / `stripHipsTranslation`; GLB JSON contract on `swat-soldier.glb`; pure locomotion state fn; scenario/collision math when added |
-| **Playwright** | `/play` canvas visible, loader dismissed, no `PropertyBinding` console errors; optional `window.__PLAY_TEST__` hook for soldier count + mixer + active clip |
+| **Vitest** | Registry lookup; `resolveSoldierClips` / `stripHipsTranslation`; GLB JSON contract on `swat-soldier.glb`; `prepareFpsViewModel` bone hide; pure locomotion state fn; scenario/collision math when added |
+| **Playwright** | `/play` canvas visible, loader dismissed, no `PropertyBinding` console errors; crosshair overlay; optional `window.__PLAY_TEST__` hook for soldier count + mixer + active clip |
 
 Unit tests avoid WebGL; E2E does not rely on pixel assertions.
 
@@ -143,7 +150,7 @@ Navmesh, destructible walls, multi-level, roofs, LODs, prop models (trees etc. l
 
 ```
 src/modules/
-├── game/       GameCanvas, LocalPlayer, useFpsControls, CameraHud, RoundPhase types
+├── game/       GameCanvas, LocalPlayer, FpsViewModel, CrosshairHud, useFpsControls, CameraHud, RoundPhase types
 ├── scenarios/  types.ts + registry, ScenarioScene, arena-01, collisionSegments
 ├── soldiers/   types.ts + soldier-skin-registry, SoldierModel, useSoldierLocomotion
 ├── combat/     HitboxPreset registry (US-3 meshes); types only for US-2 consumers

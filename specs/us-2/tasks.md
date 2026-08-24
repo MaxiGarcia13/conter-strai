@@ -12,7 +12,6 @@ Post type-split: use `SoldierSkin` / `soldier-skin-registry`, `ScenarioConfig` f
 - [x] Create `/play` page with dynamic `GameCanvas` import
 - [x] `SoldierModel` component (spawn NPCs)
 - [x] `useFpsControls` hook (WASD, mouse, **outer bounds** clamp only)
-- [x] `FpsViewModel` (first-person arms rig on camera)
 - [x] Soldier GLB clip mapping utilities (`idle`, `walk`, `run`; hips root motion stripped in code)
 - [x] `useSoldierLocomotion` hook (mixer + crossfade; wired on `SoldierModel` → idle for NPCs)
 - [x] Remove obsolete `swat-guy.glb` asset (superseded by `swat-soldier.glb`)
@@ -23,16 +22,30 @@ Post type-split: use `SoldierSkin` / `soldier-skin-registry`, `ScenarioConfig` f
 
 ## Camera modes
 
-Cycle with **F** today; remap to **C** when jump ships (see Action animations). HUD shows active mode. One local soldier clone — mode changes camera + rig placement only (no second model). Shared hot-path truth lives in `game/state/player-state.ts`; only `mode` is React-subscribable.
+Cycle with **C**. HUD shows active mode. World body (`LocalPlayer`) is one clone + mixer; FPS adds a **camera-parented** arms view model (never on screen together with the world body). Shared hot-path truth lives in `game/state/player-state.ts`; only `mode` is React-subscribable.
 
-- [x] **First-person (FPS)** — camera at eye height (`PLAYER_EYE_HEIGHT` ~1.7 m); view model visible; immersion + precise aim
+- [x] **First-person (FPS)** — camera at eye height (`PLAYER_EYE_HEIGHT` ~1.7 m)
 - [x] **Over-the-shoulder (OTS)** — close behind right shoulder (~1.75 m back, ~1.55 m up, shoulder offset); character visible
 - [x] **Standard third-person (TPS)** — tracked behind and above (~3.6 m back, ~2.4 m up); full character + surroundings
 - [x] Shared player transform state (`origin`, `yaw`, `pitch`, `mode`) consumed by controls + local soldier rig
 - [x] `applyCameraMode` (or equivalent) positions Three.js camera per mode each frame
-- [x] `CameraHud` overlay: `[F] Camera: …` label (update to **C** with jump remap)
-- [x] Unified `LocalPlayer` (single clone + single mixer); FPS arms view model is mode-gated inside the rig (never on screen together with the body); NPC spawn-skip stays as slot reservation
+- [x] `CameraHud` overlay: `[C] Camera: …` label
+- [x] Unified `LocalPlayer` (world clone + mixer); NPC spawn-skip stays as slot reservation
 - [x] Verify: mode cycle does not duplicate soldiers, teleport, or black-screen the canvas (e2e asserts constant `soldierCount` across cycles)
+
+## FPS view model + aim HUD
+
+Camera placement does not fix seeing inside the mesh. Hide the world body in FPS; show camera-parented arms. Aim = camera look (US-2.7 screen crosshair + US-2.19 world hit marker).
+
+- [ ] FPS camera: `distance: 0`, `height: PLAYER_EYE_HEIGHT` (no negative-distance clip hacks)
+- [ ] Hide world-body clone when `mode === 'fps'`; show it in OTS/TPS
+- [ ] `FpsViewModel` — clone parented to the camera; `prepareFpsViewModel` once (zero head/neck/legs; leave arms)
+- [ ] View-model offset/rotation from `VIEWMODEL_OFFSET` / `VIEWMODEL_ROTATION_Y` in `game/constants/player.ts`
+- [ ] Arms follow mouse because the group is a camera child (yaw/pitch already applied in `applyCameraMode`)
+- [ ] Drive view-model locomotion with the same shared idle/walk/run state as the world body
+- [ ] HUD crosshair (US-2.7): centered DOM overlay, `pointer-events-none`, all camera modes, `aria-hidden`, `data-testid` for e2e
+- [ ] World aim marker (US-2.19): raycast along camera look; small reticle at hit; skip local-player + view-model meshes; hide when no hit
+- [ ] Cycle C: view model unmounts in OTS/TPS; world body returns; no torso interior in FPS
 
 ## Locomotion animations
 
@@ -46,7 +59,7 @@ Drive via pose state / `LocomotionIntent` from `soldiers/types.ts` (controller a
 - [x] **Run** when moving with WASD **and** Space held
 - [x] Wire `useSoldierLocomotion` to local player with shared state from `useFpsControls`
 - [x] Crossfade between clips (~0.2 s); in-place playback (hips translation stripped / locked)
-- [x] Third-person modes: head + body visible; FPS: hide meshes that block the camera
+- [ ] Third-person modes: head + body visible; FPS: world body hidden (view model owns on-screen arms)
 - [x] `RUN_SPEED` constant (e.g. 9 m/s) distinct from `WALK_SPEED` (5 m/s) in `game/constants/player.ts`
 
 ## Action animations (jump / kneel)
@@ -85,12 +98,14 @@ Today: player clamped to **outer arena bounds** only — can walk through house 
   - bones: `mixamorig:Hips`, neck, hands (no PropertyBinding orphans vs idle channels)
 - [ ] `locomotion-state.test.ts` — pure fn: stand → `idle`, WASD → `walk`, WASD+Space → `run`
 - [ ] Collision segment + hole math tests (when collision util is complete)
+- [ ] `prepare-fps-view-model.test.ts` — head/neck/leg bones scaled to 0; arm/hand bones unchanged
 
 ### E2E (Playwright)
 
 - [x] `tests/e2e/play.spec.ts` — `/play` loads: `<canvas>` visible, boot/deploy loader dismissed, no `PropertyBinding` console errors
 - [x] Optional dev hook `window.__PLAY_TEST__` (`soldierCount`, `mixerReady`, `activeClip`) when `E2E=true`
 - [x] E2E asserts hook: at least one soldier in scene after load; mixer ready; clip is `idle` at spawn
+- [ ] E2E: crosshair overlay present (`data-testid`); `__PLAY_TEST__` still one local world soldier after FPS (no duplicate body)
 
 ### Acceptance
 
@@ -100,4 +115,3 @@ Today: player clamped to **outer arena bounds** only — can walk through house 
 ## Later / other US
 
 - [ ] `dying` animation hook-up (clip in GLB; wire on damage — US-3)
-- [ ] Crosshair HUD overlay (US-2.7 / US-4)

@@ -27,6 +27,15 @@ Post type-split: weapon contracts in `weapons/`, round phase types in `game/`, d
 - [ ] Opposing-team dummy / bot at fixed spawn for local tests until US-5
 - [ ] When `HealthState.isEliminated`, disable FPS controls until next `startRound()`
 
+## Weapon mesh (hand attach)
+
+Runtime attach — keep `pistol_a.glb` separate from `swat-soldier.glb` (do not bake into the soldier asset).
+
+- [ ] Extend `PistolWeaponConfig` / weapon registry with `modelUrl` → `/assets/soldiers/pistol_a.glb`
+- [ ] Attach pistol clone to Mixamo **right hand** bone (`mixamorig:RightHand` / sanitized name) on local player + NPCs / dummy
+- [ ] Tune grip offset (`position` / `rotation` / `scale`) so the weapon sits in the hand across idle / walk / shoot / reload
+- [ ] FPS: keep world pistol on the visible arms (same clone as body — no separate view-model)
+
 ## Weapon pose animations
 
 Clip playback only (no ammo / hitscan required for these checkboxes).

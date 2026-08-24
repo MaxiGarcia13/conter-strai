@@ -17,7 +17,10 @@ const TARGETS = [
   'public/assets/textures/wall/castle_brick_broken.glb',
   'public/assets/textures/wall/broken_brick.glb',
   'public/assets/textures/wall/cliff_side.glb',
+
   'public/assets/soldiers/swat-soldier.glb',
+
+  'public/assets/weapons/pistol_a.glb',
 ];
 
 function formatMb(bytes) {

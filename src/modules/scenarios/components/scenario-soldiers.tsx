@@ -12,6 +12,7 @@ interface ScenarioSoldiersProps {
 
 export function ScenarioSoldiers({ scenario, skipKey }: ScenarioSoldiersProps) {
   const teams = Object.keys(scenario.teamSpawns) as Team[];
+
   return (
     <>
       {teams.map((team) =>

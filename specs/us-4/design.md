@@ -9,6 +9,13 @@ Builds on combat health + weapon type contracts from the architecture type split
 - Build `DamageData` → health store / `applyDamage`
 - Update health store
 
+## Weapon pose animations
+
+- **LMB** (pointer-locked) → one-shot `shooting` clip on the local soldier mixer
+- **R** → one-shot `reloading` clip (blocks other actions until finished)
+- Clip names live on `SoldierSkin.meshData.animations`; priority above kneel/locomotion (see US-2)
+- Hitscan / ammo gating may attach later without changing the clip contract
+
 ## Weapons (MVP)
 
 - **Pistol only** — `weapons/weapon-registry.ts`; damage percentages stay in combat

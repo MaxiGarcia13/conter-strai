@@ -72,10 +72,10 @@ New arena = new `ScenarioConfig` entry. New tree/object = prop registry entry + 
 - `SoldierModel.tsx` — loads `swat-soldier.glb` (soldier id `swat-guy`); NPC spawns
 - `LocalPlayer.tsx` — single local soldier + animation mixer; rig follows camera mode
 - `useFpsControls.ts` — WASD, mouse, locomotion state, collision (bounds + interior walls)
-- `useSoldierLocomotion.ts` — idle / walk / run crossfade on skinned root
+- `useSoldierLocomotion.ts` — idle / walk / run + action clips (jump, kneel, …) on skinned root
 - `CameraHud.tsx` — active camera mode label
 
-## Camera modes (F to cycle)
+## Camera modes (C to cycle)
 
 | Mode | Role | Tunables (m) |
 | ---- | ---- | ------------ |
@@ -85,15 +85,17 @@ New arena = new `ScenarioConfig` entry. New tree/object = prop registry entry + 
 
 Shared state: ground `origin` [x, 0, z], `yaw`, `pitch`, `mode`. Camera positioned each frame from mode + origin — not by moving the soldier root independently in third person.
 
-## Locomotion animations
+## Locomotion / action animations
 
 | Input | Clip | Notes |
 | ----- | ---- | ----- |
 | Stand still | `idle` | Default |
 | WASD | `walk` | In-place; hips root motion stripped in code |
 | WASD + Space | `run` | Faster move speed + run clip |
+| **F** | `jump` | One-shot; animation-only (no vertical physics) |
+| **E** | `kneel` | Toggle; `LoopOnce` + clamp; cancel on WASD |
 
-One `AnimationMixer` per local soldier. Scenario NPCs stay on `idle` until US-4+.
+Priority (high → low): blocking one-shots (`reloading` / `jump` / `shooting` from US-4) → `kneel` → locomotion. One `AnimationMixer` per local soldier. Scenario NPCs stay on `idle` until US-4+.
 
 ## Interior wall collision
 

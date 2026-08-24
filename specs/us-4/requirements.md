@@ -12,7 +12,9 @@
 | US-4.6 | **No mid-round respawn** — eliminated until round ends                                                                                            |
 | US-4.7 | **Round service**: when all players on one team are eliminated, end round, declare winner, reset HP, respawn all at team spawns, start next round |
 | US-4.8 | Round start: assign Puma / Lion, spawn at team points, equip pistol                                                                               |
+| US-4.9 | While pointer-locked, **LMB** plays the soldier **shooting** clip (hitscan damage may land later)                                                 |
+| US-4.10 | **R** plays the soldier **reloading** clip (ammo / magazine gating may land later)                                                                |
 
 ## Acceptance
 
-Two teams fight with pistols until one team is eliminated; round resets and repeats.
+Two teams fight with pistols until one team is eliminated; round resets and repeats. Soldier fire/reload clips play on LMB / R.

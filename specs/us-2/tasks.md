@@ -23,14 +23,14 @@ Post type-split: use `SoldierSkin` / `soldier-skin-registry`, `ScenarioConfig` f
 
 ## Camera modes
 
-Cycle with **F**; HUD shows active mode. One local soldier clone — mode changes camera + rig placement only (no second model). Shared hot-path truth lives in `game/state/player-state.ts`; only `mode` is React-subscribable.
+Cycle with **F** today; remap to **C** when jump ships (see Action animations). HUD shows active mode. One local soldier clone — mode changes camera + rig placement only (no second model). Shared hot-path truth lives in `game/state/player-state.ts`; only `mode` is React-subscribable.
 
 - [x] **First-person (FPS)** — camera at eye height (`PLAYER_EYE_HEIGHT` ~1.7 m); view model visible; immersion + precise aim
 - [x] **Over-the-shoulder (OTS)** — close behind right shoulder (~1.75 m back, ~1.55 m up, shoulder offset); character visible
 - [x] **Standard third-person (TPS)** — tracked behind and above (~3.6 m back, ~2.4 m up); full character + surroundings
 - [x] Shared player transform state (`origin`, `yaw`, `pitch`, `mode`) consumed by controls + local soldier rig
 - [x] `applyCameraMode` (or equivalent) positions Three.js camera per mode each frame
-- [x] `CameraHud` overlay: `[F] Camera: …` label
+- [x] `CameraHud` overlay: `[F] Camera: …` label (update to **C** with jump remap)
 - [x] Unified `LocalPlayer` (single clone + single mixer); FPS arms view model is mode-gated inside the rig (never on screen together with the body); NPC spawn-skip stays as slot reservation
 - [x] Verify: mode cycle does not duplicate soldiers, teleport, or black-screen the canvas (e2e asserts constant `soldierCount` across cycles)
 
@@ -38,7 +38,7 @@ Cycle with **F**; HUD shows active mode. One local soldier clone — mode change
 
 Clips in `swat-soldier.glb`: `idle`, `walk`, `run` (see `soldier-skin-registry`). `dying` deferred to US-3.
 
-Drive via `LocomotionState` / `LocomotionIntent` from `soldiers/types.ts` (controller abstraction).
+Drive via pose state / `LocomotionIntent` from `soldiers/types.ts` (controller abstraction).
 
 - [x] Locomotion state: `idle` | `walk` | `run` driven by input each frame
 - [x] **Idle** when not moving (no WASD)
@@ -48,6 +48,16 @@ Drive via `LocomotionState` / `LocomotionIntent` from `soldiers/types.ts` (contr
 - [x] Crossfade between clips (~0.2 s); in-place playback (hips translation stripped / locked)
 - [x] Third-person modes: head + body visible; FPS: hide meshes that block the camera
 - [x] `RUN_SPEED` constant (e.g. 9 m/s) distinct from `WALK_SPEED` (5 m/s) in `game/constants/player.ts`
+
+## Action animations (jump / kneel)
+
+Registry also maps `jump`, `kneel` (plus US-4 `reloading` / `shooting`). Camera cycle is **C**; **F** is jump.
+
+- [ ] Extend `SoldierAnimationClips` + registry + `resolveSoldierClips` for action clips
+- [ ] Pose state includes `jump` | `kneel` (and US-4 action clips); priority over locomotion
+- [ ] **F** → one-shot `jump` (busy until mixer finished); no Y physics
+- [ ] **E** → toggle `kneel` (`LoopOnce` + clamp); cancel on WASD
+- [ ] Remap camera cycle **F** → **C**; update HUD + e2e
 
 ## Interior wall collision
 
@@ -70,7 +80,7 @@ Today: player clamped to **outer arena bounds** only — can walk through house 
 - [ ] `resolve-soldier-clips.test.ts` — registry names resolve; `null` when a clip is missing
 - [ ] `strip-root-motion.test.ts` — hips translation tracks removed from walk/run clips
 - [ ] `swat-soldier-glb.test.ts` — **asset contract** (parse GLB JSON chunk):
-  - clips: `idle`, `walk`, `run` (and `dying` present but optional)
+  - clips: `idle`, `walk`, `run`, `jump`, `kneel`, `reloading`, `shooting` (and `dying` present but optional)
   - nodes: `Armature`, `Soldier_body`, `Soldier_head`
   - bones: `mixamorig:Hips`, neck, hands (no PropertyBinding orphans vs idle channels)
 - [ ] `locomotion-state.test.ts` — pure fn: stand → `idle`, WASD → `walk`, WASD+Space → `run`

@@ -27,6 +27,15 @@ Post type-split: weapon contracts in `weapons/`, round phase types in `game/`, d
 - [ ] Opposing-team dummy / bot at fixed spawn for local tests until US-5
 - [ ] When `HealthState.isEliminated`, disable FPS controls until next `startRound()`
 
+## Weapon pose animations
+
+Clip playback only (no ammo / hitscan required for these checkboxes).
+
+- [ ] Registry maps `shooting` + `reloading` on `swat-guy`
+- [ ] Pointer-locked **LMB** → one-shot `shooting` (not while reloading/jumping)
+- [ ] **R** → one-shot `reloading` (busy until mixer finished)
+- [ ] Mixer priority: `reloading` > `jump` > `shooting` > `kneel` > locomotion
+
 ## Verification
 
 - [ ] Vitest: hit → HP path + `checkRoundEnd`

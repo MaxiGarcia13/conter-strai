@@ -55,7 +55,7 @@ Today: player clamped to **outer arena bounds** only — can walk through house 
 
 - [x] Increase default hole width (`WALL_HOLE_WIDTH` in `house-helpers`) so doorways are comfortably passable (~2.0–2.4 m)
 - [x] Flesh out collision map: axis-aligned segments + doorway hole metadata (extend `buildCollisionSegments` if needed)
-- [ ] Player circle (`PLAYER_RADIUS`) vs wall segments: block solid spans; allow passage only through holes
+- [x] Player circle (`PLAYER_RADIUS`) vs wall segments: block solid spans; allow passage only through holes
 - [ ] Integrate into `useFpsControls` (or `resolvePlayerCollision` util) **after** intended move, before commit
 - [ ] Outer bounds clamp remains as final fallback
 - [ ] Acceptance: cannot clip through ruin walls; can walk through holes; holes feel wider than 1.4 m default

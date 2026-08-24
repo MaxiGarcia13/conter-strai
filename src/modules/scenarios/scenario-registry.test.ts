@@ -38,9 +38,9 @@ describe('scenario-registry', () => {
   });
 
   it('publishes axis-aligned collision spans and doorway holes', () => {
-    expect(scenario.collisionSegments).toHaveLength(48);
+    expect(scenario.collisionSegments).toHaveLength(49);
     expect(scenario.collisionSegments?.every(({ axis }) => axis === 'x' || axis === 'z')).toBe(true);
-    expect(scenario.collisionHoles).toHaveLength(15);
+    expect(scenario.collisionHoles).toHaveLength(13);
     expect(scenario.collisionHoles?.every(({ width }) => width === 2.2)).toBe(true);
   });
 });

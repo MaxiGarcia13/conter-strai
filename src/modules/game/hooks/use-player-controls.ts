@@ -4,6 +4,7 @@ import type { ScenarioConfig } from '@/modules/scenarios';
 import { useFrame, useThree } from '@react-three/fiber';
 
 import { useEffect, useRef, useState } from 'react';
+import { resolveLocomotionState } from '@/modules/soldiers/utils/resolve-locomotion-state';
 import { clamp } from '@/utils/clamp';
 import {
   MAX_FRAME_DELTA_SECONDS,
@@ -191,7 +192,7 @@ export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickn
       setPlayerPose(null);
     }
 
-    setPlayerLocomotion(running ? 'run' : moving ? 'walk' : 'idle');
+    setPlayerLocomotion(resolveLocomotionState({ moving, running }));
 
     if (moving) {
       const previousPosition = { x: transform.x, z: transform.z };

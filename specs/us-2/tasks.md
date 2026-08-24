@@ -97,7 +97,7 @@ Today: player clamped to **outer arena bounds** only — can walk through house 
   - clips: `idle`, `walk`, `run`, `jump`, `kneel`, `reloading`, `shooting` (and `dying` present but optional)
   - nodes: `Armature`, `Soldier_body`, `Soldier_head`
   - bones: `mixamorig:Hips`, neck, hands (no PropertyBinding orphans vs idle channels)
-- [ ] `locomotion-state.test.ts` — pure fn: stand → `idle`, WASD → `walk`, WASD+Space → `run`
+- [x] `locomotion-state.test.ts` — pure fn: stand → `idle`, WASD → `walk`, WASD+Space → `run`
 - [ ] Collision segment + hole math tests (when collision util is complete)
 - [x] Head-bone / FPS hide helper test — Head (and Neck) scale to 0 in FPS; arm bones unchanged; restore for OTS/TPS
 

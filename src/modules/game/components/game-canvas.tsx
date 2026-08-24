@@ -59,7 +59,7 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
 
         <PlayerControls scenario={scenario} spawn={localSpawn} />
 
-        {import.meta.env.E2E && <PlayTestHook />}
+        {!!import.meta.env.DEV && <PlayTestHook />}
 
         <Suspense fallback={null}>
           <ScenarioScene scenario={scenario} />

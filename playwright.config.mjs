@@ -24,6 +24,7 @@ export default defineConfig({
     env: {
       ...process.env,
       E2E: 'true',
+      PUBLIC_E2E: 'true',
       PORT: String(port),
     },
   },

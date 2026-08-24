@@ -7,7 +7,7 @@ import { wallAlongX, wallAlongZ } from './wall-helpers';
 const H = WALL_HEIGHT.full;
 
 /** Default doorway / blast-hole width (meters). */
-export const WALL_HOLE_WIDTH = 1.4;
+export const WALL_HOLE_WIDTH = 2.2;
 
 /** Full wall or a centered gap small enough to slip through but not shoot across easily. */
 export type HouseSide = 'full' | { hole: number };

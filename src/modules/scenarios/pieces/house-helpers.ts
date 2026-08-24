@@ -1,4 +1,4 @@
-import type { ScenarioFloorZone, ScenarioWallSegment } from '../types';
+import type { CollisionAxis, CollisionHole, ScenarioFloorZone, ScenarioWallSegment } from '../types';
 import type { WallMaterialId } from './constants';
 import { FLOOR_MATERIAL, WALL_HEIGHT } from './constants';
 import { floorZone } from './floor-helpers';
@@ -33,6 +33,19 @@ function holeWidth(side: HouseSide | undefined): number | null {
     return null;
   }
   return side.hole;
+}
+
+function collisionHole(
+  side: HouseSide | undefined,
+  axis: CollisionAxis,
+  center: [number, number, number],
+  totalLength: number,
+): CollisionHole[] {
+  const width = holeWidth(side);
+  if (width === null || width >= totalLength - 0.6) {
+    return [];
+  }
+  return [{ axis, center, width }];
 }
 
 function wallSegmentsAlongX(
@@ -79,6 +92,7 @@ function wallSegmentsAlongZ(
 function houseFootprint(house: HouseFootprint): {
   floor: ScenarioFloorZone;
   walls: ScenarioWallSegment[];
+  holes: CollisionHole[];
 } {
   const { id, centerX, centerZ, width, depth, material, walls = {} } = house;
   const halfW = width / 2;
@@ -87,6 +101,12 @@ function houseFootprint(house: HouseFootprint): {
   const southZ = centerZ + halfD;
   const westX = centerX - halfW;
   const eastX = centerX + halfW;
+  const holes: CollisionHole[] = [
+    ...collisionHole(walls.north, 'x', [centerX, 0, northZ], width),
+    ...collisionHole(walls.south, 'x', [centerX, 0, southZ], width),
+    ...collisionHole(walls.west, 'z', [westX, 0, centerZ], depth),
+    ...collisionHole(walls.east, 'z', [eastX, 0, centerZ], depth),
+  ];
 
   const segments: ScenarioWallSegment[] = [
     ...wallSegmentsAlongX(northZ, centerX, width, walls.north ?? 'full', material, `${id}-north`),
@@ -98,19 +118,23 @@ function houseFootprint(house: HouseFootprint): {
   return {
     floor: floorZone(`${id}-floor`, FLOOR_MATERIAL.tile, centerX, centerZ, width, depth),
     walls: segments,
+    holes,
   };
 }
 
 export function buildHouses(houses: HouseFootprint[]): {
   floors: ScenarioFloorZone[];
   walls: ScenarioWallSegment[];
+  holes: CollisionHole[];
 } {
   const floors: ScenarioFloorZone[] = [];
   const wallSegments: ScenarioWallSegment[] = [];
+  const holes: CollisionHole[] = [];
   for (const house of houses) {
     const built = houseFootprint(house);
     floors.push(built.floor);
     wallSegments.push(...built.walls);
+    holes.push(...built.holes);
   }
-  return { floors, walls: wallSegments };
+  return { floors, walls: wallSegments, holes };
 }

@@ -1,5 +1,5 @@
 import type { HouseFootprint } from '@/modules/scenarios/pieces/house-helpers';
-import type { CollisionSegment, ScenarioFloorZone, ScenarioWallSegment } from '@/modules/scenarios/types';
+import type { CollisionHole, CollisionSegment, ScenarioFloorZone, ScenarioWallSegment } from '@/modules/scenarios/types';
 import { buildCollisionSegments } from '@/modules/scenarios/pieces/collision-helpers';
 import { WALL_MATERIAL } from '@/modules/scenarios/pieces/constants';
 import { floorZone } from '@/modules/scenarios/pieces/floor-helpers';
@@ -112,6 +112,8 @@ const built = buildHouses(arena01Houses);
 export const arena01Floors: ScenarioFloorZone[] = [...arena01Streets, ...built.floors];
 
 export const arena01Walls: ScenarioWallSegment[] = built.walls;
+
+export const arena01Holes: CollisionHole[] = built.holes;
 
 /** Interior colliders for player movement; doorway holes remain passable. */
 export const arena01Collisions: CollisionSegment[] = buildCollisionSegments(arena01Walls);

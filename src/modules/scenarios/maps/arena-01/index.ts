@@ -5,7 +5,7 @@ import type {
   ScenarioMeta,
   SpawnerConfig,
 } from '@/modules/scenarios/types';
-import { arena01Collisions, arena01Floors, arena01Walls } from './layout';
+import { arena01Collisions, arena01Floors, arena01Holes, arena01Walls } from './layout';
 
 const arena01Meta: ScenarioMeta = {
   id: 'arena-01',
@@ -32,6 +32,7 @@ const arena01Layout: ArenaLayout = {
   wallSegments: arena01Walls,
   props: [],
   collisionSegments: arena01Collisions,
+  collisionHoles: arena01Holes,
 };
 
 const arena01Spawns: SpawnerConfig = {

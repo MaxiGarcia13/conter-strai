@@ -32,11 +32,21 @@ export interface ScenarioWallSegment {
   assetId?: TextureId;
 }
 
+export type CollisionAxis = 'x' | 'z';
+
 /** Interior collider line — blocks movement without rendering a wall. */
 export interface CollisionSegment {
   start: Vec3;
   end: Vec3;
+  axis: CollisionAxis;
   height?: number;
+}
+
+/** Open span in an interior wall, measured along its axis. */
+export interface CollisionHole {
+  axis: CollisionAxis;
+  center: Vec3;
+  width: number;
 }
 
 export interface ArenaLayout {
@@ -59,6 +69,7 @@ export interface ArenaLayout {
   wallSegments?: ScenarioWallSegment[];
   props?: ScenarioProp[];
   collisionSegments?: CollisionSegment[];
+  collisionHoles?: CollisionHole[];
 }
 
 // ---------------------------------------------------------------------------

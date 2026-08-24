@@ -5,11 +5,18 @@
     "jsxImportSource": "react",
     "paths": {
       "@/*": [
-        "./src/*",
+        "./src/*"
+      ],
+      "@root/*": [
         "./package.json"
       ]
     }
   },
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"]
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
+  "exclude": [
+    "dist"
+  ]
 }

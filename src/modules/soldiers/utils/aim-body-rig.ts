@@ -24,14 +24,14 @@ interface PitchedBone {
   lastWritten: Quaternion;
 }
 
-export interface SoldierFpsRig {
+export interface SoldierAimRig {
   /** Camera anchor; kept unscaled so its world position survives the hide. */
   head: Object3D;
   /** Bones scaled to zero while FPS is active, restored when it is not. */
   hiddenBones: HiddenBone[];
   /** Upper-body bones receiving look pitch, root → up. */
   pitchedBones: PitchedBone[];
-  /** Look pitch baked into the pitched bones right now (0 outside FPS). */
+  /** Look pitch currently baked into the pitched bones. */
   appliedPitchRadians: number;
 }
 
@@ -45,8 +45,8 @@ function findBone(root: Object3D, names: readonly string[]): Object3D | null {
   return null;
 }
 
-/** Resolves the FPS body rig on a soldier clone; `null` when no head bone exists. */
-export function resolveSoldierFpsRig(root: Object3D): SoldierFpsRig | null {
+/** Resolves the aim rig on a soldier clone; `null` when no head bone exists. */
+export function resolveSoldierAimRig(root: Object3D): SoldierAimRig | null {
   const head = findBone(root, HEAD_BONE_NAMES);
   if (!head) {
     return null;
@@ -70,7 +70,9 @@ const ZERO_SCALE = new Vector3(0, 0, 0);
 const scratchQuaternion = new Quaternion();
 
 /**
- * Per-frame FPS body pose, applied AFTER the mixer update.
+ * Per-frame local-body pose, applied AFTER the mixer update in every camera
+ * mode: look pitch always bends the spine so the arms track the mouse; only
+ * the head hide follows the FPS flag.
  *
  * The mixer never overwrites externally mutated bone properties once they have
  * been touched (cached PropertyMixer values), but it DOES rewrite them while a
@@ -79,20 +81,14 @@ const scratchQuaternion = new Quaternion();
  * otherwise (frozen clip, e.g. clamped kneel) only the pitch delta since the
  * previous frame — applying full pitch there would spin the body every frame.
  */
-export function applyFpsBodyPose(rig: SoldierFpsRig, pitchRadians: number, fpsActive: boolean): void {
+export function applySoldierAimPose(rig: SoldierAimRig, pitchRadians: number, hideHead: boolean): void {
   for (const { bone, restScale } of rig.hiddenBones) {
-    bone.scale.copy(fpsActive ? ZERO_SCALE : restScale);
-  }
-
-  const deltaPitch = pitchRadians - rig.appliedPitchRadians;
-  rig.appliedPitchRadians = fpsActive ? pitchRadians : 0;
-
-  if (!fpsActive) {
-    return;
+    bone.scale.copy(hideHead ? ZERO_SCALE : restScale);
   }
 
   const pitchedBones = rig.pitchedBones;
   if (pitchedBones.length === 0) {
+    rig.appliedPitchRadians = pitchRadians;
     return;
   }
 
@@ -103,10 +99,12 @@ export function applyFpsBodyPose(rig: SoldierFpsRig, pitchRadians: number, fpsAc
   for (const [index, pitched] of pitchedBones.entries()) {
     const { bone, lastWritten } = pitched;
     const mixerRefreshed = !bone.quaternion.equals(lastWritten);
-    const appliedPitch = (mixerRefreshed ? pitchRadians : deltaPitch) * (activeWeights[index]! / weightSum);
+    const delta = mixerRefreshed ? pitchRadians : pitchRadians - rig.appliedPitchRadians;
+    const appliedPitch = delta * (activeWeights[index]! / weightSum);
 
     scratchQuaternion.setFromAxisAngle(PITCH_AXIS, -appliedPitch);
     bone.quaternion.premultiply(scratchQuaternion);
     lastWritten.copy(bone.quaternion);
   }
+  rig.appliedPitchRadians = pitchRadians;
 }

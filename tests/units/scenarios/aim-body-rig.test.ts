@@ -2,10 +2,10 @@ import { Bone, MathUtils, Object3D, Quaternion, Vector3 } from 'three';
 import { describe, expect, it } from 'vitest';
 
 import {
-  applyFpsBodyPose,
-  resolveSoldierFpsRig,
+  applySoldierAimPose,
+  resolveSoldierAimRig,
   SPINE_PITCH_WEIGHTS,
-} from '@/modules/soldiers/utils/fps-body-rig';
+} from '@/modules/soldiers/utils/aim-body-rig';
 
 const PITCH_AXIS = new Vector3(1, 0, 0);
 
@@ -43,10 +43,10 @@ function buildArmature(withColon: boolean): ArmatureBones {
   return { root, head, spine, leftArm };
 }
 
-describe('resolveSoldierFpsRig', () => {
+describe('resolveSoldierAimRig', () => {
   it('resolves head and spine chain using the asset’s colon bone names', () => {
     const bones = buildArmature(true);
-    const rig = resolveSoldierFpsRig(bones.root);
+    const rig = resolveSoldierAimRig(bones.root);
 
     expect(rig?.head).toBe(bones.head);
     expect(rig?.pitchedBones.map(({ bone }) => bone)).toEqual(bones.spine);
@@ -57,7 +57,7 @@ describe('resolveSoldierFpsRig', () => {
 
   it('resolves colon-less Mixamo aliases as well', () => {
     const bones = buildArmature(false);
-    const rig = resolveSoldierFpsRig(bones.root);
+    const rig = resolveSoldierAimRig(bones.root);
 
     expect(rig?.head).toBe(bones.head);
     expect(rig?.pitchedBones.map(({ bone }) => bone)).toEqual(bones.spine);
@@ -67,16 +67,16 @@ describe('resolveSoldierFpsRig', () => {
     const root = new Object3D();
     addBone(root, 'mixamorig:Hips');
 
-    expect(resolveSoldierFpsRig(root)).toBeNull();
+    expect(resolveSoldierAimRig(root)).toBeNull();
   });
 });
 
-describe('applyFpsBodyPose', () => {
+describe('applySoldierAimPose', () => {
   it('hides the head and pitches the spine with look while FPS is active', () => {
     const bones = buildArmature(true);
-    const rig = resolveSoldierFpsRig(bones.root)!;
+    const rig = resolveSoldierAimRig(bones.root)!;
 
-    applyFpsBodyPose(rig, 0.5, true);
+    applySoldierAimPose(rig, 0.5, true);
 
     expect(bones.head.scale.x).toBe(0);
 
@@ -87,13 +87,27 @@ describe('applyFpsBodyPose', () => {
     });
   });
 
+  it('keeps pitching the spine in shoulder modes so the arms follow the mouse there too', () => {
+    const bones = buildArmature(true);
+    const rig = resolveSoldierAimRig(bones.root)!;
+
+    applySoldierAimPose(rig, 0.5, false);
+
+    expect(bones.head.scale.x).toBe(1); // head stays visible…
+    rig.pitchedBones.forEach(({ bone }, index) => {
+      const weight = SPINE_PITCH_WEIGHTS[index]!;
+      const expected = new Quaternion().setFromAxisAngle(PITCH_AXIS, -0.5 * weight);
+      expect(bone.quaternion.angleTo(expected)).toBeLessThan(1e-6); // …but the body still aims
+    });
+  });
+
   it('applies only the pitch delta while the mixer keeps the frozen pose (clamped kneel)', () => {
     const bones = buildArmature(true);
-    const rig = resolveSoldierFpsRig(bones.root)!;
+    const rig = resolveSoldierAimRig(bones.root)!;
 
     // Held look pitch across many frames: full-pitch-per-frame would spin forever.
     for (let frame = 0; frame < 10; frame++) {
-      applyFpsBodyPose(rig, 0.5, true);
+      applySoldierAimPose(rig, 0.5, true);
     }
 
     rig.pitchedBones.forEach(({ bone }, index) => {
@@ -105,16 +119,16 @@ describe('applyFpsBodyPose', () => {
 
   it('re-applies the full pitch when the mixer refreshed the clip pose', () => {
     const bones = buildArmature(true);
-    const rig = resolveSoldierFpsRig(bones.root)!;
+    const rig = resolveSoldierAimRig(bones.root)!;
 
-    applyFpsBodyPose(rig, 0.5, true);
+    applySoldierAimPose(rig, 0.5, true);
 
     // Simulate the mixer rewriting the spine tracks on the next update.
     for (const bone of bones.spine) {
       bone.quaternion.identity();
     }
 
-    applyFpsBodyPose(rig, 0.5, true);
+    applySoldierAimPose(rig, 0.5, true);
 
     rig.pitchedBones.forEach(({ bone }, index) => {
       const weight = SPINE_PITCH_WEIGHTS[index]!;
@@ -123,33 +137,35 @@ describe('applyFpsBodyPose', () => {
     });
   });
 
-  it('treats re-entry into FPS as a fresh pitch base', () => {
+  it('keeps the pitch base continuous across a camera-mode switch (no double bend)', () => {
     const bones = buildArmature(true);
-    const rig = resolveSoldierFpsRig(bones.root)!;
+    const rig = resolveSoldierAimRig(bones.root)!;
 
-    applyFpsBodyPose(rig, 0.5, true);
-    applyFpsBodyPose(rig, 0.5, false); // resets the applied-pitch base
-
-    // Simulate a mixer refresh during the shoulder-mode gap.
-    for (const bone of bones.spine) {
-      bone.quaternion.identity();
-    }
-
-    applyFpsBodyPose(rig, 0.3, true);
+    applySoldierAimPose(rig, 0.5, true);
+    applySoldierAimPose(rig, 0.5, false); // switch to shoulder mode at the same pitch
 
     rig.pitchedBones.forEach(({ bone }, index) => {
       const weight = SPINE_PITCH_WEIGHTS[index]!;
-      const expected = new Quaternion().setFromAxisAngle(PITCH_AXIS, -0.3 * weight);
+      const expected = new Quaternion().setFromAxisAngle(PITCH_AXIS, -0.5 * weight);
+      expect(bone.quaternion.angleTo(expected)).toBeLessThan(1e-6);
+    });
+
+    // Frozen bones + raised pitch → exactly the small delta, not the full pitch again.
+    applySoldierAimPose(rig, 0.7, false);
+
+    rig.pitchedBones.forEach(({ bone }, index) => {
+      const weight = SPINE_PITCH_WEIGHTS[index]!;
+      const expected = new Quaternion().setFromAxisAngle(PITCH_AXIS, -0.7 * weight);
       expect(bone.quaternion.angleTo(expected)).toBeLessThan(1e-6);
     });
   });
 
   it('leaves non-rig bones untouched', () => {
     const bones = buildArmature(false);
-    const rig = resolveSoldierFpsRig(bones.root)!;
+    const rig = resolveSoldierAimRig(bones.root)!;
     const armQuaternion = bones.leftArm.quaternion.clone();
 
-    applyFpsBodyPose(rig, 0.5, true);
+    applySoldierAimPose(rig, 0.5, true);
 
     expect(bones.leftArm.scale.toArray()).toEqual([1, 1, 1]);
     expect(bones.leftArm.quaternion.angleTo(armQuaternion)).toBeLessThan(1e-6);
@@ -158,12 +174,12 @@ describe('applyFpsBodyPose', () => {
   it('restores hidden bones from rest scale when inactive', () => {
     const bones = buildArmature(true);
     bones.head.scale.set(0.5, 0.5, 0.5); // non-1 rest captured at resolve time
-    const rig = resolveSoldierFpsRig(bones.root)!;
+    const rig = resolveSoldierAimRig(bones.root)!;
 
-    applyFpsBodyPose(rig, 0.5, true);
+    applySoldierAimPose(rig, 0.5, true);
     expect(bones.head.scale.x).toBe(0);
 
-    applyFpsBodyPose(rig, 0.5, false);
+    applySoldierAimPose(rig, 0.5, false);
     // The mixer caches mixed values and never overwrites external mutations,
     // so the pose helper must restore the scale itself.
     expect(bones.head.scale.toArray()).toEqual([0.5, 0.5, 0.5]);
@@ -182,7 +198,7 @@ describe('applyFpsBodyPose', () => {
       appliedPitchRadians: 0,
     };
 
-    applyFpsBodyPose(rig, MathUtils.degToRad(90), true);
+    applySoldierAimPose(rig, MathUtils.degToRad(90), true);
 
     const expected = new Quaternion().setFromAxisAngle(PITCH_AXIS, -Math.PI / 2);
     expect(spineOnly.quaternion.angleTo(expected)).toBeLessThan(1e-6);

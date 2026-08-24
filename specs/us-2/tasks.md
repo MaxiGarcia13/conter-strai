@@ -42,7 +42,7 @@ One mesh. Do not add a camera-parented `FpsViewModel`. Camera follows the local 
 - [x] Frame order: mixer → `updateWorldMatrix` on head → place camera (avoid one-frame lag)
 - [x] FPS: scale/hide Head (and Neck if needed) so the camera does not see the inside of the helmet; restore scale in OTS/TPS (Neck intentionally kept — hiding it collapses the head anchor; clips rewrite scale per frame so hide is enforced post-mixer)
 - [x] Apply mouse pitch to upper-body / spine bones after the clip so arms follow look; yaw stays on the rig as today
-- [ ] If look-down still clips chest, hide additional FPS-only meshes (upper chest) — do not hide the whole body
+- [x] If look-down still clips chest, hide additional FPS-only meshes (upper chest) — do not hide the whole body
 - [x] OTS/TPS: keep `placeShoulderCamera`; show full head/body; do not apply FPS-only bone hides
 - [x] HUD crosshair (US-2.7): centered DOM overlay, `pointer-events-none`, all camera modes, `aria-hidden`, `data-testid` for e2e
 - [x] World aim marker (US-2.19): raycast along camera look; small reticle at hit; skip local-player meshes; hide when no hit

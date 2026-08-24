@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
 import { getTextureById } from '@/modules/textures';
-
-import { getScenarioById } from './get-scenario-by-id';
 
 describe('scenario-registry', () => {
   const scenario = getScenarioById('arena-01');

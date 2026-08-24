@@ -1,8 +1,6 @@
 import type { CollisionSegment } from '@/modules/scenarios/types';
-
 import { describe, expect, it } from 'vitest';
-
-import { resolvePlayerCollision } from './resolve-player-collision';
+import { resolvePlayerCollision } from '@/modules/game/utils/resolve-player-collision';
 
 const horizontalWall: CollisionSegment = {
   start: [-2, 0, 0],
@@ -25,6 +23,12 @@ describe('resolvePlayerCollision', () => {
     const resolved = resolvePlayerCollision({ x: 0, z: 0 }, [leftWall, rightWall], 0.4);
 
     expect(resolved).toEqual({ x: 0, z: 0 });
+  });
+
+  it('blocks a movement step that would cross through a wall', () => {
+    const resolved = resolvePlayerCollision({ x: 0, z: 1 }, [horizontalWall], 0.4, { x: 0, z: -1 });
+
+    expect(resolved.z).toBeCloseTo(-0.4);
   });
 
   it('resolves a vertical wall span on the X axis', () => {

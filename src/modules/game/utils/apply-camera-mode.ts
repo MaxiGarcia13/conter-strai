@@ -13,6 +13,8 @@ const MIN_CAMERA_HEIGHT = 0.25;
 export function applyCameraMode(camera: Camera, mode: CameraMode, transform: PlayerTransform): void {
   switch (mode) {
     case 'fps':
+      // Pre-mount fallback only: once LocalPlayer resolves its head bone it
+      // re-places the camera later in the same frame, overwriting this rig.
       placeShoulderCamera(camera, transform, {
         distance: -0.25,
         height: PLAYER_EYE_HEIGHT - 0.08,

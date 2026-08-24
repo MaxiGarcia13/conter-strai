@@ -37,16 +37,16 @@ Cycle with **C**. HUD shows active mode. One local soldier clone + mixer (`Local
 
 One mesh. Do not add a camera-parented `FpsViewModel`. Camera follows the local soldier **head bone** after the mixer; hide head (and usually neck) so the camera is not inside the skull. Arms stay on the world body — apply look **pitch** to spine/upper-body bones so arms follow the mouse. Aim = camera look (US-2.7 screen crosshair + US-2.19 world hit marker).
 
-- [ ] Resolve Mixamo head bone on the local clone (`mixamorigHead` / `mixamorig:Head`); document names in the skin/asset contract
-- [ ] FPS: after locomotion mixer update, copy head **world** position to the camera (tiny look-forward offset optional); look rotation stays `pitch`/`yaw` from player state
-- [ ] Frame order: mixer → `updateWorldMatrix` on head → place camera (avoid one-frame lag)
-- [ ] FPS: scale/hide Head (and Neck if needed) so the camera does not see the inside of the helmet; restore scale in OTS/TPS
-- [ ] Apply mouse pitch to upper-body / spine bones after the clip so arms follow look; yaw stays on the rig as today
+- [x] Resolve Mixamo head bone on the local clone (`mixamorigHead` / `mixamorig:Head`); document names in the skin/asset contract
+- [x] FPS: after locomotion mixer update, copy head **world** position to the camera (tiny look-forward offset optional); look rotation stays `pitch`/`yaw` from player state
+- [x] Frame order: mixer → `updateWorldMatrix` on head → place camera (avoid one-frame lag)
+- [x] FPS: scale/hide Head (and Neck if needed) so the camera does not see the inside of the helmet; restore scale in OTS/TPS (Neck intentionally kept — hiding it collapses the head anchor; clips rewrite scale per frame so hide is enforced post-mixer)
+- [x] Apply mouse pitch to upper-body / spine bones after the clip so arms follow look; yaw stays on the rig as today
 - [ ] If look-down still clips chest, hide additional FPS-only meshes (upper chest) — do not hide the whole body
-- [ ] OTS/TPS: keep `placeShoulderCamera`; show full head/body; do not apply FPS-only bone hides
-- [ ] HUD crosshair (US-2.7): centered DOM overlay, `pointer-events-none`, all camera modes, `aria-hidden`, `data-testid` for e2e
-- [ ] World aim marker (US-2.19): raycast along camera look; small reticle at hit; skip local-player meshes; hide when no hit
-- [ ] Cycle C: head visible again in OTS/TPS; FPS shows arms, not torso interior; still one local clone
+- [x] OTS/TPS: keep `placeShoulderCamera`; show full head/body; do not apply FPS-only bone hides
+- [x] HUD crosshair (US-2.7): centered DOM overlay, `pointer-events-none`, all camera modes, `aria-hidden`, `data-testid` for e2e
+- [x] World aim marker (US-2.19): raycast along camera look; small reticle at hit; skip local-player meshes; hide when no hit
+- [x] Cycle C: head visible again in OTS/TPS; FPS shows arms, not torso interior; still one local clone
 
 ## Locomotion animations
 
@@ -60,7 +60,7 @@ Drive via pose state / `LocomotionIntent` from `soldiers/types.ts` (controller a
 - [x] **Run** when moving with WASD **and** Space held
 - [x] Wire `useSoldierLocomotion` to local player with shared state from `useFpsControls`
 - [x] Crossfade between clips (~0.2 s); in-place playback (hips translation stripped / locked)
-- [ ] Third-person modes: full head + body; FPS: same clone, head/neck hidden, arms visible and pitched with look
+- [x] Third-person modes: full head + body; FPS: same clone, head/neck hidden, arms visible and pitched with look
 - [x] `RUN_SPEED` constant (e.g. 9 m/s) distinct from `WALK_SPEED` (5 m/s) in `game/constants/player.ts`
 
 ## Action animations (jump / kneel)
@@ -99,14 +99,14 @@ Today: player clamped to **outer arena bounds** only — can walk through house 
   - bones: `mixamorig:Hips`, neck, hands (no PropertyBinding orphans vs idle channels)
 - [ ] `locomotion-state.test.ts` — pure fn: stand → `idle`, WASD → `walk`, WASD+Space → `run`
 - [ ] Collision segment + hole math tests (when collision util is complete)
-- [ ] Head-bone / FPS hide helper test — Head (and Neck) scale to 0 in FPS; arm bones unchanged; restore for OTS/TPS
+- [x] Head-bone / FPS hide helper test — Head (and Neck) scale to 0 in FPS; arm bones unchanged; restore for OTS/TPS
 
 ### E2E (Playwright)
 
 - [x] `tests/e2e/play.spec.ts` — `/play` loads: `<canvas>` visible, boot/deploy loader dismissed, no `PropertyBinding` console errors
 - [x] Optional dev hook `window.__PLAY_TEST__` (`soldierCount`, `mixerReady`, `activeClip`) when `E2E=true`
 - [x] E2E asserts hook: at least one soldier in scene after load; mixer ready; clip is `idle` at spawn
-- [ ] E2E: crosshair overlay present (`data-testid`); `__PLAY_TEST__` still one local soldier after FPS (no second clone)
+- [x] E2E: crosshair overlay present (`data-testid`); `__PLAY_TEST__` still one local soldier after FPS (no second clone)
 
 ### Acceptance
 

@@ -19,6 +19,9 @@ test('/play cycles camera modes without duplicating the local soldier', async ({
   const hud = page.getByRole('status');
   await expect(hud).toContainText('First-person');
 
+  const crosshair = page.getByTestId('crosshair');
+  await expect(crosshair).toBeVisible();
+
   await page.mouse.click(640, 400);
   await page.keyboard.press('C');
   await expect(hud).toContainText('Over-the-shoulder');
@@ -31,6 +34,7 @@ test('/play cycles camera modes without duplicating the local soldier', async ({
   await page.keyboard.press('C');
   await expect(hud).toContainText('First-person');
   expect((await readPlayTest(page))?.soldierCount).toBe(atSpawn?.soldierCount);
+  await expect(crosshair).toBeVisible();
 
   expectNoConsoleErrors(consoleErrors);
 });

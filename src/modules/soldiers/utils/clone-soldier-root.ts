@@ -24,6 +24,18 @@ function refreshSkinnedMeshes(root: Object3D): void {
   });
 }
 
+/**
+ * Animated skeletons invalidate cached bounding spheres (a pre-pose raycast
+ * caches a degenerate one); soldier visibility never relies on them.
+ */
+export function disableSkinnedMeshCulling(root: Object3D): void {
+  root.traverse((child) => {
+    if (child instanceof SkinnedMesh) {
+      child.frustumCulled = false;
+    }
+  });
+}
+
 /** Clones the soldier armature and multiplies its existing scale (GLB embeds 0.01 → ~1.7 m). */
 export function cloneSoldierRoot(scene: Object3D, scaleMultiplier = 1): Object3D {
   const source = getSoldierArmature(scene);

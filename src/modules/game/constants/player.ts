@@ -19,3 +19,6 @@ export const MAX_FRAME_DELTA_SECONDS = 0.1;
 /** Local player slot until round start assigns spawns per player. */
 export const DEFAULT_LOCAL_TEAM = 'puma' as const;
 export const DEFAULT_LOCAL_SPAWN_INDEX = 0;
+
+/** Scene-graph name of the local soldier rig; aim raycasts skip it. */
+export const LOCAL_PLAYER_ROOT_NAME = 'local-player';

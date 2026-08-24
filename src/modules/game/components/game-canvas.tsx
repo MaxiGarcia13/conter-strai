@@ -9,7 +9,9 @@ import {
   ScenarioSoldiers,
 } from '@/modules/scenarios';
 import { resolveLocalSpawn } from '../utils/local-spawn';
+import { AimMarker } from './aim-marker';
 import { CameraHud } from './camera-hud';
+import { CrosshairHud } from './crosshair-hud';
 import { DeferredAfterLoad } from './deferred-after-load';
 import { LoadingReporter } from './loading-reporter';
 import { LocalPlayer } from './local-player';
@@ -74,8 +76,11 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
             <LocalPlayer />
           </DeferredAfterLoad>
         </Suspense>
+
+        <AimMarker />
       </Canvas>
       <CameraHud />
+      <CrosshairHud />
     </div>
   );
 }

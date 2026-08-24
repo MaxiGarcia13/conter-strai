@@ -2,11 +2,11 @@ import type { Group } from 'three';
 import type { SoldierSkinId } from '../types';
 import { Clone, useGLTF } from '@react-three/drei';
 
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import { getSoldierSkinById } from '../get-soldier-skin-by-id';
 import { useSoldierLocomotion } from '../hooks/use-soldier-locomotion';
-import { getSoldierArmature, soldierScaleVector } from '../utils/clone-soldier-root';
+import { disableSkinnedMeshCulling, getSoldierArmature, soldierScaleVector } from '../utils/clone-soldier-root';
 
 interface SoldierModelProps {
   id?: SoldierSkinId;
@@ -37,6 +37,14 @@ export function SoldierModel({
   useSoldierLocomotion(modelRef, animations, skin.meshData.animations, {
     enabled: animated,
   });
+
+  useEffect(() => {
+    const model = modelRef.current;
+    if (model) {
+      // Aim-marker raycasts run pre-matrix-update and would cache a degenerate bound.
+      disableSkinnedMeshCulling(model);
+    }
+  }, [source]);
 
   return (
     <group position={position} rotation={[0, rotationY, 0]}>

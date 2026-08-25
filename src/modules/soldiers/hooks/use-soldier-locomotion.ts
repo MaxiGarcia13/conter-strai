@@ -46,11 +46,12 @@ interface SoldierActions {
   jump: AnimationAction;
   kneel: AnimationAction;
   dying: AnimationAction;
+  reloading?: AnimationAction;
   shooting?: AnimationAction;
   hitReaction?: AnimationAction;
 }
 
-const ONE_SHOT_KEYS = ['jump', 'kneel', 'dying', 'shooting', 'hitReaction'] as const;
+const ONE_SHOT_KEYS = ['jump', 'kneel', 'dying', 'reloading', 'shooting', 'hitReaction'] as const;
 type OneShotKey = (typeof ONE_SHOT_KEYS)[number];
 
 function isOneShotKey(key: ClipKey): key is OneShotKey {
@@ -138,6 +139,9 @@ export function useSoldierLocomotion(
       kneel: mixer.clipAction(resolved.kneel),
       dying: mixer.clipAction(resolved.dying),
     };
+    if (resolved.reloading) {
+      actions.reloading = mixer.clipAction(resolved.reloading);
+    }
     if (resolved.shooting) {
       actions.shooting = mixer.clipAction(resolved.shooting);
     }
@@ -192,6 +196,7 @@ export function useSoldierLocomotion(
     animationConfig.run,
     animationConfig.walk,
     animationConfig.crouchWalking,
+    animationConfig.reloading,
     animationConfig.shooting,
     animationConfig.hitReaction,
     clipsKey,

@@ -18,7 +18,7 @@ export function applyCameraMode(camera: Camera, mode: CameraMode, transform: Pla
       // re-places the camera later in the same frame, overwriting this rig.
       placeShoulderCamera(camera, transform, bodyAnchorY, {
         distance: -0.25,
-        bodyLift: PLAYER_EYE_HEIGHT - 0.08 - DEFAULT_BODY_ANCHOR_Y,
+        bodyLift: PLAYER_EYE_HEIGHT - 0.05 - DEFAULT_BODY_ANCHOR_Y,
         shoulderOffset: 0,
       });
       break;

@@ -21,6 +21,12 @@ export interface SoldierAnimationClips {
 /** Action poses layered above locomotion; `reloading` / `shooting` join with US-4. */
 export type SoldierActionId = 'jump' | 'kneel' | 'dying' | 'crouchWalking';
 
+/** Per-skin first-person camera tweaks (head bone is the base; offsets are meters). */
+export interface SoldierFpsViewConfig {
+  /** World-up nudge after placing on the head bone (Remy’s joint sits low). */
+  eyeOffsetY?: number;
+}
+
 /** Shared GLB descriptor for world models and the first-person view model. */
 export interface CharacterMeshData {
   modelUrl: string;
@@ -30,6 +36,8 @@ export interface CharacterMeshData {
   viewModelScale?: number;
   /** Optional shared animation pack URL; clips from this GLB override mesh-local ones by name. */
   sharedAnimationsUrl?: string;
+  /** FPS camera offsets; omitted → sit exactly on the head bone. */
+  fpsView?: SoldierFpsViewConfig;
   animations: SoldierAnimationClips;
 }
 

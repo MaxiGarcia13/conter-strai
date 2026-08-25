@@ -91,7 +91,7 @@ export function LocalPlayer({ skinId = 'swat-1' }: LocalPlayerProps) {
     // Shoulder booms pivot on this; getWorldPosition refreshes the bone chain post-mixer.
     setBodyAnchorY(aimRig.head.getWorldPosition(headWorldPosition).y);
     if (fpsActive) {
-      placeCameraAtHead(camera, aimRig.head, transform);
+      placeCameraAtHead(camera, aimRig.head, transform, skin.meshData.fpsView?.eyeOffsetY ?? 0);
     }
   });
 

@@ -8,6 +8,8 @@ export const soldierSkins: Record<SoldierSkinId, SoldierSkin> = {
       scale: 1,
       viewModelScale: 1.15,
       sharedAnimationsUrl: '/assets/characters/shared/base-animations.glb',
+      // Head bone sits low vs eyes; nudge FPS lens up so arms match SWAT framing.
+      fpsView: { eyeOffsetY: 0.1 },
       animations: {
         idle: 'idle',
         walk: 'walk',

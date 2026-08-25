@@ -153,7 +153,16 @@ export function usePlayerControls({
   }, []);
 
   useEffect(() => {
+    if (eliminated && document.pointerLockElement === domElement) {
+      document.exitPointerLock();
+    }
+  }, [eliminated, domElement]);
+
+  useEffect(() => {
     const requestLock = () => {
+      if (eliminatedRef.current) {
+        return;
+      }
       try {
         // Rapid re-lock after Esc is rejected by browsers; swallow it.
         const request = domElement.requestPointerLock() as unknown;
@@ -170,7 +179,7 @@ export function usePlayerControls({
     };
 
     const onMouseMove = (event: MouseEvent) => {
-      if (document.pointerLockElement !== domElement) {
+      if (document.pointerLockElement !== domElement || eliminatedRef.current) {
         return;
       }
 

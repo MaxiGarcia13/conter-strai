@@ -26,9 +26,9 @@ stateDiagram-v2
 
 ## Teams
 
-| Team      | ID         | Motif                                              |
-| --------- | ---------- | -------------------------------------------------- |
-| Civilians | `civilian` | Irregular / non-military side                      |
+| Team      | ID         | Motif                                                            |
+| --------- | ---------- | ---------------------------------------------------------------- |
+| Civilians | `civilian` | Irregular / non-military side                                    |
 | Soldiers  | `soldier`  | Military side — default skin `swat-1` (also `swat-2` / `swat-3`) |
 
 Team IDs are `civilian` \| `soldier` everywhere in code. Display names: **Civilians** / **Soldiers** (`TEAM_DISPLAY_NAME`).
@@ -114,11 +114,11 @@ Units: **1 world unit = 1 meter**.
 
 ### Registries
 
-| Registry         | Role                                                        | Example ids                         |
-| ---------------- | ----------------------------------------------------------- | ----------------------------------- |
-| **Texture**      | Floor/wall GLB materials under `/assets/textures/`          | `forrest_ground`, `coral_fort_wall` |
-| **Prop**         | Placeable objects (trees, barrels, cover)                   | deferred (`props: []` on arena-01)  |
-| **Scenario**     | Map layout: bounds, materials, props, team spawns           | `arena-01`                          |
+| Registry         | Role                                                                                | Example ids                                                     |
+| ---------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **Texture**      | Floor/wall GLB materials under `/assets/textures/`                                  | `forrest_ground`, `coral_fort_wall`                             |
+| **Prop**         | Placeable objects (trees, barrels, cover)                                           | deferred (`props: []` on arena-01)                              |
+| **Scenario**     | Map layout: bounds, materials, props, team spawns                                   | `arena-01`                                                      |
 | **Soldier skin** | Visual presets (`SoldierSkin`); hitbox via `hitboxPresetId`; clips from shared pack | `swat-1` (default), `swat-2`, `swat-3`, `remy`, `james`, `liza` |
 
 `ScenarioScene` reads config only — new arena / prop = registry + placements, not a new React scene.
@@ -144,14 +144,14 @@ Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-stat
 
 ### Locomotion / actions
 
-| Input               | Clip              | Notes                                                                 |
-| ------------------- | ----------------- | --------------------------------------------------------------------- |
-| Stand still         | `idle`            | Default                                                               |
-| WASD                | `walk`            | In-place; hips translation stripped                                   |
-| WASD + Space        | `run`             | Faster move + run clip                                                |
-| **E**               | `kneel`           | Toggle; `LoopOnce` + clamp; WASD does **not** stand up                |
-| Kneel + WASD        | `crouch-walking`  | Loop; walk-speed only (Space run ignored)                             |
-| **F**               | `jump`            | One-shot; animation-only (no Y physics); clears kneel first           |
+| Input        | Clip             | Notes                                                       |
+| ------------ | ---------------- | ----------------------------------------------------------- |
+| Stand still  | `idle`           | Default                                                     |
+| WASD         | `walk`           | In-place; hips translation stripped                         |
+| WASD + Space | `run`            | Faster move + run clip                                      |
+| **E**        | `kneel`          | Toggle; `LoopOnce` + clamp; WASD does **not** stand up      |
+| Kneel + WASD | `crouch-walking` | Loop; walk-speed only (Space run ignored)                   |
+| **F**        | `jump`           | One-shot; animation-only (no Y physics); clears kneel first |
 
 Priority: blocking one-shots (jump; later US-4 `reloading` / `shooting`) → kneel + moving → crouch-walk → kneel + idle → locomotion → **`dying`** on elimination (US-3).
 
@@ -171,19 +171,19 @@ Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`
 
 ### Testing
 
-| Layer          | Scope                                                                                                                              |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| **Vitest**     | Registries; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide    |
-| **Playwright** | `/play` default `swat-1` + `?skin=remy`; no `PropertyBinding` errors; kneel + WASD stays crouched; optional `__PLAY_TEST__` hook   |
+| Layer          | Scope                                                                                                                            |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Vitest**     | Registries; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide  |
+| **Playwright** | `/play` default `swat-1` + `?skin=remy`; no `PropertyBinding` errors; kneel + WASD stays crouched; optional `__PLAY_TEST__` hook |
 
 ## Characters — shipped US-6
 
 Locomotion and action clips load from `/assets/characters/shared/base-animations.glb`. Mesh GLBs are skins only.
 
-| Skin ids                         | Team       | Mesh path                                  |
-| -------------------------------- | ---------- | ------------------------------------------ |
-| `remy`, `james`, `liza`          | civilian   | `/assets/characters/civilians/<id>.glb`    |
-| `swat-1`, `swat-2`, `swat-3`     | soldier    | `/assets/characters/soldiers/<id>.glb`     |
+| Skin ids                     | Team     | Mesh path                               |
+| ---------------------------- | -------- | --------------------------------------- |
+| `remy`, `james`, `liza`      | civilian | `/assets/characters/civilians/<id>.glb` |
+| `swat-1`, `swat-2`, `swat-3` | soldier  | `/assets/characters/soldiers/<id>.glb`  |
 
 Default `/play` skin is `swat-1`. Until US-7 select ships, `/play?skin=<id>` via `resolvePlaySkinId`.
 
@@ -227,13 +227,13 @@ Attached on `LocalPlayer` and `SoldierModel` when `entityId` is set.
 
 ### Key files
 
-| File | Role |
-| ---- | ---- |
-| `combat/apply-damage.ts` | Pure zone × weapon × difficulty math |
-| `combat/health-store.ts` | Zustand `HealthSystem` |
-| `combat/components/hitbox-mesh.tsx` | Invisible zone colliders |
-| `combat/components/health-bar.tsx` | HUD |
-| `weapons/weapon-registry.ts` | Pistol `damageByZone` |
+| File                                | Role                                 |
+| ----------------------------------- | ------------------------------------ |
+| `combat/apply-damage.ts`            | Pure zone × weapon × difficulty math |
+| `combat/health-store.ts`            | Zustand `HealthSystem`               |
+| `combat/components/hitbox-mesh.tsx` | Invisible zone colliders             |
+| `combat/components/health-bar.tsx`  | HUD                                  |
+| `weapons/weapon-registry.ts`        | Pistol `damageByZone`                |
 
 ## Data flow (combat)
 

@@ -41,13 +41,13 @@ export interface CharacterMeshData {
   animations: SoldierAnimationClips;
 }
 
-export type SoldierSkinId =
-  | 'remy'
-  | 'james'
-  | 'liza'
-  | 'swat-1'
-  | 'swat-2'
-  | 'swat-3';
+export type SoldierSkinId
+  = | 'remy'
+    | 'james'
+    | 'liza'
+    | 'swat-1'
+    | 'swat-2'
+    | 'swat-3';
 
 /** Visual preset; collider layout stays decoupled via `hitboxPresetId`. */
 export interface SoldierSkin {

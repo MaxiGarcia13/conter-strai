@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-returns-description */
 /**
  * Normalizes Mixamo character GLBs for the shared animation / PBR contract:
  * 1. Rewrite numbered bone prefixes (`mixamorig9:` / `mixamorig6:`) → `mixamorig:`
@@ -10,8 +11,8 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import draco3d from 'draco3dgltf';

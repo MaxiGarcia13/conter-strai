@@ -6,8 +6,8 @@ import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import { AnimationMixer, LoopOnce, LoopRepeat } from 'three';
 
-import { resolveSoldierClips } from '../utils/resolve-soldier-clips';
 import { resolveAnimationClipKey } from '../utils/resolve-animation-clip-key';
+import { resolveSoldierClips } from '../utils/resolve-soldier-clips';
 
 const CROSSFADE_SECONDS = 0.2;
 

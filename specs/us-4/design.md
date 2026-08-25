@@ -4,8 +4,8 @@ Builds on combat health + weapon type contracts from the architecture type split
 
 ## Prerequisites
 
-- **US-3** — health store, `applyDamage`, hitboxes, HUD, elimination + `dying` clip *(shipped)*
-- **US-6** *(shipped)* — shared animation pack, six skins (`remy` / `james` / `liza` + `swat-1` / `swat-2` / `swat-3`), legacy `swat-soldier.glb` removed. Weapon pose clips (US-4.9–4.10) and pistol hand attach (US-4.11) can proceed.
+- **US-3** — health store, `applyDamage`, hitboxes, HUD, elimination + `dying` clip _(shipped)_
+- **US-6** _(shipped)_ — shared animation pack, six skins (`remy` / `james` / `liza` + `swat-1` / `swat-2` / `swat-3`), legacy `swat-soldier.glb` removed. Weapon pose clips (US-4.9–4.10) and pistol hand attach (US-4.11) can proceed.
 
 ## useShooting hook
 

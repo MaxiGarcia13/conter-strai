@@ -1,6 +1,6 @@
 # US-7 — Design
 
-Depends on **US-6** *(shipped)* skins (`remy` / `james` / `liza`, `swat-1` / `swat-2` / `swat-3`) and shared idle for the character preview. Does not own animation retarget or crouch-walk.
+Depends on **US-6** _(shipped)_ skins (`remy` / `james` / `liza`, `swat-1` / `swat-2` / `swat-3`) and shared idle for the character preview. Does not own animation retarget or crouch-walk.
 
 ## Routing
 
@@ -50,10 +50,10 @@ ScenarioConfig {
 
 ## Skin ↔ team
 
-| Team       | Skin ids                     | Default   |
-| ---------- | ---------------------------- | --------- |
-| `civilian` | `remy`, `james`, `liza`      | `remy`    |
-| `soldier`  | `swat-1`, `swat-2`, `swat-3` | `swat-1`  |
+| Team       | Skin ids                     | Default  |
+| ---------- | ---------------------------- | -------- |
+| `civilian` | `remy`, `james`, `liza`      | `remy`   |
+| `soldier`  | `swat-1`, `swat-2`, `swat-3` | `swat-1` |
 
 Changing team resets character to that team’s default skin if the current skin is invalid for the new team.
 

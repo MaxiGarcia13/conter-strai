@@ -10,9 +10,9 @@ vi.mock('@react-three/drei', () => ({
 }));
 
 const EXPECTED_URLS: Record<keyof typeof soldierSkins, string> = {
-  remy: '/assets/characters/civilians/remy.glb',
-  james: '/assets/characters/civilians/james.glb',
-  liza: '/assets/characters/civilians/liza.glb',
+  'remy': '/assets/characters/civilians/remy.glb',
+  'james': '/assets/characters/civilians/james.glb',
+  'liza': '/assets/characters/civilians/liza.glb',
   'swat-1': '/assets/characters/soldiers/swat-1.glb',
   'swat-2': '/assets/characters/soldiers/swat-2.glb',
   'swat-3': '/assets/characters/soldiers/swat-3.glb',

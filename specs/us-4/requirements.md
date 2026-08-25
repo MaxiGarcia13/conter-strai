@@ -1,5 +1,7 @@
 # US-4 — PvP shooting (local loop)
 
+**Prerequisite:** US-6 for character mesh + shared animation pipeline. Requirements US-4.9–4.11 (fire/reload clips, pistol attach) depend on US-6; round service and hitscan (US-4.1–4.8) can proceed earlier.
+
 ## Requirements
 
 | ID      | Requirement                                                                                                                                       |

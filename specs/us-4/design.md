@@ -2,6 +2,11 @@
 
 Builds on combat health + weapon type contracts from the architecture type split.
 
+## Prerequisites
+
+- **US-3** — health store, `applyDamage`, hitboxes (mostly shipped; finish elimination / `dying` as needed)
+- **US-6** — before weapon pose clips (US-4.9–4.10) and pistol hand attach (US-4.11): shared animation pack, `remy` / `swat-1` meshes, legacy `swat-soldier.glb` removed. Round service and hitscan can land before or during US-6.
+
 ## useShooting hook
 
 - Raycast from camera on mousedown (cooldown from `PistolWeaponConfig.fireCooldownSeconds`)
@@ -19,7 +24,8 @@ Builds on combat health + weapon type contracts from the architecture type split
 ## Weapons (MVP)
 
 - **Pistol only** — `weapons/weapon-registry.ts` with `damageByZone` (see US-3); combat applies profile × difficulty
-- **Hand mesh:** load `pistol_a.glb` from registry `modelUrl`; parent under the soldier **RightHand** bone at runtime (local + NPCs). Grip offset is a small constant on the weapon config or attach helper — do not merge into `swat-soldier.glb`.
+- **Hand mesh:** load `pistol_a.glb` from registry `modelUrl`; parent under the soldier **RightHand** bone at runtime (local + NPCs). Grip offset is a small constant on the weapon config or attach helper — do not bake into character mesh GLBs.
+- **Fire/reload clips:** after US-6 removes `swat-soldier.glb`, add `reloading` / `shooting` to `base-animations.glb` so `remy` and `swat-1` share them.
 - Hits pass `weaponId` on `DamageData` so the health bar drops by that weapon’s injury amounts
 - Future: knife (melee), rifle (primary), richer `Loadout` — each gets its own `damageByZone`
 
@@ -29,7 +35,7 @@ Builds on combat health + weapon type contracts from the architecture type split
 type Team = 'civilian' | 'soldier';
 type RoundPhase = 'live' | 'round-end'; // game/types.ts
 
-startRound() → assign teams, spawn from ScenarioConfig.teamSpawns, resetAll HP, equip pistol
+startRound() → assign teams (local: respect US-7 select when present; else auto), spawn from ScenarioConfig.teamSpawns, resetAll HP, equip pistol
 checkRoundEnd() → if all civilians eliminated OR all soldiers eliminated → endRound()
 endRound(winner) → RoundPhase 'round-end', banner, delay, startRound()
 ```

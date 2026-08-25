@@ -2,6 +2,8 @@
 
 Post type-split: weapon contracts in `weapons/`, round phase types in `game/`, damage via `combat/`. See [`specs/current/design.md#module-types`](../current/design.md#module-types).
 
+**Order:** Ship [**US-6**](../us-6/tasks.md) before weapon pose + pistol attach tasks below. Round service and shooting can start earlier — see [suggested order](../current/tasks.md#suggested-order).
+
 ## Done (architecture foundation)
 
 - [x] `PistolWeaponConfig`, `BulletHitResult`, `Loadout` in `weapons/types.ts`
@@ -29,21 +31,21 @@ Post type-split: weapon contracts in `weapons/`, round phase types in `game/`, d
 
 ## Weapon mesh (hand attach)
 
-Runtime attach — keep `pistol_a.glb` separate from `swat-soldier.glb` (do not bake into the soldier asset).
+Runtime attach — keep `pistol_a.glb` separate from character mesh GLBs (do not bake into remy / swat-1).
 
-- [ ] Extend `PistolWeaponConfig` / weapon registry with `modelUrl` → `/assets/soldiers/pistol_a.glb`
+- [ ] Extend `PistolWeaponConfig` / weapon registry with `modelUrl` → `/assets/weapons/pistol_a.glb` (or current registry path)
 - [ ] Attach pistol clone to Mixamo **right hand** bone (`mixamorig:RightHand` / sanitized name) on local player + NPCs / dummy
 - [ ] Tune grip offset (`position` / `rotation` / `scale`) so the weapon sits in the hand across idle / walk / shoot / reload
 - [ ] FPS: keep world pistol on the visible arms (same clone as body — no separate view-model)
 
 ## Weapon pose animations
 
-Clip playback only (no ammo / hitscan required for these checkboxes).
+Clip playback only (no ammo / hitscan required for these checkboxes). Depends on US-6 shared pack.
 
-- [ ] Registry maps `shooting` + `reloading` on `swat-guy`
+- [ ] Add `shooting` + `reloading` clips to `base-animations.glb`; map on `remy` / `swat-1`
 - [ ] Pointer-locked **LMB** → one-shot `shooting` (not while reloading/jumping)
 - [ ] **R** → one-shot `reloading` (busy until mixer finished)
-- [ ] Mixer priority: `reloading` > `jump` > `shooting` > `kneel` > locomotion
+- [ ] Mixer priority: `reloading` > `jump` > `shooting` > kneel / crouch-walk > locomotion
 
 ## Verification
 

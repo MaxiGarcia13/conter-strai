@@ -30,7 +30,7 @@ Injury amount depends on **where** you are hit (head > body > limbs) **and** **w
 - [x] Soldier **hitbox meshes** — invisible colliders from `HitboxPreset.parts`, tagged `userData.hitZone` + `userData.entityId`
 - [x] Attach hitboxes to world/NPC soldiers (and local player when third-person / raycast targets exist)
 - [x] `HealthBar` HUD component (local player HP %)
-- [ ] Elimination persists until round end (no mid-round respawn) — store flag; disable controls when eliminated (full round reset in US-4)
+- [x] Elimination persists until round end (no mid-round respawn) — store flag; disable controls when eliminated (full round reset in US-4)
 - [ ] Wire `dying` clip on elimination (clip already in `swat-soldier.glb`; deferred from US-2)
 - [ ] Vitest: `apply-damage.test.ts` — zone × weapon × difficulty, HP floor at 0 / elimination
 

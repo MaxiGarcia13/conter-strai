@@ -1,9 +1,10 @@
 import type { LocalSpawn } from '../utils/local-spawn';
 import type { ScenarioConfig } from '@/modules/scenarios';
-
 import { useFrame, useThree } from '@react-three/fiber';
 
 import { useEffect, useRef, useState } from 'react';
+import { useHealthStore } from '@/modules/combat';
+import { LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
 import { resolveLocomotionState } from '@/modules/soldiers/utils/resolve-locomotion-state';
 import { clamp } from '@/utils/clamp';
 import {
@@ -60,8 +61,13 @@ export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickn
   const camera = useThree((state) => state.camera);
   const domElement = useThree((state) => state.gl.domElement);
   const [isPointerLocked, setIsPointerLocked] = useState(false);
+  const eliminated = useHealthStore(
+    (s) => s.healthById[LOCAL_PLAYER_ENTITY_ID]?.isEliminated ?? false,
+  );
 
   const pressedCodesRef = useRef(new Set<string>());
+  const eliminatedRef = useRef(eliminated);
+  eliminatedRef.current = eliminated;
 
   useEffect(() => {
     camera.rotation.order = 'YXZ';
@@ -92,6 +98,10 @@ export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickn
       pressedCodesRef.current.add(event.code);
 
       if (event.repeat) {
+        return;
+      }
+
+      if (eliminatedRef.current) {
         return;
       }
 
@@ -166,6 +176,12 @@ export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickn
 
   useFrame((_, rawDelta) => {
     const delta = Math.min(rawDelta, MAX_FRAME_DELTA_SECONDS);
+
+    if (eliminatedRef.current) {
+      setPlayerLocomotion('idle');
+      return;
+    }
+
     const pressed = pressedCodesRef.current;
     let strafe = 0;
     let forward = 0;

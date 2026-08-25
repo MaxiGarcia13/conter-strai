@@ -3,6 +3,7 @@ import type { ScenarioId } from '@/modules/scenarios';
 import { Canvas } from '@react-three/fiber';
 
 import { Suspense, useCallback, useMemo, useState } from 'react';
+import { HealthBar } from '@/modules/combat';
 import {
   getScenarioById,
   ScenarioScene,
@@ -81,6 +82,7 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
       </Canvas>
       <CameraHud />
       <CrosshairHud />
+      <HealthBar />
     </div>
   );
 }

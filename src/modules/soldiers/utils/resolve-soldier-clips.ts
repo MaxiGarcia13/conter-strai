@@ -9,6 +9,7 @@ export interface ResolvedSoldierClips {
   run: AnimationClip;
   jump: AnimationClip;
   kneel: AnimationClip;
+  dying: AnimationClip;
   reloading: AnimationClip;
   shooting: AnimationClip;
 }
@@ -19,6 +20,7 @@ const CLIP_KEYS = [
   'run',
   'jump',
   'kneel',
+  'dying',
   'reloading',
   'shooting',
 ] as const;

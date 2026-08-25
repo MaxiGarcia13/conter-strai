@@ -12,12 +12,13 @@ export interface SoldierAnimationClips {
   run: string;
   jump: string;
   kneel: string;
+  dying: string;
   reloading: string;
   shooting: string;
 }
 
 /** Action poses layered above locomotion; `reloading` / `shooting` join with US-4. */
-export type SoldierActionId = 'jump' | 'kneel';
+export type SoldierActionId = 'jump' | 'kneel' | 'dying';
 
 /** Shared GLB descriptor for world models and the first-person view model. */
 export interface CharacterMeshData {

@@ -68,6 +68,7 @@ export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickn
   const pressedCodesRef = useRef(new Set<string>());
   const eliminatedRef = useRef(eliminated);
   eliminatedRef.current = eliminated;
+  const wasEliminatedRef = useRef(false);
 
   useEffect(() => {
     camera.rotation.order = 'YXZ';
@@ -178,9 +179,15 @@ export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickn
     const delta = Math.min(rawDelta, MAX_FRAME_DELTA_SECONDS);
 
     if (eliminatedRef.current) {
+      if (!wasEliminatedRef.current) {
+        wasEliminatedRef.current = true;
+        setPlayerPose('dying');
+      }
       setPlayerLocomotion('idle');
       return;
     }
+
+    wasEliminatedRef.current = false;
 
     const pressed = pressedCodesRef.current;
     let strafe = 0;

@@ -37,6 +37,7 @@ interface SoldierActions {
   run: AnimationAction;
   jump: AnimationAction;
   kneel: AnimationAction;
+  dying: AnimationAction;
 }
 
 /** Drives idle / walk / run crossfades plus one-shot jump and kneel poses on a skinned soldier root. */
@@ -87,12 +88,13 @@ export function useSoldierLocomotion(
       run: mixer.clipAction(resolved.run),
       jump: mixer.clipAction(resolved.jump),
       kneel: mixer.clipAction(resolved.kneel),
+      dying: mixer.clipAction(resolved.dying),
     };
     for (const key of ['idle', 'walk', 'run'] as const) {
       actions[key].loop = LoopRepeat;
     }
     // One-shots hold their final frame until the pose owner lets them go.
-    for (const key of ['jump', 'kneel'] as const) {
+    for (const key of ['jump', 'kneel', 'dying'] as const) {
       actions[key].loop = LoopOnce;
       actions[key].clampWhenFinished = true;
     }
@@ -125,6 +127,7 @@ export function useSoldierLocomotion(
     animationConfig.idle,
     animationConfig.jump,
     animationConfig.kneel,
+    animationConfig.dying,
     animationConfig.run,
     animationConfig.walk,
     clipsKey,

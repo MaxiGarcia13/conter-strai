@@ -2,9 +2,8 @@ import type { Group } from 'three';
 import type { SoldierSkinId } from '../types';
 import { Clone, useGLTF } from '@react-three/drei';
 
-import { useEffect, useMemo, useRef } from 'react';
-
-import { HitboxMesh } from '@/modules/combat';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { HitboxMesh, useHealthStore } from '@/modules/combat';
 
 import { getSoldierSkinById } from '../get-soldier-skin-by-id';
 import { useSoldierLocomotion } from '../hooks/use-soldier-locomotion';
@@ -39,8 +38,18 @@ export function SoldierModel({
     [skin.meshData.scale, source],
   );
 
+  const eliminated = useHealthStore(
+    useCallback(
+      (s) => (entityId ? s.healthById[entityId]?.isEliminated ?? false : false),
+      [entityId],
+    ),
+  );
+  const eliminatedRef = useRef(eliminated);
+  eliminatedRef.current = eliminated;
+
   useSoldierLocomotion(modelRef, animations, skin.meshData.animations, {
     enabled: animated,
+    getPose: entityId ? () => (eliminatedRef.current ? 'dying' : null) : undefined,
   });
 
   useEffect(() => {

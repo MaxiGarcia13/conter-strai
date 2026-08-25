@@ -2,7 +2,7 @@
 
 Browser-based tactical shooter inspired by Counter-Strike. **Civilians** vs **Soldiers**, round-based team elimination, no install.
 
-> Lock in, squad up, and hold the line.
+> The revolution starts here — choose your side and fight.
 
 ## Status
 

@@ -16,7 +16,7 @@ test('/play cycles camera modes without duplicating the local soldier', async ({
   await waitForCanvas(page);
   const atSpawn = await waitForPlayTest(page);
 
-  const hud = page.getByRole('status');
+  const hud = page.getByRole('status', { name: /^Camera:/ });
   await expect(hud).toContainText('First-person');
 
   const crosshair = page.getByTestId('crosshair');

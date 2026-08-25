@@ -24,6 +24,7 @@ describe('soldier-skin-registry', () => {
       run: 'run',
       jump: 'jump',
       kneel: 'kneel',
+      dying: 'dying',
       reloading: 'reloading',
       shooting: 'shooting',
     });

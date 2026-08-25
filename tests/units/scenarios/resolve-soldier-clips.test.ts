@@ -32,6 +32,7 @@ describe('resolve-soldier-clips', () => {
       'run',
       'jump',
       'kneel',
+      'dying',
       'reloading',
       'shooting',
     ]);

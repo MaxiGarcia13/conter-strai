@@ -20,18 +20,18 @@ stateDiagram-v2
 
 | Phase           | Behavior                                                                        |
 | --------------- | ------------------------------------------------------------------------------- |
-| **Round start** | Split players into Puma / Lion; teleport to team spawns; full HP; equip pistol  |
+| **Round start** | Split players into Civilians / Soldiers; teleport to team spawns; full HP; equip pistol |
 | **In progress** | PvP combat; eliminated players spectate or wait (no respawn)                    |
 | **Round end**   | One team wiped → opposing team wins; show banner; after brief delay, next round |
 
 ## Teams
 
-| Team | ID     | Motif                                        |
-| ---- | ------ | -------------------------------------------- |
-| Puma | `puma` | Argentina — puma (national / regional fauna) |
-| Lion | `lion` | England — heraldic lion                      |
+| Team       | ID         | Motif                                              |
+| ---------- | ---------- | -------------------------------------------------- |
+| Civilians  | `civilian` | Irregular / non-military side                      |
+| Soldiers   | `soldier`  | Military side — MVP skin `swat-guy` (SWAT soldier) |
 
-Team IDs are `puma` \| `lion` everywhere in code. Display names: **Puma** / **Lion**.
+Team IDs are `civilian` \| `soldier` everywhere in code. Display names: **Civilians** / **Soldiers** (`TEAM_DISPLAY_NAME`).
 
 Team assignment: random or balanced split in MVP; **server assigns teams** in Colyseus `MatchRoom` (US-5).
 
@@ -165,7 +165,7 @@ Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`
 | **bounds**   | 100 m × 50 m; wall height 3.5 m                                            |
 | **floor**    | `forrest_ground`                                                           |
 | **walls**    | `coral_fort_wall` perimeter + interior ruin segments                       |
-| **spawns**   | Puma west (−X), Lion east (+X); face map center                            |
+| **spawns**   | Soldiers west (−X), Civilians east (+X); face map center                       |
 | **props**    | `[]` — slots ready for trees / cover later                                 |
 
 ### Testing

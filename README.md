@@ -1,6 +1,6 @@
 # Conter Strai
 
-Browser-based tactical shooter inspired by Counter-Strike. **Puma** vs **Lion**, round-based team elimination, no install.
+Browser-based tactical shooter inspired by Counter-Strike. **Civilians** vs **Soldiers**, round-based team elimination, no install.
 
 > Lock in, squad up, and hold the line.
 
@@ -18,7 +18,7 @@ Browser-based tactical shooter inspired by Counter-Strike. **Puma** vs **Lion**,
 
 ## Game rules (MVP)
 
-- **Teams:** Puma vs Lion (Argentina / England national animals)
+- **Teams:** Civilians vs Soldiers
 - **Mode:** Team deathmatch — eliminate the other side
 - **Rounds:** No mid-round respawn; full reset between rounds
 - **Loadout:** Pistol only at round start
@@ -77,7 +77,7 @@ src/
     soldiers/       # SoldierSkin registry, model, locomotion
     combat/         # Hitbox presets, zone damage, apply-damage
     weapons/        # Pistol config & weapon registry
-    teams/          # Puma / Lion
+    teams/          # Civilians / Soldiers
     textures/       # PBR map assets
     props/          # Scenario prop registry (stub)
   pages/            # Routes (`/` landing, `/play`, …)

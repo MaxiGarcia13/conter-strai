@@ -22,7 +22,7 @@ Post type-split: client game modules stay free of Colyseus imports — use `src/
 - [ ] Wire local FPS transform sync through adapter (not direct Colyseus in `game/`)
 - [ ] Wire `useShooting` → `sendShot`; apply **server** HP / eliminated updates (client combat math becomes prediction-only or removed for HP)
 - [ ] Init Colyseus join on `/play` mount
-- [ ] Cap room at 2–8 players; assign Puma / Lion on server
+- [ ] Cap room at 2–8 players; assign Civilians / Soldiers on server
 
 ## Verification
 

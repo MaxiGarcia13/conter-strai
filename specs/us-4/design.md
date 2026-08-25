@@ -26,11 +26,11 @@ Builds on combat health + weapon type contracts from the architecture type split
 ## Round service
 
 ```
-type Team = 'puma' | 'lion';
+type Team = 'civilian' | 'soldier';
 type RoundPhase = 'live' | 'round-end'; // game/types.ts
 
 startRound() → assign teams, spawn from ScenarioConfig.teamSpawns, resetAll HP, equip pistol
-checkRoundEnd() → if all puma eliminated OR all lion eliminated → endRound()
+checkRoundEnd() → if all civilians eliminated OR all soldiers eliminated → endRound()
 endRound(winner) → RoundPhase 'round-end', banner, delay, startRound()
 ```
 

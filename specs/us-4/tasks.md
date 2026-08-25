@@ -8,14 +8,14 @@ Post type-split: weapon contracts in `weapons/`, round phase types in `game/`, d
 - [x] `weapon-registry.ts` — MVP pistol (`fireCooldownSeconds`; **damageByZone** added in US-3)
 - [x] `GameMode`, `RoundPhase` in `game/types.ts` (`'team-elimination'`, `'live' | 'round-end'`)
 - [x] Scenario `teamSpawns` on `arena-01` (consume in round start)
-- [x] Teams module (`puma` | `lion`)
+- [x] Teams module (`civilian` | `soldier`)
 
 ## Round service
 
 - [ ] Round store / service: `startRound`, `endRound`, `checkRoundEnd` using `RoundPhase`
-- [ ] Team assignment (Puma / Lion) + pick spawn from `ScenarioConfig.teamSpawns`
+- [ ] Team assignment (Civilians / Soldiers) + pick spawn from `ScenarioConfig.teamSpawns`
 - [ ] On `startRound`: full HP via health store `resetAll`, equip pistol from `Loadout` / weapon registry
-- [ ] `checkRoundEnd` → if all puma **or** all lion eliminated → `endRound(winner)`
+- [ ] `checkRoundEnd` → if all civilians **or** all soldiers eliminated → `endRound(winner)`
 - [ ] Round-end UI banner (winner team); delay; `startRound()` again
 
 ## Shooting

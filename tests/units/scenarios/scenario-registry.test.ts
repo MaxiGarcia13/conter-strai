@@ -10,13 +10,13 @@ describe('scenario-registry', () => {
     expect(scenario.bounds).toEqual({ width: 100, depth: 50, wallHeight: 3.5 });
   });
 
-  it('spawns puma west and lion east', () => {
-    expect(scenario.teamSpawns.puma.length).toBeGreaterThan(0);
-    expect(scenario.teamSpawns.lion.length).toBe(0);
-    for (const [spawnX] of scenario.teamSpawns.puma) {
+  it('spawns soldiers west and civilians east', () => {
+    expect(scenario.teamSpawns.soldier.length).toBeGreaterThan(0);
+    expect(scenario.teamSpawns.civilian.length).toBe(0);
+    for (const [spawnX] of scenario.teamSpawns.soldier) {
       expect(spawnX).toBeLessThan(0);
     }
-    for (const [spawnX] of scenario.teamSpawns.lion) {
+    for (const [spawnX] of scenario.teamSpawns.civilian) {
       expect(spawnX).toBeGreaterThan(0);
     }
   });

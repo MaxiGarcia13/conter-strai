@@ -4,7 +4,7 @@ Guidance for AI coding agents working on **Conter Strai**.
 
 ## Product
 
-Browser tactical shooter: **Puma** vs **Lion**, round-based team elimination. Landing is Astro-only; gameplay is an R3F island on `/play`.
+Browser tactical shooter: **Civilians** vs **Soldiers**, round-based team elimination. Landing is Astro-only; gameplay is an R3F island on `/play`.
 
 ## Source of truth
 
@@ -51,7 +51,7 @@ src/modules/
 ├── combat/      # HitboxPreset, damage, difficulty
 ├── weapons/     # pistol config, loadout
 ├── game/        # canvas, FPS controls, round types
-├── teams/       # puma | lion
+├── teams/       # civilian | soldier
 ├── textures/    # PBR assets
 └── props/       # prop registry (stub)
 ```

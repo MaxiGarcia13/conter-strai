@@ -24,6 +24,7 @@ export function ScenarioSoldiers({ scenario, skipKey }: ScenarioSoldiersProps) {
           return (
             <SoldierModel
               key={key}
+              entityId={key}
               position={position}
               rotationY={spawnYawFor(scenario, team, position)}
             />

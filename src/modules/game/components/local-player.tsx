@@ -5,11 +5,12 @@ import { Clone, useGLTF } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import { Vector3 } from 'three';
+import { HitboxMesh } from '@/modules/combat';
 import { getSoldierSkinById } from '@/modules/soldiers';
 import { useSoldierLocomotion } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { applySoldierAimPose, resolveSoldierAimRig } from '@/modules/soldiers/utils/aim-body-rig';
 import { disableSkinnedMeshCulling, getSoldierArmature, soldierScaleVector } from '@/modules/soldiers/utils/clone-soldier-root';
-import { LOCAL_PLAYER_ROOT_NAME, MODEL_FORWARD_YAW_OFFSET } from '../constants/player';
+import { LOCAL_PLAYER_ENTITY_ID, LOCAL_PLAYER_ROOT_NAME, MODEL_FORWARD_YAW_OFFSET } from '../constants/player';
 import { clearPlayerPoseIf, getCameraMode, getPlayerLocomotion, getPlayerPose, getPlayerTransform, setBodyAnchorY } from '../state/player-state';
 import { placeCameraAtHead } from '../utils/fps-head-camera';
 
@@ -97,6 +98,7 @@ export function LocalPlayer({ skinId = 'swat-guy' }: LocalPlayerProps) {
     <>
       <group ref={rigRef} name={LOCAL_PLAYER_ROOT_NAME}>
         <Clone ref={modelRef} object={source} scale={scale} />
+        <HitboxMesh hitboxPresetId={skin.hitboxPresetId} entityId={LOCAL_PLAYER_ENTITY_ID} />
       </group>
     </>
   );

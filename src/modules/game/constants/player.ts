@@ -22,5 +22,8 @@ export const MAX_FRAME_DELTA_SECONDS = 0.1;
 export const DEFAULT_LOCAL_TEAM = 'soldier' as const;
 export const DEFAULT_LOCAL_SPAWN_INDEX = 0;
 
+/** Entity id used for the local player's hitbox and health tracking. */
+export const LOCAL_PLAYER_ENTITY_ID = 'local-player';
+
 /** Scene-graph name of the local soldier rig; aim raycasts skip it. */
-export const LOCAL_PLAYER_ROOT_NAME = 'local-player';
+export const LOCAL_PLAYER_ROOT_NAME = LOCAL_PLAYER_ENTITY_ID;

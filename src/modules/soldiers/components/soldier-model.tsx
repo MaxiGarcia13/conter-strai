@@ -4,12 +4,16 @@ import { Clone, useGLTF } from '@react-three/drei';
 
 import { useEffect, useMemo, useRef } from 'react';
 
+import { HitboxMesh } from '@/modules/combat';
+
 import { getSoldierSkinById } from '../get-soldier-skin-by-id';
 import { useSoldierLocomotion } from '../hooks/use-soldier-locomotion';
 import { disableSkinnedMeshCulling, getSoldierArmature, soldierScaleVector } from '../utils/clone-soldier-root';
 
 interface SoldierModelProps {
   id?: SoldierSkinId;
+  /** Entity id for hitbox tagging; omit to skip hitbox colliders. */
+  entityId?: string;
   /** World position in meters; Y is ground level. */
   position?: [number, number, number];
   /** Yaw in radians; 0 faces +Z. */
@@ -20,6 +24,7 @@ interface SoldierModelProps {
 
 export function SoldierModel({
   id = 'swat-guy',
+  entityId,
   position = [0, 0, 0],
   rotationY = 0,
   animated = true,
@@ -49,6 +54,9 @@ export function SoldierModel({
   return (
     <group position={position} rotation={[0, rotationY, 0]}>
       <Clone ref={modelRef} object={source} scale={scale} />
+      {entityId && (
+        <HitboxMesh hitboxPresetId={skin.hitboxPresetId} entityId={entityId} />
+      )}
     </group>
   );
 }

@@ -29,7 +29,7 @@ stateDiagram-v2
 | Team      | ID         | Motif                                              |
 | --------- | ---------- | -------------------------------------------------- |
 | Civilians | `civilian` | Irregular / non-military side                      |
-| Soldiers  | `soldier`  | Military side — MVP skin `swat-guy` (SWAT soldier) |
+| Soldiers  | `soldier`  | Military side — default skin `swat-1` (also `swat-2` / `swat-3`) |
 
 Team IDs are `civilian` \| `soldier` everywhere in code. Display names: **Civilians** / **Soldiers** (`TEAM_DISPLAY_NAME`).
 
@@ -119,7 +119,7 @@ Units: **1 world unit = 1 meter**.
 | **Texture**      | Floor/wall GLB materials under `/assets/textures/`          | `forrest_ground`, `coral_fort_wall` |
 | **Prop**         | Placeable objects (trees, barrels, cover)                   | deferred (`props: []` on arena-01)  |
 | **Scenario**     | Map layout: bounds, materials, props, team spawns           | `arena-01`                          |
-| **Soldier skin** | Visual presets (`SoldierSkin`); hitbox via `hitboxPresetId` | `swat-guy`                          |
+| **Soldier skin** | Visual presets (`SoldierSkin`); hitbox via `hitboxPresetId`; clips from shared pack | `swat-1` (default), `swat-2`, `swat-3`, `remy`, `james`, `liza` |
 
 `ScenarioScene` reads config only — new arena / prop = registry + placements, not a new React scene.
 
@@ -129,7 +129,7 @@ Units: **1 world unit = 1 meter**.
 - `ScenarioScene` — floor + outer walls + `wallSegments` + generic `props`
 - `SoldierModel` — NPC spawns; `LocalPlayer` — one clone + mixer
 - `useFpsControls` — WASD, mouse, locomotion intent, collision
-- `useSoldierLocomotion` — idle / walk / run + jump / kneel
+- `useSoldierLocomotion` — idle / walk / run / crouch-walk + jump / kneel
 - `CameraHud` / `CrosshairHud` — mode label + screen crosshair; world aim marker on look-ray hit
 
 ### Camera modes (**C**)
@@ -144,15 +144,16 @@ Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-stat
 
 ### Locomotion / actions
 
-| Input        | Clip    | Notes                                      |
-| ------------ | ------- | ------------------------------------------ |
-| Stand still  | `idle`  | Default                                    |
-| WASD         | `walk`  | In-place; hips translation stripped        |
-| WASD + Space | `run`   | Faster move + run clip                     |
-| **F**        | `jump`  | One-shot; animation-only (no Y physics)    |
-| **E**        | `kneel` | Toggle; `LoopOnce` + clamp; cancel on WASD |
+| Input               | Clip              | Notes                                                                 |
+| ------------------- | ----------------- | --------------------------------------------------------------------- |
+| Stand still         | `idle`            | Default                                                               |
+| WASD                | `walk`            | In-place; hips translation stripped                                   |
+| WASD + Space        | `run`             | Faster move + run clip                                                |
+| **E**               | `kneel`           | Toggle; `LoopOnce` + clamp; WASD does **not** stand up                |
+| Kneel + WASD        | `crouch-walking`  | Loop; walk-speed only (Space run ignored)                             |
+| **F**               | `jump`            | One-shot; animation-only (no Y physics); clears kneel first           |
 
-Priority: blocking one-shots (US-4 `reloading` / `shooting`, jump) → kneel → locomotion → **`dying`** on elimination (US-3).
+Priority: blocking one-shots (jump; later US-4 `reloading` / `shooting`) → kneel + moving → crouch-walk → kneel + idle → locomotion → **`dying`** on elimination (US-3).
 
 ### Interior collision
 
@@ -170,10 +171,29 @@ Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`
 
 ### Testing
 
-| Layer          | Scope                                                                                           |
-| -------------- | ----------------------------------------------------------------------------------------------- |
-| **Vitest**     | Registries; clip resolve / hips strip; GLB JSON contract; locomotion state; collision; FPS hide |
-| **Playwright** | `/play` canvas, no `PropertyBinding` errors; crosshair; optional `__PLAY_TEST__` hook           |
+| Layer          | Scope                                                                                                                              |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Vitest**     | Registries; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide    |
+| **Playwright** | `/play` default `swat-1` + `?skin=remy`; no `PropertyBinding` errors; kneel + WASD stays crouched; optional `__PLAY_TEST__` hook   |
+
+## Characters — shipped US-6
+
+Locomotion and action clips load from `/assets/characters/shared/base-animations.glb`. Mesh GLBs are skins only.
+
+| Skin ids                         | Team       | Mesh path                                  |
+| -------------------------------- | ---------- | ------------------------------------------ |
+| `remy`, `james`, `liza`          | civilian   | `/assets/characters/civilians/<id>.glb`    |
+| `swat-1`, `swat-2`, `swat-3`     | soldier    | `/assets/characters/soldiers/<id>.glb`     |
+
+Default `/play` skin is `swat-1`. Until US-7 select ships, `/play?skin=<id>` via `resolvePlaySkinId`.
+
+**Skeleton contract:** Mixamo `Armature` with bone names `mixamorig:*` (colon form). Vendor exports with numbered prefixes (`mixamorig9:`, …) are rewritten in-asset (`npm run assets:normalize-characters`) so shared-pack tracks and aim/FPS lookups bind.
+
+**Required shared clips:** `idle`, `walk`, `run`, `jump`, `kneel`, `crouch-walking`, `dying`. `reloading` / `shooting` stay optional until US-4 adds them to the pack.
+
+**Clip resolve:** `useGLTF` mesh + shared pack; merge lists (**shared wins** on name); resolve by registry names (null if a required clip is missing); strip hips translation on `idle` / `walk` / `run` / `crouch-walking`.
+
+**Removed:** `/assets/soldiers/swat-soldier.glb` and skin id `swat-guy`.
 
 ## Combat — shipped US-3
 

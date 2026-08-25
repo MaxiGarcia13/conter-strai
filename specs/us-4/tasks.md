@@ -2,7 +2,7 @@
 
 Post type-split: weapon contracts in `weapons/`, round phase types in `game/`, damage via `combat/`. See [`specs/current/design.md#module-types`](../current/design.md#module-types).
 
-**Order:** Ship [**US-6**](../us-6/tasks.md) before weapon pose + pistol attach tasks below. Round service and shooting can start earlier — see [suggested order](../current/tasks.md#suggested-order).
+**Order:** US-6 is shipped — weapon pose + pistol attach can proceed. Round service and shooting are independent — see [suggested order](../current/tasks.md#suggested-order).
 
 ## Done (architecture foundation)
 
@@ -31,7 +31,7 @@ Post type-split: weapon contracts in `weapons/`, round phase types in `game/`, d
 
 ## Weapon mesh (hand attach)
 
-Runtime attach — keep `pistol_a.glb` separate from character mesh GLBs (do not bake into remy / swat-1).
+Runtime attach — keep `pistol_a.glb` separate from character mesh GLBs (do not bake into civilian / soldier skins).
 
 - [ ] Extend `PistolWeaponConfig` / weapon registry with `modelUrl` → `/assets/weapons/pistol_a.glb` (or current registry path)
 - [ ] Attach pistol clone to Mixamo **right hand** bone (`mixamorig:RightHand` / sanitized name) on local player + NPCs / dummy
@@ -40,9 +40,9 @@ Runtime attach — keep `pistol_a.glb` separate from character mesh GLBs (do not
 
 ## Weapon pose animations
 
-Clip playback only (no ammo / hitscan required for these checkboxes). Depends on US-6 shared pack.
+Clip playback only (no ammo / hitscan required for these checkboxes). Shared pack shipped in US-6.
 
-- [ ] Add `shooting` + `reloading` clips to `base-animations.glb`; map on `remy` / `swat-1`
+- [ ] Add `shooting` + `reloading` clips to `base-animations.glb`; map on all registered skins
 - [ ] Pointer-locked **LMB** → one-shot `shooting` (not while reloading/jumping)
 - [ ] **R** → one-shot `reloading` (busy until mixer finished)
 - [ ] Mixer priority: `reloading` > `jump` > `shooting` > kneel / crouch-walk > locomotion

@@ -5,7 +5,7 @@ Builds on combat health + weapon type contracts from the architecture type split
 ## Prerequisites
 
 - **US-3** — health store, `applyDamage`, hitboxes, HUD, elimination + `dying` clip *(shipped)*
-- **US-6** — before weapon pose clips (US-4.9–4.10) and pistol hand attach (US-4.11): shared animation pack, `remy` / `swat-1` meshes, legacy `swat-soldier.glb` removed. Round service and hitscan can land before or during US-6.
+- **US-6** *(shipped)* — shared animation pack, six skins (`remy` / `james` / `liza` + `swat-1` / `swat-2` / `swat-3`), legacy `swat-soldier.glb` removed. Weapon pose clips (US-4.9–4.10) and pistol hand attach (US-4.11) can proceed.
 
 ## useShooting hook
 
@@ -25,7 +25,7 @@ Builds on combat health + weapon type contracts from the architecture type split
 
 - **Pistol only** — `weapons/weapon-registry.ts` with `damageByZone` (see US-3); combat applies profile × difficulty
 - **Hand mesh:** load `pistol_a.glb` from registry `modelUrl`; parent under the soldier **RightHand** bone at runtime (local + NPCs). Grip offset is a small constant on the weapon config or attach helper — do not bake into character mesh GLBs.
-- **Fire/reload clips:** after US-6 removes `swat-soldier.glb`, add `reloading` / `shooting` to `base-animations.glb` so `remy` and `swat-1` share them.
+- **Fire/reload clips:** add `reloading` / `shooting` to `base-animations.glb` so all registered skins share them.
 - Hits pass `weaponId` on `DamageData` so the health bar drops by that weapon’s injury amounts
 - Future: knife (melee), rifle (primary), richer `Loadout` — each gets its own `damageByZone`
 

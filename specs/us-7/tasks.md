@@ -1,6 +1,6 @@
 # US-7 — Tasks
 
-Pre-play match select. Requires US-6 skins registered (`remy`, `swat-1`).
+Pre-play match select. Requires US-6 skins registered (`remy` / `james` / `liza`, `swat-1` / `swat-2` / `swat-3`).
 
 ## Spec / queue
 
@@ -30,11 +30,11 @@ Pre-play match select. Requires US-6 skins registered (`remy`, `swat-1`).
 - [ ] `GameCanvas` uses selected `scenarioId` (stop hardcoding only path if still default-only)
 - [ ] `resolveLocalSpawn` uses selected **team** (not always `soldier`)
 - [ ] `LocalPlayer` uses selected **skin**
-- [ ] Playwright: landing → select → play with civilian/`remy` and soldier/`swat-1` smoke paths
+- [ ] Playwright: landing → select → play with civilian/`remy` and soldier/`swat-1` smoke paths (other skins via select list)
 
 ## Out of scope here
 
-- Shared clip pipeline / crouch-walk (US-6)
+- Shared clip pipeline / crouch-walk (shipped US-6)
 - Round auto-assign implementation (US-4) beyond the US-4.8 note
 - Colyseus lobby (US-5)
 - Arena image upload / CDN

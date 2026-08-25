@@ -80,7 +80,7 @@ Full detail is in `.cursor/rules/` — follow those when they apply.
 
 ## Spec workflow
 
-- Open work: `specs/us-4` … `us-7` (and `tech-debt.md`)
+- Open work: `specs/us-4`, `us-5`, `us-7` (and `tech-debt.md`)
 - On ship: fold delta into `specs/current/`, add a **CHANGELOG** row, delete the delta folder
 - Cross-cutting refactors (e.g. type split): row under **Shipped — other** in CHANGELOG; keep reference docs in `current/design.md`
 

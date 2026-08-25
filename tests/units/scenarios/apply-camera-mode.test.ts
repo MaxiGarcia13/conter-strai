@@ -2,7 +2,7 @@ import type { PlayerTransform } from '@/modules/game/state/player-state';
 import { PerspectiveCamera } from 'three';
 
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_BODY_ANCHOR_Y } from '@/modules/game/constants/player';
+import { DEFAULT_BODY_ANCHOR_Y, PLAYER_EYE_HEIGHT } from '@/modules/game/constants/player';
 import { applyCameraMode } from '@/modules/game/utils/apply-camera-mode';
 
 function makeTransform(partial: Partial<PlayerTransform> = {}): PlayerTransform {
@@ -47,8 +47,8 @@ describe('applyCameraMode', () => {
   });
 
   it('lands the FPS pre-mount fallback at eye height while the anchor is still at rest', () => {
-    // Before LocalPlayer resolves, the anchor holds its default → PLAYER_EYE_HEIGHT - 0.08.
+    // Before LocalPlayer resolves, the anchor holds its default → PLAYER_EYE_HEIGHT - 0.05.
     const camera = place('fps', makeTransform(), DEFAULT_BODY_ANCHOR_Y);
-    expect(camera.position.y).toBeCloseTo(1.7 - 0.08, 3);
+    expect(camera.position.y).toBeCloseTo(PLAYER_EYE_HEIGHT - 0.05, 3);
   });
 });

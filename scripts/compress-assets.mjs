@@ -26,9 +26,13 @@ const TARGETS = [
 
   // Civilians
   'public/assets/characters/civilians/remy.glb',
+  'public/assets/characters/civilians/liza.glb',
+  'public/assets/characters/civilians/james.glb',
 
   // Soldiers
   'public/assets/characters/soldiers/swat-1.glb',
+  'public/assets/characters/soldiers/swat-2.glb',
+  'public/assets/characters/soldiers/swat-3.glb',
 
   // Weapons
   'public/assets/weapons/pistol_a.glb',

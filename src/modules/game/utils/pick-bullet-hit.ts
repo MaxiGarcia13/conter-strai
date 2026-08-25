@@ -63,10 +63,26 @@ export function pickBulletHit(
       if (tags.entityId === localEntityId) {
         continue;
       }
+      let hitZone: BulletHitResult['hitZone'] = (tags.hitZone as BulletHitResult['hitZone']) ?? 'body';
+      // Mesh hits only carry entityId on the root — refine zone from a nearby hitbox.
+      if (!tags.hitZone) {
+        for (const later of intersections) {
+          if (later.distance + 0.02 < ix.distance) {
+            continue;
+          }
+          if (later.distance > ix.distance + 0.45) {
+            break;
+          }
+          const laterTags = resolveHitTags(later.object);
+          if (laterTags?.entityId === tags.entityId && laterTags.hitZone) {
+            hitZone = laterTags.hitZone as BulletHitResult['hitZone'];
+            break;
+          }
+        }
+      }
       return {
         entityId: tags.entityId,
-        // Mesh hits inherit entityId from the soldier root; default zone to body.
-        hitZone: (tags.hitZone as BulletHitResult['hitZone']) ?? 'body',
+        hitZone,
         point: ix.point.toArray() as [number, number, number],
         distance: ix.distance,
       };

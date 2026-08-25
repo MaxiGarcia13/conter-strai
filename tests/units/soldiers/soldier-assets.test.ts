@@ -28,7 +28,7 @@ describe('shared animation pack', () => {
   });
 
   it('has required action clips', () => {
-    const requiredClips = ['jump', 'kneel', 'dying'];
+    const requiredClips = ['jump', 'kneel', 'dying', 'shooting', 'hit-reaction'];
     for (const clip of requiredClips) {
       expect(animationNames).toContain(clip);
     }

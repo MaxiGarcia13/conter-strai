@@ -1,6 +1,6 @@
 import type { SoldierSkinId } from '@/modules/soldiers';
 
-const DEFAULT_SKIN_ID: SoldierSkinId = 'remy';
+const DEFAULT_SKIN_ID: SoldierSkinId = 'swat-1';
 
 const PLAY_SKIN_IDS = new Set<SoldierSkinId>([
   'remy',

@@ -38,7 +38,7 @@ const arena01Layout: ArenaLayout = {
 const arena01Spawns: SpawnerConfig = {
   teamSpawns: {
     soldier: [[-40, 0, -8]],
-    civilian: [[-46, 0, -8]],
+    civilian: [[46, 0, -8]],
   },
 };
 

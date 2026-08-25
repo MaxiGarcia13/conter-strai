@@ -6,6 +6,7 @@ import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import { AnimationMixer, LoopOnce, LoopRepeat } from 'three';
 
+import { acknowledgeHitReaction } from '../state/hit-reaction-state';
 import { resolveAnimationClipKey } from '../utils/resolve-animation-clip-key';
 import { resolveSoldierClips } from '../utils/resolve-soldier-clips';
 
@@ -23,10 +24,15 @@ interface UseSoldierLocomotionOptions {
   state?: LocomotionState;
   /** Per-frame state source (local player); wins over `state` when set. */
   getLocomotionState?: () => LocomotionState;
-  /** Active jump/kneel pose; wins over locomotion while set. */
+  /** Active jump/kneel/dying pose; wins over locomotion while set. */
   getPose?: () => SoldierActionId | null;
+  /** Entity id for hit-reaction acknowledge (local player + NPCs). */
+  entityId?: string;
   /** Pose owner clears its jump request when the one-shot mixer finishes. */
   onJumpFinished?: () => void;
+  onShootingFinished?: () => void;
+  onHitReactionStarted?: () => void;
+  onHitReactionFinished?: () => void;
   enabled?: boolean;
 }
 
@@ -40,21 +46,60 @@ interface SoldierActions {
   jump: AnimationAction;
   kneel: AnimationAction;
   dying: AnimationAction;
+  shooting?: AnimationAction;
+  hitReaction?: AnimationAction;
 }
 
-/** Drives idle / walk / run crossfades plus one-shot jump and kneel poses on a skinned soldier root. */
+const ONE_SHOT_KEYS = ['jump', 'kneel', 'dying', 'shooting', 'hitReaction'] as const;
+type OneShotKey = (typeof ONE_SHOT_KEYS)[number];
+
+function isOneShotKey(key: ClipKey): key is OneShotKey {
+  return (ONE_SHOT_KEYS as readonly string[]).includes(key);
+}
+
+function playDyingHard(mixer: AnimationMixer, actions: SoldierActions): void {
+  // Crossfades can leave idle weighted on; death must fully own the skeleton.
+  mixer.stopAllAction();
+  const dying = actions.dying;
+  dying.reset();
+  dying.setLoop(LoopOnce, 1);
+  dying.clampWhenFinished = true;
+  dying.setEffectiveWeight(1);
+  dying.play();
+}
+
+/** Drives idle / walk / run crossfades plus one-shot jump, kneel, and dying poses. */
 export function useSoldierLocomotion(
   modelRef: RefObject<Object3D | null>,
   clips: AnimationClip[],
   animationConfig: SoldierAnimationClips,
   options: UseSoldierLocomotionOptions = {},
 ): void {
-  const { enabled = true, state = 'idle', getLocomotionState, getPose, onJumpFinished } = options;
+  const {
+    enabled = true,
+    state = 'idle',
+    getLocomotionState,
+    getPose,
+    entityId,
+    onJumpFinished,
+    onShootingFinished,
+    onHitReactionStarted,
+    onHitReactionFinished,
+  } = options;
   const mixerRef = useRef<AnimationMixer | null>(null);
   const actionsRef = useRef<SoldierActions | null>(null);
   const clipsRef = useRef(clips);
   const prevKeyRef = useRef<ClipKey>('idle');
+  const getPoseRef = useRef(getPose);
+  const getLocomotionStateRef = useRef(getLocomotionState);
+  const stateRef = useRef(state);
+  const entityIdRef = useRef(entityId);
   clipsRef.current = clips;
+  getPoseRef.current = getPose;
+  getLocomotionStateRef.current = getLocomotionState;
+  stateRef.current = state;
+  entityIdRef.current = entityId;
+
   const clipsKey = useMemo(
     () => clips.map((clip) => clip.name).join('|'),
     [clips],
@@ -64,7 +109,7 @@ export function useSoldierLocomotion(
     prevKeyRef.current = 'idle';
 
     for (const action of Object.values(actionsRef.current ?? {})) {
-      action.stop();
+      action?.stop();
     }
     actionsRef.current = null;
 
@@ -93,19 +138,32 @@ export function useSoldierLocomotion(
       kneel: mixer.clipAction(resolved.kneel),
       dying: mixer.clipAction(resolved.dying),
     };
+    if (resolved.shooting) {
+      actions.shooting = mixer.clipAction(resolved.shooting);
+    }
+    if (resolved.hitReaction) {
+      actions.hitReaction = mixer.clipAction(resolved.hitReaction);
+    }
     for (const key of ['idle', 'walk', 'run', 'crouchWalking'] as const) {
       actions[key].loop = LoopRepeat;
     }
     // One-shots hold their final frame until the pose owner lets them go.
-    for (const key of ['jump', 'kneel', 'dying'] as const) {
-      actions[key].loop = LoopOnce;
-      actions[key].clampWhenFinished = true;
+    for (const key of ONE_SHOT_KEYS) {
+      const action = actions[key];
+      if (action) {
+        action.loop = LoopOnce;
+        action.clampWhenFinished = true;
+      }
     }
     actions.idle.reset().setEffectiveWeight(1).play();
 
     const onFinished = (event: { action: AnimationAction }) => {
       if (event.action === actions.jump) {
         onJumpFinished?.();
+      } else if (event.action === actions.shooting) {
+        onShootingFinished?.();
+      } else if (event.action === actions.hitReaction) {
+        onHitReactionFinished?.();
       }
     };
     mixer.addEventListener('finished', onFinished);
@@ -116,7 +174,7 @@ export function useSoldierLocomotion(
 
     return () => {
       for (const action of Object.values(actions)) {
-        action.stop();
+        action?.stop();
       }
       mixer.removeEventListener('finished', onFinished);
       activeMixers.delete(mixer);
@@ -134,10 +192,15 @@ export function useSoldierLocomotion(
     animationConfig.run,
     animationConfig.walk,
     animationConfig.crouchWalking,
+    animationConfig.shooting,
+    animationConfig.hitReaction,
     clipsKey,
     enabled,
     modelRef,
     onJumpFinished,
+    onShootingFinished,
+    onHitReactionStarted,
+    onHitReactionFinished,
   ]);
 
   useFrame((_, delta) => {
@@ -156,16 +219,32 @@ export function useSoldierLocomotion(
       return;
     }
 
-    const pose = getPose?.();
-    const locomotion = getLocomotionState?.() ?? state;
-    const targetKey = resolveAnimationClipKey(pose, locomotion);
+    const pose = getPoseRef.current?.() ?? null;
+    const locomotion = getLocomotionStateRef.current?.() ?? stateRef.current;
+    let targetKey = resolveAnimationClipKey(pose, locomotion);
+
+    // Skip optional clips that are not loaded for this skin.
+    if (isOneShotKey(targetKey) && !actions[targetKey]) {
+      targetKey = locomotion;
+    }
 
     if (targetKey !== prevKeyRef.current) {
-      const from = actions[prevKeyRef.current];
-      const to = actions[targetKey];
-
-      to.reset().setEffectiveWeight(1).play();
-      from.crossFadeTo(to, CROSSFADE_SECONDS, false);
+      if (targetKey === 'dying') {
+        playDyingHard(mixer, actions);
+      } else {
+        const from = actions[prevKeyRef.current];
+        const to = actions[targetKey];
+        if (to) {
+          to.reset().setEffectiveWeight(1).play();
+          if (from) {
+            from.crossFadeTo(to, CROSSFADE_SECONDS, false);
+          }
+          if (targetKey === 'hitReaction' && entityIdRef.current) {
+            acknowledgeHitReaction(entityIdRef.current);
+            onHitReactionStarted?.();
+          }
+        }
+      }
       prevKeyRef.current = targetKey;
     }
 

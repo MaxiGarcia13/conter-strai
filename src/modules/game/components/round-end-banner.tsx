@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 import { useRoundStore } from '../state/round-store';
 
-const ROUND_END_DELAY_MS = 3000;
+const ROUND_END_DELAY_MS = 4000;
 
 /** Full-screen overlay shown when a round ends; auto-restarts after a delay. */
 export function RoundEndBanner() {

@@ -16,10 +16,18 @@ export interface SoldierAnimationClips {
   dying: string;
   reloading?: string;
   shooting?: string;
+  hitReaction?: string;
 }
 
-/** Action poses layered above locomotion; `reloading` / `shooting` join with US-4. */
-export type SoldierActionId = 'jump' | 'kneel' | 'dying' | 'crouchWalking';
+/** Action poses layered above locomotion. */
+export type SoldierActionId
+  = | 'jump'
+    | 'kneel'
+    | 'dying'
+    | 'crouchWalking'
+    | 'shooting'
+    | 'hitReaction'
+    | 'reloading';
 
 /** Per-skin first-person camera tweaks (head bone is the base; offsets are meters). */
 export interface SoldierFpsViewConfig {

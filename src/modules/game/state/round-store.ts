@@ -11,7 +11,7 @@ import {
   LOCAL_PLAYER_ENTITY_ID,
 } from '../constants/player';
 import { checkRoundEnd } from '../services/check-round-end';
-import { resetPlayerTransform } from './player-state';
+import { resetPlayerTransform, setPlayerPose } from './player-state';
 
 const DEFAULT_SCENARIO_ID = 'arena-01' satisfies ScenarioId;
 
@@ -38,6 +38,7 @@ export const useRoundStore = create<RoundState>()((set, get) => ({
     const scenario = getScenarioById(scenarioId);
 
     useHealthStore.getState().resetAll();
+    setPlayerPose(null);
 
     const roster: RosterEntry[] = [];
     const teams: Team[] = ['soldier', 'civilian'];

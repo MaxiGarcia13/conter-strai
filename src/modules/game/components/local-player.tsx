@@ -7,10 +7,12 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Vector3 } from 'three';
 import { HitboxMesh } from '@/modules/combat';
 import { getSoldierSkinById } from '@/modules/soldiers';
+import { DYING_DROP_SECONDS, dyingGroundOffsetY } from '@/modules/soldiers/constants/dying';
 import { useSoldierAnimationClips } from '@/modules/soldiers/hooks/use-soldier-animation-clips';
 import { useSoldierLocomotion } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { applySoldierAimPose, resolveSoldierAimRig } from '@/modules/soldiers/utils/aim-body-rig';
 import { disableSkinnedMeshCulling, getSoldierArmature, soldierScaleVector } from '@/modules/soldiers/utils/clone-soldier-root';
+import { resolveLocalPlayerPose } from '@/modules/soldiers/utils/resolve-soldier-pose';
 import { LOCAL_PLAYER_ENTITY_ID, LOCAL_PLAYER_ROOT_NAME, MODEL_FORWARD_YAW_OFFSET } from '../constants/player';
 import { clearPlayerPoseIf, getCameraMode, getPlayerLocomotion, getPlayerPose, getPlayerTransform, setBodyAnchorY } from '../state/player-state';
 import { placeCameraAtHead } from '../utils/fps-head-camera';
@@ -21,6 +23,11 @@ interface LocalPlayerProps {
 
 // Stable identity: the locomotion mixer captures it once in its mount effect.
 const clearJumpPose = () => clearPlayerPoseIf('jump');
+const clearShootingPose = () => clearPlayerPoseIf('shooting');
+function clearInterruptedPoses() {
+  clearPlayerPoseIf('shooting');
+  clearPlayerPoseIf('kneel');
+}
 
 const headWorldPosition = new Vector3();
 
@@ -35,6 +42,7 @@ export function LocalPlayer({ skinId = 'swat-1' }: LocalPlayerProps) {
   const rigRef = useRef<Group>(null);
   const modelRef = useRef<Group>(null);
   const aimRigRef = useRef<SoldierAimRig | null>(null);
+  const dropProgressRef = useRef(0);
   const camera = useThree((state) => state.camera);
   const skin = useMemo(() => getSoldierSkinById(skinId), [skinId]);
   const gltf = useGLTF(skin.meshData.modelUrl);
@@ -63,22 +71,35 @@ export function LocalPlayer({ skinId = 'swat-1' }: LocalPlayerProps) {
     animations,
     skin.meshData.animations,
     {
+      entityId: LOCAL_PLAYER_ENTITY_ID,
       getLocomotionState: getPlayerLocomotion,
-      getPose: getPlayerPose,
+      getPose: () => resolveLocalPlayerPose(getPlayerPose(), LOCAL_PLAYER_ENTITY_ID),
       onJumpFinished: clearJumpPose,
+      onShootingFinished: clearShootingPose,
+      onHitReactionStarted: clearInterruptedPoses,
     },
   );
 
   // Declared after useSoldierLocomotion so placement runs after its mixer update.
-  useFrame(() => {
+  useFrame((_, delta) => {
     const rigGroup = rigRef.current;
     if (!rigGroup) {
       return;
     }
 
     const transform = getPlayerTransform();
+    const dying = getPlayerPose() === 'dying';
+    if (dying) {
+      dropProgressRef.current = Math.min(1, dropProgressRef.current + delta / DYING_DROP_SECONDS);
+    } else {
+      dropProgressRef.current = 0;
+    }
 
-    rigGroup.position.set(transform.x, 0, transform.z);
+    rigGroup.position.set(
+      transform.x,
+      dyingGroundOffsetY(dropProgressRef.current),
+      transform.z,
+    );
     rigGroup.rotation.y = transform.yaw + MODEL_FORWARD_YAW_OFFSET;
 
     const aimRig = aimRigRef.current;
@@ -87,10 +108,17 @@ export function LocalPlayer({ skinId = 'swat-1' }: LocalPlayerProps) {
     }
 
     const fpsActive = getCameraMode() === 'fps';
-    applySoldierAimPose(aimRig, transform.pitch, fpsActive);
+    // Dying owns the full skeleton — aim pitch / FPS head-hide would fight the clip.
+    if (dying) {
+      for (const { bone, restScale } of aimRig.hiddenBones) {
+        bone.scale.copy(restScale);
+      }
+    } else {
+      applySoldierAimPose(aimRig, transform.pitch, fpsActive);
+    }
     // Shoulder booms pivot on this; getWorldPosition refreshes the bone chain post-mixer.
     setBodyAnchorY(aimRig.head.getWorldPosition(headWorldPosition).y);
-    if (fpsActive) {
+    if (fpsActive && !dying) {
       placeCameraAtHead(camera, aimRig.head, transform, skin.meshData.fpsView?.eyeOffsetY ?? 0);
     }
   });

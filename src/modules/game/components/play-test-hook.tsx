@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 import { countActiveSoldierMixers as countLocomotionMixers } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { SOLDIER_ROOT_NAME } from '@/modules/soldiers/utils/clone-soldier-root';
 import { resolveAnimationClipKey } from '@/modules/soldiers/utils/resolve-animation-clip-key';
+import { resolveLocalPlayerPose } from '@/modules/soldiers/utils/resolve-soldier-pose';
+import { LOCAL_PLAYER_ENTITY_ID } from '../constants/player';
 import {
   cycleCameraMode,
   getCameraMode,
@@ -97,7 +99,10 @@ export function PlayTestHook() {
       window.__PLAY_TEST__ = {
         soldierCount,
         mixerReady: countLocomotionMixers() > 0,
-        activeClip: resolveAnimationClipKey(getPlayerPose(), getPlayerLocomotion()),
+        activeClip: resolveAnimationClipKey(
+          resolveLocalPlayerPose(getPlayerPose(), LOCAL_PLAYER_ENTITY_ID),
+          getPlayerLocomotion(),
+        ),
         skinId: resolvePlaySkinId(),
         version: HOOK_VERSION,
         debug: {

@@ -2,6 +2,7 @@ import type { DamageData, Difficulty, HealthState, HealthSystem } from './types'
 
 import type { EntityId } from '@/modules/soldiers';
 import { create } from 'zustand';
+import { requestHitReaction } from '@/modules/soldiers/state/hit-reaction-state';
 import { weapons } from '@/modules/weapons/weapon-registry';
 import { applyDamage as computeNextHp } from './apply-damage';
 import { DEFAULT_MAX_HP } from './constants/health';
@@ -41,6 +42,9 @@ export const useHealthStore = create<HealthStoreState>()((set, get) => ({
       isEliminated: isEliminated(nextHp),
     };
     set((state) => ({ healthById: { ...state.healthById, [targetId]: nextState } }));
+    if (!nextState.isEliminated) {
+      requestHitReaction(targetId);
+    }
     return nextHp;
   },
   resetAll: () => set({ healthById: {} }),

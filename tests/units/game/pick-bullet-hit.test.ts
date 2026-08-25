@@ -58,6 +58,24 @@ describe('pickBulletHit', () => {
     expect(result?.hitZone).toBe('head');
   });
 
+  it('refines body default to head when a hitbox follows the mesh hit', () => {
+    const root = new Obj3D();
+    root.userData = { entityId: 'civilian-0' };
+    const skin = new Mesh();
+    skin.visible = true;
+    root.add(skin);
+
+    const headBox = new Mesh();
+    headBox.visible = false;
+    headBox.userData = { entityId: 'civilian-0', hitZone: 'head' };
+
+    const result = pickBulletHit(
+      [stubIntersection(skin, 4), stubIntersection(headBox, 4.1)],
+      'local-player',
+    );
+    expect(result?.hitZone).toBe('head');
+  });
+
   it('skips the local player and continues', () => {
     const localRoot = new Obj3D();
     localRoot.name = LOCAL_PLAYER_ROOT_NAME;

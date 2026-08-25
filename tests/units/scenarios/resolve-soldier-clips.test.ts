@@ -34,6 +34,8 @@ describe('resolve-soldier-clips', () => {
       'jump',
       'kneel',
       'dying',
+      'shooting',
+      'hitReaction',
     ]);
   });
 
@@ -50,13 +52,13 @@ describe('resolve-soldier-clips', () => {
     expect(resolved).toBeNull();
   });
 
-  it('strips hips translation from locomotion but keeps it on action clips', () => {
+  it('strips hips translation from locomotion and dying; keeps it on jump/kneel', () => {
     const resolved = resolveSoldierClips(
       Object.values(skin.meshData.animations).map(clipWithHipsTrack),
       skin.meshData.animations,
     )!;
 
-    for (const key of ['idle', 'walk', 'run', 'crouchWalking'] as const) {
+    for (const key of ['idle', 'walk', 'run', 'crouchWalking', 'dying'] as const) {
       expect(resolved[key].tracks.some((track) => HIPS_TRACK.test(track.name))).toBe(false);
     }
     // Without these tracks jump never leaves the ground and kneel never crouches.
@@ -65,20 +67,29 @@ describe('resolve-soldier-clips', () => {
     }
   });
 
-  it('optional reloading/shooting absent returns no error', () => {
+  it('optional reloading absent returns no error', () => {
+    const config = { ...skin.meshData.animations };
+    delete (config as { reloading?: string }).reloading;
     const resolved = resolveSoldierClips(
-      Object.values(skin.meshData.animations).map(clipWithHipsTrack),
-      skin.meshData.animations,
+      Object.values(config).map(clipWithHipsTrack),
+      config,
     )!;
     expect(resolved.reloading).toBeUndefined();
-    expect(resolved.shooting).toBeUndefined();
+    expect(resolved.shooting?.name).toBe('shooting');
+    expect(resolved.hitReaction?.name).toBe('hit-reaction');
   });
 
-  it('optional reloading/shooting present resolves them', () => {
-    const config = { ...skin.meshData.animations, reloading: 'reloading', shooting: 'shooting' };
+  it('optional reloading/shooting/hitReaction present resolves them', () => {
+    const config = {
+      ...skin.meshData.animations,
+      reloading: 'reloading',
+      shooting: 'shooting',
+      hitReaction: 'hit-reaction',
+    };
     const clips = Object.values(config).map(clipWithHipsTrack);
     const resolved = resolveSoldierClips(clips, config)!;
     expect(resolved.reloading?.name).toBe('reloading');
     expect(resolved.shooting?.name).toBe('shooting');
+    expect(resolved.hitReaction?.name).toBe('hit-reaction');
   });
 });

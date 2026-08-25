@@ -11,6 +11,8 @@ const SHARED_CLIP_MAP = {
   jump: 'jump',
   kneel: 'kneel',
   dying: 'dying',
+  shooting: 'shooting',
+  hitReaction: 'hit-reaction',
 } as const;
 
 export const soldierSkins: Record<SoldierSkinId, SoldierSkin> = {

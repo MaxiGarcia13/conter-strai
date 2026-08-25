@@ -7,6 +7,7 @@ import { DEFAULT_LOCAL_TEAM, LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/const
 import { useRoundStore } from '@/modules/game/state/round-store';
 import { DEFAULT_WEAPON_ID, weapons } from '@/modules/weapons/weapon-registry';
 import { resolveHitDamage } from '../services/resolve-hit-damage';
+import { getPlayerPose, setPlayerPose } from '../state/player-state';
 import { pickBulletHit } from '../utils/pick-bullet-hit';
 
 const SCREEN_CENTER = new Vector2(0, 0);
@@ -39,6 +40,12 @@ export function useShooting(domElement: HTMLElement | null) {
         return;
       }
       lastFireRef.current = now;
+
+      const pose = getPlayerPose();
+      if (pose === 'jump' || pose === 'reloading' || pose === 'dying') {
+        return;
+      }
+      setPlayerPose('shooting');
 
       camera.updateMatrixWorld();
       const raycaster = raycasterRef.current;

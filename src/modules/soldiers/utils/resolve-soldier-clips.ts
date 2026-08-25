@@ -13,6 +13,7 @@ export interface ResolvedSoldierClips {
   dying: AnimationClip;
   reloading?: AnimationClip;
   shooting?: AnimationClip;
+  hitReaction?: AnimationClip;
 }
 
 const CLIP_KEYS = [
@@ -25,13 +26,20 @@ const CLIP_KEYS = [
   'dying',
 ] as const;
 
-const OPTIONAL_KEYS = ['reloading', 'shooting'] as const;
+const OPTIONAL_KEYS = ['reloading', 'shooting', 'hitReaction'] as const;
 
-// Locomotion must play in place; action clips keep hips translation or the
-// body never crouches / leaves the ground.
-const LOCOMOTION_KEYS: readonly (keyof ResolvedSoldierClips)[] = ['idle', 'walk', 'run', 'crouchWalking'];
+// In-place playback: locomotion always; dying too — the shared pack's dying
+// hips Y runs to ~105 (vs ~±10 on jump/kneel), which launches the mesh instead
+// of collapsing. Rotations alone still read as a fall.
+const STRIP_HIPS_KEYS: readonly (keyof ResolvedSoldierClips)[] = [
+  'idle',
+  'walk',
+  'run',
+  'crouchWalking',
+  'dying',
+];
 
-/** Resolves registry clip names; locomotion gets hips root motion stripped for in-place playback. */
+/** Resolves registry clip names; selected clips get hips root motion stripped. */
 export function resolveSoldierClips(
   clips: AnimationClip[],
   config: SoldierAnimationClips,
@@ -48,7 +56,7 @@ export function resolveSoldierClips(
     if (!source) {
       return null;
     }
-    resolved[key] = LOCOMOTION_KEYS.includes(key) ? stripHipsTranslation(source) : source;
+    resolved[key] = STRIP_HIPS_KEYS.includes(key) ? stripHipsTranslation(source) : source;
   }
 
   for (const key of OPTIONAL_KEYS) {

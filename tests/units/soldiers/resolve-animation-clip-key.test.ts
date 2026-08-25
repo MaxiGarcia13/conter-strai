@@ -9,9 +9,11 @@ describe('resolveAnimationClipKey', () => {
     expect(resolveAnimationClipKey(null, 'run')).toBe('run');
   });
 
-  it('returns pose when pose is jump or dying', () => {
+  it('returns pose when pose is jump, shooting, or dying', () => {
     expect(resolveAnimationClipKey('jump', 'idle')).toBe('jump');
     expect(resolveAnimationClipKey('jump', 'walk')).toBe('jump');
+    expect(resolveAnimationClipKey('shooting', 'walk')).toBe('shooting');
+    expect(resolveAnimationClipKey('hitReaction', 'run')).toBe('hitReaction');
     expect(resolveAnimationClipKey('dying', 'run')).toBe('dying');
   });
 

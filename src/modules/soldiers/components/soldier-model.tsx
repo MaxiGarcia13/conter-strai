@@ -1,12 +1,10 @@
 import type { Group } from 'three';
 import type { SoldierActionId, SoldierSkinId } from '../types';
 import { Clone, useGLTF } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
 
 import { useEffect, useMemo, useRef } from 'react';
 import { HitboxMesh, useHealthStore } from '@/modules/combat';
 
-import { DYING_DROP_SECONDS, dyingGroundOffsetY } from '../constants/dying';
 import { getSoldierSkinById } from '../get-soldier-skin-by-id';
 import { useSoldierAnimationClips } from '../hooks/use-soldier-animation-clips';
 import { useSoldierLocomotion } from '../hooks/use-soldier-locomotion';
@@ -32,10 +30,8 @@ export function SoldierModel({
   rotationY = 0,
   animated = true,
 }: SoldierModelProps) {
-  const rootRef = useRef<Group>(null);
   const modelRef = useRef<Group>(null);
   const entityIdRef = useRef(entityId);
-  const dropProgressRef = useRef(0);
   entityIdRef.current = entityId;
 
   const skin = useMemo(() => getSoldierSkinById(id), [id]);
@@ -72,31 +68,8 @@ export function SoldierModel({
     }
   }, [source]);
 
-  // In-clip dying has no hips fall (root motion stripped); ease the root onto the floor.
-  useFrame((_, delta) => {
-    const root = rootRef.current;
-    if (!root) {
-      return;
-    }
-
-    const dying = getPoseRef.current() === 'dying';
-    if (dying) {
-      dropProgressRef.current = Math.min(1, dropProgressRef.current + delta / DYING_DROP_SECONDS);
-      setTimeout(() => {
-        root.position.set(
-          position[0],
-          position[1] + dyingGroundOffsetY(dropProgressRef.current),
-          position[2],
-        );
-      }, 1000);
-    } else {
-      dropProgressRef.current = 0;
-    }
-  });
-
   return (
     <group
-      ref={rootRef}
       position={position}
       rotation={[0, rotationY, 0]}
       userData={entityId ? { entityId } : undefined}

@@ -52,17 +52,16 @@ describe('resolve-soldier-clips', () => {
     expect(resolved).toBeNull();
   });
 
-  it('strips hips translation from locomotion and dying; keeps it on jump/kneel', () => {
+  it('strips hips translation from locomotion; keeps it on pose clips', () => {
     const resolved = resolveSoldierClips(
       Object.values(skin.meshData.animations).map(clipWithHipsTrack),
       skin.meshData.animations,
     )!;
 
-    for (const key of ['idle', 'walk', 'run', 'crouchWalking', 'dying'] as const) {
+    for (const key of ['idle', 'walk', 'run', 'crouchWalking'] as const) {
       expect(resolved[key].tracks.some((track) => HIPS_TRACK.test(track.name))).toBe(false);
     }
-    // Without these tracks jump never leaves the ground and kneel never crouches.
-    for (const key of ['jump', 'kneel'] as const) {
+    for (const key of ['jump', 'kneel', 'dying'] as const) {
       expect(resolved[key].tracks.some((track) => HIPS_TRACK.test(track.name))).toBe(true);
     }
   });

@@ -33,10 +33,10 @@ Keep if the next US needs it; document or implement so it is not misleading dead
 
 No god files today (~150 lines max). Prefer small extractions when editing these:
 
-| File                              | Why                                     |
-| --------------------------------- | --------------------------------------- |
-| `house-helpers.ts`                | Wall segments with doorway holes        |
-| `use-fps-controls.ts`             | Pointer lock + WASD + bounds clamp      |
-| `scenario-walls.tsx`              | Outer perimeter + segments + UV tiling  |
-| `use-scenario-texture-library.ts` | PBR map load + material assembly        |
-| `use-soldier-locomotion.ts`       | Mixer lifecycle + crossfade + hips lock |
+| File                              | Why                                    |
+| --------------------------------- | -------------------------------------- |
+| `house-helpers.ts`                | Wall segments with doorway holes       |
+| `use-fps-controls.ts`             | Pointer lock + WASD + bounds clamp     |
+| `scenario-walls.tsx`              | Outer perimeter + segments + UV tiling |
+| `use-scenario-texture-library.ts` | PBR map load + material assembly       |
+| `use-soldier-locomotion.ts`       | Mixer lifecycle + crossfade            |

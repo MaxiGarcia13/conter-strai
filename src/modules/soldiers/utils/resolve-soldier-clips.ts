@@ -28,15 +28,12 @@ const CLIP_KEYS = [
 
 const OPTIONAL_KEYS = ['reloading', 'shooting', 'hitReaction'] as const;
 
-// In-place playback: locomotion always; dying too — the shared pack's dying
-// hips Y runs to ~105 (vs ~±10 on jump/kneel), which launches the mesh instead
-// of collapsing. Rotations alone still read as a fall.
+// In-place playback: strip horizontal root motion from locomotion clips only.
 const STRIP_HIPS_KEYS: readonly (keyof ResolvedSoldierClips)[] = [
   'idle',
   'walk',
   'run',
   'crouchWalking',
-  'dying',
 ];
 
 /** Resolves registry clip names; selected clips get hips root motion stripped. */

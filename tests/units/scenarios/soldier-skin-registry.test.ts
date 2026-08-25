@@ -9,39 +9,38 @@ vi.mock('@react-three/drei', () => ({
   useGLTF: { preload: vi.fn() },
 }));
 
+const EXPECTED_URLS: Record<keyof typeof soldierSkins, string> = {
+  remy: '/assets/characters/civilians/remy.glb',
+  james: '/assets/characters/civilians/james.glb',
+  liza: '/assets/characters/civilians/liza.glb',
+  'swat-1': '/assets/characters/soldiers/swat-1.glb',
+  'swat-2': '/assets/characters/soldiers/swat-2.glb',
+  'swat-3': '/assets/characters/soldiers/swat-3.glb',
+};
+
+const SHARED_CLIP_MAP = {
+  idle: 'idle',
+  walk: 'walk',
+  run: 'run',
+  crouchWalking: 'crouch-walking',
+  jump: 'jump',
+  kneel: 'kneel',
+  dying: 'dying',
+};
+
 describe('soldier-skin-registry', () => {
-  const swat1Skin = getSoldierSkinById('swat-1');
-  const remySkin = getSoldierSkinById('remy');
-
-  it('resolves the swat-1 GLB url', () => {
-    expect(soldierSkins['swat-1']).toBeDefined();
-    expect(swat1Skin.meshData.modelUrl).toBe('/assets/characters/soldiers/swat-1.glb');
+  it('registers all playable skin ids', () => {
+    expect(Object.keys(soldierSkins).sort()).toEqual(Object.keys(EXPECTED_URLS).sort());
   });
 
-  it('resolves the remy GLB url', () => {
-    expect(soldierSkins['remy']).toBeDefined();
-    expect(remySkin.meshData.modelUrl).toBe('/assets/characters/civilians/remy.glb');
-  });
-
-  it('maps locomotion and action clip names for swat-1', () => {
-    expect(swat1Skin.meshData.animations).toEqual({
-      idle: 'idle',
-      walk: 'walk',
-      run: 'run',
-      crouchWalking: 'crouch-walking',
-      jump: 'jump',
-      kneel: 'kneel',
-      dying: 'dying',
+  for (const [id, modelUrl] of Object.entries(EXPECTED_URLS)) {
+    it(`resolves ${id} GLB url and shared pack`, () => {
+      const skin = getSoldierSkinById(id as keyof typeof soldierSkins);
+      expect(skin.meshData.modelUrl).toBe(modelUrl);
+      expect(skin.meshData.sharedAnimationsUrl).toBe('/assets/characters/shared/base-animations.glb');
+      expect(skin.meshData.animations).toEqual(SHARED_CLIP_MAP);
+      expect(skin.hitboxPresetId).toBe('humanoid-standard');
+      expect(hitboxPresets[skin.hitboxPresetId].parts.length).toBeGreaterThan(0);
     });
-  });
-
-  it('links shared animation pack for both skins', () => {
-    expect(swat1Skin.meshData.sharedAnimationsUrl).toBe('/assets/characters/shared/base-animations.glb');
-    expect(remySkin.meshData.sharedAnimationsUrl).toBe('/assets/characters/shared/base-animations.glb');
-  });
-
-  it('links a registered humanoid-standard hitbox preset', () => {
-    expect(swat1Skin.hitboxPresetId).toBe('humanoid-standard');
-    expect(hitboxPresets[swat1Skin.hitboxPresetId].parts.length).toBeGreaterThan(0);
-  });
+  }
 });

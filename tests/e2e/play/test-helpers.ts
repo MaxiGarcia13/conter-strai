@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import type { SoldierSkinId } from '@/modules/soldiers';
 import { expect } from '@playwright/test';
 
 export interface PlayTestSnapshot {
@@ -27,7 +28,7 @@ export function captureConsoleErrors(page: Page): string[] {
 
 export async function navigateToPlay(
   page: Page,
-  options: { skin?: 'swat-1' | 'remy' } = {},
+  options: { skin?: SoldierSkinId } = {},
 ): Promise<void> {
   const params = new URLSearchParams();
   if (options.skin) {

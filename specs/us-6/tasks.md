@@ -42,9 +42,20 @@ Shared animation pack + new skins + crouch-walk stance. Select UI is **US-7**.
 - [x] Manual: swap skin to `remy` in code — idle/walk/kneel/crouch-walk OK
     (covered by Playwright `/play?skin=remy` probe; `resolvePlaySkinId` for e2e until US-7 select)
 
+## Additional skins (james / liza / swat-2 / swat-3)
+
+Registry + `/play?skin=` only — match select character lists stay US-7.
+
+- [x] Asset fix: rewrite `james.glb` / `liza.glb` bone prefixes (`mixamorig9:` / `mixamorig6:`) → `mixamorig:` so shared pack + aim/FPS lookups bind
+- [x] Extend `SoldierSkinId` with `james` | `liza` | `swat-2` | `swat-3`
+- [x] Register all four meshes → shared pack + `humanoid-standard` (civilians may reuse remy’s `fpsView.eyeOffsetY` until tuned)
+- [x] `resolvePlaySkinId` accepts all six skin ids; default remains `swat-1`
+- [x] Vitest: asset contract for james / liza / swat-2 / swat-3; registry URLs; `resolvePlaySkinId` coverage
+- [x] Playwright helper types accept new ids; keep e2e smoke on `swat-1` + `remy` (manual/`?skin=` for the rest)
+
 ## Out of scope here
 
-- Match select UI / query params (US-7)
+- Match select UI / team→skin lists (US-7; will list all six when select ships)
 - `reloading` / `shooting` clips on shared pack (US-4 — add to `base-animations.glb`)
 - `dying` on elimination *(shipped US-3)*
 - Colyseus (US-5)

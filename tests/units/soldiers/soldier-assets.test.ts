@@ -1,6 +1,15 @@
 import { NodeIO } from '@gltf-transform/core';
 import { beforeAll, describe, expect, it } from 'vitest';
 
+const CHARACTER_MESHES = [
+  { id: 'remy', path: './public/assets/characters/civilians/remy.glb' },
+  { id: 'james', path: './public/assets/characters/civilians/james.glb' },
+  { id: 'liza', path: './public/assets/characters/civilians/liza.glb' },
+  { id: 'swat-1', path: './public/assets/characters/soldiers/swat-1.glb' },
+  { id: 'swat-2', path: './public/assets/characters/soldiers/swat-2.glb' },
+  { id: 'swat-3', path: './public/assets/characters/soldiers/swat-3.glb' },
+] as const;
+
 describe('shared animation pack', () => {
   let animationNames: string[];
 
@@ -26,90 +35,43 @@ describe('shared animation pack', () => {
   });
 });
 
-describe('remy.glb', () => {
-  let nodeNames: Set<string>;
-  let animationNames: string[];
+for (const mesh of CHARACTER_MESHES) {
+  describe(`${mesh.id}.glb`, () => {
+    let nodeNames: Set<string>;
 
-  beforeAll(async () => {
-    const io = new NodeIO();
-    const doc = await io.read('./public/assets/characters/civilians/remy.glb');
-    const root = doc.getRoot();
-    nodeNames = new Set(root.listNodes().map((n) => n.getName()));
-    animationNames = root.listAnimations().map((a) => a.getName());
-  });
+    beforeAll(async () => {
+      const io = new NodeIO();
+      const doc = await io.read(mesh.path);
+      const root = doc.getRoot();
+      nodeNames = new Set(root.listNodes().map((n) => n.getName()));
+    });
 
-  it('has Armature root', () => {
-    expect(nodeNames.has('Armature')).toBe(true);
-  });
+    it('has Armature root', () => {
+      expect(nodeNames.has('Armature')).toBe(true);
+    });
 
-  it('has skeleton bones', () => {
-    const hasHips
-      = nodeNames.has('mixamorig:Hips')
-        || nodeNames.has('mixamorigHips')
-        || nodeNames.has('Hips');
-    expect(hasHips).toBe(true);
-  });
+    it('uses mixamorig: skeleton contract', () => {
+      expect(nodeNames.has('mixamorig:Hips')).toBe(true);
+      expect(nodeNames.has('mixamorig:Head')).toBe(true);
+      for (const name of nodeNames) {
+        expect(name).not.toMatch(/^mixamorig\d+:/);
+      }
+    });
 
-  it('all animation track targets reference existing nodes', async () => {
-    const io = new NodeIO();
-    const doc = await io.read('./public/assets/characters/civilians/remy.glb');
-    const root = doc.getRoot();
-    const allNodes = new Set(root.listNodes().map((n) => n.getName()));
+    it('all animation track targets reference existing nodes', async () => {
+      const io = new NodeIO();
+      const doc = await io.read(mesh.path);
+      const root = doc.getRoot();
+      const allNodes = new Set(root.listNodes().map((n) => n.getName()));
 
-    for (const animation of root.listAnimations()) {
-      for (const channel of animation.listChannels()) {
-        const targetNode = channel.getTargetNode();
-        if (targetNode) {
-          expect(allNodes.has(targetNode.getName())).toBe(true);
+      for (const animation of root.listAnimations()) {
+        for (const channel of animation.listChannels()) {
+          const targetNode = channel.getTargetNode();
+          if (targetNode) {
+            expect(allNodes.has(targetNode.getName())).toBe(true);
+          }
         }
       }
-    }
+    });
   });
-});
-
-describe('swat-1.glb', () => {
-  let nodeNames: Set<string>;
-  let animationNames: string[];
-
-  beforeAll(async () => {
-    const io = new NodeIO();
-    const doc = await io.read('./public/assets/characters/soldiers/swat-1.glb');
-    const root = doc.getRoot();
-    nodeNames = new Set(root.listNodes().map((n) => n.getName()));
-    animationNames = root.listAnimations().map((a) => a.getName());
-  });
-
-  it('has Armature root', () => {
-    expect(nodeNames.has('Armature')).toBe(true);
-  });
-
-  it('has skeleton bones', () => {
-    const hasHips
-      = nodeNames.has('mixamorig:Hips')
-        || nodeNames.has('mixamorigHips')
-        || nodeNames.has('Hips');
-    expect(hasHips).toBe(true);
-
-    const hasHead
-      = nodeNames.has('mixamorig:Head')
-        || nodeNames.has('mixamorigHead')
-        || nodeNames.has('Head');
-    expect(hasHead).toBe(true);
-  });
-
-  it('all animation track targets reference existing nodes', async () => {
-    const io = new NodeIO();
-    const doc = await io.read('./public/assets/characters/soldiers/swat-1.glb');
-    const root = doc.getRoot();
-    const allNodes = new Set(root.listNodes().map((n) => n.getName()));
-
-    for (const animation of root.listAnimations()) {
-      for (const channel of animation.listChannels()) {
-        const targetNode = channel.getTargetNode();
-        if (targetNode) {
-          expect(allNodes.has(targetNode.getName())).toBe(true);
-        }
-      }
-    }
-  });
-});
+}

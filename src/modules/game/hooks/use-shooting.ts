@@ -7,8 +7,9 @@ import { DEFAULT_LOCAL_TEAM, LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/const
 import { useRoundStore } from '@/modules/game/state/round-store';
 import { DEFAULT_WEAPON_ID, weapons } from '@/modules/weapons/weapon-registry';
 import { resolveHitDamage } from '../services/resolve-hit-damage';
-import { getPlayerPose, setPlayerPose } from '../state/player-state';
+import { getPlayerPose } from '../state/player-state';
 import { pickBulletHit } from '../utils/pick-bullet-hit';
+import { playGameSound } from '../utils/play-game-sound';
 
 const SCREEN_CENTER = new Vector2(0, 0);
 
@@ -40,6 +41,11 @@ export function useShooting(domElement: HTMLElement | null) {
         return;
       }
       lastFireRef.current = now;
+      // FPS: local gunshot originates at the camera (always full volume for self).
+      playGameSound('pistol', {
+        source: camera.position,
+        listener: camera.position,
+      });
 
       const pose = getPlayerPose();
       if (pose === 'reloading' || pose === 'dying') {

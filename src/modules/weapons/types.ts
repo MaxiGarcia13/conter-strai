@@ -8,6 +8,8 @@ export interface PistolWeaponConfig {
   fireCooldownSeconds: number;
   /** Fraction of max HP dealt per hit zone, before difficulty. */
   damageByZone: Record<HitZone, number>;
+  /** Runtime URL of the weapon GLB (served from public/). */
+  modelUrl: string;
 }
 
 export interface BulletHitResult {

@@ -33,7 +33,7 @@ Post type-split: weapon contracts in `weapons/`, round phase types in `game/`, d
 
 Runtime attach — keep `pistol_a.glb` separate from character mesh GLBs (do not bake into civilian / soldier skins).
 
-- [ ] Extend `PistolWeaponConfig` / weapon registry with `modelUrl` → `/assets/weapons/pistol_a.glb` (or current registry path)
+- [x] Extend `PistolWeaponConfig` / weapon registry with `modelUrl` → `/assets/weapons/pistol_a.glb` (or current registry path)
 - [ ] Attach pistol clone to Mixamo **right hand** bone (`mixamorig:RightHand` / sanitized name) on local player + NPCs / dummy
 - [ ] Tune grip offset (`position` / `rotation` / `scale`) so the weapon sits in the hand across idle / walk / shoot / reload
 - [ ] FPS: keep world pistol on the visible arms (same clone as body — no separate view-model)

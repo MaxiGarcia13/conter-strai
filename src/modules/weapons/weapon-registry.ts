@@ -11,5 +11,6 @@ export const weapons: Record<string, PistolWeaponConfig> = {
     name: 'Pistol',
     fireCooldownSeconds: 0.35,
     damageByZone: { head: 0.4, body: 0.2, limb: 0.15 },
+    modelUrl: '/assets/weapons/pistol_a.glb',
   },
 };

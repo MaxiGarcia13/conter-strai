@@ -45,5 +45,5 @@ Shared animation pack + new skins + crouch-walk stance. Select UI is **US-7**.
 
 - Match select UI / query params (US-7)
 - `reloading` / `shooting` clips on shared pack (US-4 — add to `base-animations.glb`)
-- `dying` on elimination (US-3)
+- `dying` on elimination *(shipped US-3)*
 - Colyseus (US-5)

@@ -11,9 +11,10 @@
 
 | US | Summary |
 |----|---------|
-| **US-3** | Zone-based health & difficulty damage (round-permanent elimination) |
 | **US-4** | Round-based PvP — pistol, teams, eliminate opposing team to win |
 | **US-5** | Colyseus multiplayer (Astro Node adapter) + team rounds |
+| **US-6** | Shared animation pack + `remy` / `swat-1` skins + crouch-walk |
+| **US-7** | Match select (team / character / arena) |
 
 ## Shipped
 
@@ -21,6 +22,7 @@
 |----|---------|
 | **US-1** | Landing page — hero, soldiers art, Start Game CTA, GitHub contribute footer, shooter theme, SEO |
 | **US-2** | 3D arena (`arena-01`), FPS/OTS/TPS cameras, locomotion + jump/kneel, interior collision, aim HUD |
+| **US-3** | Health & zone damage — weapon profiles, hitboxes, HUD bar, round-permanent elimination + `dying` clip |
 
 ## Shipped — other
 

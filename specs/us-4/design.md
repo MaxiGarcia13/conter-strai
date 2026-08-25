@@ -4,7 +4,7 @@ Builds on combat health + weapon type contracts from the architecture type split
 
 ## Prerequisites
 
-- **US-3** — health store, `applyDamage`, hitboxes (mostly shipped; finish elimination / `dying` as needed)
+- **US-3** — health store, `applyDamage`, hitboxes, HUD, elimination + `dying` clip *(shipped)*
 - **US-6** — before weapon pose clips (US-4.9–4.10) and pistol hand attach (US-4.11): shared animation pack, `remy` / `swat-1` meshes, legacy `swat-soldier.glb` removed. Round service and hitscan can land before or during US-6.
 
 ## useShooting hook

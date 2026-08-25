@@ -152,7 +152,7 @@ Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-stat
 | **F**        | `jump`  | One-shot; animation-only (no Y physics)    |
 | **E**        | `kneel` | Toggle; `LoopOnce` + clamp; cancel on WASD |
 
-Priority: blocking one-shots (US-4 `reloading` / `shooting`, jump) → kneel → locomotion. `dying` clip is in the GLB; wire on elimination in **US-3**.
+Priority: blocking one-shots (US-4 `reloading` / `shooting`, jump) → kneel → locomotion → **`dying`** on elimination (US-3).
 
 ### Interior collision
 
@@ -175,13 +175,53 @@ Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`
 | **Vitest**     | Registries; clip resolve / hips strip; GLB JSON contract; locomotion state; collision; FPS hide |
 | **Playwright** | `/play` canvas, no `PropertyBinding` errors; crosshair; optional `__PLAY_TEST__` hook           |
 
+## Combat — shipped US-3
+
+### Damage
+
+```
+damage = maxHp × weapon.damageByZone[zone] × DIFFICULTY_MULT[difficulty]
+nextHp = max(0, currentHp − damage)
+```
+
+| Weapon   | head | body | limb | Status                         |
+| -------- | ---- | ---- | ---- | ------------------------------ |
+| `pistol` | 0.40 | 0.20 | 0.15 | MVP — only equipped weapon now |
+| `knife`  | TBD  | TBD  | TBD  | Future loadout                 |
+
+- **Weapons own** per-zone fractions on `weapon-registry.ts`; **combat** owns pure `applyDamage` + `DIFFICULTY_MULT` — no Three.js in the service.
+- **Health store** (`health-store.ts`, Zustand): per-`EntityId` HP map; resolves `weaponId` → profile; sets `isEliminated` via `isEliminated(hp)`.
+- HP resets on round end only (`resetAll` — wired in US-4 round service).
+
+### Hitboxes
+
+Invisible meshes from `HitboxPreset.parts` (`humanoid-standard`); each part tagged `userData.hitZone` + `userData.entityId`. Skins reference preset via `hitboxPresetId` only — no geometry on skin config.
+
+Attached on `LocalPlayer` and `SoldierModel` when `entityId` is set.
+
+### HUD + elimination
+
+- `HealthBar` — DOM overlay, local player HP %.
+- At 0 HP: `isEliminated: true`; FPS controls disabled; **`dying`** one-shot on mixer (`LocalPlayer` / `SoldierModel` via `getPose`).
+- No mid-round respawn; round reset restores HP in US-4.
+
+### Key files
+
+| File | Role |
+| ---- | ---- |
+| `combat/apply-damage.ts` | Pure zone × weapon × difficulty math |
+| `combat/health-store.ts` | Zustand `HealthSystem` |
+| `combat/components/hitbox-mesh.tsx` | Invisible zone colliders |
+| `combat/components/health-bar.tsx` | HUD |
+| `weapons/weapon-registry.ts` | Pistol `damageByZone` |
+
 ## Data flow (combat)
 
 ```
-useShooting (raycast) → hit zone from mesh userData
-  → applyDamage (service) → health store → HUD
-  → isEliminated → disable controls (no respawn this round)
-  → round service checks team wipe → round end → respawn all
+useShooting (US-4, raycast) → hit zone from mesh userData
+  → health store applyDamage → HUD
+  → isEliminated → disable controls + dying clip
+  → round service checks team wipe → round end → resetAll
 ```
 
 ## Multiplayer (US-5)

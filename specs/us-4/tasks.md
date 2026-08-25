@@ -18,7 +18,7 @@ Post type-split: weapon contracts in `weapons/`, round phase types in `game/`, d
 - [x] Team assignment (Civilians / Soldiers) + pick spawn from `ScenarioConfig.teamSpawns`
 - [x] On `startRound`: full HP via health store `resetAll`, equip pistol from `Loadout` / weapon registry
 - [x] `checkRoundEnd` → if all civilians **or** all soldiers eliminated → `endRound(winner)`
-- [ ] Round-end UI banner (winner team); delay; `startRound()` again
+- [x] Round-end UI banner (winner team); delay; `startRound()` again
 
 ## Shooting
 

@@ -19,6 +19,7 @@ import { LoadingReporter } from './loading-reporter';
 import { LocalPlayer } from './local-player';
 import { PlayTestHook } from './play-test-hook';
 import { PlayerControls } from './player-controls';
+import { RoundEndBanner } from './round-end-banner';
 
 const DEFAULT_SCENARIO_ID = 'arena-01' satisfies ScenarioId;
 const DEFAULT_LIGHTING = { ambient: 0.6, sunIntensity: 1.2 };
@@ -85,6 +86,7 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
       <CameraHud />
       <CrosshairHud />
       <HealthBar />
+      <RoundEndBanner />
     </div>
   );
 }

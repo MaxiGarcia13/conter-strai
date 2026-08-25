@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { AnimationMixer, LoopOnce, LoopRepeat } from 'three';
 
 import { resolveSoldierClips } from '../utils/resolve-soldier-clips';
+import { resolveAnimationClipKey } from '../utils/resolve-animation-clip-key';
 
 const CROSSFADE_SECONDS = 0.2;
 
@@ -155,7 +156,9 @@ export function useSoldierLocomotion(
       return;
     }
 
-    const targetKey = getPose?.() ?? getLocomotionState?.() ?? state;
+    const pose = getPose?.();
+    const locomotion = getLocomotionState?.() ?? state;
+    const targetKey = resolveAnimationClipKey(pose, locomotion);
 
     if (targetKey !== prevKeyRef.current) {
       const from = actions[prevKeyRef.current];

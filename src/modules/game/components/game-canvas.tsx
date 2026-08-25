@@ -10,6 +10,7 @@ import {
   ScenarioSoldiers,
 } from '@/modules/scenarios';
 import { resolveLocalSpawn } from '../utils/local-spawn';
+import { resolvePlaySkinId } from '../utils/resolve-play-skin-id';
 import { AimMarker } from './aim-marker';
 import { CameraHud } from './camera-hud';
 import { CrosshairHud } from './crosshair-hud';
@@ -31,6 +32,7 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
   const scenario = useMemo(() => getScenarioById(scenarioId), [scenarioId]);
   const lighting = scenario.lighting ?? DEFAULT_LIGHTING;
   const localSpawn = useMemo(() => resolveLocalSpawn(scenario), [scenario]);
+  const skinId = useMemo(() => resolvePlaySkinId(), []);
   const [trackLoading, setTrackLoading] = useState(Boolean(onLoaderChange));
 
   const handleLoaderChange = useCallback(
@@ -74,7 +76,7 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
               scenario={scenario}
               skipKey={localSpawn.key}
             />
-            <LocalPlayer />
+            <LocalPlayer skinId={skinId} />
           </DeferredAfterLoad>
         </Suspense>
 

@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 
 import { countActiveSoldierMixers as countLocomotionMixers } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { SOLDIER_ROOT_NAME } from '@/modules/soldiers/utils/clone-soldier-root';
+import { resolveAnimationClipKey } from '@/modules/soldiers/utils/resolve-animation-clip-key';
 import {
   cycleCameraMode,
   getCameraMode,
@@ -13,9 +14,10 @@ import {
   setPlayerLocomotion,
   setPlayerPose,
 } from '../state/player-state';
+import { resolvePlaySkinId } from '../utils/resolve-play-skin-id';
 
 const POLL_INTERVAL_MS = 60;
-const HOOK_VERSION = 'v4-manual-angle';
+const HOOK_VERSION = 'v5-crouch-walk';
 
 /** Diagnostic snapshot polled by Playwright when the build runs with E2E=true. */
 export interface PlayTestSnapshot {
@@ -23,7 +25,9 @@ export interface PlayTestSnapshot {
   /** Soldier armature roots in the scene graph (includes hidden FPS body). */
   soldierCount: number;
   mixerReady: boolean;
+  /** Resolved mixer clip key (kneel+moving → crouchWalking). */
   activeClip: string;
+  skinId: string;
   debug?: {
     mode: string;
     pitch: number;
@@ -93,7 +97,8 @@ export function PlayTestHook() {
       window.__PLAY_TEST__ = {
         soldierCount,
         mixerReady: countLocomotionMixers() > 0,
-        activeClip: getPlayerPose() ?? getPlayerLocomotion(),
+        activeClip: resolveAnimationClipKey(getPlayerPose(), getPlayerLocomotion()),
+        skinId: resolvePlaySkinId(),
         version: HOOK_VERSION,
         debug: {
           mode: getCameraMode(),

@@ -5,6 +5,7 @@ export interface PlayTestSnapshot {
   soldierCount: number;
   mixerReady: boolean;
   activeClip: string;
+  skinId?: string;
 }
 
 export async function readPlayTest(page: Page): Promise<PlayTestSnapshot | undefined> {
@@ -24,8 +25,16 @@ export function captureConsoleErrors(page: Page): string[] {
   return consoleErrors;
 }
 
-export async function navigateToPlay(page: Page): Promise<void> {
-  await page.goto('/play');
+export async function navigateToPlay(
+  page: Page,
+  options: { skin?: 'swat-1' | 'remy' } = {},
+): Promise<void> {
+  const params = new URLSearchParams();
+  if (options.skin) {
+    params.set('skin', options.skin);
+  }
+  const query = params.toString();
+  await page.goto(query ? `/play?${query}` : '/play');
 }
 
 export async function waitForCanvas(page: Page): Promise<void> {

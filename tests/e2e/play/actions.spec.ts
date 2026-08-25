@@ -9,11 +9,13 @@ import {
   waitForPlayTest,
 } from './test-helpers';
 
-test('/play plays a one-shot jump on F and holds kneel until movement cancels it', async ({ page }) => {
+test('/play plays jump on F; kneel + WASD stays crouched (crouch-walk)', async ({ page }) => {
   const consoleErrors = captureConsoleErrors(page);
   await navigateToPlay(page);
   await waitForCanvas(page);
   await waitForPlayTest(page);
+
+  expect((await readPlayTest(page))?.skinId).toBe('swat-1');
 
   await page.keyboard.down('KeyW');
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('walk');
@@ -35,10 +37,36 @@ test('/play plays a one-shot jump on F and holds kneel until movement cancels it
   await page.waitForTimeout(600);
   expect((await readPlayTest(page))?.activeClip).toBe('kneel');
 
+  // US-6: WASD keeps kneel stance and plays crouch-walking (does not stand up).
+  await page.keyboard.down('KeyW');
+  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('crouchWalking');
+  await page.keyboard.up('KeyW');
+  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('kneel');
+
+  expectNoConsoleErrors(consoleErrors);
+});
+
+test('/play?skin=remy boots shared clips without PropertyBinding errors', async ({ page }) => {
+  const consoleErrors = captureConsoleErrors(page);
+  await navigateToPlay(page, { skin: 'remy' });
+  await waitForCanvas(page);
+  await waitForPlayTest(page);
+
+  expect((await readPlayTest(page))?.skinId).toBe('remy');
+  expect((await readPlayTest(page))?.activeClip).toBe('idle');
+
   await page.keyboard.down('KeyW');
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('walk');
   await page.keyboard.up('KeyW');
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('idle');
+
+  await page.keyboard.press('KeyE');
+  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('kneel');
+
+  await page.keyboard.down('KeyW');
+  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('crouchWalking');
+  await page.keyboard.up('KeyW');
+  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('kneel');
 
   expectNoConsoleErrors(consoleErrors);
 });

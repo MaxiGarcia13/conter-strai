@@ -78,8 +78,14 @@ export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickn
 
   useEffect(() => {
     const requestJump = () => {
+      const pose = getPlayerPose();
+      // If kneeling, clear kneel first; next frame will pick up the jump.
+      if (pose === 'kneel') {
+        setPlayerPose(null);
+        return;
+      }
       // Busy until the mixer finishes; LocalPlayer clears the pose on completion.
-      if (getPlayerPose() === null) {
+      if (pose === null) {
         setPlayerPose('jump');
       }
     };
@@ -208,12 +214,8 @@ export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickn
 
     const transform = getPlayerTransform();
     const moving = strafe !== 0 || forward !== 0;
-    const running = moving && pressed.has(MOVE_CODES.runModifier);
-
-    // Kneeling is a stationary pose; movement cancels it before locomotion is written.
-    if (moving && getPlayerPose() === 'kneel') {
-      setPlayerPose(null);
-    }
+    // Walk-speed only while kneeling; run modifier ignored.
+    const running = moving && pressed.has(MOVE_CODES.runModifier) && getPlayerPose() !== 'kneel';
 
     setPlayerLocomotion(resolveLocomotionState({ moving, running }));
 

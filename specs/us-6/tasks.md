@@ -31,15 +31,16 @@ Shared animation pack + new skins + crouch-walk stance. Select UI is **US-7**.
 
 - [x] Load shared GLB in `SoldierModel` / `LocalPlayer` path; feed merged clips into resolve
 - [x] `useSoldierLocomotion`: add `crouchWalking` action (loop); priority kneel+moving → crouch-walk, kneel+idle → kneel
-- [ ] `use-player-controls`: do **not** clear kneel on WASD; walk-speed only while kneeling; **F** clears kneel then jumps
-- [ ] Pure helper (Vitest): given pose + locomotion → clip id (`kneel` | `crouch-walking` | loco)
-- [ ] Camera / body anchor still tracks lowered hips during crouch-walk
+- [x] `use-player-controls`: do **not** clear kneel on WASD; walk-speed only while kneeling; **F** clears kneel then jumps
+- [x] Pure helper (Vitest): given pose + locomotion → clip id (`kneel` | `crouch-walking` | loco)
+- [x] Camera / body anchor still tracks lowered hips during crouch-walk
 
 ## Verification
 
 - [x] Vitest: no remaining `swat-soldier` / `swat-guy` references in src + tests
-- [ ] Playwright: `/play` with default `swat-1` — no `PropertyBinding` errors; kneel + WASD stays crouched (probe or manual)
-- [ ] Manual: swap skin to `remy` in code — idle/walk/kneel/crouch-walk OK
+- [x] Playwright: `/play` with default `swat-1` — no `PropertyBinding` errors; kneel + WASD stays crouched (probe or manual)
+- [x] Manual: swap skin to `remy` in code — idle/walk/kneel/crouch-walk OK
+    (covered by Playwright `/play?skin=remy` probe; `resolvePlaySkinId` for e2e until US-7 select)
 
 ## Out of scope here
 

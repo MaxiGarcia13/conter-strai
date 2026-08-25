@@ -19,9 +19,9 @@ function clipWithHipsTrack(name: string): AnimationClip {
 }
 
 describe('resolve-soldier-clips', () => {
-  const skin = getSoldierSkinById('swat-guy');
+  const skin = getSoldierSkinById('swat-1');
 
-  it('resolves every registry clip name', () => {
+  it('resolves every required registry clip name', () => {
     const resolved = resolveSoldierClips(
       Object.values(skin.meshData.animations).map(clipWithHipsTrack),
       skin.meshData.animations,
@@ -30,19 +30,23 @@ describe('resolve-soldier-clips', () => {
       'idle',
       'walk',
       'run',
+      'crouchWalking',
       'jump',
       'kneel',
       'dying',
-      'reloading',
-      'shooting',
     ]);
   });
 
-  it('returns null when a configured clip is missing', () => {
+  it('returns null when a required clip is missing', () => {
     const resolved = resolveSoldierClips(
       ['idle', 'walk'].map(clipWithHipsTrack),
       skin.meshData.animations,
     );
+    expect(resolved).toBeNull();
+  });
+
+  it('returns null on empty clips', () => {
+    const resolved = resolveSoldierClips([], skin.meshData.animations);
     expect(resolved).toBeNull();
   });
 
@@ -52,12 +56,29 @@ describe('resolve-soldier-clips', () => {
       skin.meshData.animations,
     )!;
 
-    for (const key of ['idle', 'walk', 'run'] as const) {
+    for (const key of ['idle', 'walk', 'run', 'crouchWalking'] as const) {
       expect(resolved[key].tracks.some((track) => HIPS_TRACK.test(track.name))).toBe(false);
     }
     // Without these tracks jump never leaves the ground and kneel never crouches.
     for (const key of ['jump', 'kneel'] as const) {
       expect(resolved[key].tracks.some((track) => HIPS_TRACK.test(track.name))).toBe(true);
     }
+  });
+
+  it('optional reloading/shooting absent returns no error', () => {
+    const resolved = resolveSoldierClips(
+      Object.values(skin.meshData.animations).map(clipWithHipsTrack),
+      skin.meshData.animations,
+    )!;
+    expect(resolved.reloading).toBeUndefined();
+    expect(resolved.shooting).toBeUndefined();
+  });
+
+  it('optional reloading/shooting present resolves them', () => {
+    const config = { ...skin.meshData.animations, reloading: 'reloading', shooting: 'shooting' };
+    const clips = Object.values(config).map(clipWithHipsTrack);
+    const resolved = resolveSoldierClips(clips, config)!;
+    expect(resolved.reloading?.name).toBe('reloading');
+    expect(resolved.shooting?.name).toBe('shooting');
   });
 });

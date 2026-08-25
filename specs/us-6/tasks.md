@@ -11,33 +11,33 @@ Shared animation pack + new skins + crouch-walk stance. Select UI is **US-7**.
 
 ## Types + clip resolve
 
-- [ ] Extend `SoldierAnimationClips` with `crouchWalking`; make `reloading` / `shooting` optional
-- [ ] Add optional `sharedAnimationsUrl` on `CharacterMeshData`
-- [ ] `SoldierSkinId`: `'remy' | 'swat-1'` (drop `swat-guy`)
-- [ ] Merge mesh + shared `AnimationClip[]` (shared wins on name); resolve by registry names
-- [ ] Strip hips on `idle` / `walk` / `run` / `crouch-walking`
-- [ ] Vitest: resolve merge + missing required clip → null; optional reload/shoot absent OK
+- [x] Extend `SoldierAnimationClips` with `crouchWalking`; make `reloading` / `shooting` optional
+- [x] Add optional `sharedAnimationsUrl` on `CharacterMeshData`
+- [x] `SoldierSkinId`: `'remy' | 'swat-1'` (drop `swat-guy`)
+- [x] Merge mesh + shared `AnimationClip[]` (shared wins on name); resolve by registry names
+- [x] Strip hips on `idle` / `walk` / `run` / `crouch-walking`
+- [x] Vitest: resolve merge + missing required clip → null; optional reload/shoot absent OK
 
 ## Registry + assets
 
-- [ ] Register `remy` → `/assets/characters/civilians/remy.glb` + shared pack + `humanoid-standard`
-- [ ] Register `swat-1` → `/assets/characters/soldiers/swat-1.glb` + shared pack + `humanoid-standard` (default skin)
-- [ ] Delete `public/assets/soldiers/swat-soldier.glb` and remove `swat-guy` everywhere
-- [ ] Update `scripts/compress-assets.mjs` (drop legacy TODO target; keep character paths)
-- [ ] Replace `swat-soldier-glb.test.ts` with shared-pack + remy/swat-1 contract tests
-- [ ] Preload shared + both mesh URLs via `useGLTF.preload`
+- [x] Register `remy` → `/assets/characters/civilians/remy.glb` + shared pack + `humanoid-standard`
+- [x] Register `swat-1` → `/assets/characters/soldiers/swat-1.glb` + shared pack + `humanoid-standard` (default skin)
+- [x] Delete `public/assets/soldiers/swat-soldier.glb` and remove `swat-guy` everywhere
+- [x] Update `scripts/compress-assets.mjs` (drop legacy TODO target; keep character paths)
+- [x] Replace `swat-soldier-glb.test.ts` with shared-pack + remy/swat-1 contract tests
+- [x] Preload shared + both mesh URLs via `useGLTF.preload`
 
 ## Mixer + controls
 
-- [ ] Load shared GLB in `SoldierModel` / `LocalPlayer` path; feed merged clips into resolve
-- [ ] `useSoldierLocomotion`: add `crouchWalking` action (loop); priority kneel+moving → crouch-walk, kneel+idle → kneel
+- [x] Load shared GLB in `SoldierModel` / `LocalPlayer` path; feed merged clips into resolve
+- [x] `useSoldierLocomotion`: add `crouchWalking` action (loop); priority kneel+moving → crouch-walk, kneel+idle → kneel
 - [ ] `use-player-controls`: do **not** clear kneel on WASD; walk-speed only while kneeling; **F** clears kneel then jumps
 - [ ] Pure helper (Vitest): given pose + locomotion → clip id (`kneel` | `crouch-walking` | loco)
 - [ ] Camera / body anchor still tracks lowered hips during crouch-walk
 
 ## Verification
 
-- [ ] Vitest: no remaining `swat-soldier` / `swat-guy` references in src + tests
+- [x] Vitest: no remaining `swat-soldier` / `swat-guy` references in src + tests
 - [ ] Playwright: `/play` with default `swat-1` — no `PropertyBinding` errors; kneel + WASD stays crouched (probe or manual)
 - [ ] Manual: swap skin to `remy` in code — idle/walk/kneel/crouch-walk OK
 

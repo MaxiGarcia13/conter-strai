@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Vector3 } from 'three';
 import { HitboxMesh } from '@/modules/combat';
 import { getSoldierSkinById } from '@/modules/soldiers';
+import { useSoldierAnimationClips } from '@/modules/soldiers/hooks/use-soldier-animation-clips';
 import { useSoldierLocomotion } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { applySoldierAimPose, resolveSoldierAimRig } from '@/modules/soldiers/utils/aim-body-rig';
 import { disableSkinnedMeshCulling, getSoldierArmature, soldierScaleVector } from '@/modules/soldiers/utils/clone-soldier-root';
@@ -30,14 +31,14 @@ const headWorldPosition = new Vector3();
  * head itself is hidden, while shoulder/third person leave the camera to
  * `applyCameraMode`.
  */
-export function LocalPlayer({ skinId = 'swat-guy' }: LocalPlayerProps) {
+export function LocalPlayer({ skinId = 'swat-1' }: LocalPlayerProps) {
   const rigRef = useRef<Group>(null);
   const modelRef = useRef<Group>(null);
   const aimRigRef = useRef<SoldierAimRig | null>(null);
   const camera = useThree((state) => state.camera);
   const skin = useMemo(() => getSoldierSkinById(skinId), [skinId]);
   const gltf = useGLTF(skin.meshData.modelUrl);
-  const animations = useMemo(() => gltf.animations, [gltf]);
+  const animations = useSoldierAnimationClips(skin.meshData, gltf.animations);
 
   const source = useMemo(() => getSoldierArmature(gltf.scene), [gltf]);
   const scale = useMemo(

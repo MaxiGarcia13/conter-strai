@@ -2,7 +2,7 @@ import type { Object3D } from 'three';
 import { SkinnedMesh } from 'three';
 import { SkeletonUtils } from 'three-stdlib';
 
-/** Skinned mesh root in swat-soldier.glb (avoids duplicate empty armatures). */
+/** Skinned mesh root in soldier GLBs (avoids duplicate empty armatures). */
 export const SOLDIER_ROOT_NAME = 'Armature';
 
 export function getSoldierArmature(scene: Object3D): Object3D {

@@ -35,6 +35,7 @@ interface SoldierActions {
   idle: AnimationAction;
   walk: AnimationAction;
   run: AnimationAction;
+  crouchWalking: AnimationAction;
   jump: AnimationAction;
   kneel: AnimationAction;
   dying: AnimationAction;
@@ -86,11 +87,12 @@ export function useSoldierLocomotion(
       idle: mixer.clipAction(resolved.idle),
       walk: mixer.clipAction(resolved.walk),
       run: mixer.clipAction(resolved.run),
+      crouchWalking: mixer.clipAction(resolved.crouchWalking),
       jump: mixer.clipAction(resolved.jump),
       kneel: mixer.clipAction(resolved.kneel),
       dying: mixer.clipAction(resolved.dying),
     };
-    for (const key of ['idle', 'walk', 'run'] as const) {
+    for (const key of ['idle', 'walk', 'run', 'crouchWalking'] as const) {
       actions[key].loop = LoopRepeat;
     }
     // One-shots hold their final frame until the pose owner lets them go.
@@ -130,6 +132,7 @@ export function useSoldierLocomotion(
     animationConfig.dying,
     animationConfig.run,
     animationConfig.walk,
+    animationConfig.crouchWalking,
     clipsKey,
     enabled,
     modelRef,

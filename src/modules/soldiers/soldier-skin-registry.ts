@@ -2,20 +2,38 @@ import type { SoldierSkin, SoldierSkinId } from './types';
 import { useGLTF } from '@react-three/drei';
 
 export const soldierSkins: Record<SoldierSkinId, SoldierSkin> = {
-  'swat-guy': {
+  'remy': {
     meshData: {
-      modelUrl: '/assets/soldiers/swat-soldier.glb',
+      modelUrl: '/assets/characters/civilians/remy.glb',
       scale: 1,
       viewModelScale: 1.15,
+      sharedAnimationsUrl: '/assets/characters/shared/base-animations.glb',
       animations: {
         idle: 'idle',
         walk: 'walk',
         run: 'run',
+        crouchWalking: 'crouch-walking',
         jump: 'jump',
         kneel: 'kneel',
         dying: 'dying',
-        reloading: 'reloading',
-        shooting: 'shooting',
+      },
+    },
+    hitboxPresetId: 'humanoid-standard',
+  },
+  'swat-1': {
+    meshData: {
+      modelUrl: '/assets/characters/soldiers/swat-1.glb',
+      scale: 1,
+      viewModelScale: 1.15,
+      sharedAnimationsUrl: '/assets/characters/shared/base-animations.glb',
+      animations: {
+        idle: 'idle',
+        walk: 'walk',
+        run: 'run',
+        crouchWalking: 'crouch-walking',
+        jump: 'jump',
+        kneel: 'kneel',
+        dying: 'dying',
       },
     },
     hitboxPresetId: 'humanoid-standard',
@@ -26,4 +44,7 @@ export const soldierSkins: Record<SoldierSkinId, SoldierSkin> = {
 // drei's loading manager (which would update LoadingReporter during render).
 for (const { meshData } of Object.values(soldierSkins)) {
   useGLTF.preload(meshData.modelUrl);
+  if (meshData.sharedAnimationsUrl) {
+    useGLTF.preload(meshData.sharedAnimationsUrl);
+  }
 }

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { HitboxMesh, useHealthStore } from '@/modules/combat';
 
 import { getSoldierSkinById } from '../get-soldier-skin-by-id';
+import { useSoldierAnimationClips } from '../hooks/use-soldier-animation-clips';
 import { useSoldierLocomotion } from '../hooks/use-soldier-locomotion';
 import { disableSkinnedMeshCulling, getSoldierArmature, soldierScaleVector } from '../utils/clone-soldier-root';
 
@@ -22,7 +23,7 @@ interface SoldierModelProps {
 }
 
 export function SoldierModel({
-  id = 'swat-guy',
+  id = 'swat-1',
   entityId,
   position = [0, 0, 0],
   rotationY = 0,
@@ -31,7 +32,7 @@ export function SoldierModel({
   const modelRef = useRef<Group>(null);
   const skin = useMemo(() => getSoldierSkinById(id), [id]);
   const gltf = useGLTF(skin.meshData.modelUrl);
-  const animations = useMemo(() => gltf.animations, [gltf]);
+  const animations = useSoldierAnimationClips(skin.meshData, gltf.animations);
   const source = useMemo(() => getSoldierArmature(gltf.scene), [gltf]);
   const scale = useMemo(
     () => soldierScaleVector(source, skin.meshData.scale),

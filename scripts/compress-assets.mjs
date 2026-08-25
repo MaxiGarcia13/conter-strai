@@ -30,9 +30,6 @@ const TARGETS = [
   // Soldiers
   'public/assets/characters/soldiers/swat-1.glb',
 
-  // TODO: Remove after us-6 is done
-  'public/assets/soldiers/swat-soldier.glb',
-
   // Weapons
   'public/assets/weapons/pistol_a.glb',
 ];

@@ -10,27 +10,30 @@ export interface SoldierAnimationClips {
   idle: string;
   walk: string;
   run: string;
+  crouchWalking: string;
   jump: string;
   kneel: string;
   dying: string;
-  reloading: string;
-  shooting: string;
+  reloading?: string;
+  shooting?: string;
 }
 
 /** Action poses layered above locomotion; `reloading` / `shooting` join with US-4. */
-export type SoldierActionId = 'jump' | 'kneel' | 'dying';
+export type SoldierActionId = 'jump' | 'kneel' | 'dying' | 'crouchWalking';
 
 /** Shared GLB descriptor for world models and the first-person view model. */
 export interface CharacterMeshData {
   modelUrl: string;
-  /** Multiplier on the GLB armature scale (swat-soldier embeds 0.01 → ~1.7 m at 1). */
+  /** Multiplier on the GLB armature scale. */
   scale: number;
   /** First-person scale multiplier; defaults to `scale` when omitted. */
   viewModelScale?: number;
+  /** Optional shared animation pack URL; clips from this GLB override mesh-local ones by name. */
+  sharedAnimationsUrl?: string;
   animations: SoldierAnimationClips;
 }
 
-export type SoldierSkinId = 'swat-guy';
+export type SoldierSkinId = 'remy' | 'swat-1';
 
 /** Visual preset; collider layout stays decoupled via `hitboxPresetId`. */
 export interface SoldierSkin {
@@ -42,7 +45,7 @@ export interface SoldierSkin {
 // Controller
 // ---------------------------------------------------------------------------
 
-export type LocomotionState = 'idle' | 'walk' | 'run';
+export type LocomotionState = 'idle' | 'walk' | 'run' | 'crouchWalking';
 
 /** Per-frame movement request produced by a controller. */
 export interface LocomotionIntent {

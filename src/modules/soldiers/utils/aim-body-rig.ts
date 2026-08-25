@@ -2,7 +2,7 @@ import type { Object3D } from 'three';
 import { Quaternion, Vector3 } from 'three';
 
 /**
- * swat-soldier.glb bone contract (Mixamo export): names appear with and
+ * Soldier GLB bone contract (Mixamo export): names appear with and
  * without the `:` separator, so every lookup tries both spellings.
  */
 const HEAD_BONE_NAMES = ['mixamorigHead', 'mixamorig:Head'] as const;

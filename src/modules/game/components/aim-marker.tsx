@@ -6,11 +6,9 @@ import { ACCENT_COLOR } from '../constants/palette';
 import { LOCAL_PLAYER_ROOT_NAME } from '../constants/player';
 
 const SCREEN_CENTER = new Vector2(0, 0);
-const UP = new Vector3(0, 1, 0);
-const scratchNormal = new Vector3();
-const scratchTarget = new Vector3();
+const scratchLook = new Vector3();
 
-/** Lift off the surface to avoid z-fighting (meters). */
+/** Pull toward the camera to avoid z-fighting (meters). */
 const SURFACE_LIFT = 0.02;
 
 function hasAncestorNamed(object: Object3D, name: string): boolean {
@@ -42,22 +40,22 @@ export function AimMarker() {
     raycaster.setFromCamera(SCREEN_CENTER, camera);
     const hit = raycaster
       .intersectObject(scene, true)
-      .find(({ object }) => object !== mesh && !hasAncestorNamed(object, LOCAL_PLAYER_ROOT_NAME));
+      .find(
+        ({ object }) =>
+          object.visible &&
+          object !== mesh &&
+          !hasAncestorNamed(object, LOCAL_PLAYER_ROOT_NAME),
+      );
 
     if (!hit) {
       marker.visible = false;
       return;
     }
 
-    if (hit.face) {
-      scratchNormal.copy(hit.face.normal).transformDirection(hit.object.matrixWorld).normalize();
-    } else {
-      scratchNormal.copy(UP);
-    }
-
-    marker.position.copy(hit.point).addScaledVector(scratchNormal, SURFACE_LIFT);
-    scratchTarget.copy(hit.point).add(scratchNormal);
-    marker.lookAt(scratchTarget);
+    camera.getWorldDirection(scratchLook);
+    marker.position.copy(hit.point).addScaledVector(scratchLook, -SURFACE_LIFT);
+    // Face the camera so the ring stays a circle (surface normals tip it into a C-arc).
+    marker.quaternion.copy(camera.quaternion);
     marker.visible = true;
   });
 
@@ -70,6 +68,7 @@ export function AimMarker() {
           transparent
           opacity={0.9}
           side={DoubleSide}
+          depthTest={false}
           depthWrite={false}
         />
       </mesh>

@@ -3,18 +3,18 @@ import { homepage } from '@root/package.json';
 import { getImage, Image } from 'astro:assets';
 import GithubIcon from '@/components/github-icon.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
-import soldiersImg from '../assets/soldiers.png';
+import csImg from '../assets/cs.png';
 
 const ogImage = await getImage({
-  src: soldiersImg,
+  src: csImg,
   width: 1200,
   height: 800,
   format: 'png',
 });
 
 const title = 'Conter Strai';
-const description =
-  'Lock in, squad up, and hold the line. Conter Strai is an online PvP tactical shooter that runs in your browser.';
+const description
+  = 'Lock in, squad up, and hold the line. Conter Strai is an online PvP tactical shooter that runs in your browser.';
 const repoUrl = homepage.replace(/#readme$/, '');
 const bullets = [
   'Online PvP combat',
@@ -36,7 +36,8 @@ const bullets = [
       <p class="flex items-center gap-2 text-accent">
         <span
           class="motion-safe:animate-pulse size-1.5 shrink-0 rounded-full bg-accent"
-          aria-hidden="true"></span>
+          aria-hidden="true"
+        ></span>
         Live
       </p>
       <p>
@@ -100,7 +101,7 @@ const bullets = [
         >
         </div>
         <Image
-          src={soldiersImg}
+          src={csImg}
           alt="Soldiers geared up for deployment"
           widths={[256, 480, 768]}
           sizes="(max-width: 1024px) 90vw, 960px"

@@ -39,10 +39,10 @@ nextHp = max(0, currentHp − damage)
 
 ### MVP + future profiles
 
-| Weapon   | head | body | limb | Status                          |
-| -------- | ---- | ---- | ---- | ------------------------------- |
-| `pistol` | 0.50 | 0.20 | 0.15 | MVP — only equipped weapon now  |
-| `knife`  | TBD  | TBD  | TBD  | Future loadout (not US-3/US-4)  |
+| Weapon   | head | body | limb | Status                         |
+| -------- | ---- | ---- | ---- | ------------------------------ |
+| `pistol` | 0.50 | 0.20 | 0.15 | MVP — only equipped weapon now |
+| `knife`  | TBD  | TBD  | TBD  | Future loadout (not US-3/US-4) |
 
 Same health bar UI; injury severity = **body place** (hit zone) × **weapon** × difficulty — e.g. pistol headshot hurts more than pistol limb hit; a future knife can use different per-zone numbers.
 

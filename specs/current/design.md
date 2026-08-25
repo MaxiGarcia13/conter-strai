@@ -18,18 +18,18 @@ stateDiagram-v2
   RoundEnd --> RoundStart: declare winner, reset all
 ```
 
-| Phase           | Behavior                                                                        |
-| --------------- | ------------------------------------------------------------------------------- |
+| Phase           | Behavior                                                                                |
+| --------------- | --------------------------------------------------------------------------------------- |
 | **Round start** | Split players into Civilians / Soldiers; teleport to team spawns; full HP; equip pistol |
-| **In progress** | PvP combat; eliminated players spectate or wait (no respawn)                    |
-| **Round end**   | One team wiped → opposing team wins; show banner; after brief delay, next round |
+| **In progress** | PvP combat; eliminated players spectate or wait (no respawn)                            |
+| **Round end**   | One team wiped → opposing team wins; show banner; after brief delay, next round         |
 
 ## Teams
 
-| Team       | ID         | Motif                                              |
-| ---------- | ---------- | -------------------------------------------------- |
-| Civilians  | `civilian` | Irregular / non-military side                      |
-| Soldiers   | `soldier`  | Military side — MVP skin `swat-guy` (SWAT soldier) |
+| Team      | ID         | Motif                                              |
+| --------- | ---------- | -------------------------------------------------- |
+| Civilians | `civilian` | Irregular / non-military side                      |
+| Soldiers  | `soldier`  | Military side — MVP skin `swat-guy` (SWAT soldier) |
 
 Team IDs are `civilian` \| `soldier` everywhere in code. Display names: **Civilians** / **Soldiers** (`TEAM_DISPLAY_NAME`).
 
@@ -84,7 +84,7 @@ src/modules/
 | **Scenario** | `ScenarioConfig`, `ArenaLayout`, `SpawnerConfig`                   | Flat access (`scenario.bounds`); maps under `scenarios/maps/` |
 | **Soldier**  | `SoldierSkin`, `CharacterMeshData`, `Soldier`, `SoldierController` | Visual preset decoupled from hitbox via `hitboxPresetId`      |
 | **Combat**   | `HitboxPreset`, `HitZone`, `DamageData`, `HealthSystem`            | Owns collider presets and raycast zones                       |
-| **Weapons**  | `PistolWeaponConfig` / `WeaponConfig`, `Loadout`               | Per-weapon `damageByZone`; combat applies × difficulty        |
+| **Weapons**  | `PistolWeaponConfig` / `WeaponConfig`, `Loadout`                   | Per-weapon `damageByZone`; combat applies × difficulty        |
 | **Game**     | `GameMode`, `RoundPhase`                                           | `'team-elimination'`; `'live' \| 'round-end'`                 |
 
 Shipped 2026-08-23 — see [CHANGELOG](../CHANGELOG.md#shipped--other).
@@ -94,11 +94,11 @@ Shipped 2026-08-23 — see [CHANGELOG](../CHANGELOG.md#shipped--other).
 | Piece  | Detail                                                                                                                             |
 | ------ | ---------------------------------------------------------------------------------------------------------------------------------- |
 | Files  | `src/pages/index.astro`, `src/layouts/base-layout.astro`, `src/components/GithubIcon.astro`, `src/styles/global.css`               |
-| Layout | Full-viewport: status strip → hero (copy + CTA left, `soldiers.png` right) → footer; stack on mobile                               |
+| Layout | Full-viewport: status strip → hero (copy + CTA left, `cs.png` right) → footer; stack on mobile                                     |
 | Theme  | Near-black surfaces; CS amber accent (`--accent`); `.game-atmosphere` vignette/glow; Barlow Condensed + Rajdhani + Share Tech Mono |
 | CTA    | **Start Game** → `/play` (high-contrast accent clip-path button)                                                                   |
 | Footer | **Contribute on GitHub** → repo from `package.json` `homepage` (opens in new tab; `GithubIcon`)                                    |
-| SEO    | Title, description, OG/Twitter image (`/soldiers.png`), dark `theme-color`, favicon `/conter-strai.png`                            |
+| SEO    | Title, description, OG/Twitter image (`/cs.png`), dark `theme-color`, favicon `/conter-strai.png`                                  |
 | Bundle | Astro-only — no Three.js / R3F on this route                                                                                       |
 
 ## Routes
@@ -134,23 +134,23 @@ Units: **1 world unit = 1 meter**.
 
 ### Camera modes (**C**)
 
-| Mode                  | Role                                                                                         |
-| --------------------- | -------------------------------------------------------------------------------------------- |
-| **First-person**      | Camera on head bone; head mesh hidden; spine pitch follows look; same clone (no view-model)  |
-| **Over-the-shoulder** | Close behind right shoulder (~1.75 m back, ~1.55 m up)                                       |
-| **Third-person**      | Farther behind/above (~3.6 m back, ~2.4 m up)                                                |
+| Mode                  | Role                                                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------- |
+| **First-person**      | Camera on head bone; head mesh hidden; spine pitch follows look; same clone (no view-model) |
+| **Over-the-shoulder** | Close behind right shoulder (~1.75 m back, ~1.55 m up)                                      |
+| **Third-person**      | Farther behind/above (~3.6 m back, ~2.4 m up)                                               |
 
 Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-state.ts`). OTS/TPS boom height rides head-bone world Y after mixer update.
 
 ### Locomotion / actions
 
-| Input        | Clip    | Notes                                       |
-| ------------ | ------- | ------------------------------------------- |
-| Stand still  | `idle`  | Default                                     |
-| WASD         | `walk`  | In-place; hips translation stripped         |
-| WASD + Space | `run`   | Faster move + run clip                      |
-| **F**        | `jump`  | One-shot; animation-only (no Y physics)     |
-| **E**        | `kneel` | Toggle; `LoopOnce` + clamp; cancel on WASD  |
+| Input        | Clip    | Notes                                      |
+| ------------ | ------- | ------------------------------------------ |
+| Stand still  | `idle`  | Default                                    |
+| WASD         | `walk`  | In-place; hips translation stripped        |
+| WASD + Space | `run`   | Faster move + run clip                     |
+| **F**        | `jump`  | One-shot; animation-only (no Y physics)    |
+| **E**        | `kneel` | Toggle; `LoopOnce` + clamp; cancel on WASD |
 
 Priority: blocking one-shots (US-4 `reloading` / `shooting`, jump) → kneel → locomotion. `dying` clip is in the GLB; wire on elimination in **US-3**.
 
@@ -160,20 +160,20 @@ Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`
 
 ### arena-01 — Ruined Village
 
-| Field        | Value                                                                      |
-| ------------ | -------------------------------------------------------------------------- |
-| **bounds**   | 100 m × 50 m; wall height 3.5 m                                            |
-| **floor**    | `forrest_ground`                                                           |
-| **walls**    | `coral_fort_wall` perimeter + interior ruin segments                       |
-| **spawns**   | Soldiers west (−X), Civilians east (+X); face map center                       |
-| **props**    | `[]` — slots ready for trees / cover later                                 |
+| Field      | Value                                                    |
+| ---------- | -------------------------------------------------------- |
+| **bounds** | 100 m × 50 m; wall height 3.5 m                          |
+| **floor**  | `forrest_ground`                                         |
+| **walls**  | `coral_fort_wall` perimeter + interior ruin segments     |
+| **spawns** | Soldiers west (−X), Civilians east (+X); face map center |
+| **props**  | `[]` — slots ready for trees / cover later               |
 
 ### Testing
 
-| Layer          | Scope                                                                                          |
-| -------------- | ---------------------------------------------------------------------------------------------- |
+| Layer          | Scope                                                                                           |
+| -------------- | ----------------------------------------------------------------------------------------------- |
 | **Vitest**     | Registries; clip resolve / hips strip; GLB JSON contract; locomotion state; collision; FPS hide |
-| **Playwright** | `/play` canvas, no `PropertyBinding` errors; crosshair; optional `__PLAY_TEST__` hook          |
+| **Playwright** | `/play` canvas, no `PropertyBinding` errors; crosshair; optional `__PLAY_TEST__` hook           |
 
 ## Data flow (combat)
 

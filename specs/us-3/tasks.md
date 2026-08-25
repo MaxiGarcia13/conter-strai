@@ -27,7 +27,7 @@ Injury amount depends on **where** you are hit (head > body > limbs) **and** **w
 
 - [x] Export `isEliminated(hp)` helper (or equivalent) for callers if not covered by `HealthState.isEliminated`
 - [x] `health-store.ts` (Zustand) — per-`EntityId` HP map; implement `HealthSystem` (`getHealth`, `applyDamage`, `resetAll`)
-- [ ] Soldier **hitbox meshes** — invisible colliders from `HitboxPreset.parts`, tagged `userData.hitZone` + `userData.entityId`
+- [x] Soldier **hitbox meshes** — invisible colliders from `HitboxPreset.parts`, tagged `userData.hitZone` + `userData.entityId`
 - [ ] Attach hitboxes to world/NPC soldiers (and local player when third-person / raycast targets exist)
 - [ ] `HealthBar` HUD component (local player HP %)
 - [ ] Elimination persists until round end (no mid-round respawn) — store flag; disable controls when eliminated (full round reset in US-4)

@@ -62,7 +62,11 @@ export function SoldierModel({
   }, [source]);
 
   return (
-    <group position={position} rotation={[0, rotationY, 0]}>
+    <group
+      position={position}
+      rotation={[0, rotationY, 0]}
+      userData={entityId ? { entityId } : undefined}
+    >
       <Clone ref={modelRef} object={source} scale={scale} />
       {entityId && (
         <HitboxMesh hitboxPresetId={skin.hitboxPresetId} entityId={entityId} />

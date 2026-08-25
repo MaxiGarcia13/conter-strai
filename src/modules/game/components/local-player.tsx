@@ -97,7 +97,11 @@ export function LocalPlayer({ skinId = 'swat-1' }: LocalPlayerProps) {
 
   return (
     <>
-      <group ref={rigRef} name={LOCAL_PLAYER_ROOT_NAME}>
+      <group
+        ref={rigRef}
+        name={LOCAL_PLAYER_ROOT_NAME}
+        userData={{ entityId: LOCAL_PLAYER_ENTITY_ID }}
+      >
         <Clone ref={modelRef} object={source} scale={scale} />
         <HitboxMesh hitboxPresetId={skin.hitboxPresetId} entityId={LOCAL_PLAYER_ENTITY_ID} />
       </group>

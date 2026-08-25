@@ -22,11 +22,11 @@ Post type-split: weapon contracts in `weapons/`, round phase types in `game/`, d
 
 ## Shooting
 
-- [ ] `useShooting` hook — raycast from camera on mousedown; cooldown from `PistolWeaponConfig.fireCooldownSeconds`
-- [ ] Filter hits by `userData.hitZone`, `userData.entityId`, and **team** (no friendly fire in MVP)
-- [ ] Build `DamageData` (incl. **`weaponId`** of equipped weapon) → combat `applyDamage` / health store `applyDamage`
-- [ ] Pure `resolveHitDamage` (or thin wrapper) Vitest-covered alongside `checkRoundEnd`
-- [ ] Opposing-team dummy / bot at fixed spawn for local tests until US-5
+- [x] `useShooting` hook — raycast from camera on mousedown; cooldown from `PistolWeaponConfig.fireCooldownSeconds`
+- [x] Filter hits by `userData.hitZone`, `userData.entityId`, and **team** (no friendly fire in MVP)
+- [x] Build `DamageData` (incl. **`weaponId`** of equipped weapon) → combat `applyDamage` / health store `applyDamage`
+- [x] Pure `resolveHitDamage` (or thin wrapper) Vitest-covered alongside `checkRoundEnd`
+- [x] Opposing-team dummy / bot at fixed spawn for local tests until US-5 (`ScenarioSoldiers` + hit pick / roster aligned)
 - [ ] When `HealthState.isEliminated`, disable FPS controls until next `startRound()`
 
 ## Weapon mesh (hand attach)

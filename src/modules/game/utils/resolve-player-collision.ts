@@ -5,6 +5,15 @@ export interface PlayerPosition {
   z: number;
 }
 
+/** Fixed XZ disc used for standing NPCs / dummies. */
+export interface CircleBlocker {
+  x: number;
+  z: number;
+  radius: number;
+  /** When set, callers can drop eliminated entities from the blocker list. */
+  entityId?: string;
+}
+
 const COLLISION_EPSILON = 1e-8;
 const RESOLUTION_PASSES = 4;
 const MAX_COLLISION_STEP = 0.2;
@@ -95,6 +104,45 @@ export function resolvePlayerCollision(
       z: resolved.z + stepZ,
     };
     resolved = resolvePositionAgainstSegments(intended, segments, radius, resolved);
+  }
+
+  return resolved;
+}
+
+/** Pushes the player circle out of overlapping solid discs (NPC bodies). */
+export function resolveCircleBlockers(
+  position: PlayerPosition,
+  blockers: CircleBlocker[],
+  playerRadius: number,
+): PlayerPosition {
+  const resolved = { ...position };
+
+  for (let pass = 0; pass < RESOLUTION_PASSES; pass += 1) {
+    let moved = false;
+    for (const blocker of blockers) {
+      const dx = resolved.x - blocker.x;
+      const dz = resolved.z - blocker.z;
+      const minDistance = playerRadius + blocker.radius;
+      const distanceSquared = dx * dx + dz * dz;
+
+      if (distanceSquared >= minDistance * minDistance) {
+        continue;
+      }
+
+      if (distanceSquared > COLLISION_EPSILON) {
+        const distance = Math.sqrt(distanceSquared);
+        const push = (minDistance - distance) / distance;
+        resolved.x += dx * push;
+        resolved.z += dz * push;
+      } else {
+        // Exact center overlap — arbitrary axis so we still separate.
+        resolved.x += minDistance;
+      }
+      moved = true;
+    }
+    if (!moved) {
+      break;
+    }
   }
 
   return resolved;

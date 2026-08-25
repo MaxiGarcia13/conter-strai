@@ -1,6 +1,9 @@
 import type { CollisionSegment } from '@/modules/scenarios/types';
 import { describe, expect, it } from 'vitest';
-import { resolvePlayerCollision } from '@/modules/game/utils/resolve-player-collision';
+import {
+  resolveCircleBlockers,
+  resolvePlayerCollision,
+} from '@/modules/game/utils/resolve-player-collision';
 
 const horizontalWall: CollisionSegment = {
   start: [-2, 0, 0],
@@ -42,5 +45,27 @@ describe('resolvePlayerCollision', () => {
 
     expect(resolved.x).toBeCloseTo(0.4);
     expect(resolved.z).toBe(0);
+  });
+});
+
+describe('resolveCircleBlockers', () => {
+  it('pushes the player out of an overlapping NPC disc', () => {
+    const resolved = resolveCircleBlockers(
+      { x: 0.2, z: 0 },
+      [{ x: 0, z: 0, radius: 0.4 }],
+      0.4,
+    );
+
+    expect(Math.hypot(resolved.x, resolved.z)).toBeCloseTo(0.8);
+  });
+
+  it('leaves a non-overlapping player untouched', () => {
+    const resolved = resolveCircleBlockers(
+      { x: 2, z: 0 },
+      [{ x: 0, z: 0, radius: 0.4 }],
+      0.4,
+    );
+
+    expect(resolved).toEqual({ x: 2, z: 0 });
   });
 });

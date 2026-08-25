@@ -1,5 +1,6 @@
 import type { HitboxPart, HitboxPresetId } from '../types';
 import { useMemo } from 'react';
+import { DoubleSide } from 'three';
 import { hitboxPresets } from '../hitbox-preset-registry';
 
 interface HitboxMeshProps {
@@ -23,6 +24,7 @@ function HitboxPartMesh({
     return (
       <mesh position={part.offset} userData={userData} visible={false}>
         <sphereGeometry args={[part.radius, 8, 6]} />
+        <meshBasicMaterial side={DoubleSide} />
       </mesh>
     );
   }
@@ -30,6 +32,7 @@ function HitboxPartMesh({
   return (
     <mesh position={part.offset} userData={userData} visible={false}>
       <boxGeometry args={part.size} />
+      <meshBasicMaterial side={DoubleSide} />
     </mesh>
   );
 }

@@ -17,6 +17,7 @@ export function PlayerControls({ scenario, spawn }: PlayerControlsProps) {
     collisionSegments: scenario.collisionSegments ?? [],
     spawn,
     wallThickness: scenario.walls.thickness ?? DEFAULT_WALL_THICKNESS,
+    scenario,
   });
   return null;
 }

@@ -2,13 +2,14 @@ import type { PlayLoaderState } from './play-loader';
 import type { ScenarioId } from '@/modules/scenarios';
 import { Canvas } from '@react-three/fiber';
 
-import { Suspense, useCallback, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { HealthBar } from '@/modules/combat';
 import {
   getScenarioById,
   ScenarioScene,
   ScenarioSoldiers,
 } from '@/modules/scenarios';
+import { useRoundStore } from '../state/round-store';
 import { resolveLocalSpawn } from '../utils/local-spawn';
 import { resolvePlaySkinId } from '../utils/resolve-play-skin-id';
 import { AimMarker } from './aim-marker';
@@ -20,6 +21,7 @@ import { LocalPlayer } from './local-player';
 import { PlayTestHook } from './play-test-hook';
 import { PlayerControls } from './player-controls';
 import { RoundEndBanner } from './round-end-banner';
+import { ShootingController } from './shooting-controller';
 
 const DEFAULT_SCENARIO_ID = 'arena-01' satisfies ScenarioId;
 const DEFAULT_LIGHTING = { ambient: 0.6, sunIntensity: 1.2 };
@@ -35,6 +37,12 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
   const localSpawn = useMemo(() => resolveLocalSpawn(scenario), [scenario]);
   const skinId = useMemo(() => resolvePlaySkinId(), []);
   const [trackLoading, setTrackLoading] = useState(Boolean(onLoaderChange));
+
+  const startRound = useRoundStore((state) => state.startRound);
+
+  useEffect(() => {
+    startRound(scenarioId);
+  }, [scenarioId, startRound]);
 
   const handleLoaderChange = useCallback(
     (state: PlayLoaderState | null) => {
@@ -82,6 +90,7 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
         </Suspense>
 
         <AimMarker />
+        <ShootingController />
       </Canvas>
       <CameraHud />
       <CrosshairHud />

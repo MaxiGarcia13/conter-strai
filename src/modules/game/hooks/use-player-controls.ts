@@ -2,7 +2,7 @@ import type { LocalSpawn } from '../utils/local-spawn';
 import type { ScenarioConfig } from '@/modules/scenarios';
 import { useFrame, useThree } from '@react-three/fiber';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useHealthStore } from '@/modules/combat';
 import { LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
 import { resolveLocomotionState } from '@/modules/soldiers/utils/resolve-locomotion-state';
@@ -26,7 +26,8 @@ import {
   setPlayerPose,
 } from '../state/player-state';
 import { applyCameraMode } from '../utils/apply-camera-mode';
-import { resolvePlayerCollision } from '../utils/resolve-player-collision';
+import { npcBlockersFromScenario } from '../utils/npc-blockers-from-scenario';
+import { resolveCircleBlockers, resolvePlayerCollision } from '../utils/resolve-player-collision';
 
 const MOVE_CODES = {
   forward: 'KeyW',
@@ -50,19 +51,30 @@ interface UsePlayerControlsOptions {
   collisionSegments: NonNullable<ScenarioConfig['collisionSegments']>;
   wallThickness: number;
   spawn: LocalSpawn;
+  scenario: ScenarioConfig;
 }
 
 /**
  * Binds WASD + pointer-lock mouse look to the shared player transform and
  * positions the camera for the active mode each frame. Movement resolves
- * interior walls before clamping against the scenario's outer bounds.
+ * interior walls and NPC bodies before clamping against the scenario's outer bounds.
  */
-export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickness }: UsePlayerControlsOptions) {
+export function usePlayerControls({
+  bounds,
+  collisionSegments,
+  spawn,
+  wallThickness,
+  scenario,
+}: UsePlayerControlsOptions) {
   const camera = useThree((state) => state.camera);
   const domElement = useThree((state) => state.gl.domElement);
   const [isPointerLocked, setIsPointerLocked] = useState(false);
   const eliminated = useHealthStore(
     (s) => s.healthById[LOCAL_PLAYER_ENTITY_ID]?.isEliminated ?? false,
+  );
+  const npcBlockers = useMemo(
+    () => npcBlockersFromScenario(scenario, spawn.key),
+    [scenario, spawn.key],
   );
 
   const pressedCodesRef = useRef(new Set<string>());
@@ -239,6 +251,19 @@ export function usePlayerControls({ bounds, collisionSegments, spawn, wallThickn
       transform.x = resolvedPosition.x;
       transform.z = resolvedPosition.z;
     }
+
+    // Block walk-through of standing NPCs (skip corpses).
+    const health = useHealthStore.getState();
+    const solidNpcs = npcBlockers.filter(
+      (blocker) => !blocker.entityId || !health.getHealth(blocker.entityId)?.isEliminated,
+    );
+    const afterNpcs = resolveCircleBlockers(
+      { x: transform.x, z: transform.z },
+      solidNpcs,
+      PLAYER_RADIUS,
+    );
+    transform.x = afterNpcs.x;
+    transform.z = afterNpcs.z;
 
     // Outer walls sit just outside bounds; keep the player body clear of them.
     const halfWidth = Math.max(bounds.width / 2 - PLAYER_RADIUS, 0);

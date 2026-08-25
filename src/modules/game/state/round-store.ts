@@ -5,12 +5,15 @@ import type { Team } from '@/modules/teams';
 import { create } from 'zustand';
 import { useHealthStore } from '@/modules/combat';
 import { getScenarioById, spawnYawFor } from '@/modules/scenarios';
-import { LOCAL_PLAYER_ENTITY_ID } from '../constants/player';
+import {
+  DEFAULT_LOCAL_SPAWN_INDEX,
+  DEFAULT_LOCAL_TEAM,
+  LOCAL_PLAYER_ENTITY_ID,
+} from '../constants/player';
 import { checkRoundEnd } from '../services/check-round-end';
 import { resetPlayerTransform } from './player-state';
 
 const DEFAULT_SCENARIO_ID = 'arena-01' satisfies ScenarioId;
-const DEFAULT_LOCAL_TEAM: Team = 'civilian';
 
 export interface RoundState {
   phase: RoundPhase;
@@ -42,15 +45,18 @@ export const useRoundStore = create<RoundState>()((set, get) => ({
     for (const team of teams) {
       const spawns = scenario.teamSpawns[team] ?? [];
       for (let i = 0; i < spawns.length; i++) {
-        roster.push({ entityId: `${team}-${i}`, team });
+        const isLocalSlot = team === DEFAULT_LOCAL_TEAM && i === DEFAULT_LOCAL_SPAWN_INDEX;
+        roster.push({
+          entityId: isLocalSlot ? LOCAL_PLAYER_ENTITY_ID : `${team}-${i}`,
+          team,
+        });
       }
     }
 
-    roster.push({ entityId: LOCAL_PLAYER_ENTITY_ID, team: DEFAULT_LOCAL_TEAM });
-
     const localSpawns = scenario.teamSpawns[DEFAULT_LOCAL_TEAM];
     if (localSpawns && localSpawns.length > 0) {
-      const position = localSpawns[0]!;
+      const index = Math.min(DEFAULT_LOCAL_SPAWN_INDEX, localSpawns.length - 1);
+      const position = localSpawns[index]!;
       const yaw = spawnYawFor(scenario, DEFAULT_LOCAL_TEAM, position);
       resetPlayerTransform(position[0], position[2], yaw);
     }

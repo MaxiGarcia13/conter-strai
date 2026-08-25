@@ -18,6 +18,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "assets:compress": "node scripts/compress-assets.mjs",
+    "assets:normalize-characters": "node scripts/normalize-character-glbs.mjs",
     "assets:extract-maps": "node scripts/extract-texture-maps.mjs",
     "preview": "astro preview",
     "clean": "rm -rf node_modules && rm -rf dist && rm -rf .astro",

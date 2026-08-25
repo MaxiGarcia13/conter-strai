@@ -11,15 +11,29 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TEXTURE_SIZE = 1024;
 
 const TARGETS = [
+  // floors
   'public/assets/textures/floor/forrest_ground.glb',
   'public/assets/textures/floor/asphalt.glb',
   'public/assets/textures/floor/brown_floor_tiles.glb',
+
+  // Walls
   'public/assets/textures/wall/castle_brick_broken.glb',
   'public/assets/textures/wall/broken_brick.glb',
   'public/assets/textures/wall/cliff_side.glb',
 
+  // Animations
+  'public/assets/characters/shared/base-animations.glb',
+
+  // Civilians
+  'public/assets/characters/civilians/remy.glb',
+
+  // Soldiers
+  'public/assets/characters/soldiers/swat-1.glb',
+
+  // TODO: Remove after us-6 is done
   'public/assets/soldiers/swat-soldier.glb',
 
+  // Weapons
   'public/assets/weapons/pistol_a.glb',
 ];
 

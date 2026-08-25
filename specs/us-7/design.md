@@ -17,11 +17,11 @@ Depends on **US-6** skins (`remy`, `swat-1`) and shared idle for the character p
 
 `GameCanvas` (or a thin boot helper) reads URL search params:
 
-| Param      | Type                         | Effect                                      |
-| ---------- | ---------------------------- | ------------------------------------------- |
-| `team`     | `Team`                       | `resolveLocalSpawn` uses that team’s slots  |
-| `skin`     | `SoldierSkinId`              | `LocalPlayer` / model skin                  |
-| `scenario` | `ScenarioId`                 | `getScenarioById` (today only `arena-01`)   |
+| Param      | Type            | Effect                                     |
+| ---------- | --------------- | ------------------------------------------ |
+| `team`     | `Team`          | `resolveLocalSpawn` uses that team’s slots |
+| `skin`     | `SoldierSkinId` | `LocalPlayer` / model skin                 |
+| `scenario` | `ScenarioId`    | `getScenarioById` (today only `arena-01`)  |
 
 Local play **respects** the selected team. When US-4 round service / US-5 Colyseus assign teams, document override: select becomes preference or is skipped for networked matches — update US-4.8 note when implementing rounds.
 
@@ -50,10 +50,10 @@ ScenarioConfig {
 
 ## Skin ↔ team
 
-| Team       | Skin id   |
-| ---------- | --------- |
-| `civilian` | `remy`    |
-| `soldier`  | `swat-1`  |
+| Team       | Skin id  |
+| ---------- | -------- |
+| `civilian` | `remy`   |
+| `soldier`  | `swat-1` |
 
 Changing team resets character to that team’s default skin if the current skin is invalid for the new team.
 

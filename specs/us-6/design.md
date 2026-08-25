@@ -9,11 +9,11 @@ Builds on US-2 locomotion (`useSoldierLocomotion`, hips strip, kneel/jump poses)
 
 ## Asset contract
 
-| Asset | Role |
-| ----- | ---- |
-| `/assets/characters/shared/base-animations.glb` | Source of truth for loco/action clips |
-| `/assets/characters/civilians/remy.glb` | Civilian mesh (Mixamo `Armature` / `mixamorig:*`) |
-| `/assets/characters/soldiers/swat-1.glb` | Soldier mesh (same skeleton contract) |
+| Asset                                           | Role                                              |
+| ----------------------------------------------- | ------------------------------------------------- |
+| `/assets/characters/shared/base-animations.glb` | Source of truth for loco/action clips             |
+| `/assets/characters/civilians/remy.glb`         | Civilian mesh (Mixamo `Armature` / `mixamorig:*`) |
+| `/assets/characters/soldiers/swat-1.glb`        | Soldier mesh (same skeleton contract)             |
 
 **Required shared clip names:** `idle`, `walk`, `run`, `jump`, `kneel`, `crouch-walking`, `dying` (dying still wired in US-3). Ignore junk `mixamo.com*` names via explicit registry mapping.
 

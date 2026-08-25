@@ -7,9 +7,9 @@ Work queue points to open US deltas. Tick tasks in the delta folder; ship into `
 US numbers are not execution order. Ship in this sequence:
 
 1. **US-3** — finish remaining (health bar, elimination, `dying` clip)
-2. **US-6** — shared animations + `remy` / `swat-1` + crouch-walk *(before US-4 weapon poses and pistol attach)*
+2. **US-6** — shared animations + `remy` / `swat-1` + crouch-walk _(before US-4 weapon poses and pistol attach)_
 3. **US-4** — PvP loop (round service + shooting; fire/reload clips on shared pack after US-6)
-4. **US-7** — match select *(requires US-6 skins)*
+4. **US-7** — match select _(requires US-6 skins)_
 5. **US-5** — Colyseus multiplayer
 
 Round service and hitscan (US-4) can start in parallel with US-6, but weapon mesh attach and pose clips (US-4.9–4.11) should wait for US-6.

@@ -4,6 +4,7 @@ import { Clone, useGLTF } from '@react-three/drei';
 
 import { useEffect, useMemo, useRef } from 'react';
 import { HitboxMesh, useHealthStore } from '@/modules/combat';
+import { WeaponAttach } from '@/modules/weapons/components/weapon-attach';
 
 import { getSoldierSkinById } from '../get-soldier-skin-by-id';
 import { useSoldierAnimationClips } from '../hooks/use-soldier-animation-clips';
@@ -75,6 +76,7 @@ export function SoldierModel({
       userData={entityId ? { entityId } : undefined}
     >
       <Clone ref={modelRef} object={source} scale={scale} />
+      {entityId && <WeaponAttach attachKey={source.uuid} modelRef={modelRef} />}
       {entityId && (
         <HitboxMesh hitboxPresetId={skin.hitboxPresetId} entityId={entityId} />
       )}

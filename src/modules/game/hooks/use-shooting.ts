@@ -42,10 +42,9 @@ export function useShooting(domElement: HTMLElement | null) {
       lastFireRef.current = now;
 
       const pose = getPlayerPose();
-      if (pose === 'jump' || pose === 'reloading' || pose === 'dying') {
+      if (pose === 'reloading' || pose === 'dying') {
         return;
       }
-      setPlayerPose('shooting');
 
       camera.updateMatrixWorld();
       const raycaster = raycasterRef.current;

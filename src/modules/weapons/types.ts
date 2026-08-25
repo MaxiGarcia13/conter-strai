@@ -10,6 +10,10 @@ export interface PistolWeaponConfig {
   damageByZone: Record<HitZone, number>;
   /** Runtime URL of the weapon GLB (served from public/). */
   modelUrl: string;
+  /** Local euler radians on mixamorig RightHand (before meter→cm scale). */
+  gripRotation?: [number, number, number];
+  /** Local position in meters on RightHand after gripRotation (×100 at attach). */
+  gripPosition?: [number, number, number];
 }
 
 export interface BulletHitResult {

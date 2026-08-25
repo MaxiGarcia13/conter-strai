@@ -21,7 +21,7 @@ export const DEFAULT_PISTOL_GRIP_ROTATION: [number, number, number] = [
 
 export const DEFAULT_PISTOL_GRIP_POSITION: [number, number, number] = [
   0.01,
-  0.05,
+  0.07,
   0.02,
 ];
 

@@ -2,32 +2,10 @@ import { useEffect, useRef } from 'react';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 import { useRoundStore } from '../state/round-store';
 
-const ROUND_END_DELAY_MS = 4000;
-
 /** Full-screen overlay shown when a round ends; auto-restarts after a delay. */
 export function RoundEndBanner() {
   const phase = useRoundStore((s) => s.phase);
   const winner = useRoundStore((s) => s.winner);
-  const startRound = useRoundStore((s) => s.startRound);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    if (phase !== 'round-end') {
-      return;
-    }
-
-    timerRef.current = setTimeout(() => {
-      timerRef.current = null;
-      startRound();
-    }, ROUND_END_DELAY_MS);
-
-    return () => {
-      if (timerRef.current !== null) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [phase, startRound]);
 
   if (phase !== 'round-end' || !winner) {
     return null;

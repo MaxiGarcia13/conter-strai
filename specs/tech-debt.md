@@ -40,3 +40,11 @@ No god files today (~150 lines max). Prefer small extractions when editing these
 | `scenario-walls.tsx`              | Outer perimeter + segments + UV tiling |
 | `use-scenario-texture-library.ts` | PBR map load + material assembly       |
 | `use-soldier-locomotion.ts`       | Mixer lifecycle + crossfade            |
+
+## Soldier mesh setup duplication
+
+`LocalPlayer` and `SoldierModel` repeat the same GLTF load / armature / scale / culling pipeline; locomotion is already shared via `useSoldierLocomotion`. Do **not** merge the two components — player transform, aim rig, FPS camera, and pose callbacks stay in `game/`.
+
+- [ ] **Extract `useSoldierMesh`** — new hook in `src/modules/soldiers/hooks/use-soldier-mesh.ts` consolidating: `getSoldierSkinById`, `useGLTF`, `useSoldierAnimationClips`, `getSoldierArmature`, `soldierScaleVector`, and the `disableSkinnedMeshCulling` mount effect. Returns `{ modelRef, source, scale, skin, animations }`.
+- [ ] **Refactor `SoldierModel`** — consume `useSoldierMesh`; keep NPC-only concerns (static `position` / `rotationY`, health-store pose via `resolveNpcPose`, conditional `WeaponAttach` / `HitboxMesh` when `entityId` is set).
+- [ ] **Refactor `LocalPlayer`** — consume `useSoldierMesh`; keep game-only concerns (`useFrame` + `getPlayerTransform`, aim rig, `placeCameraAtHead`, `setBodyAnchorY`, pose clear callbacks).

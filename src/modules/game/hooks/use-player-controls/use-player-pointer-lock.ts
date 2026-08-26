@@ -19,7 +19,6 @@ export function usePlayerPointerLock({
   eliminatedRef,
   externalControlsRef,
 }: UsePlayerPointerLockOptions): void {
-
   useEffect(() => {
     if (eliminated && document.pointerLockElement === domElement) {
       document.exitPointerLock();

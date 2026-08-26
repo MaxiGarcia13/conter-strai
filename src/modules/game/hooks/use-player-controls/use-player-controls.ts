@@ -77,5 +77,4 @@ export function usePlayerControls({
     eliminatedRef,
     externalControlsRef,
   });
-
 }

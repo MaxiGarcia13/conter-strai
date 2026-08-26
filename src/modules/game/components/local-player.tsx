@@ -1,18 +1,14 @@
 import type { Group } from 'three';
 import type { SoldierSkinId } from '@/modules/soldiers';
 import type { SoldierAimRig } from '@/modules/soldiers/utils/aim-body-rig';
-import { Clone, useGLTF } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Vector3 } from 'three';
-import { HitboxMesh } from '@/modules/combat';
-import { getSoldierSkinById } from '@/modules/soldiers';
-import { useSoldierAnimationClips } from '@/modules/soldiers/hooks/use-soldier-animation-clips';
+import { SoldierMeshBody } from '@/modules/soldiers/components/soldier-mesh-body';
 import { useSoldierLocomotion } from '@/modules/soldiers/hooks/use-soldier-locomotion';
+import { useSoldierMesh } from '@/modules/soldiers/hooks/use-soldier-mesh';
 import { applySoldierAimPose, resolveSoldierAimRig } from '@/modules/soldiers/utils/aim-body-rig';
-import { disableSkinnedMeshCulling, getSoldierArmature, soldierScaleVector } from '@/modules/soldiers/utils/clone-soldier-root';
 import { resolveLocalPlayerPose } from '@/modules/soldiers/utils/resolve-soldier-pose';
-import { WeaponAttach } from '@/modules/weapons/components/weapon-attach';
 import {
   DEFAULT_PLAY_SKIN_ID,
   LOCAL_PLAYER_ENTITY_ID,
@@ -26,7 +22,6 @@ interface LocalPlayerProps {
   skinId?: SoldierSkinId;
 }
 
-// Stable identity: the locomotion mixer captures it once in its mount effect.
 const clearJumpPose = () => clearPlayerPoseIf('jump');
 function clearReloadingPose() {
   const pose = getPlayerPose();
@@ -52,26 +47,13 @@ const headWorldPosition = new Vector3();
  */
 export function LocalPlayer({ skinId = DEFAULT_PLAY_SKIN_ID }: LocalPlayerProps) {
   const rigRef = useRef<Group>(null);
-  const modelRef = useRef<Group>(null);
+  const { modelRef, source, scale, skin, animations } = useSoldierMesh(skinId);
   const aimRigRef = useRef<SoldierAimRig | null>(null);
   const camera = useThree((state) => state.camera);
-  const skin = useMemo(() => getSoldierSkinById(skinId), [skinId]);
-  const gltf = useGLTF(skin.meshData.modelUrl);
-  const animations = useSoldierAnimationClips(skin.meshData, gltf.animations);
-
-  const source = useMemo(() => getSoldierArmature(gltf.scene), [gltf]);
-  const scale = useMemo(
-    () => soldierScaleVector(source, skin.meshData.scale),
-    [skin.meshData.scale, source],
-  );
 
   useEffect(() => {
     const model = modelRef.current;
     aimRigRef.current = model ? resolveSoldierAimRig(model) : null;
-    if (model) {
-      // Aim-marker raycasts run pre-matrix-update and would cache a degenerate bound.
-      disableSkinnedMeshCulling(model);
-    }
     return () => {
       aimRigRef.current = null;
     };
@@ -128,16 +110,18 @@ export function LocalPlayer({ skinId = DEFAULT_PLAY_SKIN_ID }: LocalPlayerProps)
   });
 
   return (
-    <>
-      <group
-        ref={rigRef}
-        name={LOCAL_PLAYER_ROOT_NAME}
-        userData={{ entityId: LOCAL_PLAYER_ENTITY_ID }}
-      >
-        <Clone ref={modelRef} object={source} scale={scale} />
-        <WeaponAttach attachKey={source.uuid} modelRef={modelRef} />
-        <HitboxMesh hitboxPresetId={skin.hitboxPresetId} entityId={LOCAL_PLAYER_ENTITY_ID} />
-      </group>
-    </>
+    <group
+      ref={rigRef}
+      name={LOCAL_PLAYER_ROOT_NAME}
+      userData={{ entityId: LOCAL_PLAYER_ENTITY_ID }}
+    >
+      <SoldierMeshBody
+        modelRef={modelRef}
+        source={source}
+        scale={scale}
+        hitboxPresetId={skin.hitboxPresetId}
+        entityId={LOCAL_PLAYER_ENTITY_ID}
+      />
+    </group>
   );
 }

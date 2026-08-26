@@ -29,19 +29,63 @@ Keep if the next US needs it; document or implement so it is not misleading dead
 - [x] **`game/index.ts` barrel** — nothing imports `@/modules/game`; either use the barrel from `play.astro` / islands or delete the re-export file.
 - [x] **`scenarios/index.ts` re-exports `./pieces`** — broad public API unused outside map authoring; narrow exports or document as map-authoring surface only.
 
-## Complexity hotspots (watch, not urgent)
+## Complexity hotspots (index)
 
-No god files; prefer small extracts when editing these. Largest today: `use-soldier-locomotion.ts` (~270 lines).
+Largest today: `use-soldier-locomotion.ts` (~270 lines). Prefer the **Complexity refactors** tasks below when editing these; do not split for vanity line-count.
 
 | File                                                     | Why                                    |
 | -------------------------------------------------------- | -------------------------------------- |
 | `house-helpers.ts`                                       | Wall segments with doorway holes       |
 | `hooks/use-player-controls/use-player-movement-frame.ts` | Move + collide + bounds + camera       |
-| `hooks/use-player-controls/use-player-pointer-lock.ts`   | Click-lock + mouse look                |
-| `dev/dev-free-camera.tsx`                                | Ghost fly + own key map                |
+| `hooks/use-player-controls/use-player-pointer-lock.ts`   | Click-lock + mouse look (small; leave) |
+| `dev/dev-free-camera.tsx`                                | Ghost fly + look + controls claim      |
 | `scenario-walls.tsx`                                     | Outer perimeter + segments + UV tiling |
 | `use-scenario-texture-library.ts`                        | PBR map load + material assembly       |
 | `use-soldier-locomotion.ts`                              | Mixer lifecycle + crossfade            |
+| `play-test-hook.tsx`                                     | DEV poll + bone debug surface          |
+
+Watch-only (already modular enough — no refactor task):
+
+- `resolve-player-collision.ts` — `resolveSegment` / circle blockers already extracted
+- `pick-bullet-hit.ts` — tag walk helpers already extracted
+- `use-player-pointer-lock.ts` — small after hygiene pass
+
+## Complexity refactors
+
+Unchecked how-tos for the hotspots above. `LocalPlayer` / `SoldierModel` size is covered by **Soldier mesh setup duplication** (`useSoldierMesh`).
+
+- [ ] **Split `useSoldierLocomotion` (~270)** — `src/modules/soldiers/hooks/use-soldier-locomotion.ts`
+  1. Extract pure helpers (`createSoldierActions`, `playDyingHard`, one-shot `finished` wiring) into `soldiers/utils/` or `soldiers/hooks/locomotion/`.
+  2. Keep `useSoldierLocomotion` as a thin orchestrator: mount mixer effect + `useFrame` state machine.
+  3. Preserve `countActiveSoldierMixers` and existing option callbacks for e2e / pose owners.
+  4. Do not change the public hook signature.
+
+- [ ] **Split `DevFreeCamera`** — `src/modules/game/dev/dev-free-camera.tsx`
+  1. `use-free-camera-toggle.ts` — KeyV toggle listener.
+  2. `use-free-camera-look.ts` — claim/release R3F `controls`, pointer lock, mouse look.
+  3. `use-free-camera-fly.ts` — `useFrame` fly (WASD via shared axes + Q/E/boost).
+  4. `DevFreeCamera` becomes a short composer returning `null`.
+
+- [ ] **Extract wall mesh builders from `ScenarioWalls`** — `src/modules/scenarios/components/scenario-walls.tsx`
+  1. Move `segmentWall` / `outerWalls` into `scenarios/utils/` (or `pieces/`).
+  2. Leave `ScenarioWalls` as the R3F component that maps scenario config → those builders + materials.
+
+- [ ] **Extract house wall-segment helpers** — `src/modules/scenarios/pieces/house-helpers.ts`
+  1. Move `wallSegmentsAlongX` / `wallSegmentsAlongZ` / hole math into `wall-segment-helpers.ts` (or similar).
+  2. Keep `buildHouses` / `HouseFootprint` as the public map-authoring API.
+
+- [ ] **Extract texture-library pure utils** — `src/modules/scenarios/hooks/use-scenario-texture-library.ts`
+  1. Move `collectMapEntries` + material assembly from loaded maps into pure utils (Vitest without R3F).
+  2. Hook stays: `useLoader` + `useMemo` wiring only.
+
+- [ ] **Extract pure advance from `usePlayerMovementFrame`** — `src/modules/game/hooks/use-player-controls/use-player-movement-frame.ts`
+  1. Pure `advancePlayerTransform({…})` (intended move → wall collision → NPC discs → bounds clamp → locomotion).
+  2. Hook keeps elimination / external-controls early-outs and `applyCameraMode`.
+  3. Add a small unit test for the pure advance path.
+
+- [ ] **Extract DEV play-test helpers** — `src/modules/game/dev/play-test-hook.tsx`
+  1. Move `findLocalNode` / quaternion helpers into `dev/play-test-helpers.ts`.
+  2. Keep polling + `__playTest` surface in the component.
 
 ## Player controls hygiene
 
@@ -73,9 +117,10 @@ Post-split leftovers from `use-player-controls` → folder + `game/utils`. Pick 
 
 `LocalPlayer` and `SoldierModel` repeat the same GLTF load / armature / scale / culling pipeline; locomotion is already shared via `useSoldierLocomotion`. Do **not** merge the two components — player transform, aim rig, FPS camera, and pose callbacks stay in `game/`.
 
-- [ ] **Extract `useSoldierMesh`** — new hook in `src/modules/soldiers/hooks/use-soldier-mesh.ts` consolidating: `getSoldierSkinById`, `useGLTF`, `useSoldierAnimationClips`, `getSoldierArmature`, `soldierScaleVector`, and the `disableSkinnedMeshCulling` mount effect. Returns `{ modelRef, source, scale, skin, animations }`.
-- [ ] **Refactor `SoldierModel`** — consume `useSoldierMesh`; keep NPC-only concerns (static `position` / `rotationY`, health-store pose via `resolveNpcPose`, conditional `WeaponAttach` / `HitboxMesh` when `entityId` is set).
-- [ ] **Refactor `LocalPlayer`** — consume `useSoldierMesh`; keep game-only concerns (`useFrame` + `getPlayerTransform`, aim rig, `placeCameraAtHead`, `setBodyAnchorY`, pose clear callbacks).
+- [x] **Extract `useSoldierMesh`** — new hook in `src/modules/soldiers/hooks/use-soldier-mesh.ts` consolidating: `getSoldierSkinById`, `useGLTF`, `useSoldierAnimationClips`, `getSoldierArmature`, `soldierScaleVector`, and the `disableSkinnedMeshCulling` mount effect. Returns `{ modelRef, source, scale, skin, animations }`.
+- [x] **Extract `SoldierMeshBody`** — presentational Clone + conditional `WeaponAttach` / `HitboxMesh` in `src/modules/soldiers/components/soldier-mesh-body.tsx`. Outer `<group>` (static props vs `rigRef` / root name / `useFrame` transform) stays with each caller.
+- [x] **Refactor `SoldierModel`** — consume `useSoldierMesh` + `SoldierMeshBody`; keep NPC-only concerns (static `position` / `rotationY`, health-store pose via `resolveNpcPose`, optional `entityId`).
+- [x] **Refactor `LocalPlayer`** — consume `useSoldierMesh` + `SoldierMeshBody`; keep game-only concerns (`useFrame` + `getPlayerTransform`, aim rig, `placeCameraAtHead`, `setBodyAnchorY`, pose clear callbacks).
 
 ## Deferred from US-4
 

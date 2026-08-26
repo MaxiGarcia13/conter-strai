@@ -105,7 +105,6 @@
     background-size: 2rem 2rem;
     mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 75%);
   }
-
 }
 
 @layer base {
@@ -148,6 +147,5 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
-
   }
 }

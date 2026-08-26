@@ -41,12 +41,12 @@ Room-centric routes: `/room`, `/room/join`, `/room/[roomId]`, `/room/[roomId]/jo
 
 ## Waiting room (`/room/[roomId]`)
 
-- [ ] `src/pages/room/[roomId]/index.astro` + island (DOM-only OK)
-- [ ] Show room id, local player summary from session, waiting / empty-slot copy (local-only; no remotes)
-- [ ] Shareable invite URL input (`{origin}/room/{roomId}/join`) + **Copy**
-- [ ] QR code for the same invite URL (client-side)
-- [ ] **Play** → `/room/{roomId}/play`
-- [ ] Back link to `/room` when host
+- [x] `src/pages/room/[roomId]/index.astro` + island (DOM-only OK)
+- [x] Show room id, local player summary from session, waiting / empty-slot copy (local-only; no remotes)
+- [x] Shareable invite URL input (`{origin}/room/{roomId}/join`) + **Copy**
+- [x] QR code for the same invite URL (client-side)
+- [x] **Play** → `/room/{roomId}/play`
+- [x] Back link to `/room` when host
 
 ## Play boot
 

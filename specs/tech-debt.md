@@ -33,16 +33,16 @@ Keep if the next US needs it; document or implement so it is not misleading dead
 
 Largest today: `use-player-movement-frame.ts` / house helpers. Prefer the **Complexity refactors** tasks below when editing these; do not split for vanity line-count.
 
-| File                                                     | Why                                    |
-| -------------------------------------------------------- | -------------------------------------- |
-| `house-helpers.ts`                                       | Wall segments with doorway holes       |
-| `hooks/use-player-controls/use-player-movement-frame.ts` | Move + collide + bounds + camera       |
-| `hooks/use-player-controls/use-player-pointer-lock.ts`   | Click-lock + mouse look (small; leave) |
-| `dev/dev-free-camera.tsx`                                | Ghost fly + look + controls claim      |
-| `scenario-walls.tsx`                                     | Outer perimeter + segments + UV tiling |
-| `use-scenario-texture-library.ts`                        | PBR map load + material assembly       |
+| File                                                     | Why                                       |
+| -------------------------------------------------------- | ----------------------------------------- |
+| `house-helpers.ts`                                       | Wall segments with doorway holes          |
+| `hooks/use-player-controls/use-player-movement-frame.ts` | Move + collide + bounds + camera          |
+| `hooks/use-player-controls/use-player-pointer-lock.ts`   | Click-lock + mouse look (small; leave)    |
+| `dev/dev-free-camera.tsx`                                | Ghost fly + look + controls claim         |
+| `scenario-walls.tsx`                                     | Outer perimeter + segments + UV tiling    |
+| `use-scenario-texture-library.ts`                        | PBR map load + material assembly          |
 | `hooks/use-soldier-locomotion/`                          | Slim orchestrator + private mixer/helpers |
-| `play-test-hook.tsx`                                     | DEV poll + bone debug surface          |
+| `play-test-hook.tsx`                                     | DEV poll + bone debug surface             |
 
 Watch-only (already modular enough — no refactor task):
 
@@ -60,7 +60,7 @@ Unchecked how-tos for the hotspots above. `LocalPlayer` / `SoldierModel` size is
   3. Preserve `countActiveSoldierMixers` and existing option callbacks for e2e / pose owners.
   4. Do not change the public hook signature; barrel exports only the public API.
 
-- [ ] **Split `DevFreeCamera`** — `src/modules/game/dev/dev-free-camera.tsx`
+- [x] **Split `DevFreeCamera`** — `src/modules/game/dev/dev-free-camera.tsx`
   1. `use-free-camera-toggle.ts` — KeyV toggle listener.
   2. `use-free-camera-look.ts` — claim/release R3F `controls`, pointer lock, mouse look.
   3. `use-free-camera-fly.ts` — `useFrame` fly (WASD via shared axes + Q/E/boost).

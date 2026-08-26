@@ -15,7 +15,7 @@ test('/play plays jump on F; kneel + WASD stays crouched (crouch-walk)', async (
   await waitForCanvas(page);
   await waitForPlayTest(page);
 
-  expect((await readPlayTest(page))?.skinId).toBe('swat-1');
+  expect((await readPlayTest(page))?.skinId).toBe('remy');
 
   await page.keyboard.down('KeyW');
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('walk');
@@ -46,13 +46,13 @@ test('/play plays jump on F; kneel + WASD stays crouched (crouch-walk)', async (
   expectNoConsoleErrors(consoleErrors);
 });
 
-test('/play?skin=remy boots shared clips without PropertyBinding errors', async ({ page }) => {
+test('/play?skin=swat-1 boots shared clips without PropertyBinding errors', async ({ page }) => {
   const consoleErrors = captureConsoleErrors(page);
-  await navigateToPlay(page, { skin: 'remy' });
+  await navigateToPlay(page, { skin: 'swat-1' });
   await waitForCanvas(page);
   await waitForPlayTest(page);
 
-  expect((await readPlayTest(page))?.skinId).toBe('remy');
+  expect((await readPlayTest(page))?.skinId).toBe('swat-1');
   expect((await readPlayTest(page))?.activeClip).toBe('idle');
 
   await page.keyboard.down('KeyW');

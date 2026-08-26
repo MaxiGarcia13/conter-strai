@@ -25,7 +25,7 @@ const CAMERA_MODE_CYCLE: CameraMode[] = ['fps', 'ots', 'tps'];
 const transform: PlayerTransform = { x: 0, z: 0, yaw: 0, pitch: 0 };
 let locomotion: LocomotionState = 'idle';
 let pose: SoldierActionId | null = null;
-let cameraMode: CameraMode = 'fps';
+let cameraMode: CameraMode = 'ots';
 const modeListeners = new Set<CameraModeListener>();
 
 export function getPlayerTransform(): PlayerTransform {

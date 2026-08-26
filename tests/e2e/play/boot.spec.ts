@@ -19,6 +19,6 @@ test('/play loads the scene and settles its assets', async ({ page }) => {
 
   expect(atSpawn.soldierCount).toBeGreaterThanOrEqual(1);
   expect(atSpawn.activeClip).toBe('idle');
-  expect(atSpawn.skinId).toBe('swat-1');
+  expect(atSpawn.skinId).toBe('remy');
   expectNoConsoleErrors(consoleErrors);
 });

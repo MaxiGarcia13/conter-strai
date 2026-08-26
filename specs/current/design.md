@@ -28,8 +28,8 @@ stateDiagram-v2
 
 | Team      | ID         | Motif                                                            |
 | --------- | ---------- | ---------------------------------------------------------------- |
-| Civilians | `civilian` | Irregular / non-military side                                    |
-| Soldiers  | `soldier`  | Military side — default skin `swat-1` (also `swat-2` / `swat-3`) |
+| Civilians | `civilian` | Irregular / non-military side — default play skin `remy` (also `james` / `liza`) |
+| Soldiers  | `soldier`  | Military side — `swat-1` / `swat-2` / `swat-3`                                   |
 
 Team IDs are `civilian` \| `soldier` everywhere in code. Display names: **Civilians** / **Soldiers** (`TEAM_DISPLAY_NAME`).
 
@@ -119,7 +119,7 @@ Units: **1 world unit = 1 meter**.
 | **Texture**      | Floor/wall GLB materials under `/assets/textures/`                                  | `forrest_ground`, `coral_fort_wall`                             |
 | **Prop**         | Placeable objects (trees, barrels, cover)                                           | deferred (`props: []` on arena-01)                              |
 | **Scenario**     | Map layout: bounds, materials, props, team spawns                                   | `arena-01`                                                      |
-| **Soldier skin** | Visual presets (`SoldierSkin`); hitbox via `hitboxPresetId`; clips from shared pack | `swat-1` (default), `swat-2`, `swat-3`, `remy`, `james`, `liza` |
+| **Soldier skin** | Visual presets (`SoldierSkin`); hitbox via `hitboxPresetId`; clips from shared pack | `remy` (default), `james`, `liza`, `swat-1`, `swat-2`, `swat-3` |
 
 `ScenarioScene` reads config only — new arena / prop = registry + placements, not a new React scene.
 
@@ -135,10 +135,12 @@ Units: **1 world unit = 1 meter**.
 
 ### Camera modes (**C**)
 
+Default on `/play` boot: **over-the-shoulder**. Cycle with **C**: FPS → OTS → TPS → …
+
 | Mode                  | Role                                                                                        |
 | --------------------- | ------------------------------------------------------------------------------------------- |
 | **First-person**      | Camera on head bone; head mesh hidden; spine pitch follows look; same clone (no view-model) |
-| **Over-the-shoulder** | Close behind right shoulder (~1.75 m back, ~1.55 m up)                                      |
+| **Over-the-shoulder** | Close behind right shoulder (~1.75 m back, ~1.55 m up) — **default**                        |
 | **Third-person**      | Farther behind/above (~3.6 m back, ~2.4 m up)                                               |
 
 Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-state.ts`). OTS/TPS boom height rides head-bone world Y after mixer update.
@@ -177,7 +179,7 @@ Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`
 | Layer          | Scope                                                                                                                            |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | **Vitest**     | Registries; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide  |
-| **Playwright** | `/play` default `swat-1` + `?skin=remy`; no `PropertyBinding` errors; kneel + WASD stays crouched; optional `__PLAY_TEST__` hook |
+| **Playwright** | `/play` default `remy` + `?skin=swat-1`; no `PropertyBinding` errors; kneel + WASD stays crouched; optional `__PLAY_TEST__` hook |
 
 ## Characters — shipped US-6
 
@@ -188,7 +190,7 @@ Locomotion and action clips load from `/assets/characters/shared/base-animations
 | `remy`, `james`, `liza`      | civilian | `/assets/characters/civilians/<id>.glb` |
 | `swat-1`, `swat-2`, `swat-3` | soldier  | `/assets/characters/soldiers/<id>.glb`  |
 
-Default `/play` skin is `swat-1`. Until US-7 select ships, `/play?skin=<id>` via `resolvePlaySkinId`.
+Default `/play` skin is `remy` (civilian team, east spawn). Until US-7 select ships, `/play?skin=<id>` via `resolvePlaySkinId`.
 
 **Skeleton contract:** Mixamo `Armature` with bone names `mixamorig:*` (colon form). Vendor exports with numbered prefixes (`mixamorig9:`, …) are rewritten in-asset (`npm run assets:normalize-characters`) so shared-pack tracks and aim/FPS lookups bind.
 
@@ -259,7 +261,7 @@ checkRoundEnd() → if all civilians eliminated OR all soldiers eliminated → e
 endRound(winner) → RoundPhase 'round-end', winner banner (no local auto-restart; US-5 owns the next round)
 ```
 
-Local player occupies the default soldier slot; remaining spawns are `ScenarioSoldiers` NPCs (opposing-team dummies until US-5). US-7 select will override local team/skin; until then `/play?skin=` and `DEFAULT_LOCAL_TEAM` apply.
+Local player occupies the default civilian slot (`remy`); remaining spawns are `ScenarioSoldiers` NPCs (opposing-team dummies until US-5). US-7 select will override local team/skin; until then `/play?skin=` and `DEFAULT_LOCAL_TEAM` apply.
 
 When `HealthState.isEliminated`, FPS move/look/shoot is disabled and pointer lock is released until the next `startRound()`.
 

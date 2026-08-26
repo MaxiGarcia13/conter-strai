@@ -11,7 +11,7 @@ Depends on **US-6** _(shipped)_ skins (`remy` / `james` / `liza`, `swat-1` / `sw
 - Astro page: `src/pages/select.astro`
 - React island (client-only): match-select UI + small R3F canvas for character turntable
 - Landing CTA (`index.astro`) points to `/select`
-- Invalid / missing query params on `/play`: sensible defaults (`soldier`, `swat-1`, `arena-01`) with team↔skin consistency (civilian → `remy`, soldier → `swat-1`)
+- Invalid / missing query params on `/play`: sensible defaults (`civilian`, `remy`, `arena-01`) with team↔skin consistency (civilian → `remy`, soldier → `swat-1`)
 
 ## Session → play boot
 
@@ -23,7 +23,7 @@ Depends on **US-6** _(shipped)_ skins (`remy` / `james` / `liza`, `swat-1` / `sw
 | `skin`     | `SoldierSkinId` | `LocalPlayer` / model skin                 |
 | `scenario` | `ScenarioId`    | `getScenarioById` (today only `arena-01`)  |
 
-Local play **respects** the selected team once play boot lands. Until then the shipped US-4 round service uses `DEFAULT_LOCAL_TEAM` (`soldier`). Networked assign may override (US-5).
+Local play **respects** the selected team once play boot lands. Until then the shipped US-4 round service uses `DEFAULT_LOCAL_TEAM` (`civilian`, skin `remy`). Networked assign may override (US-5).
 
 ## Select UI layout
 

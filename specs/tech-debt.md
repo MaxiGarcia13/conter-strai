@@ -66,7 +66,7 @@ Unchecked how-tos for the hotspots above. `LocalPlayer` / `SoldierModel` size is
   3. `use-free-camera-fly.ts` — `useFrame` fly (WASD via shared axes + Q/E/boost).
   4. `DevFreeCamera` becomes a short composer returning `null`.
 
-- [ ] **Extract wall mesh builders from `ScenarioWalls`** — `src/modules/scenarios/components/scenario-walls.tsx`
+- [x] **Extract wall mesh builders from `ScenarioWalls`** — `src/modules/scenarios/components/scenario-walls.tsx`
   1. Move `segmentWall` / `outerWalls` into `scenarios/utils/` (or `pieces/`).
   2. Leave `ScenarioWalls` as the R3F component that maps scenario config → those builders + materials.
 

@@ -1,0 +1,40 @@
+---
+description: Split large hooks into a colocated folder; keep reusable logic in shared utils/hooks
+globs: src/modules/**/hooks/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Colocated Hook Folders
+
+When a hook grows past ~150 lines or mixes mount lifecycle + per-frame logic + pure helpers, convert it to a folder — do not leave a fat single file.
+
+## Layout
+
+```
+hooks/use-example/
+  index.ts                 # public barrel only
+  use-example.ts           # thin orchestrator
+  use-example-*.ts         # private sub-hooks (effects, frame loops)
+  *.ts                     # private helpers / types used only here
+```
+
+Exemplars: `hooks/use-soldier-locomotion/`, `hooks/use-player-controls/`.
+
+## Placement
+
+| Kind | Where |
+| --- | --- |
+| Hook-only helpers, types, sub-hooks, finished wiring, mixer mount | **Inside** the hook folder; do **not** re-export from the barrel |
+| Pure domain / shared resolution reused by other modules or hooks | `src/modules/<domain>/utils/` (or a shared hook if it is React lifecycle reused by multiple callers) |
+
+## Barrel
+
+- Export only the public API (`useExample`, diagnostic counters callers need).
+- Callers import `@/modules/<domain>/hooks/use-example` (folder), never deep private paths.
+
+## Forbid
+
+- Dumping hook-private helpers into `utils/` “for neatness” when nothing else imports them
+- Moving shared resolvers into the hook folder when other features already depend on them
+- Re-exporting the whole private surface from `index.ts`
+- Splitting for vanity line-count when concerns are still one cohesive unit (see `specs/tech-debt.md`)

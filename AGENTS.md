@@ -75,6 +75,7 @@ Full detail is in `.cursor/rules/` — follow those when they apply.
 - **Files/dirs:** kebab-case; **components:** PascalCase export, kebab-case file
 - Prefer DDD-style modules; thin pages/islands; pure domain in services/utils
 - Prefer small components and hooks; one component per file
+- Large hooks → `hooks/use-name/` folder (private helpers inside; reusable code in `utils/` / shared hooks)
 - Semantic / conventional commits when the user asks for a commit
 - Diagnosable comments only — no noise
 

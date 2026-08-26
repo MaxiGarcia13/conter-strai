@@ -40,7 +40,7 @@ sequenceDiagram
   AstroAPI->>MM: createRoom match
   MM->>Room: onCreate metadata roomCode
   AstroAPI-->>Browser: public room code
-  Browser->>AstroAPI: GET .../status
+  Browser->>AstroAPI: GET /api/v1/room/:id
   AstroAPI->>MM: query or remoteRoomCall
   AstroAPI-->>Browser: phase teams seats
   Browser->>Room: WebSocket joinById or reserved seat
@@ -49,7 +49,7 @@ sequenceDiagram
 
 - **Astro Node** serves pages and `/api/v1/room` API routes.
 - **Colyseus** runs in the **same Node process** — `matchMaker` is available to Astro `APIRoute` handlers after boot.
-- Lobby UI uses REST for create/status/seat/dispose; waiting room and `/play` use `@colyseus/sdk` via `colyseus-adapter`.
+- Lobby UI uses REST for create / snapshot / seat / dispose; waiting room and `/play` use `@colyseus/sdk` via `colyseus-adapter`.
 - REST is same-origin under Astro; WebSocket uses `PUBLIC_COLYSEUS_URL`.
 
 ### Boot wiring constraint
@@ -104,7 +104,8 @@ interface RoomSnapshot {
 
 ### `GET /api/v1/room/:roomId`
 
-- Existence + snapshot (full `RoomSnapshot` or thinner subset).
+- Existence + `RoomSnapshot` for lobby UI polling (invite pages, waiting room) before WS connect.
+- Response **`200`**: `RoomSnapshot` (`phase`, `canJoin`, per-team seats, optional `scenario` / `playerCount`).
 - **`404`** if unknown / disposed.
 
 ### `PUT /api/v1/room/:roomId`
@@ -119,12 +120,6 @@ interface RoomSnapshot {
 - Host (or empty-room cleanup) disposes the Colyseus room.
 - Response **`204`**; **`404`** if unknown.
 
-### `GET /api/v1/room/:roomId/status`
-
-- Source of truth for lobby UI polling before WS connect (and invite pages).
-- Response **`200`**: `RoomSnapshot` (`phase`, `canJoin`, per-team seats, optional `scenario` / `playerCount`).
-- **`404`** if unknown / disposed.
-
 ### Join for presence / play
 
 After REST create or PUT, client connects with `joinById` (or reserved seat) on waiting-room and/or play mount — see client adapter. Live seat lists prefer Schema sync over polling once connected.
@@ -137,8 +132,7 @@ src/
 │   ├── room/…                    # US-7 lobby pages
 │   └── api/v1/room/
 │       ├── index.ts              # POST create
-│       ├── [roomId].ts           # GET / PUT / DELETE
-│       └── [roomId]/status.ts    # GET status
+│       └── [roomId]/index.ts     # GET snapshot / PUT seat / DELETE
 └── modules/multiplayer/
     ├── adapters/
     │   └── colyseus-adapter.ts   # client-facing API used by GameCanvas / waiting room
@@ -214,7 +208,7 @@ onRoundUpdate(callback)
 ## Integration
 
 - Create/join forms → `POST` / `PUT` `/api/v1/room`; write `sessionStorage` as today (US-7) plus server room code
-- Waiting room → poll or one-shot `GET …/status`; optionally open WS early for live roster
+- Waiting room → poll or one-shot `GET /api/v1/room/{id}`; optionally open WS early for live roster
 - `GameCanvas` calls adapter on mount
 - `LocalPlayer` / FPS controls sync local transform (throttled)
 - `useShooting` calls `sendShot`; opposing team only

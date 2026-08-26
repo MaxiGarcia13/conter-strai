@@ -20,18 +20,17 @@ Lobby REST wraps Colyseus `matchMaker`; presence and play stay on WebSocket. See
 ## Lobby REST (`/api/v1/room`)
 
 - [x] `POST /api/v1/room` — generate 6-char `roomCode`, `matchMaker.createRoom('match', …)`, return `RoomSnapshot` (`201`)
-- [x] `GET /api/v1/room/[roomId]` — lookup by metadata `roomCode`, snapshot or `404`
+- [x] `GET /api/v1/room/[roomId]` — `RoomSnapshot` (`phase`, `canJoin`, per-team seats `max: 4`, optional `scenario` / `playerCount`); `404` if unknown
 - [x] `PUT /api/v1/room/[roomId]` — seat claim/update while `waiting`; `409` if full/wrong phase/team full; prefer `reserveSeatFor` token in response
 - [x] `DELETE /api/v1/room/[roomId]` — dispose room (`204` / `404`)
-- [ ] `GET /api/v1/room/[roomId]/status` — `phase`, `canJoin`, per-team seats (`max: 4`), optional `scenario` / `playerCount`
 - [ ] Return `503` from REST when matchMaker is not initialized
-- [ ] Files: `src/pages/api/v1/room/index.ts`, `[roomId].ts`, `[roomId]/status.ts`; handlers in `src/modules/multiplayer/handlers/`
+- [x] Files: `src/pages/api/v1/room/index.ts`, `[roomId]/index.ts`; handlers in `src/modules/multiplayer/handlers/`
 
 ## Lobby UI consumers
 
 - [ ] Create-room flow → `POST /api/v1/room` (stop client-only id generation as source of truth; keep writing `sessionStorage`)
-- [ ] Join / invite flows → `GET` status + `PUT` seat before navigating to waiting/play
-- [ ] Waiting room → poll or fetch `GET …/status`; show open team slots / `canJoin`
+- [ ] Join / invite flows → `GET` snapshot + `PUT` seat before navigating to waiting/play
+- [ ] Waiting room → poll or fetch `GET /api/v1/room/{id}`; show open team slots / `canJoin`
 - [ ] Host dispose (if exposed) → `DELETE /api/v1/room/{id}`
 
 ## Client adapter + game wiring

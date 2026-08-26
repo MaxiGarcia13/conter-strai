@@ -137,7 +137,7 @@ Post-split leftovers from `use-player-controls` → folder + `game/utils`. Pick 
   2. Call each handler (`createRoom`, `getRoom`, `claimSeat`, `disposeRoom`).
   3. Expect **503** `{ error: 'Matchmaker is not ready' }` and no matchMaker side effects.
 
-- [ ] **`getRoom`** (covers `GET /api/v1/room/[roomId]` and `…/status`)
+- [ ] **`getRoom`** (`GET /api/v1/room/[roomId]`)
   1. **400** missing `roomId`; **404** lookup null; **500** lookup without `state`.
   2. **200** returns `toRoomSnapshot` for a waiting room stub — do not re-test seat/`canJoin` cases.
 

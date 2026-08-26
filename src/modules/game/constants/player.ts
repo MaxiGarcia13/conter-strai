@@ -21,8 +21,7 @@ export const MODEL_FORWARD_YAW_OFFSET = Math.PI;
 export const MAX_FRAME_DELTA_SECONDS = 0.1;
 
 /** Local player slot until round start assigns spawns per player. */
-export const DEFAULT_LOCAL_TEAM = 'civilian' as const;
-export const DEFAULT_PLAY_SKIN_ID = 'remy' as const;
+export { DEFAULT_TEAM as DEFAULT_LOCAL_TEAM, DEFAULT_PLAY_SKIN_ID } from './play-defaults';
 export const DEFAULT_LOCAL_SPAWN_INDEX = 0;
 
 /** Entity id used for the local player's hitbox and health tracking. */

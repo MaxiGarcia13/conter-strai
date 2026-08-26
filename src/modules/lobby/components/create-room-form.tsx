@@ -3,6 +3,11 @@ import type { SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
 import { useState } from 'react';
 import { CsButton } from '@/components/cs-button';
+import {
+  DEFAULT_PLAY_SKIN_ID,
+  DEFAULT_SCENARIO_ID,
+  DEFAULT_TEAM,
+} from '@/modules/game/constants/play-defaults';
 import { scenarios } from '@/modules/scenarios/scenario-registry';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 import { TEAM_SKINS } from '../types/team-skins';
@@ -16,9 +21,9 @@ import { TeamToggle } from './team-toggle';
 const SCENARIO_LIST = Object.values(scenarios);
 
 export function CreateRoomForm() {
-  const [team, setTeam] = useState<Team>('civilian');
-  const [skinId, setSkinId] = useState<SoldierSkinId>('remy');
-  const [scenarioId, setScenarioId] = useState<ScenarioConfig['id']>('arena-01');
+  const [team, setTeam] = useState<Team>(DEFAULT_TEAM);
+  const [skinId, setSkinId] = useState<SoldierSkinId>(DEFAULT_PLAY_SKIN_ID);
+  const [scenarioId, setScenarioId] = useState<ScenarioConfig['id']>(DEFAULT_SCENARIO_ID);
 
   function handleTeamChange(newTeam: Team) {
     setTeam(newTeam);

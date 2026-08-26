@@ -10,7 +10,7 @@ import {
   ScenarioScene,
   ScenarioSoldiers,
 } from '@/modules/scenarios';
-import { DEFAULT_PLAY_SKIN_ID } from '../constants/player';
+import { DEFAULT_PLAY_SKIN_ID, DEFAULT_SCENARIO_ID } from '../constants/play-defaults';
 import { LazyDevGameChrome, LazyDevSceneTools } from '../dev';
 import { useRoundStore } from '../state/round-store';
 import { resolveLocalSpawn } from '../utils/local-spawn';
@@ -24,7 +24,6 @@ import { PlayerControls } from './player-controls';
 import { RoundEndBanner } from './round-end-banner';
 import { ShootingController } from './shooting-controller';
 
-const DEFAULT_SCENARIO_ID = 'arena-01' satisfies ScenarioId;
 const DEFAULT_LIGHTING = { ambient: 0.6, sunIntensity: 1.2 };
 
 interface GameCanvasProps {

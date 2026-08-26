@@ -1,6 +1,12 @@
 import type { ScenarioConfig } from '@/modules/scenarios';
 import type { SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
+import {
+  DEFAULT_PLAY_SKIN_ID,
+  DEFAULT_ROOM_ROLE,
+  DEFAULT_SCENARIO_ID,
+  DEFAULT_TEAM,
+} from '@/modules/game/constants/play-defaults';
 import { TEAM_SKINS } from '../types/team-skins';
 
 export interface RoomSession {
@@ -13,10 +19,10 @@ export interface RoomSession {
 const PREFIX = 'cs:room:';
 
 const DEFAULT_SESSION: RoomSession = {
-  team: 'civilian',
-  skin: 'remy',
-  scenario: 'arena-01',
-  role: 'guest',
+  team: DEFAULT_TEAM,
+  skin: DEFAULT_PLAY_SKIN_ID,
+  scenario: DEFAULT_SCENARIO_ID,
+  role: DEFAULT_ROOM_ROLE,
 };
 
 export function writeRoomSession(roomId: string, data: RoomSession) {
@@ -58,7 +64,7 @@ function isRoomSession(value: unknown): value is RoomSession {
     (session.team === 'civilian' || session.team === 'soldier')
     && typeof session.skin === 'string'
     && session.skin in Object.fromEntries(characters.map((skin) => [skin, true]))
-    && session.scenario === 'arena-01'
+    && session.scenario === DEFAULT_SCENARIO_ID
     && (session.role === 'host' || session.role === 'guest')
   );
 }

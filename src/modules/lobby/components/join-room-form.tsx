@@ -2,6 +2,12 @@ import type { SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
 import { useState } from 'react';
 import { CsButton } from '@/components/cs-button';
+import {
+  DEFAULT_PLAY_SKIN_ID,
+  DEFAULT_ROOM_ROLE,
+  DEFAULT_SCENARIO_ID,
+  DEFAULT_TEAM,
+} from '@/modules/game/constants/play-defaults';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 import { TEAM_SKINS } from '../types/team-skins';
 import { writeRoomSession } from '../utils/room-session';
@@ -10,7 +16,6 @@ import { LazyCharacterPreview } from './lazy-character-preview';
 import { TeamToggle } from './team-toggle';
 
 const ROOM_ID_MAX_LENGTH = 6;
-const DEFAULT_JOIN_SCENARIO = 'arena-01';
 
 interface JoinRoomFormProps {
   roomId?: string;
@@ -23,8 +28,8 @@ function normalizeRoomId(value: string) {
 export function JoinRoomForm({ roomId: initialRoomId }: JoinRoomFormProps) {
   const roomIdLocked = Boolean(initialRoomId);
   const [roomId, setRoomId] = useState(initialRoomId ?? '');
-  const [team, setTeam] = useState<Team>('civilian');
-  const [skinId, setSkinId] = useState<SoldierSkinId>('remy');
+  const [team, setTeam] = useState<Team>(DEFAULT_TEAM);
+  const [skinId, setSkinId] = useState<SoldierSkinId>(DEFAULT_PLAY_SKIN_ID);
 
   function handleTeamChange(newTeam: Team) {
     setTeam(newTeam);
@@ -38,8 +43,8 @@ export function JoinRoomForm({ roomId: initialRoomId }: JoinRoomFormProps) {
     writeRoomSession(id, {
       team,
       skin: skinId,
-      scenario: DEFAULT_JOIN_SCENARIO,
-      role: 'guest',
+      scenario: DEFAULT_SCENARIO_ID,
+      role: DEFAULT_ROOM_ROLE,
     });
     window.location.href = `/room/${id}`;
   }

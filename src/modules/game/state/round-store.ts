@@ -10,10 +10,9 @@ import {
   DEFAULT_LOCAL_TEAM,
   LOCAL_PLAYER_ENTITY_ID,
 } from '../constants/player';
+import { DEFAULT_SCENARIO_ID } from '../constants/play-defaults';
 import { checkRoundEnd } from '../services/check-round-end';
 import { resetPlayerTransform, setPlayerPose } from './player-state';
-
-const DEFAULT_SCENARIO_ID = 'arena-01' satisfies ScenarioId;
 
 export interface RoundState {
   phase: RoundPhase;

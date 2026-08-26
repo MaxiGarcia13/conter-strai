@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { LobbyRestError } from '@/modules/multiplayer/services/lobby-rest';
 import {
-  LobbyRestError,
   postCreateRoom,
   readCreatedRoomId,
 } from '@/modules/multiplayer/services/post-create-room';

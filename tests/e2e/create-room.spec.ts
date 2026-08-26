@@ -10,17 +10,18 @@ test('create room posts to the API and writes a host session', async ({ page }) 
   await page.goto('/room');
   await page.getByRole('button', { name: 'Create Room' }).click();
 
-  const response = await created;
-  expect(response.status()).toBe(201);
-  const body = await response.json() as { id: string };
-  expect(body.id).toMatch(/^[A-Z0-9]{6}$/);
+  expect((await created).status()).toBe(201);
+  await expect(page).toHaveURL(/\/room\/[A-Z0-9]{6}$/);
 
-  await expect(page).toHaveURL(new RegExp(`/room/${body.id}$`));
-  await expect(page.getByText(body.id, { exact: true })).toBeVisible();
+  const roomId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
+  expect(roomId).toMatch(/^[A-Z0-9]{6}$/);
+  await expect(page.getByText(roomId, { exact: true })).toBeVisible();
+  await expect(page.getByText('0 / 4')).toHaveCount(2);
+  await expect(page.getByText('Open', { exact: true })).toBeVisible();
 
   const session = await page.evaluate(
-    (roomId) => sessionStorage.getItem(`cs:room:${roomId}`),
-    body.id,
+    (id) => sessionStorage.getItem(`cs:room:${id}`),
+    roomId,
   );
   expect(session).toBeTruthy();
   expect(JSON.parse(session as string)).toMatchObject({

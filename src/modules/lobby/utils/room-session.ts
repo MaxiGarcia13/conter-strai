@@ -1,3 +1,4 @@
+import type { SeatReservation } from '@/modules/multiplayer/types';
 import type { ScenarioConfig } from '@/modules/scenarios';
 import type { SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
@@ -15,6 +16,7 @@ export interface RoomSession {
   skin: SoldierSkinId;
   scenario: ScenarioConfig['id'];
   role: 'host' | 'guest';
+  reservation?: SeatReservation;
 }
 
 const PREFIX = 'cs:room:';
@@ -67,5 +69,18 @@ function isRoomSession(value: unknown): value is RoomSession {
     && isValidSkin(session.skin)
     && isValidScenario(session.scenario)
     && (session.role === 'host' || session.role === 'guest')
+    && (session.reservation === undefined || isSeatReservation(session.reservation))
+  );
+}
+
+function isSeatReservation(value: unknown): value is SeatReservation {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    return false;
+  }
+  const reservation = value as Partial<SeatReservation>;
+  return (
+    typeof reservation.name === 'string'
+    && typeof reservation.sessionId === 'string'
+    && typeof reservation.roomId === 'string'
   );
 }

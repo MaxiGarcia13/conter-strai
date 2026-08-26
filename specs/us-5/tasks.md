@@ -29,8 +29,8 @@ Lobby REST wraps Colyseus `matchMaker`; presence and play stay on WebSocket. See
 ## Lobby UI consumers
 
 - [x] Create-room flow → `POST /api/v1/room` (stop client-only id generation as source of truth; keep writing `sessionStorage`)
-- [ ] Join / invite flows → `GET` snapshot + `PUT` seat before navigating to waiting/play
-- [ ] Waiting room → poll or fetch `GET /api/v1/room/{id}`; show open team slots / `canJoin`
+- [x] Join / invite flows → `GET` snapshot + `PUT` seat before navigating to waiting/play
+- [x] Waiting room → poll or fetch `GET /api/v1/room/{id}`; show open team slots / `canJoin`
 - [ ] Host dispose (if exposed) → `DELETE /api/v1/room/{id}`
 
 ## Client adapter + game wiring

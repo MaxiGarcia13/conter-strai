@@ -7,6 +7,7 @@
 | Astro       | `@astrojs/node` adapter, `output: 'server'` | HTTP pages (`/`, `/room/...`) + REST `/api/v1/room` + Node process — **already configured**           |
 | Multiplayer | [Colyseus](https://colyseus.io/framework/)  | Rooms, Schema state sync, matchmaking, messages                                                       |
 | Client SDK  | `@colyseus/sdk`                             | `joinById` / reserved seat, listen to state, `room.send`                                              |
+| Lobby HTTP  | `@tanstack/react-query`                     | Island `useQuery` for `GET` snapshot (waiting-room poll); `useMutation` for create / join             |
 | Game UI     | R3F island on `/room/{id}/play`             | Consumes `multiplayer/` adapter only — no Colyseus imports in combat / scenarios / soldiers / weapons |
 
 Client domains reuse post type-split contracts: `HealthState` / `HitZone` (combat), `RoundPhase` (game), `Team`, `SoldierSkin`, `PistolWeaponConfig`.
@@ -207,8 +208,8 @@ onRoundUpdate(callback)
 
 ## Integration
 
-- Create/join forms → `POST` / `PUT` `/api/v1/room`; write `sessionStorage` as today (US-7) plus server room code
-- Waiting room → poll or one-shot `GET /api/v1/room/{id}`; optionally open WS early for live roster
+- Create/join forms → `POST` / `PUT` `/api/v1/room` via TanStack Query mutations; write `sessionStorage` as today (US-7) plus server room code
+- Waiting room / invite snapshot → `useQuery` on `GET /api/v1/room/{id}` (`queryKey: ['room', roomId]`); waiting room polls every 2s while `phase === 'waiting'`. Stop polling once Colyseus Schema sync is on that page.
 - `GameCanvas` calls adapter on mount
 - `LocalPlayer` / FPS controls sync local transform (throttled)
 - `useShooting` calls `sendShot`; opposing team only

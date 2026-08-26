@@ -1,23 +1,18 @@
 import type { CreateRoomOptions, RoomSnapshot } from '../types';
-
-const CREATE_ROOM_PATH = '/api/v1/room';
-const ROOM_ID_LENGTH = 6;
-
-export class LobbyRestError extends Error {
-  readonly status: number;
-
-  constructor(status: number, message: string) {
-    super(message);
-    this.name = 'LobbyRestError';
-    this.status = status;
-  }
-}
+import { ROOM_ID_LENGTH } from '@/modules/lobby/constants/room-id';
+import {
+  JSON_HEADERS,
+  LOBBY_ROOM_COLLECTION_PATH,
+  LobbyRestError,
+  readErrorMessage,
+  readJson,
+} from './lobby-rest';
 
 /** `POST /api/v1/room` — server generates the public room code. */
 export async function postCreateRoom(options: CreateRoomOptions): Promise<string> {
-  const response = await fetch(CREATE_ROOM_PATH, {
+  const response = await fetch(LOBBY_ROOM_COLLECTION_PATH, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: JSON_HEADERS,
     body: JSON.stringify(options),
   });
 
@@ -45,20 +40,4 @@ export function readCreatedRoomId(value: unknown): string | null {
     return null;
   }
   return id;
-}
-
-async function readJson(response: Response): Promise<unknown> {
-  try {
-    return await response.json();
-  } catch {
-    return null;
-  }
-}
-
-function readErrorMessage(body: unknown, fallback: string): string {
-  if (body === null || typeof body !== 'object' || Array.isArray(body)) {
-    return fallback;
-  }
-  const error = (body as { error?: unknown }).error;
-  return typeof error === 'string' && error.length > 0 ? error : fallback;
 }

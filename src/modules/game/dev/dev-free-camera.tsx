@@ -9,6 +9,8 @@ import {
   PITCH_LIMIT,
   RUN_SPEED,
 } from '../constants/player';
+import { usePressedKeyCodes } from '../hooks/use-pressed-key-codes';
+import { requestPointerLock } from '../utils/request-pointer-lock';
 import { toggleFreeCamera } from './free-camera-state';
 import { useFreeCamera } from './use-free-camera';
 
@@ -44,7 +46,7 @@ export function DevFreeCamera() {
   const domElement = useThree((state) => state.gl.domElement);
   const set = useThree((state) => state.set);
   const get = useThree((state) => state.get);
-  const pressedRef = useRef(new Set<string>());
+  const pressedRef = usePressedKeyCodes({ enabled });
   const yawPitchRef = useRef({ yaw: 0, pitch: 0 });
 
   useEffect(() => {
@@ -73,7 +75,6 @@ export function DevFreeCamera() {
 
   useEffect(() => {
     if (!enabled) {
-      pressedRef.current.clear();
       return;
     }
 
@@ -87,27 +88,8 @@ export function DevFreeCamera() {
       document.exitPointerLock();
     }
 
-    const pressed = pressedRef.current;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      pressed.add(event.code);
-    };
-    const onKeyUp = (event: KeyboardEvent) => {
-      pressed.delete(event.code);
-    };
-    const onBlur = () => {
-      pressed.clear();
-    };
-
     const requestLock = () => {
-      try {
-        const request = domElement.requestPointerLock() as unknown;
-        if (request instanceof Promise) {
-          request.catch(() => undefined);
-        }
-      } catch {
-        // Pointer lock unavailable.
-      }
+      requestPointerLock(domElement);
     };
 
     const onMouseMove = (event: MouseEvent) => {
@@ -125,20 +107,13 @@ export function DevFreeCamera() {
       camera.rotation.x = look.pitch;
     };
 
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
-    window.addEventListener('blur', onBlur);
     // Capture so player-controls click-to-lock does not win the same click.
     domElement.addEventListener('click', requestLock, true);
     document.addEventListener('mousemove', onMouseMove);
 
     return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('keyup', onKeyUp);
-      window.removeEventListener('blur', onBlur);
       domElement.removeEventListener('click', requestLock, true);
       document.removeEventListener('mousemove', onMouseMove);
-      pressed.clear();
       if (document.pointerLockElement === domElement) {
         document.exitPointerLock();
       }
@@ -150,8 +125,12 @@ export function DevFreeCamera() {
       return;
     }
 
-    const delta = Math.min(rawDelta, MAX_FRAME_DELTA_SECONDS);
     const pressed = pressedRef.current;
+    if (!pressed) {
+      return;
+    }
+
+    const delta = Math.min(rawDelta, MAX_FRAME_DELTA_SECONDS);
     let strafe = 0;
     let forward = 0;
     let vertical = 0;

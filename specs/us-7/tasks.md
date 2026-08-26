@@ -2,7 +2,7 @@
 
 Pre-play match lobby (create / join / wait). Requires US-6 skins registered (`remy` / `james` / `liza`, `swat-1` / `swat-2` / `swat-3`).
 
-Room-centric routes: `/room`, `/room/[roomId]`, `/room/[roomId]/join`, `/room/[roomId]/play`. Legacy `/play` kept for e2e until migrated.
+Room-centric routes: `/room`, `/room/join`, `/room/[roomId]`, `/room/[roomId]/join`, `/room/[roomId]/play`. Legacy `/play` kept for e2e until migrated.
 
 ## Spec / queue
 
@@ -21,7 +21,7 @@ Room-centric routes: `/room`, `/room/[roomId]`, `/room/[roomId]/join`, `/room/[r
 ## Landing
 
 - [x] **Create Room** → `/room` (migrate off `/create` if still present)
-- [ ] **Join Room** room-code entry → `/room/{code}/join` (no separate `/join` page)
+- [x] **Join Room** → `/room/join` (room id entered on the join page, not landing)
 
 ## Create room (`/room`)
 
@@ -32,11 +32,12 @@ Room-centric routes: `/room`, `/room/[roomId]`, `/room/[roomId]/join`, `/room/[r
 - [x] Arena cards from scenario registry: name + image or placeholder
 - [x] Generate local room id; write `sessionStorage` (`role: 'host'`); navigate to `/room/{roomId}`
 
-## Join room (`/room/[roomId]/join`)
+## Join room (`/room/join` and `/room/[roomId]/join`)
 
-- [ ] `src/pages/room/[roomId]/join.astro` + React island (client-only for R3F preview)
-- [ ] Team + avatar pickers (same preview as create); no arena pick
-- [ ] Write session (`role: 'guest'`); navigate to `/room/{roomId}`
+- [x] `src/pages/room/join.astro` + `src/pages/room/[roomId]/join.astro` + React island (client-only for R3F preview)
+- [x] Room id: field on `/room/join`; path param (shown) on `/room/[roomId]/join`
+- [x] Team + avatar pickers (same preview as create); no arena pick
+- [x] Write session (`role: 'guest'`); navigate to `/room/{roomId}`
 
 ## Waiting room (`/room/[roomId]`)
 

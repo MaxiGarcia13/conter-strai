@@ -1,0 +1,30 @@
+---
+import SiteTopbar from '@/components/site-topbar.astro';
+import BaseLayout from '@/layouts/base-layout.astro';
+import { JoinRoomForm } from '@/modules/lobby/components/join-room-form';
+
+const roomId = Astro.params.roomId;
+if (!roomId)
+  return Astro.redirect('/room/join');
+---
+
+<BaseLayout
+  title={`Join ${roomId} — Conter Strai`}
+  description="Pick your team and character, then join the match."
+>
+  <section class="relative z-10 flex min-h-dvh flex-col">
+    <SiteTopbar title="Join Room">
+      <a
+        slot="leading"
+        href="/"
+        class="hover:text-accent focus-visible:outline-accent motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
+      >
+        ← Home
+      </a>
+    </SiteTopbar>
+
+    <div class="flex flex-1 flex-col px-(--space-page-x) py-(--space-page-y)">
+      <JoinRoomForm roomId={roomId} client:only="react" />
+    </div>
+  </section>
+</BaseLayout>

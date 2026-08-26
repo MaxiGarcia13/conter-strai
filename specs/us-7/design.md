@@ -10,26 +10,29 @@ Local-first: create/join/waiting work without a game server. US-5 wires the same
 flowchart TD
   Landing["/"]
   Create["/room create"]
+  JoinEntry["/room/join"]
   Wait["/room/roomId wait"]
   Join["/room/roomId/join"]
   Play["/room/roomId/play"]
 
   Landing -->|"Create Room"| Create
-  Landing -->|"Join Room enter code"| Join
+  Landing -->|"Join Room"| JoinEntry
   Create -->|"Create"| Wait
+  JoinEntry -->|"after pick"| Wait
   Join -->|"after pick"| Wait
   Wait -->|"invite URL / QR"| Join
   Wait -->|"Play"| Play
 ```
 
-| Route                 | Astro page                            | Island notes                                                      |
-| --------------------- | ------------------------------------- | ----------------------------------------------------------------- |
-| `/`                   | `src/pages/index.astro`               | **Create Room** → `/room`; **Join Room** → code entry → join path |
-| `/room`               | `src/pages/room/index.astro`          | React island; R3F for character turntable                         |
-| `/room/[roomId]`      | `src/pages/room/[roomId]/index.astro` | DOM-only island OK (share, QR, Play)                              |
-| `/room/[roomId]/join` | `src/pages/room/[roomId]/join.astro`  | React island; R3F for avatar preview; no arena pick               |
-| `/room/[roomId]/play` | `src/pages/room/[roomId]/play.astro`  | Game canvas island; boot from `sessionStorage`                    |
-| `/play`               | `src/pages/play.astro` (legacy)       | e2e/dev probes (`?skin=`) until Playwright migrates               |
+| Route                 | Astro page                            | Island notes                                                     |
+| --------------------- | ------------------------------------- | ---------------------------------------------------------------- |
+| `/`                   | `src/pages/index.astro`               | **Create Room** → `/room`; **Join Room** → `/room/join`          |
+| `/room`               | `src/pages/room/index.astro`          | React island; R3F for character turntable                        |
+| `/room/join`          | `src/pages/room/join.astro`           | React island; **room id field** + avatar preview; no arena pick  |
+| `/room/[roomId]`      | `src/pages/room/[roomId]/index.astro` | DOM-only island OK (share, QR, Play)                             |
+| `/room/[roomId]/join` | `src/pages/room/[roomId]/join.astro`  | Same island; room id from path (shown, not typed); no arena pick |
+| `/room/[roomId]/play` | `src/pages/room/[roomId]/play.astro`  | Game canvas island; boot from `sessionStorage`                   |
+| `/play`               | `src/pages/play.astro` (legacy)       | e2e/dev probes (`?skin=`) until Playwright migrates              |
 
 Invalid / missing session on play: defaults `civilian`, `remy`, `arena-01` with team↔skin consistency (civilian → `remy`, soldier → `swat-1`).
 
@@ -55,9 +58,9 @@ Invite URL (share + QR) is path-only: `{origin}/room/{roomId}/join`.
 Replace single **Start Game** with:
 
 - **Create Room** → `/room`
-- **Join Room** — room-code field (inline or focused control on landing); continue → `/room/{code}/join`
+- **Join Room** → `/room/join` (room id is entered on the join page, not on `/`)
 
-Keep brand / hero composition; one job for the CTA group. No separate `/join` page.
+Keep brand / hero composition; one job for the CTA group. No root `/join` page.
 
 ## Create room (`/room`)
 
@@ -68,12 +71,13 @@ One job per section:
 3. **Avatar** — skins filtered by team; R3F preview (selected `.glb` + shared idle, slow yaw/orbit)
 4. **Create Room** — generate short random room id (client-side), write session (`role: 'host'`), navigate to `/room/{roomId}`
 
-## Join room (`/room/[roomId]/join`)
+## Join room (`/room/join` and `/room/[roomId]/join`)
 
-1. **Team** + **Avatar** — same pickers / idle preview as create; joiner does **not** pick arena (“Host arena — synced later”)
-2. Confirm — write session (`role: 'guest'`, `scenario: 'arena-01'` until US-5), navigate to `/room/{roomId}`
+1. **Room id** — editable field on `/room/join`; from the path (shown read-only) on `/room/{roomId}/join`
+2. **Team** + **Avatar** — same pickers / idle preview as create; joiner does **not** pick arena (“Host arena — synced later”)
+3. Confirm — write session (`role: 'guest'`, `scenario: 'arena-01'` until US-5), navigate to `/room/{roomId}`
 
-Room id comes from the path (invite or landing code entry). Any non-empty id accepted locally until US-5 validates.
+Landing **Join Room** opens `/room/join`. Invite links skip typing and open `/room/{roomId}/join`. Any non-empty id accepted locally until US-5 validates.
 
 ## Waiting room (`/room/[roomId]`)
 

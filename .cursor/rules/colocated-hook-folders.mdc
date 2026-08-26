@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Colocated Hook Folders
 
-When a hook grows past ~150 lines or mixes mount lifecycle + per-frame logic + pure helpers, convert it to a folder — do not leave a fat single file.
+When a hook grows past ~100 lines or mixes mount lifecycle + per-frame logic + pure helpers, convert it to a folder — do not leave a fat single file.
 
 ## Layout
 
@@ -22,10 +22,10 @@ Exemplars: `hooks/use-soldier-locomotion/`, `hooks/use-player-controls/`.
 
 ## Placement
 
-| Kind | Where |
-| --- | --- |
-| Hook-only helpers, types, sub-hooks, finished wiring, mixer mount | **Inside** the hook folder; do **not** re-export from the barrel |
-| Pure domain / shared resolution reused by other modules or hooks | `src/modules/<domain>/utils/` (or a shared hook if it is React lifecycle reused by multiple callers) |
+| Kind                                                              | Where                                                                                                |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Hook-only helpers, types, sub-hooks, finished wiring, mixer mount | **Inside** the hook folder; do **not** re-export from the barrel                                     |
+| Pure domain / shared resolution reused by other modules or hooks  | `src/modules/<domain>/utils/` (or a shared hook if it is React lifecycle reused by multiple callers) |
 
 ## Barrel
 

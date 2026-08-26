@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 import type { SoldierSkinId } from '@/modules/soldiers';
+import type { Team } from '@/modules/teams';
 import { expect } from '@playwright/test';
 
 export interface PlayTestSnapshot {
@@ -26,16 +27,33 @@ export function captureConsoleErrors(page: Page): string[] {
   return consoleErrors;
 }
 
-export async function navigateToPlay(
+/** Legacy `/play` probe — default civilian `remy` (no query params). */
+export async function navigateToPlay(page: Page): Promise<void> {
+  await page.goto('/play');
+}
+
+/** Room play boot with a seeded session (team/skin/scenario). */
+export async function navigateToRoomPlay(
   page: Page,
-  options: { skin?: SoldierSkinId } = {},
-): Promise<void> {
-  const params = new URLSearchParams();
-  if (options.skin) {
-    params.set('skin', options.skin);
-  }
-  const query = params.toString();
-  await page.goto(query ? `/play?${query}` : '/play');
+  options: { team: Team; skin: SoldierSkinId; scenario?: 'arena-01'; roomId?: string } = {
+    team: 'civilian',
+    skin: 'remy',
+  },
+): Promise<string> {
+  const roomId = options.roomId ?? 'E2E001';
+  const scenario = options.scenario ?? 'arena-01';
+  await page.goto('/');
+  await page.evaluate(
+    ({ roomId: id, team, skin, scenario: scenarioId }) => {
+      sessionStorage.setItem(
+        `cs:room:${id}`,
+        JSON.stringify({ team, skin, scenario: scenarioId, role: 'host' }),
+      );
+    },
+    { roomId, team: options.team, skin: options.skin, scenario },
+  );
+  await page.goto(`/room/${roomId}/play`);
+  return roomId;
 }
 
 export async function waitForCanvas(page: Page): Promise<void> {

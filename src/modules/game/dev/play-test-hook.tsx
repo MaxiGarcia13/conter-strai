@@ -1,7 +1,8 @@
+import type { SoldierSkinId } from '@/modules/soldiers';
+
 import { useThree } from '@react-three/fiber';
 
 import { useEffect } from 'react';
-
 import { countActiveSoldierMixers as countLocomotionMixers } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { SOLDIER_ROOT_NAME } from '@/modules/soldiers/utils/clone-soldier-root';
 import { resolveAnimationClipKey } from '@/modules/soldiers/utils/resolve-animation-clip-key';
@@ -16,7 +17,6 @@ import {
   setPlayerLocomotion,
   setPlayerPose,
 } from '../state/player-state';
-import { resolvePlaySkinId } from '../utils/resolve-play-skin-id';
 import { angleFromIdentity, findLocalNode } from './play-test-helpers';
 
 const POLL_INTERVAL_MS = 60;
@@ -55,7 +55,11 @@ declare global {
   }
 }
 
-export function PlayTestHook() {
+interface PlayTestHookProps {
+  skinId: SoldierSkinId;
+}
+
+export function PlayTestHook({ skinId }: PlayTestHookProps) {
   const scene = useThree((state) => state.scene);
   const camera = useThree((state) => state.camera);
 
@@ -83,7 +87,7 @@ export function PlayTestHook() {
           resolveLocalPlayerPose(getPlayerPose(), LOCAL_PLAYER_ENTITY_ID),
           getPlayerLocomotion(),
         ),
-        skinId: resolvePlaySkinId(),
+        skinId,
         version: HOOK_VERSION,
         debug: {
           mode: getCameraMode(),
@@ -116,7 +120,7 @@ export function PlayTestHook() {
       delete window.__PLAY_TEST__;
       delete window.__PLAY_TEST_API__;
     };
-  }, [scene, camera]);
+  }, [scene, camera, skinId]);
 
   return null;
 }

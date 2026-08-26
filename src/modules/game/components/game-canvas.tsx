@@ -10,10 +10,10 @@ import {
   ScenarioScene,
   ScenarioSoldiers,
 } from '@/modules/scenarios';
+import { DEFAULT_PLAY_SKIN_ID } from '../constants/player';
 import { LazyDevGameChrome, LazyDevSceneTools } from '../dev';
 import { useRoundStore } from '../state/round-store';
 import { resolveLocalSpawn } from '../utils/local-spawn';
-import { resolvePlaySkinId } from '../utils/resolve-play-skin-id';
 import { AimMarker } from './aim-marker';
 import { CameraHud } from './camera-hud';
 import { CrosshairHud } from './crosshair-hud';
@@ -37,13 +37,12 @@ interface GameCanvasProps {
 export function GameCanvas({
   scenarioId = DEFAULT_SCENARIO_ID,
   team,
-  skinId: selectedSkinId,
+  skinId = DEFAULT_PLAY_SKIN_ID,
   onLoaderChange,
 }: GameCanvasProps) {
   const scenario = useMemo(() => getScenarioById(scenarioId), [scenarioId]);
   const lighting = scenario.lighting ?? DEFAULT_LIGHTING;
   const localSpawn = useMemo(() => resolveLocalSpawn(scenario, team), [scenario, team]);
-  const skinId = useMemo(() => selectedSkinId ?? resolvePlaySkinId(), [selectedSkinId]);
   const [trackLoading, setTrackLoading] = useState(Boolean(onLoaderChange));
 
   const startRound = useRoundStore((state) => state.startRound);
@@ -98,7 +97,7 @@ export function GameCanvas({
         <AimMarker />
         <ShootingController />
 
-        <LazyDevSceneTools />
+        <LazyDevSceneTools skinId={skinId} />
       </Canvas>
       <CameraHud />
       <CrosshairHud />

@@ -1,3 +1,4 @@
+import type { SoldierSkinId } from '@/modules/soldiers';
 import { lazy, Suspense } from 'react';
 
 const DevSceneTools = lazy(async () => {
@@ -10,10 +11,14 @@ const DevGameChrome = lazy(async () => {
   return { default: module.DevGameChrome };
 });
 
-export function LazyDevSceneTools() {
+interface LazyDevSceneToolsProps {
+  skinId: SoldierSkinId;
+}
+
+export function LazyDevSceneTools({ skinId }: LazyDevSceneToolsProps) {
   return (
     <Suspense fallback={null}>
-      <DevSceneTools />
+      <DevSceneTools skinId={skinId} />
     </Suspense>
   );
 }

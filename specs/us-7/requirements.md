@@ -2,7 +2,7 @@
 
 Local-first pre-play lobby. No Colyseus yet — create/join/waiting work solo; remote players arrive in US-5.
 
-Product routes are room-centric. Legacy `/play?skin=` remains for e2e/dev probes until Playwright migrates.
+Product routes are room-centric. Legacy `/play` remains for e2e/dev probes (default `remy` only; skin comes from room session).
 
 ## Requirements
 
@@ -23,7 +23,7 @@ Product routes are room-centric. Legacy `/play?skin=` remains for e2e/dev probes
 | US-7.13 | `/room/{roomId}/play` boots scenario, skin, and team spawn from session (defaults + team↔skin consistency if missing)                                                          |
 | US-7.14 | `arena-01` has at least one **civilian** spawn so civilian pick is playable                                                                                                    |
 | US-7.15 | Scenario config supports optional `previewImageUrl` for arena cards (nullable until art exists)                                                                                |
-| US-7.16 | Legacy `/play` (and `/play?skin=`) remains available for e2e/dev until Playwright uses room routes; product CTAs use only `/room/.../play`                                     |
+| US-7.16 | Legacy `/play` remains available for e2e/dev (default `remy`); skin/team selection is room-session only; product CTAs use only `/room/.../play` |
 
 ## Acceptance
 

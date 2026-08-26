@@ -32,7 +32,7 @@ flowchart TD
 | `/room/[roomId]`      | `src/pages/room/[roomId]/index.astro` | DOM-only island OK (share, QR, Play)                             |
 | `/room/[roomId]/join` | `src/pages/room/[roomId]/join.astro`  | Same island; room id from path (shown, not typed); no arena pick |
 | `/room/[roomId]/play` | `src/pages/room/[roomId]/play.astro`  | Game canvas island; boot from `sessionStorage`                   |
-| `/play`               | `src/pages/play.astro` (legacy)       | e2e/dev probes (`?skin=`) until Playwright migrates              |
+| `/play`               | `src/pages/play.astro` (legacy)       | e2e/dev probe (default `remy`; no query skin)                    |
 
 Invalid / missing session on play: defaults `civilian`, `remy`, `arena-01` with team↔skin consistency (civilian → `remy`, soldier → `swat-1`).
 
@@ -114,7 +114,7 @@ Changing team resets character to that team’s default skin if the current skin
 
 ## Legacy `/play`
 
-Keep `src/pages/play.astro` for existing e2e/dev (`/play?skin=`). Product flow uses only `/room/{roomId}/play`. Migrate Playwright smoke to room routes in this US; then legacy may remain as a thin probe alias.
+Keep `src/pages/play.astro` for existing e2e/dev as a thin default-`remy` probe. Product flow and non-default skins use `/room/{roomId}/play` + `sessionStorage`.
 
 ## Handoff to US-5
 

@@ -4,6 +4,7 @@ import {
   captureConsoleErrors,
   expectNoConsoleErrors,
   navigateToPlay,
+  navigateToRoomPlay,
   readPlayTest,
   waitForCanvas,
   waitForPlayTest,
@@ -54,9 +55,9 @@ test('/play plays jump on F; kneel + WASD crouch-walks; kneel + Space runs then 
   expectNoConsoleErrors(consoleErrors);
 });
 
-test('/play?skin=swat-1 boots shared clips without PropertyBinding errors', async ({ page }) => {
+test('room play as swat-1 boots shared clips without PropertyBinding errors', async ({ page }) => {
   const consoleErrors = captureConsoleErrors(page);
-  await navigateToPlay(page, { skin: 'swat-1' });
+  await navigateToRoomPlay(page, { team: 'soldier', skin: 'swat-1' });
   await waitForCanvas(page);
   await waitForPlayTest(page);
 

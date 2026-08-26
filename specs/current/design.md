@@ -181,7 +181,7 @@ Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`
 | Layer          | Scope                                                                                                                            |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | **Vitest**     | Registries; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide  |
-| **Playwright** | `/play` default `remy` + `?skin=swat-1`; no `PropertyBinding` errors; kneel + WASD stays crouched; optional `__PLAY_TEST__` hook |
+| **Playwright** | `/play` default `remy`; room play for other skins; no `PropertyBinding` errors; kneel + WASD stays crouched; optional `__PLAY_TEST__` hook |
 
 ## Characters — shipped US-6
 
@@ -192,7 +192,7 @@ Locomotion and action clips load from `/assets/characters/shared/base-animations
 | `remy`, `james`, `liza`      | civilian | `/assets/characters/civilians/<id>.glb` |
 | `swat-1`, `swat-2`, `swat-3` | soldier  | `/assets/characters/soldiers/<id>.glb`  |
 
-Default `/play` skin is `remy` (civilian team, east spawn). Until US-7 select ships, `/play?skin=<id>` via `resolvePlaySkinId`.
+Default `/play` skin is `remy` (civilian team, east spawn). Non-default skins boot from room session on `/room/{roomId}/play`.
 
 **Skeleton contract:** Mixamo `Armature` with bone names `mixamorig:*` (colon form). Vendor exports with numbered prefixes (`mixamorig9:`, …) are rewritten in-asset (`npm run assets:normalize-characters`) so shared-pack tracks and aim/FPS lookups bind.
 
@@ -263,7 +263,7 @@ checkRoundEnd() → if all civilians eliminated OR all soldiers eliminated → e
 endRound(winner) → RoundPhase 'round-end', winner banner (no local auto-restart; US-5 owns the next round)
 ```
 
-Local player occupies the default civilian slot (`remy`); remaining spawns are `ScenarioSoldiers` NPCs (opposing-team dummies until US-5). US-7 select will override local team/skin; until then `/play?skin=` and `DEFAULT_LOCAL_TEAM` apply.
+Local player occupies the default civilian slot (`remy`) on legacy `/play`; remaining spawns are `ScenarioSoldiers` NPCs (opposing-team dummies until US-5). Room play overrides local team/skin from session.
 
 When `HealthState.isEliminated`, FPS move/look/shoot is disabled and pointer lock is released until the next `startRound()`.
 

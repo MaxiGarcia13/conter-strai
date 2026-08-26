@@ -15,14 +15,14 @@ stateDiagram-v2
   [*] --> RoundStart
   RoundStart --> InProgress: assign teams, spawn, equip pistol
   InProgress --> RoundEnd: one team fully eliminated
-  RoundEnd --> RoundStart: declare winner, reset all
+  RoundEnd --> RoundStart: US-5 server reset
 ```
 
 | Phase           | Behavior                                                                                |
 | --------------- | --------------------------------------------------------------------------------------- |
 | **Round start** | Split players into Civilians / Soldiers; teleport to team spawns; full HP; equip pistol |
 | **In progress** | PvP combat; eliminated players spectate or wait (no respawn)                            |
-| **Round end**   | One team wiped → opposing team wins; show banner; after brief delay, next round         |
+| **Round end**   | One team wiped → opposing team wins; show banner. Next-round reset is US-5              |
 
 ## Teams
 
@@ -44,7 +44,7 @@ Team assignment: random or balanced split in MVP; **server assigns teams** in Co
 | Rifle  | No                        | Primary weapon    |
 | Others | No                        | SMG, sniper, etc. |
 
-Weapon registry mirrors soldier/scenario pattern (`src/modules/weapons/` — future).
+Weapon registry lives in `src/modules/weapons/` (`weapon-registry.ts`, `PistolWeaponConfig`). Pistol mesh attaches at runtime to the Mixamo right-hand bone (`WeaponAttach`); do not bake weapons into character mesh GLBs.
 
 ## Module map
 
@@ -129,7 +129,8 @@ Units: **1 world unit = 1 meter**.
 - `ScenarioScene` — floor + outer walls + `wallSegments` + generic `props`
 - `SoldierModel` — NPC spawns; `LocalPlayer` — one clone + mixer
 - `useFpsControls` — WASD, mouse, locomotion intent, collision
-- `useSoldierLocomotion` — idle / walk / run / crouch-walk + jump / kneel
+- `useShooting` — camera-center pistol hitscan, cooldown, no friendly fire
+- `useSoldierLocomotion` — idle / walk / run / crouch-walk + jump / kneel / reload / dying
 - `CameraHud` / `CrosshairHud` — mode label + screen crosshair; world aim marker on look-ray hit
 
 ### Camera modes (**C**)
@@ -152,8 +153,10 @@ Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-stat
 | **E**        | `kneel`          | Toggle; `LoopOnce` + clamp; WASD does **not** stand up      |
 | Kneel + WASD | `crouch-walking` | Loop; walk-speed only (Space run ignored)                   |
 | **F**        | `jump`           | One-shot; animation-only (no Y physics); clears kneel first |
+| **R**        | `reloading`      | One-shot; stand+idle or `reloading-kneel`; WASD cancels     |
+| **LMB**      | —                | Hitscan pistol (no `shooting` pose until a shippable clip)  |
 
-Priority: blocking one-shots (jump; later US-4 `reloading` / `shooting`) → kneel + moving → crouch-walk → kneel + idle → locomotion → **`dying`** on elimination (US-3).
+Priority: blocking one-shots (`reloading` / `reloading-kneel` > `jump`) → kneel + moving → crouch-walk → kneel + idle → locomotion → **`dying`** on elimination. Optional `shooting` is mixer-ready but not triggered.
 
 ### Interior collision
 
@@ -189,7 +192,7 @@ Default `/play` skin is `swat-1`. Until US-7 select ships, `/play?skin=<id>` via
 
 **Skeleton contract:** Mixamo `Armature` with bone names `mixamorig:*` (colon form). Vendor exports with numbered prefixes (`mixamorig9:`, …) are rewritten in-asset (`npm run assets:normalize-characters`) so shared-pack tracks and aim/FPS lookups bind.
 
-**Required shared clips:** `idle`, `walk`, `run`, `jump`, `kneel`, `crouch-walking`, `dying`. `reloading` / `shooting` stay optional until US-4 adds them to the pack.
+**Required shared clips:** `idle`, `walk`, `run`, `jump`, `kneel`, `crouch-walking`, `dying`, `reloading`, `reloading-kneel`. Optional: `shooting` (deferred — not played on LMB), `hit-reaction`.
 
 **Clip resolve:** `useGLTF` mesh + shared pack; merge lists (**shared wins** on name); resolve by registry names (null if a required clip is missing); strip hips translation on `idle` / `walk` / `run` / `crouch-walking`.
 
@@ -211,7 +214,7 @@ nextHp = max(0, currentHp − damage)
 
 - **Weapons own** per-zone fractions on `weapon-registry.ts`; **combat** owns pure `applyDamage` + `DIFFICULTY_MULT` — no Three.js in the service.
 - **Health store** (`health-store.ts`, Zustand): per-`EntityId` HP map; resolves `weaponId` → profile; sets `isEliminated` via `isEliminated(hp)`.
-- HP resets on round end only (`resetAll` — wired in US-4 round service).
+- HP resets on round end only (`resetAll` in the round service).
 
 ### Hitboxes
 
@@ -223,7 +226,7 @@ Attached on `LocalPlayer` and `SoldierModel` when `entityId` is set.
 
 - `HealthBar` — DOM overlay, local player HP %.
 - At 0 HP: `isEliminated: true`; FPS controls disabled; **`dying`** one-shot on mixer (`LocalPlayer` / `SoldierModel` via `getPose`).
-- No mid-round respawn; round reset restores HP in US-4.
+- No mid-round respawn; round reset restores HP.
 
 ### Key files
 
@@ -238,11 +241,44 @@ Attached on `LocalPlayer` and `SoldierModel` when `entityId` is set.
 ## Data flow (combat)
 
 ```
-useShooting (US-4, raycast) → hit zone from mesh userData
+useShooting (raycast) → hit zone from mesh userData
   → health store applyDamage → HUD
   → isEliminated → disable controls + dying clip
   → round service checks team wipe → round end → resetAll
 ```
+
+## PvP loop — shipped US-4
+
+Local team-elimination on `/play`. Colyseus authority stays US-5.
+
+### Round service (`game/state/round-store.ts`)
+
+```
+startRound() → roster from ScenarioConfig.teamSpawns, resetAll HP, teleport local player, equip pistol
+checkRoundEnd() → if all civilians eliminated OR all soldiers eliminated → endRound(winner)
+endRound(winner) → RoundPhase 'round-end', winner banner (no local auto-restart; US-5 owns the next round)
+```
+
+Local player occupies the default soldier slot; remaining spawns are `ScenarioSoldiers` NPCs (opposing-team dummies until US-5). US-7 select will override local team/skin; until then `/play?skin=` and `DEFAULT_LOCAL_TEAM` apply.
+
+When `HealthState.isEliminated`, FPS move/look/shoot is disabled and pointer lock is released until the next `startRound()`.
+
+### Shooting
+
+- Pointer-locked **LMB** → `useShooting` raycast from camera center; range 100 m; cooldown `fireCooldownSeconds` (pistol 0.35 s).
+- Hits need `userData.hitZone` + `userData.entityId`; friendly fire skipped via round roster.
+- `resolveHitDamage` builds `DamageData` with equipped `weaponId` → health store `applyDamage`.
+- Gunshot SFX at the camera; injury SFX is spatial on the victim.
+- **`shooting` pose is not played** — mixer can resolve an optional clip, but LMB does not set the pose until a shippable fire animation is approved.
+
+### Reload + weapon mesh
+
+- **R** (idle) → `reloading`; **R** while kneeling → `reloading-kneel`. Busy until mixer `finished`; WASD cancels.
+- `pistol_a.glb` from registry `modelUrl`; `WeaponAttach` parents a clone under `mixamorig:RightHand` with grip offset on the weapon config.
+
+### Vitest
+
+`resolveHitDamage` (self / friendly / zone) and `checkRoundEnd` (team wipe → winner).
 
 ## Multiplayer (US-5)
 

@@ -23,7 +23,7 @@ Depends on **US-6** _(shipped)_ skins (`remy` / `james` / `liza`, `swat-1` / `sw
 | `skin`     | `SoldierSkinId` | `LocalPlayer` / model skin                 |
 | `scenario` | `ScenarioId`    | `getScenarioById` (today only `arena-01`)  |
 
-Local play **respects** the selected team. When US-4 round service / US-5 Colyseus assign teams, document override: select becomes preference or is skipped for networked matches — update US-4.8 note when implementing rounds.
+Local play **respects** the selected team once play boot lands. Until then the shipped US-4 round service uses `DEFAULT_LOCAL_TEAM` (`soldier`). Networked assign may override (US-5).
 
 ## Select UI layout
 

@@ -1,7 +1,7 @@
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 import { useRoundStore } from '../state/round-store';
 
-/** Full-screen overlay shown when a round ends; auto-restarts after a delay. */
+/** Full-screen overlay shown when a round ends. */
 export function RoundEndBanner() {
   const phase = useRoundStore((s) => s.phase);
   const winner = useRoundStore((s) => s.winner);

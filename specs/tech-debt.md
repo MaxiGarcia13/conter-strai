@@ -48,3 +48,7 @@ No god files today (~150 lines max). Prefer small extractions when editing these
 - [ ] **Extract `useSoldierMesh`** — new hook in `src/modules/soldiers/hooks/use-soldier-mesh.ts` consolidating: `getSoldierSkinById`, `useGLTF`, `useSoldierAnimationClips`, `getSoldierArmature`, `soldierScaleVector`, and the `disableSkinnedMeshCulling` mount effect. Returns `{ modelRef, source, scale, skin, animations }`.
 - [ ] **Refactor `SoldierModel`** — consume `useSoldierMesh`; keep NPC-only concerns (static `position` / `rotationY`, health-store pose via `resolveNpcPose`, conditional `WeaponAttach` / `HitboxMesh` when `entityId` is set).
 - [ ] **Refactor `LocalPlayer`** — consume `useSoldierMesh`; keep game-only concerns (`useFrame` + `getPlayerTransform`, aim rig, `placeCameraAtHead`, `setBodyAnchorY`, pose clear callbacks).
+
+## Deferred from US-4
+
+- [ ] **Shooting clip on LMB** — pack may include a `shooting` clip and the mixer can play it, but pointer-locked LMB does not set the pose (hitscan + SFX only). Wire one-shot `shooting` (not while reloading / jumping) once a shippable fire pose is approved.

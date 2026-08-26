@@ -6,14 +6,16 @@ Browser-based tactical shooter inspired by Counter-Strike. **Civilians** vs **So
 
 ## Status
 
-**US-1 (landing)** is shipped. Module type layout and registries (scenarios, soldiers, combat, weapons) are in place — see [CHANGELOG](./specs/CHANGELOG.md). Arena FPS, combat runtime, rounds, and multiplayer are in progress.
+**Status:** US-1–US-4 and US-6 are shipped. Match select (US-7) and Colyseus multiplayer (US-5) are open — see [CHANGELOG](./specs/CHANGELOG.md).
 
 | Feature                                                               | State              |
 | --------------------------------------------------------------------- | ------------------ |
-| Landing (`/`) — hero, theme, Start Game CTA, GitHub contribute footer | Done               |
-| 3D arena + FPS movement (`/play`)                                     | In progress (US-2) |
-| Zone damage & difficulty                                              | In progress (US-3) |
-| Round-based PvP (pistol, teams)                                       | In progress (US-4) |
+| Landing (`/`) — hero, theme, Start Game CTA, GitHub contribute footer | Done (US-1)        |
+| 3D arena + FPS movement (`/play`)                                     | Done (US-2)        |
+| Zone damage & difficulty                                              | Done (US-3)        |
+| Shared skins + animation pack                                         | Done (US-6)        |
+| Round-based PvP (pistol, teams, reload)                               | Done (US-4)        |
+| Match select (team / character / arena)                               | In progress (US-7) |
 | Online sync via Colyseus (Astro Node)                                 | In progress (US-5) |
 
 ## Game rules (MVP)

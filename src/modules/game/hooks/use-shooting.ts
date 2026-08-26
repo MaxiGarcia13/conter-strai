@@ -12,6 +12,7 @@ import { pickBulletHit } from '../utils/pick-bullet-hit';
 import { playGameSound } from '../utils/play-game-sound';
 
 const SCREEN_CENTER = new Vector2(0, 0);
+const PISTOL_RANGE_METERS = 100;
 
 export function useShooting(domElement: HTMLElement | null) {
   const camera = useThree((s) => s.camera);
@@ -35,6 +36,11 @@ export function useShooting(domElement: HTMLElement | null) {
         return;
       }
 
+      const pose = getPlayerPose();
+      if (pose === 'reloading' || pose === 'reloadingKneel' || pose === 'dying') {
+        return;
+      }
+
       const now = performance.now();
       const cooldownMs = weapons[DEFAULT_WEAPON_ID].fireCooldownSeconds * 1000;
       if (now - lastFireRef.current < cooldownMs) {
@@ -47,13 +53,9 @@ export function useShooting(domElement: HTMLElement | null) {
         listener: camera.position,
       });
 
-      const pose = getPlayerPose();
-      if (pose === 'reloading' || pose === 'dying') {
-        return;
-      }
-
       camera.updateMatrixWorld();
       const raycaster = raycasterRef.current;
+      raycaster.far = PISTOL_RANGE_METERS;
       raycaster.setFromCamera(SCREEN_CENTER, camera);
 
       const hit: BulletHitResult | null = pickBulletHit(

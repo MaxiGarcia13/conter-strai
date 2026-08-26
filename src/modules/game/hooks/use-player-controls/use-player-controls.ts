@@ -60,7 +60,7 @@ export function usePlayerControls({
     externalControlsRef,
   });
 
-  const { isPointerLocked } = usePlayerPointerLock({
+  usePlayerPointerLock({
     domElement,
     eliminated,
     eliminatedRef,
@@ -78,5 +78,4 @@ export function usePlayerControls({
     externalControlsRef,
   });
 
-  return { isPointerLocked };
 }

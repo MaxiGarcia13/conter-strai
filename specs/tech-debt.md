@@ -47,7 +47,7 @@ No god files; prefer small extracts when editing these. Largest today: `use-sold
 
 Post-split leftovers from `use-player-controls` → folder + `game/utils`. Pick up when touching controls or free-cam.
 
-- [ ] **Remove unused `isPointerLocked` plumbing**
+- [x] **Remove unused `isPointerLocked` plumbing**
   1. Grep `src/` for `isPointerLocked` (expect only the pointer-lock hook + orchestrator).
   2. In `use-player-pointer-lock.ts`: drop `useState`, the `pointerlockchange` listener that only feeds that state, and the return value; make the hook `void`.
   3. Keep eliminated → `exitPointerLock`, click-to-lock, and mouse look.

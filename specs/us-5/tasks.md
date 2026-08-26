@@ -12,10 +12,10 @@ Lobby REST wraps Colyseus `matchMaker`; presence and play stay on WebSocket. See
 
 - [x] Add `colyseus`, `@colyseus/schema`, `@colyseus/sdk`
 - [x] Define `MatchState` / `PlayerState` Schema (`hp`, `eliminated`, `team`, `skin`, transform) aligned with `HealthState` + `Team`
-- [ ] Implement single `MatchRoom` (`waiting` → `in_progress` → `ended`; join, leave, move, shot, round end / reset) under `src/modules/multiplayer/rooms/`
-- [ ] Enforce `maxClients: 8` and `maxPerTeam: 4` in `onJoin` / team assignment
-- [ ] Wire Colyseus into Astro Node process (boot rooms with server; matchMaker ready before API traffic)
-- [ ] Env: `PUBLIC_COLYSEUS_URL` (+ optional `COLYSEUS_PORT`)
+- [x] Implement single `MatchRoom` (`waiting` → `in_progress` → `ended`; join, leave, move, shot, round end / reset) under `src/modules/multiplayer/rooms/`
+- [x] Enforce `maxClients: 8` and `maxPerTeam: 4` in `onJoin` / team assignment
+- [x] Wire Colyseus into Astro Node process (boot rooms with server; matchMaker ready before API traffic)
+- [x] Env: `PUBLIC_COLYSEUS_URL` (+ optional `COLYSEUS_PORT`)
 
 ## Lobby REST (`/api/v1/room`)
 

@@ -4,6 +4,7 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
+import colyseus from './src/modules/multiplayer/integration';
 
 const port = Number(process.env.PORT ?? 4321);
 const site = process.env.SITE ?? `http://localhost:${port}`;
@@ -50,7 +51,11 @@ export default defineConfig({
     },
   },
 
-  integrations: [sitemap(), react()],
+  integrations: [
+    sitemap(),
+    react(),
+    colyseus(),
+  ],
 
   adapter: node({
     mode: 'standalone',

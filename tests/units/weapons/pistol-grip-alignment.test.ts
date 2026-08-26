@@ -33,7 +33,8 @@ describe('pistol grip alignment', () => {
   let hand: Object3D;
 
   beforeAll(async () => {
-    globalThis.self = { URL } as typeof globalThis & { URL: typeof URL };
+    // @ts-expect-error self is not defined in the globalThis object
+    globalThis.self = { URL };
 
     const loader = new GLTFLoader();
     const [character, animations] = await Promise.all([

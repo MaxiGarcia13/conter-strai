@@ -64,7 +64,7 @@ Post-split leftovers from `use-player-controls` → folder + `game/utils`. Pick 
   2. For horizontal axes, use `axesFromPressedCodes(pressed, MOVE_CODES)` from `game/utils/axes-from-pressed-codes.ts` + `game/utils/move-codes.ts`.
   3. Leave vertical + boost math as-is.
 
-- [ ] **Document or replace the look pitch floor**
+- [x] **Document or replace the look pitch floor**
   1. `use-player-pointer-lock.ts` gates look with `pitch >= -0.6` (free-cam does not).
   2. Default: add a named constant next to `PITCH_LIMIT` in `constants/player.ts` with a one-line comment (why look-down is limited for FPS).
   3. Only remove the gate (rely on `PITCH_LIMIT` alone) if playtest confirms full look-down is desired.

@@ -7,6 +7,8 @@ export const WALK_SPEED = 5;
 export const RUN_SPEED = 9;
 export const MOUSE_SENSITIVITY = 0.002;
 export const PITCH_LIMIT = Math.PI / 2 - 0.01;
+/** FPS look-down cap — prevents the camera from clipping into the player's own body. */
+export const LOOK_PITCH_FLOOR = -0.6;
 
 /** Camera-local offset for soldier arms/hands (x=right, y=down, z=forward). */
 export const VIEWMODEL_OFFSET: [number, number, number] = [0.12, -1.67, -0.35];

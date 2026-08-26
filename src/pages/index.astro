@@ -3,6 +3,7 @@ import { homepage } from '@root/package.json';
 import { getImage, Image } from 'astro:assets';
 import CsButton from '@/components/cs-button.astro';
 import GithubIcon from '@/components/github-icon.astro';
+import SiteTopbar from '@/components/site-topbar.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
 import csImg from '../assets/cs.png';
 
@@ -31,23 +32,20 @@ const bullets = [
   imageAlt="Soldiers geared up for deployment"
 >
   <section class="relative z-10 flex min-h-dvh flex-col">
-    <div
-      class="font-mono text-foreground-muted flex items-center justify-between gap-4 border-b border-surface-border/80 px-(--space-page-x) py-3 text-xs tracking-[0.2em] uppercase"
-    >
-      <p class="flex items-center gap-2 text-accent">
+    <SiteTopbar>
+      <p slot="leading" class="flex items-center gap-2 text-accent">
         <span
           class="motion-safe:animate-pulse size-1.5 shrink-0 rounded-full bg-accent"
           aria-hidden="true"
         ></span>
         Live
       </p>
-      <p>
+      <p slot="center">
         <span class="text-foreground">Civilians</span>
         <span class="text-accent mx-2">vs</span>
         <span class="text-foreground">Soldiers</span>
       </p>
-      <p class="hidden sm:block">Browser client</p>
-    </div>
+    </SiteTopbar>
 
     <div
       class="grid flex-1 items-center gap-12 px-(--space-page-x) py-(--space-page-y) lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16"

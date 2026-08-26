@@ -1,0 +1,24 @@
+---
+interface Props {
+  /** Center label when the `center` slot is unused. */
+  title?: string;
+}
+
+const { title } = Astro.props;
+---
+
+<div
+  class="font-mono text-foreground-muted flex items-center justify-between gap-4 border-b border-surface-border/80 px-(--space-page-x) py-3 text-xs tracking-[0.2em] uppercase"
+>
+  <div>
+    <slot name="leading" />
+  </div>
+  <div>
+    <slot name="center">
+      {title && <p class="text-foreground">{title}</p>}
+    </slot>
+  </div>
+  <p class="hidden sm:block">
+    <slot name="trailing">Browser client</slot>
+  </p>
+</div>

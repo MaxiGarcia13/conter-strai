@@ -11,6 +11,7 @@ const arena01Meta: ScenarioMeta = {
   id: 'arena-01',
   name: 'Ruined Village',
   theme: 'ruined-village',
+  previewImageUrl: '/assets/scenarios/arena-01.png',
 };
 
 const arena01Layout: ArenaLayout = {

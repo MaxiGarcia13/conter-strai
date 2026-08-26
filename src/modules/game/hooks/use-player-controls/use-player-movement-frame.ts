@@ -12,7 +12,6 @@ import {
 import {
   getBodyAnchorY,
   getCameraMode,
-  getPlayerPose,
   getPlayerTransform,
   setPlayerLocomotion,
   setPlayerPose,
@@ -74,7 +73,8 @@ export function usePlayerMovementFrame({
     const { strafe, forward } = axesFromPressedCodes(pressed, MOVE_CODES);
     const transform = getPlayerTransform();
     const moving = strafe !== 0 || forward !== 0;
-    const running = moving && pressed.has(MOVE_CODES.runModifier) && getPlayerPose() !== 'kneel';
+    // Kneel pose stays set while running so idle resumes kneel (FR-15).
+    const running = moving && pressed.has(MOVE_CODES.runModifier);
 
     const health = useHealthStore.getState();
     const solidNpcFlags = npcBlockers.map(

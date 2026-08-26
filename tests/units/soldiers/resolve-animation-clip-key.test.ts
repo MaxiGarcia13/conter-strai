@@ -21,9 +21,12 @@ describe('resolveAnimationClipKey', () => {
     expect(resolveAnimationClipKey('kneel', 'idle')).toBe('kneel');
   });
 
-  it('returns crouchWalking when kneeling and moving', () => {
+  it('returns crouchWalking when kneeling and walking', () => {
     expect(resolveAnimationClipKey('kneel', 'walk')).toBe('crouchWalking');
-    expect(resolveAnimationClipKey('kneel', 'run')).toBe('crouchWalking');
     expect(resolveAnimationClipKey('kneel', 'crouchWalking')).toBe('crouchWalking');
+  });
+
+  it('returns run when kneeling and running', () => {
+    expect(resolveAnimationClipKey('kneel', 'run')).toBe('run');
   });
 });

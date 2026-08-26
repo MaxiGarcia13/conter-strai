@@ -9,7 +9,7 @@ import {
   waitForPlayTest,
 } from './test-helpers';
 
-test('/play plays jump on F; kneel + WASD stays crouched (crouch-walk)', async ({ page }) => {
+test('/play plays jump on F; kneel + WASD crouch-walks; kneel + Space runs then resumes kneel', async ({ page }) => {
   const consoleErrors = captureConsoleErrors(page);
   await navigateToPlay(page);
   await waitForCanvas(page);
@@ -37,9 +37,17 @@ test('/play plays jump on F; kneel + WASD stays crouched (crouch-walk)', async (
   await page.waitForTimeout(600);
   expect((await readPlayTest(page))?.activeClip).toBe('kneel');
 
-  // US-6: WASD keeps kneel stance and plays crouch-walking (does not stand up).
+  // WASD keeps kneel stance and plays crouch-walking (does not stand up).
   await page.keyboard.down('KeyW');
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('crouchWalking');
+  await page.keyboard.up('KeyW');
+  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('kneel');
+
+  // WASD+Space runs while kneel pose is kept; stop resumes kneel.
+  await page.keyboard.down('KeyW');
+  await page.keyboard.down('Space');
+  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('run');
+  await page.keyboard.up('Space');
   await page.keyboard.up('KeyW');
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('kneel');
 

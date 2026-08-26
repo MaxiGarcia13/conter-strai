@@ -28,7 +28,7 @@ export interface PlayTestSnapshot {
   /** Soldier armature roots in the scene graph (includes hidden FPS body). */
   soldierCount: number;
   mixerReady: boolean;
-  /** Resolved mixer clip key (kneel+moving → crouchWalking). */
+  /** Resolved mixer clip key (kneel+walk → crouchWalking; kneel+run → run). */
   activeClip: string;
   skinId: string;
   debug?: {

@@ -32,6 +32,10 @@ export function writeRoomSession(roomId: string, data: RoomSession) {
   sessionStorage.setItem(`${PREFIX}${roomId}`, JSON.stringify(data));
 }
 
+export function clearRoomSession(roomId: string) {
+  sessionStorage.removeItem(`${PREFIX}${roomId}`);
+}
+
 export function readRoomSession(roomId: string): RoomSession | null {
   const raw = sessionStorage.getItem(`${PREFIX}${roomId}`);
   if (!raw)

@@ -1,9 +1,12 @@
+import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { CsButton } from '@/components/cs-button';
+import { deleteRoom } from '@/modules/multiplayer/services/delete-room';
+import { LobbyRestError } from '@/modules/multiplayer/services/lobby-rest';
 import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 import { useRoomSnapshot } from '../hooks/use-room-snapshot';
-import { readRoomSession } from '../utils/room-session';
+import { clearRoomSession, readRoomSession } from '../utils/room-session';
 import { InviteShare } from './invite-share';
 import { WaitingRoomSeats } from './waiting-room-seats';
 
@@ -14,6 +17,9 @@ interface WaitingRoomContentProps {
 export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
   const [session] = useState(() => readRoomSession(roomId));
   const snapshotQuery = useRoomSnapshot(session ? roomId : '', { poll: true });
+  const dispose = useMutation({
+    mutationFn: deleteRoom,
+  });
 
   if (!session) {
     return (
@@ -29,6 +35,21 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
   }
 
   const scenario = getScenarioById(snapshotQuery.data?.scenario ?? session.scenario);
+
+  async function handleCloseRoom() {
+    if (dispose.isPending) {
+      return;
+    }
+    try {
+      await dispose.mutateAsync(roomId);
+    } catch (cause) {
+      if (!(cause instanceof LobbyRestError) || cause.status !== 404) {
+        return;
+      }
+    }
+    clearRoomSession(roomId);
+    window.location.href = '/room';
+  }
 
   return (
     <div className="flex flex-1 flex-col gap-6">
@@ -97,13 +118,29 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
 
       <InviteShare roomId={roomId} />
 
+      {dispose.error && (
+        <p role="alert" className="font-mono text-xs tracking-widest text-danger">
+          {dispose.error.message}
+        </p>
+      )}
+
       <div className="flex justify-end gap-4">
         {session.role === 'host' && (
-          <CsButton href="/room" variant="secondary">
-            Back
+          <CsButton
+            type="button"
+            variant="secondary"
+            onClick={handleCloseRoom}
+            disabled={dispose.isPending}
+            aria-busy={dispose.isPending}
+          >
+            {dispose.isPending ? 'Closing…' : 'Close Room'}
           </CsButton>
         )}
-        <CsButton href={`/room/${roomId}/play`} variant="primary" className="min-w-50 justify-center">
+        <CsButton
+          href={`/room/${roomId}/play`}
+          variant="primary"
+          className="min-w-50 justify-center"
+        >
           Play
         </CsButton>
       </div>

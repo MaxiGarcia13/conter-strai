@@ -78,4 +78,5 @@ test('invite join reaches waiting with invite URL, copy, and QR', async ({ page,
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(inviteUrl);
 
   await expect(page.getByRole('link', { name: 'Play' })).toHaveAttribute('href', `/room/${roomId}/play`);
+  await expect(page.getByRole('button', { name: 'Close Room' })).toHaveCount(0);
 });

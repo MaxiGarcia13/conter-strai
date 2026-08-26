@@ -209,6 +209,7 @@ onRoundUpdate(callback)
 ## Integration
 
 - Create/join forms → `POST` / `PUT` `/api/v1/room` via TanStack Query mutations; write `sessionStorage` as today (US-7) plus server room code
+- Host waiting room **Close Room** → `DELETE /api/v1/room/{id}` then clear session and return to create
 - Waiting room / invite snapshot → `useQuery` on `GET /api/v1/room/{id}` (`queryKey: ['room', roomId]`); waiting room polls every 2s while `phase === 'waiting'`. Stop polling once Colyseus Schema sync is on that page.
 - `GameCanvas` calls adapter on mount
 - `LocalPlayer` / FPS controls sync local transform (throttled)

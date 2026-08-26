@@ -21,6 +21,9 @@ export default defineConfig({
     plugins: [tailwindcss()],
     // Avoid a Vite dep-optimizer race (Astro #16766) that can drop react/jsx-dev-runtime
     // from the client pre-bundle and cause intermittent "jsxDEV is not a function".
+    // treeshake:false — Vite 8/Rolldown DCE strips R3F AsyncDispatcher.getOwner (only
+    // reached via React.createElement across the package boundary), which throws
+    // "dispatcher.getOwner is not a function" under React 19.2 owner stacks.
     environments: {
       client: {
         optimizeDeps: {
@@ -36,6 +39,9 @@ export default defineConfig({
             'three',
             'react-qr-code',
           ],
+          rolldownOptions: {
+            treeshake: false,
+          },
         },
       },
     },

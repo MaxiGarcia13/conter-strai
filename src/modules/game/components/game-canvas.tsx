@@ -1,5 +1,7 @@
 import type { PlayLoaderState } from './play-loader';
 import type { ScenarioId } from '@/modules/scenarios';
+import type { SoldierSkinId } from '@/modules/soldiers';
+import type { Team } from '@/modules/teams';
 import { Canvas } from '@react-three/fiber';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { HealthBar } from '@/modules/combat';
@@ -27,14 +29,21 @@ const DEFAULT_LIGHTING = { ambient: 0.6, sunIntensity: 1.2 };
 
 interface GameCanvasProps {
   scenarioId?: ScenarioId;
+  team?: Team;
+  skinId?: SoldierSkinId;
   onLoaderChange?: (state: PlayLoaderState | null) => void;
 }
 
-export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }: GameCanvasProps) {
+export function GameCanvas({
+  scenarioId = DEFAULT_SCENARIO_ID,
+  team,
+  skinId: selectedSkinId,
+  onLoaderChange,
+}: GameCanvasProps) {
   const scenario = useMemo(() => getScenarioById(scenarioId), [scenarioId]);
   const lighting = scenario.lighting ?? DEFAULT_LIGHTING;
-  const localSpawn = useMemo(() => resolveLocalSpawn(scenario), [scenario]);
-  const skinId = useMemo(() => resolvePlaySkinId(), []);
+  const localSpawn = useMemo(() => resolveLocalSpawn(scenario, team), [scenario, team]);
+  const skinId = useMemo(() => selectedSkinId ?? resolvePlaySkinId(), [selectedSkinId]);
   const [trackLoading, setTrackLoading] = useState(Boolean(onLoaderChange));
 
   const startRound = useRoundStore((state) => state.startRound);

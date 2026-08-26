@@ -1,0 +1,29 @@
+---
+import PlayLoader from '@/components/play-loader.astro';
+import BaseLayout from '@/layouts/base-layout.astro';
+import { GameCanvasIsland } from '@/modules/game/components/game-canvas-island';
+
+const { roomId } = Astro.params;
+---
+
+<BaseLayout
+  title="Play — Conter Strai"
+  description="Deploy into the arena. Move fast, hold angles, win the round."
+>
+  <main class="fixed inset-0 z-10 bg-black">
+    <PlayLoader />
+
+    <GameCanvasIsland
+      client:only="react"
+      roomId={roomId}
+    />
+
+    <noscript>
+      <p
+        class="font-mono text-foreground flex h-dvh items-center justify-center text-center text-sm tracking-widest uppercase"
+      >
+        Conter Strai needs JavaScript to run.
+      </p>
+    </noscript>
+  </main>
+</BaseLayout>

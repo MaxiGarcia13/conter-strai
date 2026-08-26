@@ -50,10 +50,10 @@ Room-centric routes: `/room`, `/room/join`, `/room/[roomId]`, `/room/[roomId]/jo
 
 ## Play boot
 
-- [ ] `src/pages/room/[roomId]/play.astro` — read session for `roomId` (defaults + team↔skin consistency)
-- [ ] `GameCanvas` uses selected `scenarioId` (stop hardcoding only path if still default-only)
-- [ ] `resolveLocalSpawn` uses selected **team** (not always `soldier`)
-- [ ] `LocalPlayer` uses selected **skin**
+- [x] `src/pages/room/[roomId]/play.astro` — read session for `roomId` (defaults + team↔skin consistency)
+- [x] `GameCanvas` uses selected `scenarioId` (stop hardcoding only path if still default-only)
+- [x] `resolveLocalSpawn` uses selected **team** (not always `soldier`)
+- [x] `LocalPlayer` uses selected **skin**
 - [ ] Keep legacy `/play` for e2e/dev until room Playwright paths land
 - [ ] Playwright: landing → `/room` → wait → play with civilian/`remy` and soldier/`swat-1` smoke paths
 - [ ] Playwright: join via `/room/{id}/join` reaches waiting; invite URL / copy / QR present

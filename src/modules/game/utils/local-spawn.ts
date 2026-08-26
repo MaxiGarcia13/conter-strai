@@ -1,4 +1,5 @@
 import type { ScenarioConfig, Vec3 } from '@/modules/scenarios';
+import type { Team } from '@/modules/teams';
 import { spawnKey, spawnYawFor } from '@/modules/scenarios';
 
 import { DEFAULT_LOCAL_SPAWN_INDEX, DEFAULT_LOCAL_TEAM } from '../constants/player';
@@ -11,16 +12,16 @@ export interface LocalSpawn {
   yaw: number;
 }
 
-export function resolveLocalSpawn(scenario: ScenarioConfig): LocalSpawn {
-  const teamSpawns = scenario.teamSpawns[DEFAULT_LOCAL_TEAM];
+export function resolveLocalSpawn(scenario: ScenarioConfig, team: Team = DEFAULT_LOCAL_TEAM): LocalSpawn {
+  const teamSpawns = scenario.teamSpawns[team];
   if (!teamSpawns || teamSpawns.length === 0) {
-    throw new Error(`Scenario ${scenario.id} has no ${DEFAULT_LOCAL_TEAM} spawns`);
+    throw new Error(`Scenario ${scenario.id} has no ${team} spawns`);
   }
   const index = Math.min(DEFAULT_LOCAL_SPAWN_INDEX, teamSpawns.length - 1);
   const position = teamSpawns[index]!;
   return {
-    key: spawnKey(DEFAULT_LOCAL_TEAM, index),
+    key: spawnKey(team, index),
     position,
-    yaw: spawnYawFor(scenario, DEFAULT_LOCAL_TEAM, position),
+    yaw: spawnYawFor(scenario, team, position),
   };
 }

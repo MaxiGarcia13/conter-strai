@@ -121,7 +121,3 @@ Post-split leftovers from `use-player-controls` → folder + `game/utils`. Pick 
 - [x] **Extract `SoldierMeshBody`** — presentational Clone + conditional `WeaponAttach` / `HitboxMesh` in `src/modules/soldiers/components/soldier-mesh-body.tsx`. Outer `<group>` (static props vs `rigRef` / root name / `useFrame` transform) stays with each caller.
 - [x] **Refactor `SoldierModel`** — consume `useSoldierMesh` + `SoldierMeshBody`; keep NPC-only concerns (static `position` / `rotationY`, health-store pose via `resolveNpcPose`, optional `entityId`).
 - [x] **Refactor `LocalPlayer`** — consume `useSoldierMesh` + `SoldierMeshBody`; keep game-only concerns (`useFrame` + `getPlayerTransform`, aim rig, `placeCameraAtHead`, `setBodyAnchorY`, pose clear callbacks).
-
-## Deferred from US-4
-
-- [ ] **Shooting clip on LMB** — pack may include a `shooting` clip and the mixer can play it, but pointer-locked LMB does not set the pose (hitscan + SFX only). Wire one-shot `shooting` (not while reloading / jumping) once a shippable fire pose is approved.

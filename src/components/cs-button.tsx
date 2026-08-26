@@ -9,8 +9,8 @@ interface CsButtonBaseProps {
   children: ReactNode;
 }
 
-type CsButtonAsButton = CsButtonBaseProps &
-  Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className' | 'children'> & {
+type CsButtonAsButton = CsButtonBaseProps
+  & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className' | 'children'> & {
     href?: undefined;
   };
 

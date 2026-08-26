@@ -105,14 +105,14 @@ Shipped 2026-08-23 — see [CHANGELOG](../CHANGELOG.md#shipped--other).
 
 ## Routes
 
-| Route                 | Owner                                                                 |
-| --------------------- | --------------------------------------------------------------------- |
-| `/`                   | Astro landing — no Three.js                                           |
-| `/room`               | Create room (team / skin / arena + R3F preview)                       |
-| `/room/join`          | Join by typed room id + team / skin                                   |
-| `/room/[roomId]`      | Waiting room (invite URL, copy, QR, Play)                             |
-| `/room/[roomId]/join` | Invite join (room id from path)                                       |
-| `/room/[roomId]/play` | Game canvas — boot from `sessionStorage`                              |
+| Route                 | Owner                                           |
+| --------------------- | ----------------------------------------------- |
+| `/`                   | Astro landing — no Three.js                     |
+| `/room`               | Create room (team / skin / arena + R3F preview) |
+| `/room/join`          | Join by typed room id + team / skin             |
+| `/room/[roomId]`      | Waiting room (invite URL, copy, QR, Play)       |
+| `/room/[roomId]/join` | Invite join (room id from path)                 |
+| `/room/[roomId]/play` | Game canvas — boot from `sessionStorage`        |
 
 ## Match lobby — shipped US-7
 
@@ -127,9 +127,9 @@ sessionStorage[`cs:room:${roomId}`] = {
 }
 ```
 
-| Skin ↔ team | Defaults |
-| ----------- | -------- |
-| civilian → `remy` / `james` / `liza` | `remy` |
+| Skin ↔ team                              | Defaults |
+| ---------------------------------------- | -------- |
+| civilian → `remy` / `james` / `liza`     | `remy`   |
 | soldier → `swat-1` / `swat-2` / `swat-3` | `swat-1` |
 
 Missing/invalid play session → `civilian` + `remy` + `arena-01` with team↔skin consistency. Invite URL is path-only: `{origin}/room/{roomId}/join`. `ScenarioConfig.previewImageUrl` optional (`arena-01` null until art). Civilian east spawn required for civilian pick.
@@ -204,10 +204,10 @@ Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`
 
 ### Testing
 
-| Layer          | Scope                                                                                                                            |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **Vitest**     | Registries; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide  |
-| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; optional `__PLAY_TEST__` hook |
+| Layer          | Scope                                                                                                                           |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Vitest**     | Registries; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide |
+| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; optional `__PLAY_TEST__` hook          |
 
 ## Characters — shipped US-6
 

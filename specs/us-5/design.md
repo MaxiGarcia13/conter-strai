@@ -58,12 +58,12 @@ Astro `APIRoute` handlers must run only after Colyseus/`matchMaker` is initializ
 
 ## Hybrid responsibilities
 
-| Concern                          | HTTP REST (`/api/v1/room…`)                                 | Colyseus WebSocket                           |
-| -------------------------------- | ----------------------------------------------------------- | -------------------------------------------- |
-| Create room + short code         | Yes — `matchMaker.createRoom`                               | Also possible via SDK `create`               |
-| Read status / open team slots    | Yes — `matchMaker.query` + metadata / `remoteRoomCall`      | Better live via Schema                       |
-| Actually sit in the lobby / play | No — HTTP cannot hold presence                              | **Required** — `joinById` / seat reservation |
-| Transform / HP / shots           | No                                                          | **Required** — Schema + messages             |
+| Concern                          | HTTP REST (`/api/v1/room…`)                            | Colyseus WebSocket                           |
+| -------------------------------- | ------------------------------------------------------ | -------------------------------------------- |
+| Create room + short code         | Yes — `matchMaker.createRoom`                          | Also possible via SDK `create`               |
+| Read status / open team slots    | Yes — `matchMaker.query` + metadata / `remoteRoomCall` | Better live via Schema                       |
+| Actually sit in the lobby / play | No — HTTP cannot hold presence                         | **Required** — `joinById` / seat reservation |
+| Transform / HP / shots           | No                                                     | **Required** — Schema + messages             |
 
 ## Lobby HTTP API
 
@@ -74,13 +74,13 @@ Cap: `maxClients: 8`, `maxPerTeam: 4` (4 vs 4).
 ### Shared response shapes
 
 ```typescript
-type TeamSeatSummary = {
+interface TeamSeatSummary {
   count: number;
   max: 4;
   open: boolean; // count < max
-};
+}
 
-type RoomSnapshot = {
+interface RoomSnapshot {
   id: string; // public roomCode
   phase: 'waiting' | 'in_progress' | 'ended';
   canJoin: boolean; // phase === 'waiting' && playerCount < 8
@@ -91,7 +91,7 @@ type RoomSnapshot = {
     civilian: TeamSeatSummary;
     soldier: TeamSeatSummary;
   };
-};
+}
 ```
 
 ### `POST /api/v1/room`

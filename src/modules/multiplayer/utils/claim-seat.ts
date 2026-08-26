@@ -3,7 +3,7 @@ import type { ClaimSeatResponse } from '@/modules/multiplayer/types';
 import { matchMaker } from 'colyseus';
 import { decodeSeatClaim } from '@/modules/multiplayer/adapters/decode-seat-claim';
 import { toRoomSnapshot } from '@/modules/multiplayer/adapters/to-room-snapshot';
-import { findMatchRoomByCode } from '@/modules/multiplayer/services/find-match-room';
+import { findMatchRoomByCode } from '@/modules/multiplayer/utils/find-match-room';
 import { jsonResponse, readJsonBody, requireMatchMaker } from './http';
 
 function isRoomFullError(error: unknown): boolean {

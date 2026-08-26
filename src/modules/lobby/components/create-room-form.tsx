@@ -8,10 +8,10 @@ import {
   DEFAULT_SCENARIO_ID,
   DEFAULT_TEAM,
 } from '@/modules/game/constants/play-defaults';
+import { postCreateRoom } from '@/modules/multiplayer/services/post-create-room';
 import { SCENARIO_LIST } from '@/modules/scenarios/constants/scenarios';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 import { TEAM_SKINS } from '@/modules/teams/constants/team-skins';
-import { generateRoomId } from '../utils/generate-room-id';
 import { writeRoomSession } from '../utils/room-session';
 import { ArenaPicker } from './arena-picker';
 import { CharacterPicker } from './character-picker';
@@ -22,21 +22,37 @@ export function CreateRoomForm() {
   const [team, setTeam] = useState<Team>(DEFAULT_TEAM);
   const [skinId, setSkinId] = useState<SoldierSkinId>(DEFAULT_PLAY_SKIN_ID);
   const [scenarioId, setScenarioId] = useState<ScenarioConfig['id']>(DEFAULT_SCENARIO_ID);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function handleTeamChange(newTeam: Team) {
     setTeam(newTeam);
     setSkinId(TEAM_SKINS[newTeam][0]);
   }
 
-  function handleCreate() {
-    const roomId = generateRoomId();
-    writeRoomSession(roomId, {
-      team,
-      skin: skinId,
-      scenario: scenarioId,
-      role: 'host',
-    });
-    window.location.href = `/room/${roomId}`;
+  async function handleCreate() {
+    if (pending) {
+      return;
+    }
+    setPending(true);
+    setError(null);
+    try {
+      const roomId = await postCreateRoom({
+        team,
+        skin: skinId,
+        scenario: scenarioId,
+      });
+      writeRoomSession(roomId, {
+        team,
+        skin: skinId,
+        scenario: scenarioId,
+        role: 'host',
+      });
+      window.location.href = `/room/${roomId}`;
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Could not create room');
+      setPending(false);
+    }
   }
 
   return (
@@ -54,8 +70,20 @@ export function CreateRoomForm() {
           onSelect={setScenarioId}
         />
 
-        <CsButton type="button" onClick={handleCreate} className="mt-2 self-start">
-          Create Room
+        {error && (
+          <p role="alert" className="font-mono text-xs tracking-widest text-danger">
+            {error}
+          </p>
+        )}
+
+        <CsButton
+          type="button"
+          onClick={handleCreate}
+          disabled={pending}
+          aria-busy={pending}
+          className="mt-2 self-start"
+        >
+          {pending ? 'Creating…' : 'Create Room'}
         </CsButton>
       </div>
 

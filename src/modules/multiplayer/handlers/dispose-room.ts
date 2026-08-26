@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
-import { findMatchRoomByCode } from '@/modules/multiplayer/services/find-match-room';
-import { jsonResponse, requireMatchMaker } from './http';
+import { findMatchRoomByCode } from '@/modules/multiplayer/utils/find-match-room';
+import { jsonResponse, requireMatchMaker } from '../utils/http';
 
 export const disposeRoom: APIRoute = async ({ params }) => {
   const unavailable = requireMatchMaker();

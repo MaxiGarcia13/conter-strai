@@ -4,7 +4,7 @@ import { DEFAULT_SCENARIO_ID } from '@/modules/game/constants/play-defaults';
 import { generateRoomId } from '@/modules/lobby/utils/generate-room-id';
 import { decodeCreateRoomOptions } from '@/modules/multiplayer/adapters/decode-create-room-options';
 import { createEmptyRoomSnapshot } from '@/modules/multiplayer/adapters/to-room-snapshot';
-import { jsonResponse, readJsonBody, requireMatchMaker } from './http';
+import { jsonResponse, readJsonBody, requireMatchMaker } from '../utils/http';
 
 export const createRoom: APIRoute = async ({ request }) => {
   const unavailable = requireMatchMaker();

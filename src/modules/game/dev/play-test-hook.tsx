@@ -17,6 +17,7 @@ import {
   setPlayerPose,
 } from '../state/player-state';
 import { resolvePlaySkinId } from '../utils/resolve-play-skin-id';
+import { angleFromIdentity, findLocalNode } from './play-test-helpers';
 
 const POLL_INTERVAL_MS = 60;
 const HOOK_VERSION = 'v5-crouch-walk';
@@ -52,27 +53,6 @@ declare global {
       cycleMode: () => string;
     };
   }
-}
-
-interface DebugNode {
-  scale: { x: number };
-  quaternion: {
-    x: number;
-    y: number;
-    z: number;
-    w: number;
-  };
-  matrixWorld: { elements: number[] };
-}
-
-function angleFromIdentity(q: { x: number; y: number; z: number; w: number }): number {
-  const dot = q.w;
-  return 2 * Math.acos(Math.min(1, Math.abs(dot)));
-}
-
-function findLocalNode(localRoot: unknown, name: string): DebugNode | null {
-  const root = localRoot as { getObjectByName: (n: string) => DebugNode | null } | null;
-  return root?.getObjectByName(name) ?? root?.getObjectByName(name.replace(':', '')) ?? null;
 }
 
 export function PlayTestHook() {

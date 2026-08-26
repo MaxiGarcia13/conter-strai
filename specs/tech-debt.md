@@ -83,7 +83,7 @@ Unchecked how-tos for the hotspots above. `LocalPlayer` / `SoldierModel` size is
   2. Hook keeps elimination / external-controls early-outs and `applyCameraMode`.
   3. Add a small unit test for the pure advance path.
 
-- [ ] **Extract DEV play-test helpers** — `src/modules/game/dev/play-test-hook.tsx`
+- [x] **Extract DEV play-test helpers** — `src/modules/game/dev/play-test-hook.tsx`
   1. Move `findLocalNode` / quaternion helpers into `dev/play-test-helpers.ts`.
   2. Keep polling + `__playTest` surface in the component.
 

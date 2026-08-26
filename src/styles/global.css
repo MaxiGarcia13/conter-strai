@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './fonts.css';
+@import './cs-button.css';
 
 :root {
   /* Surfaces — CS2 menu / dark industrial */

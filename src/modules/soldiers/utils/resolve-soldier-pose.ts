@@ -4,7 +4,7 @@ import { peekHitReaction } from '../state/hit-reaction-state';
 
 /**
  * Merges explicit player poses with queued hit reactions.
- * Priority: dying → reloading/jump → hit-reaction → other poses.
+ * Priority: dying → reload/jump → hit-reaction → other poses.
  */
 export function resolveLocalPlayerPose(
   playerPose: SoldierActionId | null,
@@ -13,7 +13,7 @@ export function resolveLocalPlayerPose(
   if (playerPose === 'dying') {
     return 'dying';
   }
-  if (playerPose === 'reloading' || playerPose === 'jump') {
+  if (playerPose === 'reloading' || playerPose === 'reloadingKneel' || playerPose === 'jump') {
     return playerPose;
   }
   if (peekHitReaction(entityId)) {

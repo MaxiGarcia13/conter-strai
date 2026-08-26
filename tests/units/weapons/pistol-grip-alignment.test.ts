@@ -1,8 +1,8 @@
+import type { Object3D } from 'three';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { AnimationMixer, Euler, Group, PerspectiveCamera, Quaternion, Vector3 } from 'three';
-import type { Object3D } from 'three';
 import { SkeletonUtils } from 'three-stdlib';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -10,8 +10,8 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { applySoldierAimPose, resolveSoldierAimRig } from '@/modules/soldiers/utils/aim-body-rig';
 import {
   DEFAULT_PISTOL_GRIP_ROTATION,
-  PISTOL_BARREL_AXIS,
   gripDownDirectionWorld,
+  PISTOL_BARREL_AXIS,
 } from '@/modules/weapons/utils/pistol-grip-alignment';
 import { DEFAULT_WEAPON_ID, weapons } from '@/modules/weapons/weapon-registry';
 

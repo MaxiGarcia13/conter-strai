@@ -37,7 +37,7 @@ describe('resolveBarrelGripQuaternion', () => {
     expect(gripDownDirectionWorld(hand, grip).y).toBeLessThan(0);
   });
 
-    it('tracks a pitched camera forward vector', () => {
+  it('tracks a pitched camera forward vector', () => {
     const hand = new Group();
     hand.rotation.set(0.2, -0.5, 0.1);
     hand.updateMatrixWorld(true);

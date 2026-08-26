@@ -30,6 +30,7 @@ interface UseSoldierLocomotionOptions {
   entityId?: string;
   /** Pose owner clears its jump request when the one-shot mixer finishes. */
   onJumpFinished?: () => void;
+  onReloadingFinished?: () => void;
   onShootingFinished?: () => void;
   onHitReactionStarted?: () => void;
   onHitReactionFinished?: () => void;
@@ -47,11 +48,12 @@ interface SoldierActions {
   kneel: AnimationAction;
   dying: AnimationAction;
   reloading?: AnimationAction;
+  reloadingKneel?: AnimationAction;
   shooting?: AnimationAction;
   hitReaction?: AnimationAction;
 }
 
-const ONE_SHOT_KEYS = ['jump', 'kneel', 'dying', 'reloading', 'shooting', 'hitReaction'] as const;
+const ONE_SHOT_KEYS = ['jump', 'kneel', 'dying', 'reloading', 'reloadingKneel', 'shooting', 'hitReaction'] as const;
 type OneShotKey = (typeof ONE_SHOT_KEYS)[number];
 
 function isOneShotKey(key: ClipKey): key is OneShotKey {
@@ -83,6 +85,7 @@ export function useSoldierLocomotion(
     getPose,
     entityId,
     onJumpFinished,
+    onReloadingFinished,
     onShootingFinished,
     onHitReactionStarted,
     onHitReactionFinished,
@@ -142,6 +145,9 @@ export function useSoldierLocomotion(
     if (resolved.reloading) {
       actions.reloading = mixer.clipAction(resolved.reloading);
     }
+    if (resolved.reloadingKneel) {
+      actions.reloadingKneel = mixer.clipAction(resolved.reloadingKneel);
+    }
     if (resolved.shooting) {
       actions.shooting = mixer.clipAction(resolved.shooting);
     }
@@ -164,6 +170,10 @@ export function useSoldierLocomotion(
     const onFinished = (event: { action: AnimationAction }) => {
       if (event.action === actions.jump) {
         onJumpFinished?.();
+      } else if (event.action === actions.reloading) {
+        onReloadingFinished?.();
+      } else if (event.action === actions.reloadingKneel) {
+        onReloadingFinished?.();
       } else if (event.action === actions.shooting) {
         onShootingFinished?.();
       } else if (event.action === actions.hitReaction) {
@@ -197,12 +207,14 @@ export function useSoldierLocomotion(
     animationConfig.walk,
     animationConfig.crouchWalking,
     animationConfig.reloading,
+    animationConfig.reloadingKneel,
     animationConfig.shooting,
     animationConfig.hitReaction,
     clipsKey,
     enabled,
     modelRef,
     onJumpFinished,
+    onReloadingFinished,
     onShootingFinished,
     onHitReactionStarted,
     onHitReactionFinished,

@@ -19,6 +19,7 @@ import {
   cycleCameraMode,
   getBodyAnchorY,
   getCameraMode,
+  getPlayerLocomotion,
   getPlayerPose,
   getPlayerTransform,
   resetPlayerTransform,
@@ -37,6 +38,7 @@ const MOVE_CODES = {
   cameraCycle: 'KeyC',
   jump: 'KeyF',
   kneelToggle: 'KeyE',
+  reload: 'KeyR',
   runModifier: 'Space',
 } as const;
 
@@ -113,6 +115,24 @@ export function usePlayerControls({
       }
     };
 
+    const requestReload = () => {
+      const pose = getPlayerPose();
+      if (pose === null && getPlayerLocomotion() === 'idle') {
+        setPlayerPose('reloading');
+      } else if (pose === 'kneel') {
+        setPlayerPose('reloadingKneel');
+      }
+    };
+
+    const cancelReload = () => {
+      const pose = getPlayerPose();
+      if (pose === 'reloading') {
+        setPlayerPose(null);
+      } else if (pose === 'reloadingKneel') {
+        setPlayerPose('kneel');
+      }
+    };
+
     const onKeyDown = (event: KeyboardEvent) => {
       pressedCodesRef.current.add(event.code);
 
@@ -124,12 +144,18 @@ export function usePlayerControls({
         return;
       }
 
+      if ((MOVE_KEY_CODES as readonly string[]).includes(event.code)) {
+        cancelReload();
+      }
+
       if (event.code === MOVE_CODES.cameraCycle) {
         cycleCameraMode();
       } else if (event.code === MOVE_CODES.jump) {
         requestJump();
       } else if (event.code === MOVE_CODES.kneelToggle) {
         toggleKneel();
+      } else if (event.code === MOVE_CODES.reload) {
+        requestReload();
       }
     };
 

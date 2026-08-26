@@ -15,6 +15,7 @@ export interface SoldierAnimationClips {
   kneel: string;
   dying: string;
   reloading?: string;
+  reloadingKneel?: string;
   shooting?: string;
   hitReaction?: string;
 }
@@ -27,7 +28,8 @@ export type SoldierActionId
     | 'crouchWalking'
     | 'shooting'
     | 'hitReaction'
-    | 'reloading';
+    | 'reloading'
+    | 'reloadingKneel';
 
 /** Per-skin first-person camera tweaks (head bone is the base; offsets are meters). */
 export interface SoldierFpsViewConfig {

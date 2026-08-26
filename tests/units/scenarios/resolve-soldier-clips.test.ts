@@ -34,6 +34,8 @@ describe('resolve-soldier-clips', () => {
       'jump',
       'kneel',
       'dying',
+      'reloading',
+      'reloadingKneel',
       'shooting',
       'hitReaction',
     ]);
@@ -82,12 +84,14 @@ describe('resolve-soldier-clips', () => {
     const config = {
       ...skin.meshData.animations,
       reloading: 'reloading',
+      reloadingKneel: 'reloading-kneel',
       shooting: 'shooting',
       hitReaction: 'hit-reaction',
     };
     const clips = Object.values(config).map(clipWithHipsTrack);
     const resolved = resolveSoldierClips(clips, config)!;
     expect(resolved.reloading?.name).toBe('reloading');
+    expect(resolved.reloadingKneel?.name).toBe('reloading-kneel');
     expect(resolved.shooting?.name).toBe('shooting');
     expect(resolved.hitReaction?.name).toBe('hit-reaction');
   });

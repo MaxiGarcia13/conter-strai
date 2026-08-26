@@ -21,14 +21,14 @@ describe('shared animation pack', () => {
   });
 
   it('has all required locomotion clips', () => {
-    const requiredClips = ['idle', 'walk', 'run', 'crouch-walking'];
+    const requiredClips = ['idle-shooting', 'walk', 'run', 'crouch-walking'];
     for (const clip of requiredClips) {
       expect(animationNames).toContain(clip);
     }
   });
 
   it('has required action clips', () => {
-    const requiredClips = ['jump', 'kneel', 'dying', 'shooting', 'hit-reaction'];
+    const requiredClips = ['jump', 'kneel', 'dying', 'reloading', 'reloading-kneel', 'shooting', 'hit-reaction'];
     for (const clip of requiredClips) {
       expect(animationNames).toContain(clip);
     }

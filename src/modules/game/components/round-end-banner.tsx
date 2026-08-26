@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 import { useRoundStore } from '../state/round-store';
 

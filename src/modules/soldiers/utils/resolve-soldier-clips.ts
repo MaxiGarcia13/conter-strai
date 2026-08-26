@@ -12,6 +12,7 @@ export interface ResolvedSoldierClips {
   kneel: AnimationClip;
   dying: AnimationClip;
   reloading?: AnimationClip;
+  reloadingKneel?: AnimationClip;
   shooting?: AnimationClip;
   hitReaction?: AnimationClip;
 }
@@ -26,7 +27,7 @@ const CLIP_KEYS = [
   'dying',
 ] as const;
 
-const OPTIONAL_KEYS = ['reloading', 'shooting', 'hitReaction'] as const;
+const OPTIONAL_KEYS = ['reloading', 'reloadingKneel', 'shooting', 'hitReaction'] as const;
 
 // In-place playback: strip horizontal root motion from locomotion clips only.
 const STRIP_HIPS_KEYS: readonly (keyof ResolvedSoldierClips)[] = [

@@ -14,7 +14,7 @@ import { disableSkinnedMeshCulling, getSoldierArmature, soldierScaleVector } fro
 import { resolveLocalPlayerPose } from '@/modules/soldiers/utils/resolve-soldier-pose';
 import { WeaponAttach } from '@/modules/weapons/components/weapon-attach';
 import { LOCAL_PLAYER_ENTITY_ID, LOCAL_PLAYER_ROOT_NAME, MODEL_FORWARD_YAW_OFFSET } from '../constants/player';
-import { clearPlayerPoseIf, getCameraMode, getPlayerLocomotion, getPlayerPose, getPlayerTransform, setBodyAnchorY } from '../state/player-state';
+import { clearPlayerPoseIf, getCameraMode, getPlayerLocomotion, getPlayerPose, getPlayerTransform, setBodyAnchorY, setPlayerPose } from '../state/player-state';
 import { placeCameraAtHead } from '../utils/fps-head-camera';
 
 interface LocalPlayerProps {
@@ -23,6 +23,13 @@ interface LocalPlayerProps {
 
 // Stable identity: the locomotion mixer captures it once in its mount effect.
 const clearJumpPose = () => clearPlayerPoseIf('jump');
+function clearReloadingPose() {
+  const pose = getPlayerPose();
+  clearPlayerPoseIf('reloading');
+  if (pose === 'reloadingKneel') {
+    setPlayerPose('kneel');
+  }
+}
 const clearShootingPose = () => clearPlayerPoseIf('shooting');
 function clearInterruptedPoses() {
   clearPlayerPoseIf('shooting');
@@ -74,6 +81,7 @@ export function LocalPlayer({ skinId = 'swat-1' }: LocalPlayerProps) {
       getLocomotionState: getPlayerLocomotion,
       getPose: () => resolveLocalPlayerPose(getPlayerPose(), LOCAL_PLAYER_ENTITY_ID),
       onJumpFinished: clearJumpPose,
+      onReloadingFinished: clearReloadingPose,
       onShootingFinished: clearShootingPose,
       onHitReactionStarted: clearInterruptedPoses,
     },

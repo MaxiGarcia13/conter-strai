@@ -19,13 +19,15 @@ const EXPECTED_URLS: Record<keyof typeof soldierSkins, string> = {
 };
 
 const SHARED_CLIP_MAP = {
-  idle: 'idle',
+  idle: 'idle-shooting',
   walk: 'walk',
   run: 'run',
   crouchWalking: 'crouch-walking',
   jump: 'jump',
   kneel: 'kneel',
   dying: 'dying',
+  reloading: 'reloading',
+  reloadingKneel: 'reloading-kneel',
   shooting: 'shooting',
   hitReaction: 'hit-reaction',
 };

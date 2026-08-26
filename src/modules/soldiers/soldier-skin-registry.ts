@@ -4,13 +4,15 @@ import { useGLTF } from '@react-three/drei';
 const SHARED_ANIMATIONS_URL = '/assets/characters/shared/base-animations.glb';
 
 const SHARED_CLIP_MAP = {
-  idle: 'idle',
+  idle: 'idle-shooting',
   walk: 'walk',
   run: 'run',
   crouchWalking: 'crouch-walking',
   jump: 'jump',
   kneel: 'kneel',
   dying: 'dying',
+  reloading: 'reloading',
+  reloadingKneel: 'reloading-kneel',
   shooting: 'shooting',
   hitReaction: 'hit-reaction',
 } as const;

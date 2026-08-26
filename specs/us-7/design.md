@@ -2,92 +2,90 @@
 
 Depends on **US-6** _(shipped)_ skins (`remy` / `james` / `liza`, `swat-1` / `swat-2` / `swat-3`) and shared idle for character preview. Does not own animation retarget or crouch-walk.
 
-Local-first: create/join/lobby work without a game server. US-5 wires the same routes to Colyseus rooms.
+Local-first: create/join/waiting work without a game server. US-5 wires the same room routes to Colyseus rooms.
 
 ## Routing
 
 ```mermaid
 flowchart TD
-  Landing["/ Landing"]
-  Create["/create Arena team avatar"]
-  Join["/join Code team avatar"]
-  Lobby["/lobby Waiting room"]
-  Play["/play Match"]
+  Landing["/"]
+  Create["/room create"]
+  Wait["/room/roomId wait"]
+  Join["/room/roomId/join"]
+  Play["/room/roomId/play"]
 
   Landing -->|"Create Room"| Create
-  Landing -->|"Join Room"| Join
-  Create -->|"Create Room CTA"| Lobby
-  Join -->|"Join Room CTA"| Lobby
-  Lobby -->|"Play"| Play
-  Lobby -->|"Invite URL / QR"| Join
+  Landing -->|"Join Room enter code"| Join
+  Create -->|"Create"| Wait
+  Join -->|"after pick"| Wait
+  Wait -->|"invite URL / QR"| Join
+  Wait -->|"Play"| Play
 ```
 
-| Route     | Astro page               | Island notes                                                 |
-| --------- | ------------------------ | ------------------------------------------------------------ |
-| `/`       | `src/pages/index.astro`  | Dual CTAs: Create Room, Join Room                            |
-| `/create` | `src/pages/create.astro` | React island; R3F only for character turntable               |
-| `/join`   | `src/pages/join.astro`   | React island; R3F for avatar preview; prefill `?room=`       |
-| `/lobby`  | `src/pages/lobby.astro`  | DOM-only island OK (share input, QR, Play) — no R3F required |
-| `/play`   | existing                 | Boot from query params                                       |
+| Route                 | Astro page                            | Island notes                                                      |
+| --------------------- | ------------------------------------- | ----------------------------------------------------------------- |
+| `/`                   | `src/pages/index.astro`               | **Create Room** → `/room`; **Join Room** → code entry → join path |
+| `/room`               | `src/pages/room/index.astro`          | React island; R3F for character turntable                         |
+| `/room/[roomId]`      | `src/pages/room/[roomId]/index.astro` | DOM-only island OK (share, QR, Play)                              |
+| `/room/[roomId]/join` | `src/pages/room/[roomId]/join.astro`  | React island; R3F for avatar preview; no arena pick               |
+| `/room/[roomId]/play` | `src/pages/room/[roomId]/play.astro`  | Game canvas island; boot from `sessionStorage`                    |
+| `/play`               | `src/pages/play.astro` (legacy)       | e2e/dev probes (`?skin=`) until Playwright migrates               |
 
-Invalid / missing params on `/play`: defaults `civilian`, `remy`, `arena-01` with team↔skin consistency (civilian → `remy`, soldier → `swat-1`).
+Invalid / missing session on play: defaults `civilian`, `remy`, `arena-01` with team↔skin consistency (civilian → `remy`, soldier → `swat-1`).
 
-## Session query params
+## Session storage
 
-### `/lobby`
+Waiting URL stays clean (`/room/{roomId}` — no team/skin in the shareable wait link). After create or join picks, write:
 
-| Param      | Type               | Notes                                                             |
-| ---------- | ------------------ | ----------------------------------------------------------------- |
-| `mode`     | `create` \| `join` | Controls back-link and copy                                       |
-| `room`     | string             | Local id (create) or opaque code (join)                           |
-| `team`     | `Team`             | Local player team                                                 |
-| `skin`     | `SoldierSkinId`    | Local player skin                                                 |
-| `scenario` | `ScenarioId`       | Set on create; join defaults to `arena-01` until host sync (US-5) |
+```
+sessionStorage[`cs:room:${roomId}`] = {
+  team: Team;
+  skin: SoldierSkinId;
+  scenario: ScenarioId;   // create: chosen; join: arena-01 until host sync (US-5)
+  role: 'host' | 'guest';
+}
+```
 
-### `/play`
+`/room/{roomId}/play` reads that key. Missing or invalid → defaults above.
 
-| Param      | Type            | Effect                                     |
-| ---------- | --------------- | ------------------------------------------ |
-| `team`     | `Team`          | `resolveLocalSpawn` uses that team’s slots |
-| `skin`     | `SoldierSkinId` | `LocalPlayer` / model skin                 |
-| `scenario` | `ScenarioId`    | `getScenarioById` (today only `arena-01`)  |
-
-Local play **respects** the selected team once play boot lands. Networked assign may override (US-5).
+Invite URL (share + QR) is path-only: `{origin}/room/{roomId}/join`.
 
 ## Landing
 
-Replace single **Start Game** on `index.astro` with **Create Room** → `/create` and **Join Room** → `/join`. Keep brand / hero composition; one job for the CTA group.
+Replace single **Start Game** with:
 
-## Create room (`/create`)
+- **Create Room** → `/room`
+- **Join Room** — room-code field (inline or focused control on landing); continue → `/room/{code}/join`
+
+Keep brand / hero composition; one job for the CTA group. No separate `/join` page.
+
+## Create room (`/room`)
 
 One job per section:
 
 1. **Arena** — cards from scenario registry: display name + `previewImageUrl` or placeholder
 2. **Team** — Civilian | Soldier
 3. **Avatar** — skins filtered by team; R3F preview (selected `.glb` + shared idle, slow yaw/orbit)
-4. **Create Room** — primary CTA → `/lobby?mode=create&room=<localId>&team=&skin=&scenario=`
+4. **Create Room** — generate short random room id (client-side), write session (`role: 'host'`), navigate to `/room/{roomId}`
 
-Room id: short random string generated client-side (no server).
+## Join room (`/room/[roomId]/join`)
 
-## Join room (`/join`)
+1. **Team** + **Avatar** — same pickers / idle preview as create; joiner does **not** pick arena (“Host arena — synced later”)
+2. Confirm — write session (`role: 'guest'`, `scenario: 'arena-01'` until US-5), navigate to `/room/{roomId}`
 
-1. **Room code** — text field; any non-empty code accepted locally until US-5 validates
-2. **Team** + **Avatar** — same pickers / idle preview as create; joiner does **not** pick arena (“Host arena — synced later”)
-3. **Join Room** → `/lobby?mode=join&room=<code>&team=&skin=` (`scenario` omitted or default `arena-01`)
+Room id comes from the path (invite or landing code entry). Any non-empty id accepted locally until US-5 validates.
 
-When opened as `/join?room=<id>` (invite), prefill the room code field.
+## Waiting room (`/room/[roomId]`)
 
-## Waiting room (`/lobby`)
-
-- Room id/code, local player summary (team, skin name, arena name on create / placeholder on join)
+- Room id, local player summary from session (team, skin name, arena name for host / placeholder for guest)
 - Player list: local user only; empty slots or “Waiting for players…”
-- **Invite share** (required on create; same UI on join for consistency):
-  - Readonly input with absolute invite URL: `{origin}/join?room=<id>`
+- **Invite share**:
+  - Readonly input with `{origin}/room/{roomId}/join`
   - **Copy** control
   - **QR code** encoding that URL (client-side lib or canvas — pick a small dependency at implement time)
-- Until US-5, opening the invite still yields local-only join → lobby alone; URL shape is the contract Colyseus will honor later
-- Primary CTA **Play** → `/play?team=&skin=&scenario=`
-- Secondary: back to `/create` or `/join` from `mode`
+- Until US-5, opening the invite still yields local-only join → waiting alone; URL shape is the contract Colyseus will honor later
+- Primary CTA **Play** → `/room/{roomId}/play`
+- Secondary: back to `/room` (host) or stay on join path as appropriate
 
 ## Scenario registry
 
@@ -110,9 +108,13 @@ ScenarioConfig {
 
 Changing team resets character to that team’s default skin if the current skin is invalid for the new team.
 
+## Legacy `/play`
+
+Keep `src/pages/play.astro` for existing e2e/dev (`/play?skin=`). Product flow uses only `/room/{roomId}/play`. Migrate Playwright smoke to room routes in this US; then legacy may remain as a thin probe alias.
+
 ## Handoff to US-5
 
-US-5 consumes this lobby: wire Create / Join / Play to real Colyseus rooms. US-5.3’s “after Start Game” wording is superseded by Create Room / Join Room / lobby **Play** — see [`specs/us-5/requirements.md`](../us-5/requirements.md).
+US-5 consumes these room routes: wire create / join / play to Colyseus (`joinOrCreate` / `joinById`). See [`specs/us-5/requirements.md`](../us-5/requirements.md) US-5.3.
 
 ## Out of scope
 
@@ -122,3 +124,4 @@ US-5 consumes this lobby: wire Create / Join / Play to real Colyseus rooms. US-5
 - SMS / email invite providers
 - Extra maps (registry already supports more when added)
 - Shared clip pipeline / crouch-walk (shipped US-6)
+- Removing legacy `/play` in this US

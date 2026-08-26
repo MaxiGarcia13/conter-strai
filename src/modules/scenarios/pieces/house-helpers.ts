@@ -1,10 +1,8 @@
-import type { CollisionAxis, CollisionHole, ScenarioFloorZone, ScenarioWallSegment } from '../types';
+import type { ScenarioFloorZone, ScenarioWallSegment, CollisionHole } from '../types';
 import type { WallMaterialId } from './constants';
-import { FLOOR_MATERIAL, WALL_HEIGHT } from './constants';
+import { FLOOR_MATERIAL } from './constants';
 import { floorZone } from './floor-helpers';
-import { wallAlongX, wallAlongZ } from './wall-helpers';
-
-const H = WALL_HEIGHT.full;
+import { collisionHole, wallSegmentsAlongX, wallSegmentsAlongZ } from './wall-segment-helpers';
 
 /** Default doorway / blast-hole width (meters). */
 export const WALL_HOLE_WIDTH = 2.2;
@@ -26,66 +24,6 @@ export interface HouseFootprint {
     east?: HouseSide;
     west?: HouseSide;
   };
-}
-
-function holeWidth(side: HouseSide | undefined): number | null {
-  if (!side || side === 'full') {
-    return null;
-  }
-  return side.hole;
-}
-
-function collisionHole(
-  side: HouseSide | undefined,
-  axis: CollisionAxis,
-  center: [number, number, number],
-  totalLength: number,
-): CollisionHole[] {
-  const width = holeWidth(side);
-  if (width === null || width >= totalLength - 0.6) {
-    return [];
-  }
-  return [{ axis, center, width }];
-}
-
-function wallSegmentsAlongX(
-  z: number,
-  centerX: number,
-  totalLength: number,
-  side: HouseSide | undefined,
-  material: WallMaterialId,
-  idPrefix: string,
-): ScenarioWallSegment[] {
-  const gap = holeWidth(side);
-  if (gap === null || gap >= totalLength - 0.6) {
-    return [wallAlongX(centerX, z, totalLength, H, material, idPrefix)];
-  }
-  const segmentLength = (totalLength - gap) / 2;
-  const offset = segmentLength / 2 + gap / 2;
-  return [
-    wallAlongX(centerX - offset, z, segmentLength, H, material, `${idPrefix}-a`),
-    wallAlongX(centerX + offset, z, segmentLength, H, material, `${idPrefix}-b`),
-  ];
-}
-
-function wallSegmentsAlongZ(
-  x: number,
-  centerZ: number,
-  totalLength: number,
-  side: HouseSide | undefined,
-  material: WallMaterialId,
-  idPrefix: string,
-): ScenarioWallSegment[] {
-  const gap = holeWidth(side);
-  if (gap === null || gap >= totalLength - 0.6) {
-    return [wallAlongZ(x, centerZ, totalLength, H, material, idPrefix)];
-  }
-  const segmentLength = (totalLength - gap) / 2;
-  const offset = segmentLength / 2 + gap / 2;
-  return [
-    wallAlongZ(x, centerZ - offset, segmentLength, H, material, `${idPrefix}-a`),
-    wallAlongZ(x, centerZ + offset, segmentLength, H, material, `${idPrefix}-b`),
-  ];
 }
 
 /** Floor zone + perimeter walls with optional small holes per side. */

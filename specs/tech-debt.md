@@ -70,7 +70,7 @@ Unchecked how-tos for the hotspots above. `LocalPlayer` / `SoldierModel` size is
   1. Move `segmentWall` / `outerWalls` into `scenarios/utils/` (or `pieces/`).
   2. Leave `ScenarioWalls` as the R3F component that maps scenario config → those builders + materials.
 
-- [ ] **Extract house wall-segment helpers** — `src/modules/scenarios/pieces/house-helpers.ts`
+- [x] **Extract house wall-segment helpers** — `src/modules/scenarios/pieces/house-helpers.ts`
   1. Move `wallSegmentsAlongX` / `wallSegmentsAlongZ` / hole math into `wall-segment-helpers.ts` (or similar).
   2. Keep `buildHouses` / `HouseFootprint` as the public map-authoring API.
 

@@ -148,17 +148,17 @@ Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-stat
 
 ### Locomotion / actions
 
-| Input        | Clip             | Notes                                                       |
-| ------------ | ---------------- | ----------------------------------------------------------- |
-| Stand still  | `idle`           | Default                                                     |
-| WASD         | `walk`           | In-place; hips translation stripped                         |
-| WASD + Space | `run`            | Faster move + run clip                                      |
-| **E**               | `kneel`          | Toggle; `LoopOnce` + clamp; WASD does **not** clear kneel   |
-| Kneel + WASD        | `crouch-walking` | Loop; walk-speed; kneel pose kept                           |
-| Kneel + WASD+Space  | `run`            | Run speed + stand run clip; kneel pose kept → resumes on stop |
-| **F**               | `jump`           | One-shot; animation-only (no Y physics); clears kneel first |
-| **R**               | `reloading`      | One-shot; stand+idle or `reloading-kneel`; WASD cancels     |
-| **LMB**             | —                | Hitscan pistol (no `shooting` pose until a shippable clip)  |
+| Input              | Clip             | Notes                                                         |
+| ------------------ | ---------------- | ------------------------------------------------------------- |
+| Stand still        | `idle`           | Default                                                       |
+| WASD               | `walk`           | In-place; hips translation stripped                           |
+| WASD + Space       | `run`            | Faster move + run clip                                        |
+| **E**              | `kneel`          | Toggle; `LoopOnce` + clamp; WASD does **not** clear kneel     |
+| Kneel + WASD       | `crouch-walking` | Loop; walk-speed; kneel pose kept                             |
+| Kneel + WASD+Space | `run`            | Run speed + stand run clip; kneel pose kept → resumes on stop |
+| **F**              | `jump`           | One-shot; animation-only (no Y physics); clears kneel first   |
+| **R**              | `reloading`      | One-shot; stand+idle or `reloading-kneel`; WASD cancels       |
+| **LMB**            | —                | Hitscan pistol (no `shooting` pose until a shippable clip)    |
 
 Priority: blocking one-shots (`reloading` / `reloading-kneel` > `jump`) → kneel + run → run → kneel + walk → crouch-walk → kneel + idle → locomotion → **`dying`** on elimination. Optional `shooting` is mixer-ready but not triggered.
 

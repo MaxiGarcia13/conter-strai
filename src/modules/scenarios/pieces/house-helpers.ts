@@ -1,4 +1,4 @@
-import type { ScenarioFloorZone, ScenarioWallSegment, CollisionHole } from '../types';
+import type { CollisionHole, ScenarioFloorZone, ScenarioWallSegment } from '../types';
 import type { WallMaterialId } from './constants';
 import { FLOOR_MATERIAL } from './constants';
 import { floorZone } from './floor-helpers';

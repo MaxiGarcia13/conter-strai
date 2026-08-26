@@ -3,15 +3,15 @@ import { expect, test } from '@playwright/test';
 import {
   captureConsoleErrors,
   expectNoConsoleErrors,
-  navigateToPlay,
+  navigateToRoomPlay,
   waitForCanvas,
   waitForPlayTest,
 } from './test-helpers';
 
-test('/play loads the scene and settles its assets', async ({ page }) => {
+test('room play loads the scene and settles its assets', async ({ page }) => {
   const consoleErrors = captureConsoleErrors(page);
 
-  await navigateToPlay(page);
+  await navigateToRoomPlay(page);
   await expect(page.locator('[data-testid="play-loader"]')).toBeVisible();
   await waitForCanvas(page);
 

@@ -21,7 +21,7 @@ Post type-split: client game modules stay free of Colyseus imports — use `src/
 - [ ] `RemotePlayer` component (skin from `getSoldierSkinById`; hitboxes from combat preset when needed)
 - [ ] Wire local FPS transform sync through adapter (not direct Colyseus in `game/`)
 - [ ] Wire `useShooting` → `sendShot`; apply **server** HP / eliminated updates (client combat math becomes prediction-only or removed for HP)
-- [ ] Init Colyseus join on `/play` mount
+- [ ] Init Colyseus join on `/room/{id}/play` mount
 - [ ] Cap room at 2–8 players; assign Civilians / Soldiers on server
 
 ## Verification

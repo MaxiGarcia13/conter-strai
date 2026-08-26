@@ -3,7 +3,7 @@
 ## Stack
 
 - **Astro 7** — pages, layout; **Node.js adapter** (`@astrojs/node`, `output: 'server'`) for multiplayer (US-5)
-- **Three.js** via **@react-three/fiber** + **drei** — game island on `/play`
+- **Three.js** via **@react-three/fiber** + **drei** — game island on `/room/{id}/play`
 - **Zustand** — game session, health, players, round state
 - **Tailwind 4** — landing UI + HUD
 - **[Colyseus](https://colyseus.io/framework/)** — real-time rooms, Schema sync, matchmaking (US-5)
@@ -51,8 +51,10 @@ Weapon registry lives in `src/modules/weapons/` (`weapon-registry.ts`, `PistolWe
 ```
 src/
 ├── pages/index.astro     Landing (hero, CTA, GitHub footer) — Astro-only
+├── pages/room/           Create / join / wait / play (US-7)
 ├── components/           Shared Astro UI (GithubIcon, …)
 ├── modules/
+│   ├── lobby/            Room session, create/join/wait islands, invite share + QR
 │   ├── game/             Session shell, GameCanvas, FPS controls, HUD, round state
 │   ├── scenarios/        Config-driven maps (arena-01); team spawn points
 │   ├── soldiers/         Skin registry, model, locomotion
@@ -96,19 +98,43 @@ Shipped 2026-08-23 — see [CHANGELOG](../CHANGELOG.md#shipped--other).
 | Files  | `src/pages/index.astro`, `src/layouts/base-layout.astro`, `src/components/GithubIcon.astro`, `src/styles/global.css`               |
 | Layout | Full-viewport: status strip → hero (copy + CTA left, `cs.png` right) → footer; stack on mobile                                     |
 | Theme  | Near-black surfaces; CS amber accent (`--accent`); `.game-atmosphere` vignette/glow; Barlow Condensed + Rajdhani + Share Tech Mono |
-| CTA    | **Start Game** → `/play` (high-contrast accent clip-path button)                                                                   |
+| CTA    | **Create Room** → `/room`; **Join Room** → `/room/join`                                                                            |
 | Footer | **Contribute on GitHub** → repo from `package.json` `homepage` (opens in new tab; `GithubIcon`)                                    |
 | SEO    | Title, description, OG/Twitter image (`/cs.png`), dark `theme-color`, favicon `/conter-strai.png`                                  |
 | Bundle | Astro-only — no Three.js / R3F on this route                                                                                       |
 
 ## Routes
 
-| Route   | Owner                                                 |
-| ------- | ----------------------------------------------------- |
-| `/`     | Astro landing — no Three.js                           |
-| `/play` | Astro shell + R3F `GameCanvas` island (`client:load`) |
+| Route                 | Owner                                                                 |
+| --------------------- | --------------------------------------------------------------------- |
+| `/`                   | Astro landing — no Three.js                                           |
+| `/room`               | Create room (team / skin / arena + R3F preview)                       |
+| `/room/join`          | Join by typed room id + team / skin                                   |
+| `/room/[roomId]`      | Waiting room (invite URL, copy, QR, Play)                             |
+| `/room/[roomId]/join` | Invite join (room id from path)                                       |
+| `/room/[roomId]/play` | Game canvas — boot from `sessionStorage`                              |
 
-## Play island (`/play`) — shipped US-2
+## Match lobby — shipped US-7
+
+Local-first pre-play lobby (`src/modules/lobby/`). No Colyseus yet — US-5 wires these routes to rooms.
+
+```
+sessionStorage[`cs:room:${roomId}`] = {
+  team: Team;
+  skin: SoldierSkinId;
+  scenario: ScenarioId;   // create: chosen; join: arena-01 until host sync (US-5)
+  role: 'host' | 'guest';
+}
+```
+
+| Skin ↔ team | Defaults |
+| ----------- | -------- |
+| civilian → `remy` / `james` / `liza` | `remy` |
+| soldier → `swat-1` / `swat-2` / `swat-3` | `swat-1` |
+
+Missing/invalid play session → `civilian` + `remy` + `arena-01` with team↔skin consistency. Invite URL is path-only: `{origin}/room/{roomId}/join`. `ScenarioConfig.previewImageUrl` optional (`arena-01` null until art). Civilian east spawn required for civilian pick.
+
+## Play island (`/room/.../play`) — shipped US-2 + US-7 boot
 
 Units: **1 world unit = 1 meter**.
 
@@ -135,7 +161,7 @@ Units: **1 world unit = 1 meter**.
 
 ### Camera modes (**C**)
 
-Default on `/play` boot: **over-the-shoulder**. Cycle with **C**: FPS → OTS → TPS → …
+Default on play boot: **over-the-shoulder**. Cycle with **C**: FPS → OTS → TPS → …
 
 | Mode                  | Role                                                                                                   |
 | --------------------- | ------------------------------------------------------------------------------------------------------ |
@@ -181,7 +207,7 @@ Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`
 | Layer          | Scope                                                                                                                            |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | **Vitest**     | Registries; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide  |
-| **Playwright** | `/play` default `remy`; room play for other skins; no `PropertyBinding` errors; kneel + WASD stays crouched; optional `__PLAY_TEST__` hook |
+| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; optional `__PLAY_TEST__` hook |
 
 ## Characters — shipped US-6
 
@@ -192,7 +218,7 @@ Locomotion and action clips load from `/assets/characters/shared/base-animations
 | `remy`, `james`, `liza`      | civilian | `/assets/characters/civilians/<id>.glb` |
 | `swat-1`, `swat-2`, `swat-3` | soldier  | `/assets/characters/soldiers/<id>.glb`  |
 
-Default `/play` skin is `remy` (civilian team, east spawn). Non-default skins boot from room session on `/room/{roomId}/play`.
+Default play skin from session is `remy` (civilian, east spawn) when unset; non-default skins come from room session on `/room/{roomId}/play`.
 
 **Skeleton contract:** Mixamo `Armature` with bone names `mixamorig:*` (colon form). Vendor exports with numbered prefixes (`mixamorig9:`, …) are rewritten in-asset (`npm run assets:normalize-characters`) so shared-pack tracks and aim/FPS lookups bind.
 
@@ -253,7 +279,7 @@ useShooting (raycast) → hit zone from mesh userData
 
 ## PvP loop — shipped US-4
 
-Local team-elimination on `/play`. Colyseus authority stays US-5.
+Local team-elimination on `/room/.../play`. Colyseus authority stays US-5.
 
 ### Round service (`game/state/round-store.ts`)
 
@@ -263,7 +289,7 @@ checkRoundEnd() → if all civilians eliminated OR all soldiers eliminated → e
 endRound(winner) → RoundPhase 'round-end', winner banner (no local auto-restart; US-5 owns the next round)
 ```
 
-Local player occupies the default civilian slot (`remy`) on legacy `/play`; remaining spawns are `ScenarioSoldiers` NPCs (opposing-team dummies until US-5). Room play overrides local team/skin from session.
+Local player occupies the session skin/team (default civilian `remy`); remaining spawns are `ScenarioSoldiers` NPCs (opposing-team dummies until US-5).
 
 When `HealthState.isEliminated`, FPS move/look/shoot is disabled and pointer lock is released until the next `startRound()`.
 

@@ -3,15 +3,15 @@ import { expect, test } from '@playwright/test';
 import {
   captureConsoleErrors,
   expectNoConsoleErrors,
-  navigateToPlay,
+  navigateToRoomPlay,
   readPlayTest,
   waitForCanvas,
   waitForPlayTest,
 } from './test-helpers';
 
-test('/play changes the local soldier animation with movement input', async ({ page }) => {
+test('room play changes the local soldier animation with movement input', async ({ page }) => {
   const consoleErrors = captureConsoleErrors(page);
-  await navigateToPlay(page);
+  await navigateToRoomPlay(page);
   await waitForCanvas(page);
   await waitForPlayTest(page);
 

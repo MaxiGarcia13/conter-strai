@@ -27,11 +27,6 @@ export function captureConsoleErrors(page: Page): string[] {
   return consoleErrors;
 }
 
-/** Legacy `/play` probe — default civilian `remy` (no query params). */
-export async function navigateToPlay(page: Page): Promise<void> {
-  await page.goto('/play');
-}
-
 /** Room play boot with a seeded session (team/skin/scenario). */
 export async function navigateToRoomPlay(
   page: Page,

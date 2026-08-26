@@ -4,10 +4,10 @@
 
 | Layer       | Choice                                      | Role                                                                                                  |
 | ----------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Astro       | `@astrojs/node` adapter, `output: 'server'` | HTTP pages (`/`, `/play`) + Node process — **already configured**                                     |
+| Astro       | `@astrojs/node` adapter, `output: 'server'` | HTTP pages (`/`, `/room/...`) + Node process — **already configured**                                     |
 | Multiplayer | [Colyseus](https://colyseus.io/framework/)  | Rooms, Schema state sync, matchmaking, messages                                                       |
 | Client SDK  | `@colyseus/sdk`                             | `joinOrCreate`, listen to state, `room.send`                                                          |
-| Game UI     | R3F island on `/play`                       | Consumes `multiplayer/` adapter only — no Colyseus imports in combat / scenarios / soldiers / weapons |
+| Game UI     | R3F island on `/room/{id}/play`             | Consumes `multiplayer/` adapter only — no Colyseus imports in combat / scenarios / soldiers / weapons |
 
 Client domains reuse post type-split contracts: `HealthState` / `HitZone` (combat), `RoundPhase` (game), `Team`, `SoldierSkin`, `PistolWeaponConfig`.
 
@@ -15,7 +15,7 @@ Client domains reuse post type-split contracts: `HealthState` / `HitZone` (comba
 
 ```mermaid
 flowchart LR
-  Browser["Browser /play"]
+  Browser["Browser /room/.../play"]
   AstroNode["Astro Node server"]
   Colyseus["Colyseus Room"]
   Browser -->|"HTTP pages"| AstroNode

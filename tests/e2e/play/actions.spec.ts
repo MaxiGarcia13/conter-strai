@@ -3,16 +3,15 @@ import { expect, test } from '@playwright/test';
 import {
   captureConsoleErrors,
   expectNoConsoleErrors,
-  navigateToPlay,
   navigateToRoomPlay,
   readPlayTest,
   waitForCanvas,
   waitForPlayTest,
 } from './test-helpers';
 
-test('/play plays jump on F; kneel + WASD crouch-walks; kneel + Space runs then resumes kneel', async ({ page }) => {
+test('room play: jump on F; kneel + WASD crouch-walks; kneel + Space runs then resumes kneel', async ({ page }) => {
   const consoleErrors = captureConsoleErrors(page);
-  await navigateToPlay(page);
+  await navigateToRoomPlay(page);
   await waitForCanvas(page);
   await waitForPlayTest(page);
 

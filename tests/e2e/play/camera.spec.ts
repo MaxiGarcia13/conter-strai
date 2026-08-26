@@ -3,16 +3,16 @@ import { expect, test } from '@playwright/test';
 import {
   captureConsoleErrors,
   expectNoConsoleErrors,
-  navigateToPlay,
+  navigateToRoomPlay,
   readPlayTest,
   waitForCanvas,
   waitForPlayTest,
 } from './test-helpers';
 
-test('/play cycles camera modes without duplicating the local soldier', async ({ page }) => {
+test('room play cycles camera modes without duplicating the local soldier', async ({ page }) => {
   const consoleErrors = captureConsoleErrors(page);
 
-  await navigateToPlay(page);
+  await navigateToRoomPlay(page);
   await waitForCanvas(page);
   const atSpawn = await waitForPlayTest(page);
 

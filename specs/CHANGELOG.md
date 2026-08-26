@@ -12,7 +12,6 @@
 | US | Summary |
 |----|---------|
 | **US-5** | Colyseus multiplayer (Astro Node adapter) + team rounds |
-| **US-7** | Match select (team / character / arena) |
 
 ## Shipped
 
@@ -23,6 +22,7 @@
 | **US-3** | Health & zone damage — weapon profiles, hitboxes, HUD bar, round-permanent elimination + `dying` clip |
 | **US-4** | Local PvP loop — pistol hitscan, teams, wipe banner, hand-attached pistol, reload clips. **`shooting` pose on LMB deferred** (no shippable fire clip) |
 | **US-6** | Shared animation pack, six skins (`remy` / `james` / `liza` + `swat-1` / `swat-2` / `swat-3`), crouch-walk |
+| **US-7** | Match lobby — `/room` create / join / wait / play; sessionStorage; invite URL + QR; team/skin/arena boot (legacy `/play` removed) |
 
 ## Shipped — other
 

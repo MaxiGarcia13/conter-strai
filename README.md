@@ -6,16 +6,16 @@ Browser-based tactical shooter inspired by Counter-Strike. **Civilians** vs **So
 
 ## Status
 
-**Status:** US-1–US-4 and US-6 are shipped. Match select (US-7) and Colyseus multiplayer (US-5) are open — see [CHANGELOG](./specs/CHANGELOG.md).
+**Status:** US-1–US-4, US-6, and US-7 are shipped. Colyseus multiplayer (US-5) is open — see [CHANGELOG](./specs/CHANGELOG.md).
 
 | Feature                                                               | State              |
 | --------------------------------------------------------------------- | ------------------ |
-| Landing (`/`) — hero, theme, Start Game CTA, GitHub contribute footer | Done (US-1)        |
-| 3D arena + FPS movement (`/play`)                                     | Done (US-2)        |
+| Landing (`/`) — hero, theme, Create/Join Room CTAs, GitHub footer     | Done (US-1 + US-7) |
+| 3D arena + FPS movement                                               | Done (US-2)        |
 | Zone damage & difficulty                                              | Done (US-3)        |
 | Shared skins + animation pack                                         | Done (US-6)        |
 | Round-based PvP (pistol, teams, reload)                               | Done (US-4)        |
-| Match select (team / character / arena)                               | In progress (US-7) |
+| Match lobby (`/room` create / join / wait / play)                     | Done (US-7)        |
 | Online sync via Colyseus (Astro Node)                                 | In progress (US-5) |
 
 ## Game rules (MVP)
@@ -82,7 +82,7 @@ src/
     teams/          # Civilians / Soldiers
     textures/       # PBR map assets
     props/          # Scenario prop registry (stub)
-  pages/            # Routes (`/` landing, `/play`, …)
+  pages/            # Routes (`/` landing, `/room/...`, …)
   styles/           # Global CSS / design tokens
 specs/
   current/          # Living product contract (design, tasks)

@@ -7,6 +7,7 @@ import { SkeletonUtils } from 'three-stdlib';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { beforeAll, describe, expect, it } from 'vitest';
 
+import { soldierSkins } from '@/modules/soldiers/soldier-skin-registry';
 import { applySoldierAimPose, resolveSoldierAimRig } from '@/modules/soldiers/utils/aim-body-rig';
 import {
   DEFAULT_PISTOL_GRIP_ROTATION,
@@ -63,9 +64,10 @@ describe('pistol grip alignment', () => {
       throw new Error('aim rig missing from swat-1 clone');
     }
 
-    const idleClip = animations.animations.find((clip) => clip.name === 'idle');
+    const idleClipName = soldierSkins['swat-1'].meshData.animations.idle;
+    const idleClip = animations.animations.find((clip) => clip.name === idleClipName);
     if (!idleClip) {
-      throw new Error('idle clip missing from base-animations.glb');
+      throw new Error(`${idleClipName} clip missing from base-animations.glb`);
     }
 
     const mixer = new AnimationMixer(clone);

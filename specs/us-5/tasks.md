@@ -10,7 +10,7 @@ Lobby REST wraps Colyseus `matchMaker`; presence and play stay on WebSocket. See
 
 ## Astro Node + Colyseus server
 
-- [ ] Add `colyseus`, `@colyseus/schema`, `@colyseus/sdk`
+- [x] Add `colyseus`, `@colyseus/schema`, `@colyseus/sdk`
 - [ ] Define `MatchState` / `PlayerState` Schema (`hp`, `eliminated`, `team`, `skin`, transform) aligned with `HealthState` + `Team`
 - [ ] Implement single `MatchRoom` (`waiting` → `in_progress` → `ended`; join, leave, move, shot, round end / reset) under `src/modules/multiplayer/rooms/`
 - [ ] Enforce `maxClients: 8` and `maxPerTeam: 4` in `onJoin` / team assignment

@@ -33,6 +33,9 @@
   },
   "dependencies": {
     "@astrojs/node": "^11.1.4",
+    "@colyseus/react": "^0.18.2",
+    "@colyseus/schema": "^5.0.20",
+    "@colyseus/sdk": "^0.18.2",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
     "@tailwindcss/vite": "^4.3.3",

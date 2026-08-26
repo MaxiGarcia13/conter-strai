@@ -10,15 +10,13 @@ import {
   RUN_SPEED,
 } from '../constants/player';
 import { usePressedKeyCodes } from '../hooks/use-pressed-key-codes';
+import { axesFromPressedCodes } from '../utils/axes-from-pressed-codes';
+import { MOVE_CODES } from '../utils/move-codes';
 import { requestPointerLock } from '../utils/request-pointer-lock';
 import { toggleFreeCamera } from './free-camera-state';
 import { useFreeCamera } from './use-free-camera';
 
-const MOVE = {
-  forward: 'KeyW',
-  back: 'KeyS',
-  left: 'KeyA',
-  right: 'KeyD',
+const FREE_CAM_KEYS = {
   up: 'KeyE',
   down: 'KeyQ',
   boost: 'ShiftLeft',
@@ -51,7 +49,7 @@ export function DevFreeCamera() {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.repeat || event.code !== MOVE.toggle) {
+      if (event.repeat || event.code !== FREE_CAM_KEYS.toggle) {
         return;
       }
       toggleFreeCamera();
@@ -131,26 +129,13 @@ export function DevFreeCamera() {
     }
 
     const delta = Math.min(rawDelta, MAX_FRAME_DELTA_SECONDS);
-    let strafe = 0;
-    let forward = 0;
+    const { strafe, forward } = axesFromPressedCodes(pressed, MOVE_CODES);
     let vertical = 0;
 
-    if (pressed.has(MOVE.forward)) {
-      forward += 1;
-    }
-    if (pressed.has(MOVE.back)) {
-      forward -= 1;
-    }
-    if (pressed.has(MOVE.left)) {
-      strafe -= 1;
-    }
-    if (pressed.has(MOVE.right)) {
-      strafe += 1;
-    }
-    if (pressed.has(MOVE.up)) {
+    if (pressed.has(FREE_CAM_KEYS.up)) {
       vertical += 1;
     }
-    if (pressed.has(MOVE.down)) {
+    if (pressed.has(FREE_CAM_KEYS.down)) {
       vertical -= 1;
     }
 
@@ -158,7 +143,7 @@ export function DevFreeCamera() {
       return;
     }
 
-    const boost = pressed.has(MOVE.boost) || pressed.has(MOVE.boostAlt);
+    const boost = pressed.has(FREE_CAM_KEYS.boost) || pressed.has(FREE_CAM_KEYS.boostAlt);
     const speed = (boost ? FLY_BOOST : FLY_SPEED) * delta;
     const inputLength = Math.hypot(strafe, forward, vertical) || 1;
 

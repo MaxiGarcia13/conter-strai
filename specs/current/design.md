@@ -26,8 +26,8 @@ stateDiagram-v2
 
 ## Teams
 
-| Team      | ID         | Motif                                                            |
-| --------- | ---------- | ---------------------------------------------------------------- |
+| Team      | ID         | Motif                                                                            |
+| --------- | ---------- | -------------------------------------------------------------------------------- |
 | Civilians | `civilian` | Irregular / non-military side — default play skin `remy` (also `james` / `liza`) |
 | Soldiers  | `soldier`  | Military side — `swat-1` / `swat-2` / `swat-3`                                   |
 
@@ -137,13 +137,14 @@ Units: **1 world unit = 1 meter**.
 
 Default on `/play` boot: **over-the-shoulder**. Cycle with **C**: FPS → OTS → TPS → …
 
-| Mode                  | Role                                                                                        |
-| --------------------- | ------------------------------------------------------------------------------------------- |
-| **First-person**      | Camera on head bone; head mesh hidden; spine pitch follows look; same clone (no view-model) |
-| **Over-the-shoulder** | Close behind right shoulder (~1.75 m back, ~1.55 m up) — **default**                        |
-| **Third-person**      | Farther behind/above (~3.6 m back, ~2.4 m up)                                               |
+| Mode                  | Role                                                                                                   |
+| --------------------- | ------------------------------------------------------------------------------------------------------ |
+| **First-person**      | Camera on head bone; head mesh hidden; spine pitch follows look; same clone (no view-model)            |
+| **Over-the-shoulder** | Close behind right shoulder (~1.75 m back, ~1.55 m up) — **default**                                   |
+| **Third-person**      | Farther behind/above (~3.6 m back, ~2.4 m up)                                                          |
+| **Free (dev)**        | **V** toggles; ghost fly (WASD + click-to-look, Q/E up/down, Shift boost); no collision; player frozen |
 
-Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-state.ts`). OTS/TPS boom height rides head-bone world Y after mixer update.
+Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-state.ts`). OTS/TPS boom height rides head-bone world Y after mixer update. Free-cam + Playwright probe live under `game/dev/` and are **lazy-loaded only when `import.meta.env.DEV`** (absent from production bundles). Production pauses for any R3F `controls` owner — no free-cam import.
 
 ### Locomotion / actions
 

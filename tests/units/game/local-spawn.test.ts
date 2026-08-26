@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
 import { resolveLocalSpawn } from '@/modules/game/utils/local-spawn';
+import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
 
 describe('resolveLocalSpawn', () => {
   it('claims the default civilian slot on arena-01', () => {

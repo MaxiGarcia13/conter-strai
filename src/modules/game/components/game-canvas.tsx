@@ -1,7 +1,6 @@
 import type { PlayLoaderState } from './play-loader';
 import type { ScenarioId } from '@/modules/scenarios';
 import { Canvas } from '@react-three/fiber';
-
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { HealthBar } from '@/modules/combat';
 import {
@@ -9,6 +8,7 @@ import {
   ScenarioScene,
   ScenarioSoldiers,
 } from '@/modules/scenarios';
+import { LazyDevGameChrome, LazyDevSceneTools } from '../dev';
 import { useRoundStore } from '../state/round-store';
 import { resolveLocalSpawn } from '../utils/local-spawn';
 import { resolvePlaySkinId } from '../utils/resolve-play-skin-id';
@@ -18,7 +18,6 @@ import { CrosshairHud } from './crosshair-hud';
 import { DeferredAfterLoad } from './deferred-after-load';
 import { LoadingReporter } from './loading-reporter';
 import { LocalPlayer } from './local-player';
-import { PlayTestHook } from './play-test-hook';
 import { PlayerControls } from './player-controls';
 import { RoundEndBanner } from './round-end-banner';
 import { ShootingController } from './shooting-controller';
@@ -73,8 +72,6 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
 
         <PlayerControls scenario={scenario} spawn={localSpawn} />
 
-        {!!import.meta.env.DEV && <PlayTestHook />}
-
         <Suspense fallback={null}>
           <ScenarioScene scenario={scenario} />
         </Suspense>
@@ -91,9 +88,12 @@ export function GameCanvas({ scenarioId = DEFAULT_SCENARIO_ID, onLoaderChange }:
 
         <AimMarker />
         <ShootingController />
+
+        <LazyDevSceneTools />
       </Canvas>
       <CameraHud />
       <CrosshairHud />
+      <LazyDevGameChrome />
       <HealthBar />
       <RoundEndBanner />
     </div>

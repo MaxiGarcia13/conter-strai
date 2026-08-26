@@ -70,6 +70,7 @@ export function usePlayerControls({
 }: UsePlayerControlsOptions) {
   const camera = useThree((state) => state.camera);
   const domElement = useThree((state) => state.gl.domElement);
+  const externalControls = useThree((state) => state.controls);
   const [isPointerLocked, setIsPointerLocked] = useState(false);
   const eliminated = useHealthStore(
     (s) => s.healthById[LOCAL_PLAYER_ENTITY_ID]?.isEliminated ?? false,
@@ -83,6 +84,8 @@ export function usePlayerControls({
   const eliminatedRef = useRef(eliminated);
   eliminatedRef.current = eliminated;
   const wasEliminatedRef = useRef(false);
+  const externalControlsRef = useRef(externalControls);
+  externalControlsRef.current = externalControls;
 
   useEffect(() => {
     camera.rotation.order = 'YXZ';
@@ -134,6 +137,11 @@ export function usePlayerControls({
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
+      // Dev tools (e.g. free-cam) register R3F controls while they own input.
+      if (externalControlsRef.current) {
+        return;
+      }
+
       pressedCodesRef.current.add(event.code);
 
       if (event.repeat) {
@@ -186,7 +194,7 @@ export function usePlayerControls({
 
   useEffect(() => {
     const requestLock = () => {
-      if (eliminatedRef.current) {
+      if (eliminatedRef.current || externalControlsRef.current) {
         return;
       }
       try {
@@ -205,7 +213,11 @@ export function usePlayerControls({
     };
 
     const onMouseMove = (event: MouseEvent) => {
-      if (document.pointerLockElement !== domElement || eliminatedRef.current) {
+      if (
+        document.pointerLockElement !== domElement
+        || eliminatedRef.current
+        || externalControlsRef.current
+      ) {
         return;
       }
 
@@ -241,6 +253,13 @@ export function usePlayerControls({
     }
 
     wasEliminatedRef.current = false;
+
+    // External controls (DEV free-cam) own the camera; freeze the soldier.
+    if (externalControlsRef.current) {
+      pressedCodesRef.current.clear();
+      setPlayerLocomotion('idle');
+      return;
+    }
 
     const pressed = pressedCodesRef.current;
     let strafe = 0;

@@ -93,7 +93,7 @@ export function LocalPlayer({ skinId = DEFAULT_PLAY_SKIN_ID }: LocalPlayerProps)
   );
 
   // Declared after useSoldierLocomotion so placement runs after its mixer update.
-  useFrame(() => {
+  useFrame((state) => {
     const rigGroup = rigRef.current;
     if (!rigGroup) {
       return;
@@ -110,7 +110,8 @@ export function LocalPlayer({ skinId = DEFAULT_PLAY_SKIN_ID }: LocalPlayerProps)
       return;
     }
 
-    const fpsActive = getCameraMode() === 'fps';
+    // When DEV free-cam (or any makeDefault controls) is active, leave the camera alone.
+    const fpsActive = getCameraMode() === 'fps' && !state.controls;
     // Dying owns the full skeleton — aim pitch / FPS head-hide would fight the clip.
     if (dying) {
       for (const { bone, restScale } of aimRig.hiddenBones) {

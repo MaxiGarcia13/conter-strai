@@ -121,3 +121,36 @@ Post-split leftovers from `use-player-controls` → folder + `game/utils`. Pick 
 - [x] **Extract `SoldierMeshBody`** — presentational Clone + conditional `WeaponAttach` / `HitboxMesh` in `src/modules/soldiers/components/soldier-mesh-body.tsx`. Outer `<group>` (static props vs `rigRef` / root name / `useFrame` transform) stays with each caller.
 - [x] **Refactor `SoldierModel`** — consume `useSoldierMesh` + `SoldierMeshBody`; keep NPC-only concerns (static `position` / `rotationY`, health-store pose via `resolveNpcPose`, optional `entityId`).
 - [x] **Refactor `LocalPlayer`** — consume `useSoldierMesh` + `SoldierMeshBody`; keep game-only concerns (`useFrame` + `getPlayerTransform`, aim rig, `placeCameraAtHead`, `setBodyAnchorY`, pose clear callbacks).
+
+## Multiplayer lobby REST handler tests
+
+`src/modules/multiplayer/handlers/` has no Vitest coverage. Adapter tests already own snapshot / decode shapes (`to-room-snapshot.test.ts`, `decode-seat-claim.test.ts`) — handler tests should own **HTTP status and wiring** only. Keep files under `tests/units/multiplayer/` (not next to handlers). Mock `colyseus` `matchMaker` and `findMatchRoomByCode`; do not boot a real Colyseus server.
+
+- [ ] **Shared APIRoute test helper** — `tests/units/multiplayer/handlers/`
+  1. Fake `{ params, request }` for `APIRoute` (JSON `Request` body when needed).
+  2. `vi.mock('colyseus')` with `matchMaker.state`, `createRoom`, `reserveSeatFor`.
+  3. `vi.mock` `findMatchRoomByCode`; stub `{ roomCache, room, state }` or `null`.
+  4. Reset `matchMaker.state` to `MatchMakerState.READY` in `beforeEach`.
+
+- [ ] **503 when matchMaker is not ready** — also closes the open US-5 REST item
+  1. Set `matchMaker.state` to `MatchMakerState.INITIALIZING`.
+  2. Call each handler (`createRoom`, `getRoom`, `claimSeat`, `disposeRoom`).
+  3. Expect **503** `{ error: 'Matchmaker is not ready' }` and no matchMaker side effects.
+
+- [ ] **`getRoom`** (covers `GET /api/v1/room/[roomId]` and `…/status`)
+  1. **400** missing `roomId`; **404** lookup null; **500** lookup without `state`.
+  2. **200** returns `toRoomSnapshot` for a waiting room stub — do not re-test seat/`canJoin` cases.
+
+- [ ] **`createRoom`**
+  1. **400** invalid body (`decodeCreateRoomOptions` null).
+  2. **201** + `matchMaker.createRoom('match', { metadata: { roomCode, scenario } })`.
+  3. Mock `generateRoomId` if the 201 `id` needs to be stable.
+
+- [ ] **`claimSeat`**
+  1. **400** invalid claim; **404** unknown room.
+  2. **409** wrong phase / room full (`locked` or `clients` at cap) / team full.
+  3. **200** + `reserveSeatFor`; **409** when reserve throws an “already full” error.
+
+- [ ] **`disposeRoom`**
+  1. **404** when lookup has no `room`; **204** + `room.disconnect()`.
+  2. **500** if `disconnect` throws.

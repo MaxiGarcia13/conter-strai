@@ -74,7 +74,7 @@ Unchecked how-tos for the hotspots above. `LocalPlayer` / `SoldierModel` size is
   1. Move `wallSegmentsAlongX` / `wallSegmentsAlongZ` / hole math into `wall-segment-helpers.ts` (or similar).
   2. Keep `buildHouses` / `HouseFootprint` as the public map-authoring API.
 
-- [ ] **Extract texture-library pure utils** — `src/modules/scenarios/hooks/use-scenario-texture-library.ts`
+- [x] **Extract texture-library pure utils** — `src/modules/scenarios/hooks/use-scenario-texture-library.ts`
   1. Move `collectMapEntries` + material assembly from loaded maps into pure utils (Vitest without R3F).
   2. Hook stays: `useLoader` + `useMemo` wiring only.
 

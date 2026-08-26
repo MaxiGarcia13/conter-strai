@@ -19,7 +19,7 @@ Lobby REST wraps Colyseus `matchMaker`; presence and play stay on WebSocket. See
 
 ## Lobby REST (`/api/v1/room`)
 
-- [ ] `POST /api/v1/room` — generate 6-char `roomCode`, `matchMaker.createRoom('match', …)`, return `RoomSnapshot` (`201`)
+- [x] `POST /api/v1/room` — generate 6-char `roomCode`, `matchMaker.createRoom('match', …)`, return `RoomSnapshot` (`201`)
 - [ ] `GET /api/v1/room/[roomId]` — lookup by metadata `roomCode`, snapshot or `404`
 - [ ] `PUT /api/v1/room/[roomId]` — seat claim/update while `waiting`; `409` if full/wrong phase/team full; prefer `reserveSeatFor` token in response
 - [ ] `DELETE /api/v1/room/[roomId]` — dispose room (`204` / `404`)

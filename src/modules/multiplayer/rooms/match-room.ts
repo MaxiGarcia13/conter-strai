@@ -6,8 +6,10 @@ import type { Team } from '@/modules/teams';
 import { Room } from 'colyseus';
 import { applyDamage } from '@/modules/combat/apply-damage';
 import { DEFAULT_MAX_HP } from '@/modules/combat/constants/health';
-
+import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
 import { getScenarioById, spawnYawFor } from '@/modules/scenarios';
+
+import { opposingTeam, TEAM_SKINS, TEAMS } from '@/modules/teams';
 import { createMatchState } from '../schema/match-state';
 import { createPlayerState } from '../schema/player-state';
 
@@ -36,8 +38,7 @@ interface ShotMessage {
   zone: 'head' | 'body' | 'limb';
 }
 
-const MAX_CLIENTS = 8;
-const MAX_PER_TEAM = 4;
+const MAX_CLIENTS = DEFAULT_MAX_PER_TEAM * 2;
 const ROUND_RESET_DELAY_MS = 3_000;
 
 function teamCount(state: MatchState, team: Team): number {
@@ -52,13 +53,12 @@ function teamCount(state: MatchState, team: Team): number {
 
 function assignTeam(state: MatchState, preferred?: Team): Team | null {
   if (preferred) {
-    if (teamCount(state, preferred) < MAX_PER_TEAM) {
+    if (teamCount(state, preferred) < DEFAULT_MAX_PER_TEAM) {
       return preferred;
     }
   }
-  const teams: Team[] = ['civilian', 'soldier'];
-  for (const team of teams) {
-    if (teamCount(state, team) < MAX_PER_TEAM) {
+  for (const team of TEAMS) {
+    if (teamCount(state, team) < DEFAULT_MAX_PER_TEAM) {
       return team;
     }
   }
@@ -66,8 +66,7 @@ function assignTeam(state: MatchState, preferred?: Team): Team | null {
 }
 
 function checkTeamWipe(state: MatchState): Team | null {
-  const teams: Team[] = ['civilian', 'soldier'];
-  for (const team of teams) {
+  for (const team of TEAMS) {
     let hasAlive = false;
     for (const [, player] of state.players) {
       if (player.team === team && !player.eliminated) {
@@ -76,7 +75,7 @@ function checkTeamWipe(state: MatchState): Team | null {
       }
     }
     if (!hasAlive) {
-      return team === 'civilian' ? 'soldier' : 'civilian';
+      return opposingTeam(team);
     }
   }
   return null;
@@ -162,7 +161,7 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
 
     const player = createPlayerState({
       team,
-      skin: options?.skin ?? (team === 'civilian' ? 'remy' : 'swat-1'),
+      skin: options?.skin ?? TEAM_SKINS[team][0],
     });
     player.x = spawn[0];
     player.y = spawn[1];

@@ -9,7 +9,7 @@ import {
   DEFAULT_TEAM,
 } from '@/modules/game/constants/play-defaults';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
-import { TEAM_SKINS } from '../types/team-skins';
+import { TEAM_SKINS } from '@/modules/teams/constants/team-skins';
 import { writeRoomSession } from '../utils/room-session';
 import { CharacterPicker } from './character-picker';
 import { LazyCharacterPreview } from './lazy-character-preview';

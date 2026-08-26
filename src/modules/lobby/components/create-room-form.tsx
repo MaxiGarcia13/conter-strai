@@ -8,17 +8,15 @@ import {
   DEFAULT_SCENARIO_ID,
   DEFAULT_TEAM,
 } from '@/modules/game/constants/play-defaults';
-import { scenarios } from '@/modules/scenarios/scenario-registry';
+import { SCENARIO_LIST } from '@/modules/scenarios/constants/scenarios';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
-import { TEAM_SKINS } from '../types/team-skins';
+import { TEAM_SKINS } from '@/modules/teams/constants/team-skins';
 import { generateRoomId } from '../utils/generate-room-id';
 import { writeRoomSession } from '../utils/room-session';
 import { ArenaPicker } from './arena-picker';
 import { CharacterPicker } from './character-picker';
 import { LazyCharacterPreview } from './lazy-character-preview';
 import { TeamToggle } from './team-toggle';
-
-const SCENARIO_LIST = Object.values(scenarios);
 
 export function CreateRoomForm() {
   const [team, setTeam] = useState<Team>(DEFAULT_TEAM);

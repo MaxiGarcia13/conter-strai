@@ -5,12 +5,13 @@ import type { Team } from '@/modules/teams';
 import { create } from 'zustand';
 import { useHealthStore } from '@/modules/combat';
 import { getScenarioById, spawnYawFor } from '@/modules/scenarios';
+import { TEAMS } from '@/modules/teams';
+import { DEFAULT_SCENARIO_ID } from '../constants/play-defaults';
 import {
   DEFAULT_LOCAL_SPAWN_INDEX,
   DEFAULT_LOCAL_TEAM,
   LOCAL_PLAYER_ENTITY_ID,
 } from '../constants/player';
-import { DEFAULT_SCENARIO_ID } from '../constants/play-defaults';
 import { checkRoundEnd } from '../services/check-round-end';
 import { resetPlayerTransform, setPlayerPose } from './player-state';
 
@@ -40,9 +41,8 @@ export const useRoundStore = create<RoundState>()((set, get) => ({
     setPlayerPose(null);
 
     const roster: RosterEntry[] = [];
-    const teams: Team[] = ['soldier', 'civilian'];
 
-    for (const team of teams) {
+    for (const team of TEAMS) {
       const spawns = scenario.teamSpawns[team] ?? [];
       for (let i = 0; i < spawns.length; i++) {
         const isLocalSlot = team === DEFAULT_LOCAL_TEAM && i === DEFAULT_LOCAL_SPAWN_INDEX;

@@ -1,6 +1,7 @@
 import type { HealthSystem } from '@/modules/combat';
 import type { EntityId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
+import { opposingTeam, TEAMS } from '@/modules/teams';
 
 export interface RosterEntry {
   entityId: EntityId;
@@ -22,9 +23,7 @@ export interface CheckRoundEndResult {
  * Returns the winning team (the side that still has survivors).
  */
 export function checkRoundEnd({ roster, healthSystem }: CheckRoundEndInput): CheckRoundEndResult {
-  const teams: Team[] = ['soldier', 'civilian'];
-
-  for (const team of teams) {
+  for (const team of TEAMS) {
     const members = roster.filter((entry) => entry.team === team);
     if (members.length === 0) {
       continue;
@@ -34,8 +33,7 @@ export function checkRoundEnd({ roster, healthSystem }: CheckRoundEndInput): Che
       return hp?.isEliminated ?? false;
     });
     if (allEliminated) {
-      const winner = team === 'soldier' ? 'civilian' : 'soldier';
-      return { ended: true, winner };
+      return { ended: true, winner: opposingTeam(team) };
     }
   }
 

@@ -7,7 +7,8 @@ import {
   DEFAULT_SCENARIO_ID,
   DEFAULT_TEAM,
 } from '@/modules/game/constants/play-defaults';
-import { TEAM_SKINS } from '../types/team-skins';
+import { isValidScenario } from '@/modules/scenarios/utils/is-valid-scenario';
+import { isValidSkin, isValidTeam, TEAM_SKINS } from '@/modules/teams';
 
 export interface RoomSession {
   team: Team;
@@ -57,14 +58,14 @@ function isRoomSession(value: unknown): value is RoomSession {
   if (!value || typeof value !== 'object') {
     return false;
   }
+
   const session = value as Partial<RoomSession>;
-  const characters = [...TEAM_SKINS.civilian, ...TEAM_SKINS.soldier];
 
   return (
-    (session.team === 'civilian' || session.team === 'soldier')
+    isValidTeam(session.team)
     && typeof session.skin === 'string'
-    && session.skin in Object.fromEntries(characters.map((skin) => [skin, true]))
-    && session.scenario === DEFAULT_SCENARIO_ID
+    && isValidSkin(session.skin)
+    && isValidScenario(session.scenario)
     && (session.role === 'host' || session.role === 'guest')
   );
 }

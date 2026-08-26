@@ -78,7 +78,7 @@ Unchecked how-tos for the hotspots above. `LocalPlayer` / `SoldierModel` size is
   1. Move `collectMapEntries` + material assembly from loaded maps into pure utils (Vitest without R3F).
   2. Hook stays: `useLoader` + `useMemo` wiring only.
 
-- [ ] **Extract pure advance from `usePlayerMovementFrame`** — `src/modules/game/hooks/use-player-controls/use-player-movement-frame.ts`
+- [x] **Extract pure advance from `usePlayerMovementFrame`** — `src/modules/game/hooks/use-player-controls/use-player-movement-frame.ts`
   1. Pure `advancePlayerTransform({…})` (intended move → wall collision → NPC discs → bounds clamp → locomotion).
   2. Hook keeps elimination / external-controls early-outs and `applyCameraMode`.
   3. Add a small unit test for the pure advance path.

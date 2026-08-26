@@ -1,0 +1,139 @@
+import { describe, expect, it } from 'vitest';
+import { advancePlayerTransform } from '@/modules/game/utils/advance-player-transform';
+
+const defaultBounds = { width: 40, depth: 40 };
+
+describe('advancePlayerTransform', () => {
+  it('returns idle locomotion when no input', () => {
+    const result = advancePlayerTransform({
+      transform: { x: 0, z: 0, yaw: 0 },
+      strafe: 0,
+      forward: 0,
+      running: false,
+      delta: 0.016,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [],
+      solidNpcFlags: [],
+      bounds: defaultBounds,
+    });
+
+    expect(result.locomotion).toBe('idle');
+    expect(result.x).toBe(0);
+    expect(result.z).toBe(0);
+  });
+
+  it('moves forward along -Z when yaw is 0', () => {
+    const result = advancePlayerTransform({
+      transform: { x: 0, z: 0, yaw: 0 },
+      strafe: 0,
+      forward: 1,
+      running: false,
+      delta: 1,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [],
+      solidNpcFlags: [],
+      bounds: defaultBounds,
+    });
+
+    expect(result.locomotion).toBe('walk');
+    expect(result.x).toBeCloseTo(0);
+    expect(result.z).toBeLessThan(0);
+  });
+
+  it('runs faster than walk', () => {
+    const walk = advancePlayerTransform({
+      transform: { x: 0, z: 0, yaw: 0 },
+      strafe: 0,
+      forward: 1,
+      running: false,
+      delta: 1,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [],
+      solidNpcFlags: [],
+      bounds: defaultBounds,
+    });
+
+    const run = advancePlayerTransform({
+      transform: { x: 0, z: 0, yaw: 0 },
+      strafe: 0,
+      forward: 1,
+      running: true,
+      delta: 1,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [],
+      solidNpcFlags: [],
+      bounds: defaultBounds,
+    });
+
+    expect(run.locomotion).toBe('run');
+    expect(Math.abs(run.z)).toBeGreaterThan(Math.abs(walk.z));
+  });
+
+  it('clamps to bounds', () => {
+    const result = advancePlayerTransform({
+      transform: { x: 18, z: 0, yaw: 0 },
+      strafe: 1,
+      forward: 0,
+      running: false,
+      delta: 10,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [],
+      solidNpcFlags: [],
+      bounds: defaultBounds,
+    });
+
+    expect(result.x).toBeLessThanOrEqual(20);
+  });
+
+  it('respects NPC blockers', () => {
+    const result = advancePlayerTransform({
+      transform: { x: 0, z: -0.3, yaw: 0 },
+      strafe: 0,
+      forward: 1,
+      running: false,
+      delta: 0.016,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [{ x: 0, z: -1, radius: 0.5 }],
+      solidNpcFlags: [true],
+      bounds: defaultBounds,
+    });
+
+    expect(result.z).toBeGreaterThanOrEqual(-0.5);
+  });
+
+  it('ignores eliminated NPCs', () => {
+    const withoutNpc = advancePlayerTransform({
+      transform: { x: 0, z: 0, yaw: 0 },
+      strafe: 0,
+      forward: 1,
+      running: false,
+      delta: 1,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [],
+      solidNpcFlags: [],
+      bounds: defaultBounds,
+    });
+
+    const withDeadNpc = advancePlayerTransform({
+      transform: { x: 0, z: 0, yaw: 0 },
+      strafe: 0,
+      forward: 1,
+      running: false,
+      delta: 1,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [{ x: 0, z: -1, radius: 0.5 }],
+      solidNpcFlags: [false],
+      bounds: defaultBounds,
+    });
+
+    expect(withDeadNpc.z).toBeCloseTo(withoutNpc.z);
+  });
+});

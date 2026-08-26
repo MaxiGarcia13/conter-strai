@@ -23,7 +23,7 @@ Lobby REST wraps Colyseus `matchMaker`; presence and play stay on WebSocket. See
 - [x] `GET /api/v1/room/[roomId]` — `RoomSnapshot` (`phase`, `canJoin`, per-team seats `max: 4`, optional `scenario` / `playerCount`); `404` if unknown
 - [x] `PUT /api/v1/room/[roomId]` — seat claim/update while `waiting`; `409` if full/wrong phase/team full; prefer `reserveSeatFor` token in response
 - [x] `DELETE /api/v1/room/[roomId]` — dispose room (`204` / `404`)
-- [ ] Return `503` from REST when matchMaker is not initialized
+- [x] Return `503` from REST when matchMaker is not initialized
 - [x] Files: `src/pages/api/v1/room/index.ts`, `[roomId]/index.ts`; handlers in `src/modules/multiplayer/handlers/`
 
 ## Lobby UI consumers

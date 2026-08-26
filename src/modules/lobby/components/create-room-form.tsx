@@ -1,16 +1,16 @@
 import type { ScenarioConfig } from '@/modules/scenarios';
 import type { SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
-
 import { useState } from 'react';
 import { CsButton } from '@/components/cs-button';
 import { scenarios } from '@/modules/scenarios/scenario-registry';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 import { TEAM_SKINS } from '../types/team-skins';
 import { generateRoomId } from '../utils/generate-room-id';
+import { writeRoomSession } from '../utils/room-session';
 import { ArenaPicker } from './arena-picker';
 import { CharacterPicker } from './character-picker';
-import { CharacterPreview } from './character-preview';
+import { LazyCharacterPreview } from './lazy-character-preview';
 import { TeamToggle } from './team-toggle';
 
 const SCENARIO_LIST = Object.values(scenarios);
@@ -27,14 +27,13 @@ export function CreateRoomForm() {
 
   function handleCreate() {
     const roomId = generateRoomId();
-    const params = new URLSearchParams({
-      mode: 'create',
-      room: roomId,
+    writeRoomSession(roomId, {
       team,
       skin: skinId,
       scenario: scenarioId,
+      role: 'host',
     });
-    window.location.href = `/lobby?${params.toString()}`;
+    window.location.href = `/room/${roomId}`;
   }
 
   return (
@@ -59,7 +58,7 @@ export function CreateRoomForm() {
 
       <div className="flex flex-1 flex-col items-center gap-4">
         <div className="hud-corners aspect-square w-full max-w-md overflow-hidden bg-surface">
-          <CharacterPreview skinId={skinId} />
+          <LazyCharacterPreview skinId={skinId} />
         </div>
         <p className="font-mono text-xs tracking-widest uppercase text-foreground-muted">
           {skinId}

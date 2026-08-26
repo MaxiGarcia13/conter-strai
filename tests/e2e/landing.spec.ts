@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('landing renders and CTAs navigate to /create and /join', async ({ page }) => {
+test('landing renders and CTAs navigate to /room and /join', async ({ page }) => {
   await page.goto('/');
 
   await expect(page).toHaveTitle('Conter Strai');
@@ -17,7 +17,7 @@ test('landing renders and CTAs navigate to /create and /join', async ({ page }) 
   const createRoom = page.getByRole('link', { name: 'Create Room' });
   await expect(createRoom).toBeVisible();
   await createRoom.click();
-  await expect(page).toHaveURL(/\/create$/);
+  await expect(page).toHaveURL(/\/room$/);
 
   await page.goto('/');
 

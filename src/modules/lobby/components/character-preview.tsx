@@ -1,5 +1,4 @@
 import type { SoldierSkinId } from '@/modules/soldiers';
-
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { SoldierModel } from '@/modules/soldiers';

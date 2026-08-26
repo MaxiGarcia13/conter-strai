@@ -20,17 +20,17 @@ Room-centric routes: `/room`, `/room/[roomId]`, `/room/[roomId]/join`, `/room/[r
 
 ## Landing
 
-- [ ] **Create Room** → `/room` (migrate off `/create` if still present)
+- [x] **Create Room** → `/room` (migrate off `/create` if still present)
 - [ ] **Join Room** room-code entry → `/room/{code}/join` (no separate `/join` page)
 
 ## Create room (`/room`)
 
-- [ ] `src/pages/room/index.astro` + React island (client-only for R3F preview); retire `/create` redirect or remove
-- [ ] Team toggle: Civilian | Soldier
-- [ ] Character list filtered by team; selecting one updates preview
-- [ ] Character preview Canvas: selected skin + shared idle, slow yaw/orbit
-- [ ] Arena cards from scenario registry: name + image or placeholder
-- [ ] Generate local room id; write `sessionStorage` (`role: 'host'`); navigate to `/room/{roomId}`
+- [x] `src/pages/room/index.astro` + React island (client-only for R3F preview); retire `/create` redirect or remove
+- [x] Team toggle: Civilian | Soldier
+- [x] Character list filtered by team; selecting one updates preview
+- [x] Character preview Canvas: selected skin + shared idle, slow yaw/orbit
+- [x] Arena cards from scenario registry: name + image or placeholder
+- [x] Generate local room id; write `sessionStorage` (`role: 'host'`); navigate to `/room/{roomId}`
 
 ## Join room (`/room/[roomId]/join`)
 

@@ -34,6 +34,7 @@ export default defineConfig({
             '@react-three/fiber',
             '@react-three/drei',
             'three',
+            'react-qr-code',
           ],
         },
       },

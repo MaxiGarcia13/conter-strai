@@ -11,7 +11,7 @@ import { usePlayerKeyboard } from './use-player-keyboard';
 import { usePlayerMovementFrame } from './use-player-movement-frame';
 import { usePlayerPointerLock } from './use-player-pointer-lock';
 
-export interface UsePlayerControlsOptions {
+interface UsePlayerControlsOptions {
   bounds: ScenarioConfig['bounds'];
   collisionSegments: NonNullable<ScenarioConfig['collisionSegments']>;
   wallThickness: number;

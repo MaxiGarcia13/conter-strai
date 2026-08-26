@@ -54,7 +54,7 @@ Post-split leftovers from `use-player-controls` → folder + `game/utils`. Pick 
   4. In `use-player-controls.ts`: stop destructuring / returning `{ isPointerLocked }`.
   5. `player-controls.tsx` already ignores the return — no change there.
 
-- [ ] **Stop exporting unused `UsePlayerControlsOptions`**
+- [x] **Stop exporting unused `UsePlayerControlsOptions`**
   1. Grep confirms only `hooks/use-player-controls/index.ts` re-exports it.
   2. Keep the interface in `use-player-controls.ts` for local typing.
   3. Remove `export type { UsePlayerControlsOptions }` from `index.ts`.

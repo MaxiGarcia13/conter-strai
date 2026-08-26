@@ -31,7 +31,7 @@ Keep if the next US needs it; document or implement so it is not misleading dead
 
 ## Complexity hotspots (index)
 
-Largest today: `use-soldier-locomotion.ts` (~270 lines). Prefer the **Complexity refactors** tasks below when editing these; do not split for vanity line-count.
+Largest today: `use-player-movement-frame.ts` / house helpers. Prefer the **Complexity refactors** tasks below when editing these; do not split for vanity line-count.
 
 | File                                                     | Why                                    |
 | -------------------------------------------------------- | -------------------------------------- |
@@ -41,7 +41,7 @@ Largest today: `use-soldier-locomotion.ts` (~270 lines). Prefer the **Complexity
 | `dev/dev-free-camera.tsx`                                | Ghost fly + look + controls claim      |
 | `scenario-walls.tsx`                                     | Outer perimeter + segments + UV tiling |
 | `use-scenario-texture-library.ts`                        | PBR map load + material assembly       |
-| `use-soldier-locomotion.ts`                              | Mixer lifecycle + crossfade            |
+| `hooks/use-soldier-locomotion/`                          | Slim orchestrator + private mixer/helpers |
 | `play-test-hook.tsx`                                     | DEV poll + bone debug surface          |
 
 Watch-only (already modular enough — no refactor task):
@@ -54,11 +54,11 @@ Watch-only (already modular enough — no refactor task):
 
 Unchecked how-tos for the hotspots above. `LocalPlayer` / `SoldierModel` size is covered by **Soldier mesh setup duplication** (`useSoldierMesh`).
 
-- [ ] **Split `useSoldierLocomotion` (~270)** — `src/modules/soldiers/hooks/use-soldier-locomotion.ts`
-  1. Extract pure helpers (`createSoldierActions`, `playDyingHard`, one-shot `finished` wiring) into `soldiers/utils/` or `soldiers/hooks/locomotion/`.
-  2. Keep `useSoldierLocomotion` as a thin orchestrator: mount mixer effect + `useFrame` state machine.
+- [x] **Split `useSoldierLocomotion`** — `src/modules/soldiers/hooks/use-soldier-locomotion/`
+  1. Extract pure helpers (`createSoldierActions`, `playDyingHard`, one-shot `finished` wiring, clip transition) as private modules in the hook folder.
+  2. `useSoldierMixer` owns mount lifecycle + `activeMixers`; `useSoldierLocomotion` is a thin orchestrator (`useFrame` only).
   3. Preserve `countActiveSoldierMixers` and existing option callbacks for e2e / pose owners.
-  4. Do not change the public hook signature.
+  4. Do not change the public hook signature; barrel exports only the public API.
 
 - [ ] **Split `DevFreeCamera`** — `src/modules/game/dev/dev-free-camera.tsx`
   1. `use-free-camera-toggle.ts` — KeyV toggle listener.

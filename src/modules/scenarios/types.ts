@@ -105,6 +105,7 @@ export interface ScenarioMeta {
   id: ScenarioId;
   name: string;
   theme?: string;
+  previewImageUrl?: string | null;
 }
 
 export type ScenarioConfig = ScenarioMeta & ArenaLayout & SpawnerConfig & ArenaEnvironment;

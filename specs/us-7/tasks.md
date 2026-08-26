@@ -13,9 +13,9 @@ Do not start implementation until picked up explicitly — checkboxes below are 
 
 ## Scenario data
 
-- [ ] Optional `previewImageUrl?: string | null` on `ScenarioConfig`
-- [ ] `arena-01`: set `previewImageUrl` null (or omit); add ≥1 **civilian** east spawn in `teamSpawns`
-- [ ] Vitest / manual: civilian spawn resolves without throw
+- [x] Optional `previewImageUrl?: string | null` on `ScenarioConfig`
+- [x] `arena-01`: set `previewImageUrl` null (or omit); add ≥1 **civilian** east spawn in `teamSpawns`
+- [x] Vitest / manual: civilian spawn resolves without throw
 
 ## Landing
 

@@ -19,7 +19,7 @@ Do not start implementation until picked up explicitly — checkboxes below are 
 
 ## Landing
 
-- [ ] Replace **Start Game** with **Create Room** → `/create` and **Join Room** → `/join` on `src/pages/index.astro`
+- [x] Replace **Start Game** with **Create Room** → `/create` and **Join Room** → `/join` on `src/pages/index.astro`
 
 ## Create room (`/create`)
 

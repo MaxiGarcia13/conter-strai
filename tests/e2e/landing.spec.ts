@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('landing renders and CTA navigates to /play', async ({ page }) => {
+test('landing renders and CTAs navigate to /create and /join', async ({ page }) => {
   await page.goto('/');
 
   await expect(page).toHaveTitle('Conter Strai');
@@ -14,8 +14,15 @@ test('landing renders and CTA navigates to /play', async ({ page }) => {
     'https://github.com/MaxiGarcia13/conter-strai',
   );
 
-  const cta = page.getByRole('link', { name: 'Start Game' });
-  await expect(cta).toBeVisible();
-  await cta.click();
-  await expect(page).toHaveURL(/\/play$/);
+  const createRoom = page.getByRole('link', { name: 'Create Room' });
+  await expect(createRoom).toBeVisible();
+  await createRoom.click();
+  await expect(page).toHaveURL(/\/create$/);
+
+  await page.goto('/');
+
+  const joinRoom = page.getByRole('link', { name: 'Join Room' });
+  await expect(joinRoom).toBeVisible();
+  await joinRoom.click();
+  await expect(page).toHaveURL(/\/join$/);
 });

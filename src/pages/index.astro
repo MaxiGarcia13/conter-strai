@@ -1,6 +1,7 @@
 ---
 import { homepage } from '@root/package.json';
 import { getImage, Image } from 'astro:assets';
+import CsButton from '@/components/cs-button.astro';
 import GithubIcon from '@/components/github-icon.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
 import csImg from '../assets/cs.png';
@@ -79,19 +80,10 @@ const bullets = [
           }
         </ul>
 
-        <a
-          href="/play"
-          class="cs-cta motion-safe:transition-[background-color,box-shadow] mt-10"
-        >
-          <svg
-            class="size-3 fill-current"
-            viewBox="0 0 12 12"
-            aria-hidden="true"
-          >
-            <path d="M2 1.2v9.6L11 6 2 1.2z"></path>
-          </svg>
-          Start Game
-        </a>
+        <div class="mt-10 flex flex-wrap gap-4">
+          <CsButton href="/create" variant="primary">Create Room</CsButton>
+          <CsButton href="/join" variant="secondary">Join Room</CsButton>
+        </div>
       </div>
 
       <div class="hero-art-grid relative flex items-center justify-center">

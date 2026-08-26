@@ -24,3 +24,24 @@ export interface CreateRoomOptions {
   skin?: SoldierSkinId;
   scenario?: ScenarioId;
 }
+
+export interface SeatClaimOptions {
+  team: Team;
+  skin: SoldierSkinId;
+}
+
+/** Colyseus `ISeatReservation` fields needed by `consumeSeatReservation`. */
+export interface SeatReservation {
+  name: string;
+  sessionId: string;
+  roomId: string;
+  publicAddress?: string;
+  processId?: string;
+  reconnectionToken?: string;
+  devMode?: boolean;
+}
+
+export interface ClaimSeatResponse {
+  snapshot: RoomSnapshot;
+  reservation: SeatReservation;
+}

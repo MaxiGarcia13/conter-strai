@@ -110,8 +110,8 @@ interface RoomSnapshot {
 ### `PUT /api/v1/room/:roomId`
 
 - **Lobby seat claim / update** (not WebSocket join): validate `phase === 'waiting'`, team capacity `count < 4`.
-- Body: `{ team: Team; skin: SoldierSkinId }`.
-- Response **`200`**: updated `RoomSnapshot`; prefer including a Colyseus **seat reservation** token (`matchMaker.reserveSeatFor`) so WebSocket join is authorized.
+- Body: `{ team: Team; skin: SoldierSkinId }` (both required; skin must belong to that team).
+- Response **`200`**: `{ snapshot: RoomSnapshot; reservation }` where `reservation` is the Colyseus `ISeatReservation` from `matchMaker.reserveSeatFor` (`sessionId`, `roomId`, `name`, …) so the client can `consumeSeatReservation`.
 - Errors: **`404`** unknown; **`409`** full / wrong phase / team full; **`400`** invalid body; **`503`** matchMaker not ready.
 
 ### `DELETE /api/v1/room/:roomId`
@@ -142,6 +142,7 @@ src/
 └── modules/multiplayer/
     ├── adapters/
     │   └── colyseus-adapter.ts   # client-facing API used by GameCanvas / waiting room
+    ├── handlers/                 # Astro APIRoute implementations (pages stay thin)
     ├── rooms/
     │   └── MatchRoom.ts          # single room: waiting → in_progress → ended
     ├── schema/

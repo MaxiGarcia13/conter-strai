@@ -1,37 +1,25 @@
 import type { APIRoute } from 'astro';
-import { MatchMakerState } from '@colyseus/core/MatchMaker';
 import { matchMaker } from 'colyseus';
 import { DEFAULT_SCENARIO_ID } from '@/modules/game/constants/play-defaults';
 import { generateRoomId } from '@/modules/lobby/utils/generate-room-id';
 import { decodeCreateRoomOptions } from '@/modules/multiplayer/adapters/decode-create-room-options';
 import { createEmptyRoomSnapshot } from '@/modules/multiplayer/adapters/to-room-snapshot';
+import { jsonResponse, readJsonBody, requireMatchMaker } from './http';
 
 export const createRoom: APIRoute = async ({ request }) => {
-  if (matchMaker.state !== MatchMakerState.READY) {
-    return new Response(JSON.stringify({ error: 'Matchmaker is not ready' }), {
-      status: 503,
-      headers: { 'Content-Type': 'application/json' },
-    });
+  const unavailable = requireMatchMaker();
+  if (unavailable) {
+    return unavailable;
   }
 
-  let body: unknown = {};
-  try {
-    if (request.headers.get('content-type')?.includes('application/json')) {
-      body = await request.json();
-    }
-  } catch {
-    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+  const body = await readJsonBody(request);
+  if (!body.ok) {
+    return body.response;
   }
 
-  const options = decodeCreateRoomOptions(body);
+  const options = decodeCreateRoomOptions(body.value);
   if (!options) {
-    return new Response(JSON.stringify({ error: 'Invalid room options' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonResponse(400, { error: 'Invalid room options' });
   }
 
   const roomCode = generateRoomId();
@@ -43,8 +31,5 @@ export const createRoom: APIRoute = async ({ request }) => {
     },
   });
 
-  return new Response(JSON.stringify(createEmptyRoomSnapshot(roomCode, scenario)), {
-    status: 201,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return jsonResponse(201, createEmptyRoomSnapshot(roomCode, scenario));
 };

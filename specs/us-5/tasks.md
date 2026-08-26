@@ -20,12 +20,12 @@ Lobby REST wraps Colyseus `matchMaker`; presence and play stay on WebSocket. See
 ## Lobby REST (`/api/v1/room`)
 
 - [x] `POST /api/v1/room` — generate 6-char `roomCode`, `matchMaker.createRoom('match', …)`, return `RoomSnapshot` (`201`)
-- [ ] `GET /api/v1/room/[roomId]` — lookup by metadata `roomCode`, snapshot or `404`
-- [ ] `PUT /api/v1/room/[roomId]` — seat claim/update while `waiting`; `409` if full/wrong phase/team full; prefer `reserveSeatFor` token in response
-- [ ] `DELETE /api/v1/room/[roomId]` — dispose room (`204` / `404`)
+- [x] `GET /api/v1/room/[roomId]` — lookup by metadata `roomCode`, snapshot or `404`
+- [x] `PUT /api/v1/room/[roomId]` — seat claim/update while `waiting`; `409` if full/wrong phase/team full; prefer `reserveSeatFor` token in response
+- [x] `DELETE /api/v1/room/[roomId]` — dispose room (`204` / `404`)
 - [ ] `GET /api/v1/room/[roomId]/status` — `phase`, `canJoin`, per-team seats (`max: 4`), optional `scenario` / `playerCount`
 - [ ] Return `503` from REST when matchMaker is not initialized
-- [ ] Files: `src/pages/api/v1/room/index.ts`, `[roomId].ts`, `[roomId]/status.ts`
+- [ ] Files: `src/pages/api/v1/room/index.ts`, `[roomId].ts`, `[roomId]/status.ts`; handlers in `src/modules/multiplayer/handlers/`
 
 ## Lobby UI consumers
 

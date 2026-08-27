@@ -145,7 +145,7 @@ src/
     │   ├── PlayerState.ts
     │   └── MatchState.ts
     └── stores/
-        └── multiplayer-store.ts
+        └── multiplayer-store/    # remote players + round phase (index: useMultiplayerStore)
 ```
 
 **One `MatchRoom`** with `roundPhase: waiting → in_progress → ended` (no separate LobbyRoom → MatchRoom migrate for MVP).

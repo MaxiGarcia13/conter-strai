@@ -36,7 +36,7 @@ Lobby REST wraps Colyseus `matchMaker`; presence and play stay on WebSocket. See
 ## Client adapter + game wiring
 
 - [x] `colyseus-adapter` (`initMatch` with room id / reservation, sync transform, send shot, listeners) in `multiplayer/adapters/`
-- [ ] `multiplayer-store` for remote players + round phase (map to `RoundPhase` where useful)
+- [x] `multiplayer-store` for remote players + round phase (map to `RoundPhase` where useful)
 - [ ] `RemotePlayer` component (skin from `getSoldierSkinById`; hitboxes from combat preset when needed)
 - [ ] Wire local FPS transform sync through adapter (not direct Colyseus in `game/`)
 - [ ] Wire `useShooting` → `sendShot`; apply **server** HP / eliminated updates (client combat math becomes prediction-only or removed for HP)

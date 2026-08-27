@@ -1,4 +1,4 @@
-# Release vX.Y.Z
+# Release {{tag}}
 
 ## Highlights
 
@@ -6,25 +6,9 @@
 -
 -
 
-## What’s new
+## What's new
 
-### Features
-
-- Added:
-- Improved:
-- Updated:
-
-### Fixes
-
-- Fixed:
-- Resolved:
-- Corrected:
-
-### Performance and stability
-
-- Optimized:
-- Reduced:
-- Improved reliability for:
+{{generated_notes}}
 
 ## Breaking changes
 

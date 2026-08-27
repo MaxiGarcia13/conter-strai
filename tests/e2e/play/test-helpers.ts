@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import type { SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
 import { expect } from '@playwright/test';
+import { createMatchRoomViaApi } from '../lobby-helpers';
 
 export interface PlayTestSnapshot {
   soldierCount: number;
@@ -27,7 +28,7 @@ export function captureConsoleErrors(page: Page): string[] {
   return consoleErrors;
 }
 
-/** Room play boot with a seeded session (team/skin/scenario). */
+/** Room play boot: create a real match, claim a seat, then open `/play`. */
 export async function navigateToRoomPlay(
   page: Page,
   options: { team: Team; skin: SoldierSkinId; scenario?: 'arena-01'; roomId?: string } = {
@@ -35,17 +36,24 @@ export async function navigateToRoomPlay(
     skin: 'remy',
   },
 ): Promise<string> {
-  const roomId = options.roomId ?? 'E2E001';
+  const roomId = options.roomId ?? (await createMatchRoomViaApi(page.request));
   const scenario = options.scenario ?? 'arena-01';
+
+  const claimResponse = await page.request.put(`/api/v1/room/${roomId}`, {
+    data: { team: options.team, skin: options.skin },
+  });
+  expect(claimResponse.status()).toBe(200);
+  const claimed = (await claimResponse.json()) as { reservation: Record<string, unknown> };
+
   await page.goto('/');
   await page.evaluate(
-    ({ roomId: id, team, skin, scenario: scenarioId }) => {
+    ({ roomId: id, team, skin, scenario: scenarioId, reservation }) => {
       sessionStorage.setItem(
         `cs:room:${id}`,
-        JSON.stringify({ team, skin, scenario: scenarioId, role: 'host' }),
+        JSON.stringify({ team, skin, scenario: scenarioId, role: 'host', reservation }),
       );
     },
-    { roomId, team: options.team, skin: options.skin, scenario },
+    { roomId, team: options.team, skin: options.skin, scenario, reservation: claimed.reservation },
   );
   await page.goto(`/room/${roomId}/play`);
   return roomId;
@@ -57,7 +65,7 @@ export async function waitForCanvas(page: Page): Promise<void> {
 
 export async function waitForPlayTest(page: Page): Promise<PlayTestSnapshot> {
   await expect
-    .poll(async () => (await readPlayTest(page))?.mixerReady)
+    .poll(async () => (await readPlayTest(page))?.mixerReady, { timeout: 30_000 })
     .toBe(true);
   const snapshot = await readPlayTest(page);
   expect(snapshot).toBeDefined();

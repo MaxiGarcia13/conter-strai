@@ -15,6 +15,10 @@ US-4 (local PvP loop) and **US-7** (match lobby) are **shipped**. Fire **pose cl
 
 - [specs/tech-debt.md](../tech-debt.md) — dead exports, unused scenario scaffolding, dependency hygiene, deferred shooting clip
 
+## Improvements
+
+- [specs/improvements.md](../improvements.md) — lighting, kneel/jump controls + sync, spatial remote combat SFX
+
 ## Open deltas
 
 - [specs/us-5/tasks.md](../us-5/tasks.md) — Colyseus multiplayer (Astro Node)

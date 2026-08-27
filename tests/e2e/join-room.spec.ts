@@ -64,7 +64,9 @@ test('invite join reaches waiting with invite URL, copy, and QR', async ({ page,
   await page.goto(`/room/${roomId}/join`);
   await page.getByRole('button', { name: 'Join Room' }).click();
   await expect(page).toHaveURL(new RegExp(`/room/${roomId}$`));
-  await expect(page.getByText('0 / 4')).toHaveCount(2);
+  // Guest claim consumes one civilian seat before the waiting-room snapshot renders.
+  await expect(page.getByText('1 / 4')).toHaveCount(1);
+  await expect(page.getByText('0 / 4')).toHaveCount(1);
   await expect(page.getByText('Open', { exact: true })).toBeVisible();
 
   const inviteUrl = `${new URL(page.url()).origin}/room/${roomId}/join`;
@@ -77,6 +79,6 @@ test('invite join reaches waiting with invite URL, copy, and QR', async ({ page,
   await expect(page.getByRole('button', { name: 'Copied!' })).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(inviteUrl);
 
-  await expect(page.getByRole('link', { name: 'Play' })).toHaveAttribute('href', `/room/${roomId}/play`);
   await expect(page.getByRole('button', { name: 'Close Room' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Start Match' })).toHaveCount(0);
 });

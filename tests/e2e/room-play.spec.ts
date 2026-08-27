@@ -6,7 +6,8 @@ test('create room plays as the default civilian remy', async ({ page }) => {
   await page.getByRole('button', { name: 'Create Room' }).click();
   await expect(page).toHaveURL(/\/room\/[^/]+$/);
 
-  await page.getByRole('link', { name: 'Play' }).click();
+  const roomId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
+  await page.goto(`/room/${roomId}/play`);
   await expect(page).toHaveURL(/\/room\/[^/]+\/play$/);
 
   await waitForPlayTest(page);
@@ -20,7 +21,8 @@ test('create room plays as the selected soldier swat-1', async ({ page }) => {
   await page.getByRole('button', { name: 'Create Room' }).click();
   await expect(page).toHaveURL(/\/room\/[^/]+$/);
 
-  await page.getByRole('link', { name: 'Play' }).click();
+  const roomId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
+  await page.goto(`/room/${roomId}/play`);
   await expect(page).toHaveURL(/\/room\/[^/]+\/play$/);
 
   await waitForPlayTest(page);

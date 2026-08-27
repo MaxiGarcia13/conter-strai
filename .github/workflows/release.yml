@@ -22,12 +22,8 @@ jobs:
 
   bump:
     needs: [lint, test]
-    uses: MaxiGarcia13/gh-actions/.github/workflows/bump-version.yml@main
+    uses: ./.github/workflows/bump-version.yml
     secrets: inherit
-    with:
-      # TODO: Remove release notes in this reusable workflow
-      use_release_notes: false
-      lfs: false
 
   deploy:
     needs: bump

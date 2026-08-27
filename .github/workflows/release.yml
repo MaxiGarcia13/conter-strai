@@ -20,43 +20,18 @@ jobs:
     if: ${{ !startsWith(github.event.head_commit.message, 'chore(release):') }}
     uses: ./.github/workflows/test.yml
 
-  # TODO: Implement version bump and release
-  # version:
-  #   name: Bump versions and release
-  #   needs: [lint, test]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
+  bump:
+    uses: MaxiGarcia13/gh-actions/.github/workflows/bump-version.yml@main
+    secrets: inherit
 
-  #     - name: Setup Node
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version-file: .nvmrc
-  #         cache: npm
+  deploy:
+    needs: bump
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
 
-  #     - name: Install dependencies
-  #       run: npm ci
-
-  #     - name: Configure git author
-  #       uses: MaxiGarcia13/gh-actions/.github/actions/configure-git-author@main
-
-  #     - name: Bump package versions
-  #       run: npx nx release --skip-publish
-
-  #     - name: Push release commit and tags
-  #       run: |
-  #         git push
-  #         git push --tags
-
-  # deploy:
-  #   needs: version
-  #   uses: ./.github/workflows/deploy.yml
-  #   secrets: inherit
-
-  # release-notes:
-  #   needs: version
-  #   uses: ./.github/workflows/release-notes.yml
-  #   secrets: inherit
+  release-notes:
+    needs: bump
+    uses: MaxiGarcia13/gh-actions/.github/workflows/create-release-notes.yml@main
+    with:
+      tag: ${{ needs.bump.outputs.tag }}
+      default_branch: main

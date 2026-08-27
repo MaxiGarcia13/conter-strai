@@ -26,8 +26,8 @@
     "phoenix": "npm run clean && npm i",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "vitest run",
-    "test:e2e": "PORT=4326 E2E=true playwright test",
-    "test:e2e:ui": "PORT=4326 E2E=true playwright test --ui --headed",
+    "test:e2e": "PORT=4326 E2E=true COLYSEUS_PORT=2568 PUBLIC_COLYSEUS_URL=ws://localhost:2568 playwright test",
+    "test:e2e:ui": "PORT=4326 E2E=true COLYSEUS_PORT=2568 PUBLIC_COLYSEUS_URL=ws://localhost:2568 playwright test --ui --headed",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   },

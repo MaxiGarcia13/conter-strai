@@ -12,6 +12,7 @@
 | US | Summary |
 |----|---------|
 | **US-5** | Colyseus multiplayer (Astro Node adapter) + team rounds |
+| **US-8** | Server security — host token, origin guard, shot/move validation, room TTL |
 
 ## Shipped
 

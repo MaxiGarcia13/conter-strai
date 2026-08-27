@@ -136,7 +136,8 @@ src/
 │       └── [roomId]/index.ts     # GET snapshot / PUT seat / DELETE
 └── modules/multiplayer/
     ├── adapters/
-    │   └── colyseus-adapter.ts   # client-facing API used by GameCanvas / waiting room
+    │   ├── colyseus-adapter/     # client-facing API (index: initMatch, sync, listeners)
+    │   ├── decode-*.ts / to-room-snapshot.ts  # REST DTO mappers
     ├── handlers/                 # Astro APIRoute implementations (pages stay thin)
     ├── rooms/
     │   └── MatchRoom.ts          # single room: waiting → in_progress → ended
@@ -184,20 +185,21 @@ Register rooms when the Node server boots (Colyseus attach to Astro Node server 
 ## Client adapter
 
 ```
-// src/modules/multiplayer/adapters/colyseus-adapter.ts
-initMatch({ roomId, reservation? }) → { room, localPlayerId, players }
-syncTransform({ x, y, z, rotY })
-sendShot({ origin, direction })
-onPlayerUpdate(callback)
-onShotReceived(callback)
-onRoundUpdate(callback)
+// src/modules/multiplayer/adapters/colyseus-adapter/ (public entry: index.ts)
+initMatch({ roomId, reservation?, options? }) → MatchHandle { localPlayerId, players, … }
+syncTransform({ x, z, yaw })            // throttled ~20 Hz
+sendShot({ targetId, zone })           // server ShotMessage wire shape
+onPlayerUpdate(callback)               // full player snapshot per state change
+onRoundUpdate(callback)                // roundPhase + winner deltas
+onLeave(callback)
 ```
 
-- `initMatch` → `client.joinById(colyseusRoomId, options)` or consume seat reservation from PUT
-- Transforms: patch local player Schema fields (throttled ~20 Hz) or `room.send('move', …)` if server mutates state
-- Shots: `room.send('shot', payload)`; server validates / applies damage / mutates `hp` / `eliminated`
-- Round wipe: server runs `checkRoundEnd`; clients listen to `roundPhase` / `winner`
-- Lobby pages do **not** import Colyseus — call REST; waiting/play use adapter only
+- `initMatch` → consumes the seat reservation from `PUT` (`client.consumeSeatReservation`) or, without one (host after create), `client.joinById(colyseusRoomId, options)`; joins with schema `MatchStateSchema`
+- `roomId` is the **Colyseus internal room id** (from the reservation or a lookup), not the public 6-char code
+- Transforms: the server mutates player Schema state in its `move` handler; client sends `room.send('move', { x, y, z, rotY })` throttled to ~20 Hz
+- Shots: `room.send('shot', { targetId, zone })`; server validates (phase, alive, friendly-fire) and applies damage / `eliminated` — clients never decide kills in multiplayer
+- Round wipe: server runs `checkRoundEnd`, mutates `roundPhase` / `winner`; clients react to Schema deltas only (no shot broadcast needed)
+- Lobby pages do **not** import Colyseus — call REST; waiting/play consume the adapter only
 
 ## Round sync (server-authoritative)
 

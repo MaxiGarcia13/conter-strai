@@ -11,10 +11,10 @@ Anonymous invite game: 6-char room codes, no accounts, no rankings. Primary risk
 
 ## Boundary with US-5
 
-| US-5 | US-8 |
-| ---- | ---- |
+| US-5                                                  | US-8                                   |
+| ----------------------------------------------------- | -------------------------------------- |
 | Adapter, Schema sync, server applies HP from messages | Make messages trustworthy (validation) |
-| Lobby REST CRUD | Host token, origin guard, room TTL |
+| Lobby REST CRUD                                       | Host token, origin guard, room TTL     |
 
 Do not re-do adapter / UI wiring here.
 
@@ -81,10 +81,10 @@ On `move` messages:
 
 ## Env
 
-| Variable | Purpose |
-| -------- | ------- |
-| `ROOM_CODE_TTL_MS` | Room lifetime from create (default `14400000`) |
-| `SITE` | Allowed origin base for US-8.1 (already used by Astro config) |
+| Variable           | Purpose                                                       |
+| ------------------ | ------------------------------------------------------------- |
+| `ROOM_CODE_TTL_MS` | Room lifetime from create (default `14400000`)                |
+| `SITE`             | Allowed origin base for US-8.1 (already used by Astro config) |
 
 ## Deferred
 

@@ -24,6 +24,7 @@
     "round-based",
     "astro",
     "react-three-fiber",
+    "react",
     "threejs",
     "colyseus",
     "open-source"

@@ -177,15 +177,7 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
                 {starting ? 'Starting…' : 'Start Match'}
               </CsButton>
             )
-          : (
-              <CsButton
-                href={`/room/${roomId}/play`}
-                variant="primary"
-                className="min-w-50 justify-center"
-              >
-                {joining ? 'Connecting…' : 'Play'}
-              </CsButton>
-            )}
+          : null}
       </div>
     </div>
   );

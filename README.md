@@ -83,14 +83,16 @@ src/
   components/       # Shared Astro UI (e.g. GithubIcon)
   layouts/          # Shared Astro shell (SEO, fonts, atmosphere)
   modules/          # Feature modules — one types.ts per module, registries at root
+    combat/         # Hitbox presets, zone damage, apply-damage
     game/           # GameCanvas, FPS controls, round types
+    lobby/          # Room create / join UI and session helpers
+    multiplayer/    # Colyseus adapter, match sync (US-5)
+    props/          # Scenario prop registry (stub)
     scenarios/      # Maps (arena-01), ScenarioConfig, spawn helpers
     soldiers/       # SoldierSkin registry, model, locomotion
-    combat/         # Hitbox presets, zone damage, apply-damage
-    weapons/        # Pistol config & weapon registry
     teams/          # Civilians / Soldiers
     textures/       # PBR map assets
-    props/          # Scenario prop registry (stub)
+    weapons/        # Pistol config & weapon registry
   pages/            # Routes (`/` landing, `/room/...`, …)
   styles/           # Global CSS / design tokens
 specs/
@@ -105,15 +107,11 @@ Landing lives in `src/pages/index.astro` (no Three.js). Game logic lives in `src
 
 **Module types & conventions:** [`specs/current/design.md`](./specs/current/design.md#module-types) — `ScenarioConfig`, `SoldierSkin`, `HitboxPreset`, registries.
 
-**Agent / AI contributors:** start at [`AGENTS.md`](./AGENTS.md) (specs workflow, module layout, commands, do-nots). Cursor rules live in [`.cursor/rules/`](./.cursor/rules/).
-
-Specs land before code for each user story. Read `specs/current/` and the open `specs/us-*/` delta you are implementing.
+**Agent / AI contributors:** start at [`AGENTS.md`](./AGENTS.md). Cursor rules live in [`.cursor/rules/`](./.cursor/rules/).
 
 ## Contributing
 
-Contributions are welcome. Please read the full contribution guide in [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request or submitting an issue.
-
-The guide covers project setup, workflow, coding conventions, spec-first changes, testing expectations, and contributor etiquette.
+Contributions are welcome. Read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request or submitting an issue — workflow, PR expectations, spec-first changes, and contributor etiquette. Setup and architecture live in this README and [`specs/current/design.md`](./specs/current/design.md).
 
 ## License
 

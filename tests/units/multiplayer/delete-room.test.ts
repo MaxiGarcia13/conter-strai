@@ -13,7 +13,10 @@ describe('deleteRoom', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(deleteRoom('K7M2PQ')).resolves.toBeUndefined();
-    expect(fetchMock).toHaveBeenCalledWith('/api/v1/room/K7M2PQ', { method: 'DELETE' });
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/room/K7M2PQ', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    });
   });
 
   it('throws LobbyRestError on 404', async () => {

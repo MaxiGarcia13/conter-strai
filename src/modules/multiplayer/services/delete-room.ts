@@ -1,8 +1,13 @@
-import { LobbyRestError, lobbyRoomPath, readErrorMessage, readJson } from './lobby-rest';
+import { JSON_HEADERS, LobbyRestError, lobbyRoomPath, readErrorMessage, readJson } from './lobby-rest';
 
 /** `DELETE /api/v1/room/{roomId}` — host disposes the Colyseus match. */
 export async function deleteRoom(roomId: string): Promise<void> {
-  const response = await fetch(lobbyRoomPath(roomId), { method: 'DELETE' });
+  // JSON Content-Type (no body): Astro CSRF only hard-blocks form-like / bare
+  // mutating requests when Origin ≠ request URL origin (common behind TLS proxies).
+  const response = await fetch(lobbyRoomPath(roomId), {
+    method: 'DELETE',
+    headers: JSON_HEADERS,
+  });
   if (response.status === 204) {
     return;
   }

@@ -27,7 +27,7 @@ jobs:
     with:
       # TODO: Remove release notes in this reusable workflow
       use_release_notes: false
-      lfs: true
+      lfs: false
 
   deploy:
     needs: bump

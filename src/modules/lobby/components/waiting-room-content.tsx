@@ -1,8 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CsButton } from '@/components/cs-button';
+import { startMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
+import { useMatchJoin } from '@/modules/multiplayer/hooks/use-match-join';
 import { deleteRoom } from '@/modules/multiplayer/services/delete-room';
 import { LobbyRestError } from '@/modules/multiplayer/services/lobby-rest';
+import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 import { useRoomSnapshot } from '../hooks/use-room-snapshot';
@@ -20,6 +23,17 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
   const dispose = useMutation({
     mutationFn: deleteRoom,
   });
+
+  const { joining, error: joinError } = useMatchJoin(roomId);
+  const joined = !joining && !joinError;
+  const phase = useMultiplayerStore((s) => s.phase);
+  const [starting, setStarting] = useState(false);
+
+  useEffect(() => {
+    if (phase === 'live') {
+      window.location.href = `/room/${roomId}/play`;
+    }
+  }, [phase, roomId]);
 
   if (!session) {
     return (
@@ -118,31 +132,60 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
 
       <InviteShare roomId={roomId} />
 
-      {dispose.error && (
+      {joinError && (
         <p role="alert" className="font-mono text-xs tracking-widest text-danger">
-          {dispose.error.message}
+          {joinError}
         </p>
       )}
 
+      {(dispose.error && (
+        <p role="alert" className="font-mono text-xs tracking-widest text-danger">
+          {dispose.error.message}
+        </p>
+      ))}
+
       <div className="flex justify-end gap-4">
-        {session.role === 'host' && (
-          <CsButton
-            type="button"
-            variant="secondary"
-            onClick={handleCloseRoom}
-            disabled={dispose.isPending}
-            aria-busy={dispose.isPending}
-          >
-            {dispose.isPending ? 'Closing…' : 'Close Room'}
-          </CsButton>
-        )}
-        <CsButton
-          href={`/room/${roomId}/play`}
-          variant="primary"
-          className="min-w-50 justify-center"
-        >
-          Play
-        </CsButton>
+        {session.role === 'host'
+          ? (
+              <CsButton
+                type="button"
+                variant="secondary"
+                onClick={handleCloseRoom}
+                disabled={dispose.isPending}
+                aria-busy={dispose.isPending}
+              >
+                {dispose.isPending ? 'Closing…' : 'Close Room'}
+              </CsButton>
+            )
+          : null}
+        {session.role === 'host'
+          ? (
+              <CsButton
+                type="button"
+                variant="primary"
+                className="min-w-50 justify-center"
+                disabled={!joined || starting}
+                aria-busy={starting}
+                onClick={() => {
+                  if (starting || !joined) {
+                    return;
+                  }
+                  setStarting(true);
+                  startMatch();
+                }}
+              >
+                {starting ? 'Starting…' : 'Start Match'}
+              </CsButton>
+            )
+          : (
+              <CsButton
+                href={`/room/${roomId}/play`}
+                variant="primary"
+                className="min-w-50 justify-center"
+              >
+                {joining ? 'Connecting…' : 'Play'}
+              </CsButton>
+            )}
       </div>
     </div>
   );

@@ -1,18 +1,34 @@
+import type { SoldierSkinId } from '@/modules/soldiers';
 import { useMultiplayerStore } from '../stores/multiplayer-store';
 import { RemotePlayer } from './remote-player';
 
-/** Renders one RemotePlayer per connected peer, mounting/unmounting on join/leave. */
+/**
+ * Renders one RemotePlayer per peer. Subscribes only to sessionId+skin so the
+ * 20 Hz transform stream does not re-render this list (rigs read getState()).
+ */
 export function RemotePlayers() {
-  const ids = useMultiplayerStore((state) => Object.keys(state.remotePlayers).join(','));
+  const roster = useMultiplayerStore((state) =>
+    Object.values(state.remotePlayers)
+      .map((player) => `${player.sessionId}:${player.skin}`)
+      .sort()
+      .join(','),
+  );
 
   return (
     <>
-      {ids
+      {roster
         .split(',')
         .filter(Boolean)
-        .map((sessionId) => (
-          <RemotePlayer key={sessionId} sessionId={sessionId} />
-        ))}
+        .map((entry) => {
+          const [sessionId, skinId] = entry.split(':') as [string, SoldierSkinId];
+          return (
+            <RemotePlayer
+              key={sessionId}
+              sessionId={sessionId}
+              skinId={skinId}
+            />
+          );
+        })}
     </>
   );
 }

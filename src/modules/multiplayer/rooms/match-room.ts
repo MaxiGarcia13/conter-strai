@@ -39,7 +39,8 @@ interface ShotMessage {
 }
 
 const MAX_CLIENTS = DEFAULT_MAX_PER_TEAM * 2;
-const ROUND_RESET_DELAY_MS = 3_000;
+/** Round-over overlay visible for a few seconds before the next round starts. */
+const ROUND_RESET_DELAY_MS = 5_000;
 
 function teamCount(state: MatchState, team: Team): number {
   let count = 0;
@@ -83,6 +84,7 @@ function checkTeamWipe(state: MatchState): Team | null {
 
 export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata }> {
   private roundResetTimer: ReturnType<typeof setTimeout> | null = null;
+  private hostSessionId: string | null = null;
 
   onCreate(options: { metadata?: MatchMetadata }) {
     const meta = options.metadata ?? { roomCode: '', scenario: 'arena-01' as ScenarioId };
@@ -99,6 +101,13 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
       player.y = data.y;
       player.z = data.z;
       player.rotY = data.rotY;
+    });
+
+    this.onMessage('startRound', (client) => {
+      if (client.sessionId !== this.hostSessionId || this.state.roundPhase !== 'waiting') {
+        return;
+      }
+      this.startRound();
     });
 
     this.onMessage('shot', (_client, data: ShotMessage) => {
@@ -140,6 +149,9 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
   }
 
   onJoin(client: Client, options?: JoinOptions) {
+    if (this.hostSessionId === null) {
+      this.hostSessionId = client.sessionId;
+    }
     if (this.state.players.size >= MAX_CLIENTS) {
       throw new Error('Room is full');
     }
@@ -171,8 +183,26 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
     this.state.players.set(client.sessionId, player);
   }
 
-  onLeave(client: Client) {
-    this.state.players.delete(client.sessionId);
+  /**
+   * Hard navigations (waiting → /play) often close the socket with a "normal"
+   * code that Colyseus treats as consented. Always hold the seat briefly so
+   * `/play` can `client.reconnect` with the persisted token.
+   */
+  async onLeave(client: Client, _consented: boolean) {
+    try {
+      await this.allowReconnection(client, 60);
+    } catch {
+      this.removePlayer(client.sessionId);
+    }
+  }
+
+  private removePlayer(sessionId: string) {
+    this.state.players.delete(sessionId);
+
+    if (sessionId === this.hostSessionId) {
+      const remaining = this.state.players.keys().next();
+      this.hostSessionId = remaining.done ? null : remaining.value;
+    }
 
     if (this.state.roundPhase === 'in_progress') {
       const winner = checkTeamWipe(this.state);
@@ -192,6 +222,8 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
     }
     this.state.winner = '';
     this.state.roundPhase = 'in_progress';
+    // Reserved seats still connect; only fresh joinById/PUT joins are blocked.
+    this.lock();
   }
 
   onDispose() {

@@ -13,6 +13,8 @@ export interface HealthStoreState extends HealthSystem {
   difficulty: Difficulty;
   setDifficulty: (difficulty: Difficulty) => void;
   healthById: Record<EntityId, HealthState>;
+  /** Server-authoritative write (multiplayer snapshots); no hit reaction. */
+  syncHealth: (entityId: EntityId, health: HealthState) => void;
 }
 
 /** First damage on an unknown target enters it at full HP. */
@@ -47,5 +49,7 @@ export const useHealthStore = create<HealthStoreState>()((set, get) => ({
     }
     return nextHp;
   },
+  syncHealth: (entityId, health) =>
+    set((state) => ({ healthById: { ...state.healthById, [entityId]: health } })),
   resetAll: () => set({ healthById: {} }),
 }));

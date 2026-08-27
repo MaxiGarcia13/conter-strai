@@ -8,6 +8,7 @@ import {
   onRoundUpdate,
   readMatchPlayers,
   sendShot,
+  startMatch,
   syncTransform,
   toMoveMessage,
 } from '@/modules/multiplayer/adapters/colyseus-adapter';
@@ -18,17 +19,20 @@ const ENDPOINT = 'ws://localhost:2567';
 interface CallbackStore {
   stateChange: ((state: MatchState) => void)[];
   leave: ((code: number) => void)[];
+  messages: Record<string, ((payload: unknown) => void)[]>;
 }
 
 interface FakeRoom {
   roomId: string;
   sessionId: string;
+  reconnectionToken: string;
   state: MatchState;
   callbacks: CallbackStore;
   sent: { type: string; payload: unknown }[];
   leaveTimes: number;
   onStateChange: (callback: (state: MatchState) => void) => void;
   onLeave: (callback: (code: number) => void) => void;
+  onMessage: (type: string, callback: (payload: unknown) => void) => void;
   send: (type: string, payload: unknown) => void;
   leave: (consented?: boolean) => Promise<number>;
   removeAllListeners: () => void;
@@ -38,8 +42,9 @@ function makeRoom(roomId: string, existing?: MatchState): FakeRoom {
   const room: FakeRoom = {
     roomId,
     sessionId: 'local-session',
+    reconnectionToken: `${roomId}:token-local`,
     state: existing ?? createMatchState({ scenario: 'arena-01' }),
-    callbacks: { stateChange: [], leave: [] },
+    callbacks: { stateChange: [], leave: [], messages: {} },
     sent: [],
     leaveTimes: 0,
     onStateChange(callback) {
@@ -47,6 +52,11 @@ function makeRoom(roomId: string, existing?: MatchState): FakeRoom {
     },
     onLeave(callback) {
       room.callbacks.leave.push(callback);
+    },
+    onMessage(type, callback) {
+      const list = room.callbacks.messages[type] ?? [];
+      list.push(callback);
+      room.callbacks.messages[type] = list;
     },
     send(type, payload) {
       room.sent.push({ type, payload });
@@ -76,6 +86,11 @@ class FakeClient {
 
   consumeSeatReservation(reservation: { roomId: string }, _rootSchema: unknown): Promise<FakeRoom> {
     return Promise.resolve(makeRoom(reservation.roomId));
+  }
+
+  reconnect(reconnectionToken: string, _rootSchema: unknown): Promise<FakeRoom> {
+    const [roomId] = reconnectionToken.split(':');
+    return Promise.resolve(makeRoom(roomId ?? 'rejoined'));
   }
 }
 
@@ -190,6 +205,16 @@ describe('initMatch', () => {
     expect(room.sent).toContainEqual({ type: 'shot', payload: { targetId: 'session-2', zone: 'head' } });
   });
 
+  it('starts the round via the adapter proxy', async () => {
+    const match = await initMatch({ roomId: 'host-room' });
+    const room = match.room as unknown as FakeRoom;
+
+    startMatch();
+
+    expect(room.sent).toContainEqual({ type: 'startRound', payload: undefined });
+    expect(getActiveMatch()).toBe(match);
+  });
+
   it('notifies player listeners with a flattened snapshot on state change', async () => {
     const match = await initMatch({ roomId: 'host-room' });
     const room = match.room as unknown as FakeRoom;
@@ -240,9 +265,28 @@ describe('initMatch', () => {
     room.callbacks.stateChange[0]!(room.state);
 
     expect(roundUpdates).toEqual([
+      { phase: 'waiting', winner: '' },
       { phase: 'in_progress', winner: '' },
       { phase: 'ended', winner: 'civilian' },
     ]);
+  });
+
+  it('reconnects with a persisted reconnection token', async () => {
+    const match = await initMatch({
+      roomId: 'unused',
+      reconnectionToken: 'host-room:token-abc',
+    });
+
+    expect(match.roomId).toBe('host-room');
+    expect(match.reconnectionToken).toBe('host-room:token-local');
+  });
+
+  it('reuses an active match for the same room instead of leaving', async () => {
+    const first = await initMatch({ roomId: 'host-room' });
+    const second = await initMatch({ roomId: 'host-room' });
+
+    expect(second).toBe(first);
+    expect((first.room as unknown as FakeRoom).leaveTimes).toBe(0);
   });
 
   it('clears the active match on leave and guards module helpers', async () => {

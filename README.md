@@ -60,12 +60,14 @@ Open [http://localhost:4321](http://localhost:4321).
 | `npm run test:e2e`                  | Playwright                                       |
 | `npm run phoenix`                   | Clean install (`node_modules`, `dist`, `.astro`) |
 
-Optional env:
+Optional env (see `.env.example`):
 
-| Variable | Default                  | Purpose                            |
-| -------- | ------------------------ | ---------------------------------- |
-| `PORT`   | `4321`                   | Dev / preview port                 |
-| `SITE`   | `http://localhost:$PORT` | Canonical site URL (sitemap, meta) |
+| Variable              | Default                  | Purpose                                      |
+| --------------------- | ------------------------ | -------------------------------------------- |
+| `PORT`                | `4321`                   | Dev / preview port                           |
+| `SITE`                | `http://localhost:$PORT` | Canonical site URL (sitemap, meta)           |
+| `PUBLIC_COLYSEUS_URL` | — (required for lobby)   | Client WebSocket URL, e.g. `ws://localhost:2567` |
+| `COLYSEUS_PORT`       | `2567`                   | Colyseus listen port (keep URL in sync)      |
 
 ## Project layout
 

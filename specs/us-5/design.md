@@ -189,6 +189,7 @@ Register rooms when the Node server boots (Colyseus attach to Astro Node server 
 initMatch({ roomId, reservation?, options?, endpoint? }) → MatchHandle { localPlayerId, players, … }
 syncTransform({ x, z, yaw })            // throttled ~20 Hz
 sendShot({ targetId, zone })           // server ShotMessage wire shape
+startMatch()                            // host-only: waiting → in_progress
 onPlayerUpdate(callback)               // full player snapshot per state change
 onRoundUpdate(callback)                // roundPhase + winner deltas
 onLeave(callback)
@@ -203,7 +204,9 @@ onLeave(callback)
 
 ## Round sync (server-authoritative)
 
-- Host or ready flow moves `roundPhase` from `waiting` → `in_progress` (lock joins / set `canJoin: false`)
+- Host or ready flow moves `roundPhase` from `waiting` → `in_progress` (lock joins / set `canJoin: false`): host (first joiner) sends `startRound`; waits for the room to fill any number of players — no minimum
+- `startRound` also `lock()`s the room client-side and server-side: REST `PUT` returns `409` outside `waiting`, `onJoin`/`joinById` reject, and room `canJoin` is false. Reserved seats (guests who already claimed seats) still connect after the lock
+- Server tracks `hostSessionId` (first to join; reassigned on host leave) and gates `startRound` to that client while the room is `waiting`
 - Server assigns / validates teams on join / round start (respect preferred team when capacity allows)
 - Server detects team wipe → sets `winner`, `roundPhase: 'ended'` → after delay, reset players and `roundPhase: 'in_progress'`
 - Clients react to Schema changes only — do not decide round winners locally in multiplayer mode
@@ -214,9 +217,13 @@ onLeave(callback)
 - Host waiting room **Close Room** → `DELETE /api/v1/room/{id}` then clear session and return to create
 - Waiting room / invite snapshot → `useQuery` on `GET /api/v1/room/{id}` (`queryKey: ['room', roomId]`); waiting room polls every 2s while `phase === 'waiting'`. Stop polling once Colyseus Schema sync is on that page.
 - `GameCanvas` calls adapter on mount
+- The waiting room joins the match early: `useMatchJoin` claims a seat if the session has no reservation (host create does not claim one), then `initMatch(reservation)` + `bindMatch`. Joining happens while `waiting` because the server rejects fresh joins after the round starts. `/play` also calls `useMatchJoin`: after a hard navigation it reconnects with the persisted `room.reconnectionToken`. `MatchRoom.onLeave` always `allowReconnection`s (~60s) — browser navigations often close with a "normal" code that Colyseus marks consented, which would otherwise drop the seat immediately. Consumed seat reservations are cleared from sessionStorage (only the reconnect token is kept). If reconnect fails, the play island shows the error plus **Create a Room**.
 - `LocalPlayer` / FPS controls sync local transform (throttled): `LocalTransformSync` mounts in the Canvas, reads the shared `player-state` transform per frame and forwards via the adapter proxy; the match handle coalesces to ~20 Hz (`TRANSFORM_SYNC_INTERVAL_MS`). No-op without an active match.
-- `useShooting` calls `sendShot`; opposing team only
-- `RemotePlayer` reads remote players from multiplayer store (fed by Schema callbacks)
+- `useShooting` calls `sendShot`; opposing team only. Hit detection stays client-side (raycast against peer hitboxes); damage, elimination, and round end are server-authoritative — in match mode `useShooting` never calls local `applyDamage` / `checkAndEndRound`
+- `bindMatch(handle)` feeds an active match into the stores: player/round snapshots → multiplayer store; local player HP mirrors into `useHealthStore[LOCAL_PLAYER_ENTITY_ID]` (HealthBar, movement freeze, dying pose all reuse the solo path); HP drops trigger `requestHitReaction` (flinch) for the survivor, keyed to `LOCAL_PLAYER_ENTITY_ID` locally and session ids for peers; unbind clears stores on leave
+- Bots are disabled while a match is connected (`ScenarioSoldiers` skipped) — opponents are the `RemotePlayers`; `RoundEndBanner` reads the multiplayer store `phase`/`winner` in match mode
+- `RemotePlayer` reads remote players from multiplayer store (fed by Schema callbacks); skin comes from the store roster; locomotion is inferred from transform deltas; transforms are applied via `getState()` in `useFrame`
+- Round-end: schema `roundPhase: ended` (+ `roundEnd` message) maps to the multiplayer store; `RoundEndBanner` reads that store while connected. Overlay stays up for the server reset delay (~5s).
 
 ## Astro config (US-5)
 

@@ -48,6 +48,11 @@ export interface InitMatchOptions {
   roomId: string;
   /** Reserved seat from `PUT /api/v1/room/{id}`; consumed when present. */
   reservation?: SeatReservation;
+  /**
+   * `room.reconnectionToken` (`roomId:token`) from a prior join — used after
+   * hard navigations (waiting → /play) while the server still holds the seat.
+   */
+  reconnectionToken?: string;
   /** Preferred team/skin passed to the server `onJoin`. */
   options?: { team?: Team; skin?: SoldierSkinId };
   /** Overrides `PUBLIC_COLYSEUS_URL` (tests / unusual endpoints). */
@@ -77,10 +82,14 @@ export interface MatchHandle {
   roomId: string;
   sessionId: string;
   localPlayerId: string;
+  /** `roomId:token` for `client.reconnect` after a hard navigation. */
+  reconnectionToken: string;
   /** Latest snapshot (incl. self) rebuilt on every server state change. */
   players: MatchPlayerSnapshot[];
   syncTransform: (transform: TransformSyncPayload) => void;
   sendShot: (shot: ShotPayload) => void;
+  /** Host-only: flips the room from `waiting` to `in_progress`. */
+  startRound: () => void;
   onPlayerUpdate: (listener: PlayerUpdateListener) => () => void;
   onRoundUpdate: (listener: RoundUpdateListener) => () => void;
   onLeave: (listener: LeaveListener) => () => void;

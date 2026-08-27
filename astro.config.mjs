@@ -1,4 +1,6 @@
+import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import node from '@astrojs/node';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
@@ -6,8 +8,23 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import colyseus from './src/modules/multiplayer/integration';
 
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
+const wsBrowserShim = path.resolve(rootDir, 'src/shims/ws-browser.ts');
 const port = Number(process.env.PORT ?? 4321);
 const site = process.env.SITE ?? `http://localhost:${port}`;
+
+/** Remap Node `ws` → native WebSocket on the client only (server keeps real `ws`). */
+function wsBrowserAlias() {
+  return {
+    name: 'ws-browser-alias',
+    enforce: 'pre',
+    resolveId(id, _importer, options) {
+      if (id === 'ws' && !options?.ssr) {
+        return wsBrowserShim;
+      }
+    },
+  };
+}
 
 export default defineConfig({
   output: 'server',
@@ -19,7 +36,7 @@ export default defineConfig({
   },
 
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), wsBrowserAlias()],
     // Avoid a Vite dep-optimizer race (Astro #16766) that can drop react/jsx-dev-runtime
     // from the client pre-bundle and cause intermittent "jsxDEV is not a function".
     // treeshake:false — Vite 8/Rolldown DCE strips R3F AsyncDispatcher.getOwner (only
@@ -39,6 +56,7 @@ export default defineConfig({
             '@react-three/drei',
             'three',
             'react-qr-code',
+            '@colyseus/sdk',
           ],
           rolldownOptions: {
             treeshake: false,

@@ -1,50 +1,69 @@
 import type { Group } from 'three';
-import type { EntityId } from '@/modules/soldiers';
+import type { RemoteMotionSample } from '../utils/resolve-remote-locomotion';
+import type { RemoteRenderTransform } from '../utils/step-remote-render-transform';
+import type { EntityId, SoldierSkinId } from '@/modules/soldiers';
 import { useFrame } from '@react-three/fiber';
-import { useRef, useState } from 'react';
-import { DEFAULT_PLAY_SKIN_ID, MODEL_FORWARD_YAW_OFFSET } from '@/modules/game/constants/player';
+import { useRef } from 'react';
+import { MODEL_FORWARD_YAW_OFFSET } from '@/modules/game/constants/player';
 import { SoldierMeshBody } from '@/modules/soldiers/components/soldier-mesh-body';
 import { useSoldierLocomotion } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { useSoldierMesh } from '@/modules/soldiers/hooks/use-soldier-mesh';
 import { resolveNpcPose } from '@/modules/soldiers/utils/resolve-soldier-pose';
 import { useMultiplayerStore } from '../stores/multiplayer-store';
+import { updateRemoteMotion } from '../utils/resolve-remote-locomotion';
+import { stepRemoteRenderTransform } from '../utils/step-remote-render-transform';
 
 interface RemotePlayerProps {
   /** Colyseus session id — also the hitbox entity id on the server. */
   sessionId: EntityId;
+  skinId: SoldierSkinId;
 }
 
 /**
- * A networked soldier driven by the multiplayer store. Skin/team are fixed at
- * join, so the mesh mounts once and per-frame useFrame reads move the rig —
- * the 20 Hz transform sync never re-renders React.
+ * A networked soldier driven by the multiplayer store. Skin is owned by the
+ * parent (stable for the session); per-frame reads use `getState()` so the
+ * 20 Hz transform sync never needs a React re-render to move the rig.
+ * Visual pose eases toward the latest sync; locomotion is inferred from the
+ * raw network samples (with idle hold + walk/run hysteresis).
  */
-export function RemotePlayer({ sessionId }: RemotePlayerProps) {
+export function RemotePlayer({ sessionId, skinId }: RemotePlayerProps) {
   const rigRef = useRef<Group>(null);
-
-  const remotePlayers = useMultiplayerStore((state) => state.remotePlayers);
-
-  const [skinId] = useState(
-    () => remotePlayers[sessionId]?.skin ?? DEFAULT_PLAY_SKIN_ID,
-  );
+  const motionRef = useRef<RemoteMotionSample | null>(null);
+  const renderRef = useRef<RemoteRenderTransform | null>(null);
   const { modelRef, source, scale, skin, animations } = useSoldierMesh(skinId);
 
   useSoldierLocomotion(modelRef, animations, skin.meshData.animations, {
     entityId: sessionId,
+    getLocomotionState: () => motionRef.current?.locomotion ?? 'idle',
     getPose: () => {
-      const entry = remotePlayers[sessionId];
+      const entry = useMultiplayerStore.getState().remotePlayers[sessionId];
       return entry ? resolveNpcPose(sessionId, entry.health.isEliminated) : null;
     },
   });
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     const rig = rigRef.current;
-    const entry = remotePlayers[sessionId];
+    const entry = useMultiplayerStore.getState().remotePlayers[sessionId];
     if (!rig || !entry) {
       return;
     }
-    rig.position.set(entry.transform.x, 0, entry.transform.z);
-    rig.rotation.y = entry.transform.rotY + MODEL_FORWARD_YAW_OFFSET;
+
+    const { x, z, rotY } = entry.transform;
+    motionRef.current = updateRemoteMotion(
+      motionRef.current,
+      { x, z },
+      performance.now(),
+    );
+
+    const rendered = stepRemoteRenderTransform(
+      renderRef.current,
+      { x, z, rotY },
+      delta,
+    );
+    renderRef.current = rendered;
+
+    rig.position.set(rendered.x, 0, rendered.z);
+    rig.rotation.y = rendered.rotY + MODEL_FORWARD_YAW_OFFSET;
   });
 
   return (

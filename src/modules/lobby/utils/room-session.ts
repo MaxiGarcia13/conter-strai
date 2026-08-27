@@ -17,6 +17,8 @@ export interface RoomSession {
   scenario: ScenarioConfig['id'];
   role: 'host' | 'guest';
   reservation?: SeatReservation;
+  /** Persisted after join so `/play` can `client.reconnect` after a hard nav. */
+  reconnectionToken?: string;
 }
 
 const PREFIX = 'cs:room:';
@@ -74,6 +76,7 @@ function isRoomSession(value: unknown): value is RoomSession {
     && isValidScenario(session.scenario)
     && (session.role === 'host' || session.role === 'guest')
     && (session.reservation === undefined || isSeatReservation(session.reservation))
+    && (session.reconnectionToken === undefined || typeof session.reconnectionToken === 'string')
   );
 }
 

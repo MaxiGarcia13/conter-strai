@@ -4,6 +4,8 @@ import type { SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { resolveRoomSession } from '@/modules/lobby/utils/room-session';
+import { MatchJoinError } from '@/modules/multiplayer/components/match-join-error';
+import { useMatchJoin } from '@/modules/multiplayer/hooks/use-match-join';
 import { PlayLoader } from './play-loader';
 
 const GameCanvas = lazy(async () => {
@@ -21,6 +23,48 @@ interface GameCanvasIslandProps {
   scenarioId?: ScenarioId;
   team?: Team;
   skinId?: SoldierSkinId;
+}
+
+function MatchPlayCanvas({
+  roomId,
+  scenarioId,
+  team,
+  skinId,
+  onLoaderChange,
+  visible,
+  loader,
+}: {
+  roomId: string;
+  scenarioId?: ScenarioId;
+  team?: Team;
+  skinId?: SoldierSkinId;
+  onLoaderChange: (state: PlayLoaderState | null) => void;
+  visible: boolean;
+  loader: PlayLoaderState;
+}) {
+  const { joining, error: joinError } = useMatchJoin(roomId);
+
+  if (joinError) {
+    return <MatchJoinError roomId={roomId} message={joinError} />;
+  }
+
+  if (joining) {
+    return <PlayLoader label="Connecting to match" progress={null} />;
+  }
+
+  return (
+    <>
+      {visible && <PlayLoader {...loader} />}
+      <Suspense fallback={null}>
+        <GameCanvas
+          scenarioId={scenarioId}
+          team={team}
+          skinId={skinId}
+          onLoaderChange={onLoaderChange}
+        />
+      </Suspense>
+    </>
+  );
 }
 
 export function GameCanvasIsland({ roomId, scenarioId, team, skinId }: GameCanvasIslandProps) {
@@ -43,6 +87,20 @@ export function GameCanvasIsland({ roomId, scenarioId, team, skinId }: GameCanva
     setLoader(state);
     setVisible(true);
   }, []);
+
+  if (roomId) {
+    return (
+      <MatchPlayCanvas
+        roomId={roomId}
+        scenarioId={resolvedScenarioId}
+        team={resolvedTeam}
+        skinId={resolvedSkinId}
+        onLoaderChange={handleLoaderChange}
+        visible={visible}
+        loader={loader}
+      />
+    );
+  }
 
   return (
     <>

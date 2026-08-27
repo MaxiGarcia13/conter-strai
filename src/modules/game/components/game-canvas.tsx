@@ -6,6 +6,8 @@ import { Canvas } from '@react-three/fiber';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { HealthBar } from '@/modules/combat';
 import { LocalTransformSync } from '@/modules/multiplayer/components/local-transform-sync';
+import { RemotePlayers } from '@/modules/multiplayer/components/remote-players';
+import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import {
   getScenarioById,
   ScenarioScene,
@@ -44,6 +46,7 @@ export function GameCanvas({
   const lighting = scenario.lighting ?? DEFAULT_LIGHTING;
   const localSpawn = useMemo(() => resolveLocalSpawn(scenario, team), [scenario, team]);
   const [trackLoading, setTrackLoading] = useState(Boolean(onLoaderChange));
+  const matchConnected = useMultiplayerStore((state) => state.connected);
 
   const startRound = useRoundStore((state) => state.startRound);
 
@@ -86,10 +89,13 @@ export function GameCanvas({
 
         <Suspense fallback={null}>
           <DeferredAfterLoad>
-            <ScenarioSoldiers
-              scenario={scenario}
-              skipKey={localSpawn.key}
-            />
+            {!matchConnected && (
+              <ScenarioSoldiers
+                scenario={scenario}
+                skipKey={localSpawn.key}
+              />
+            )}
+            {matchConnected && <RemotePlayers />}
             <LocalPlayer skinId={skinId} />
           </DeferredAfterLoad>
         </Suspense>

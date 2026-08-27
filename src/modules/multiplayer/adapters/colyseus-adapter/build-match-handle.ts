@@ -25,12 +25,14 @@ function subscribe<T>(listeners: Set<T>, listener: T): () => void {
 
 export function buildMatchHandle(room: MatchRoom): MatchHandle {
   const sessionId = room.sessionId;
-  let players: MatchPlayerSnapshot[] = [];
+  let players: MatchPlayerSnapshot[] = room.state ? readMatchPlayers(room.state) : [];
   let latestTransform: TransformSyncPayload | null = null;
   let flushTimer: ReturnType<typeof setTimeout> | null = null;
   let connected = true;
-  let lastPhase: MatchRoundPhase | null = null;
-  let lastWinner = '';
+  let lastPhase: MatchRoundPhase | null = room.state
+    ? (room.state.roundPhase as MatchRoundPhase)
+    : null;
+  let lastWinner = room.state?.winner ?? '';
 
   const playerListeners = new Set<PlayerUpdateListener>();
   const roundListeners = new Set<RoundUpdateListener>();
@@ -57,6 +59,18 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
       listener(payload);
     }
     emitRoundUpdate(nextState);
+  });
+
+  // Schema patches are the source of truth; the broadcast covers clients that
+  // missed a thin patch edge-case when the round flips to ended.
+  room.onMessage('roundEnd', (message: { winner?: string }) => {
+    const winner = message?.winner ?? room.state?.winner ?? '';
+    lastPhase = 'ended';
+    lastWinner = winner;
+    const payload: RoundUpdatePayload = { phase: 'ended', winner };
+    for (const listener of roundListeners) {
+      listener(payload);
+    }
   });
 
   function flushTransform(): void {
@@ -104,10 +118,33 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
     get players() {
       return players;
     },
+    get reconnectionToken() {
+      return room.reconnectionToken;
+    },
     syncTransform,
     sendShot,
-    onPlayerUpdate: (listener) => subscribe(playerListeners, listener),
-    onRoundUpdate: (listener) => subscribe(roundListeners, listener),
+    startRound: () => {
+      if (connected) {
+        room.send('startRound');
+      }
+    },
+    onPlayerUpdate: (listener) => {
+      const unsubscribe = subscribe(playerListeners, listener);
+      if (players.length > 0) {
+        listener({ localSessionId: sessionId, players });
+      }
+      return unsubscribe;
+    },
+    onRoundUpdate: (listener) => {
+      const unsubscribe = subscribe(roundListeners, listener);
+      if (room.state) {
+        listener({
+          phase: room.state.roundPhase as MatchRoundPhase,
+          winner: room.state.winner ?? '',
+        });
+      }
+      return unsubscribe;
+    },
     onLeave: (listener) => subscribe(leaveListeners, listener),
     leave: () => room.leave(true),
   };

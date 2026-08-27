@@ -6,6 +6,7 @@ export {
   onPlayerUpdate,
   onRoundUpdate,
   sendShot,
+  startMatch,
   syncTransform,
 } from './match-session';
 export { readMatchPlayers } from './read-match-players';

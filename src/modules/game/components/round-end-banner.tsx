@@ -1,10 +1,17 @@
+import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 import { useRoundStore } from '../state/round-store';
 
-/** Full-screen overlay shown when a round ends. */
+/** Full-screen overlay shown when a round ends. Server-driven in a match. */
 export function RoundEndBanner() {
-  const phase = useRoundStore((s) => s.phase);
-  const winner = useRoundStore((s) => s.winner);
+  const connected = useMultiplayerStore((state) => state.connected);
+  const mpPhase = useMultiplayerStore((state) => state.phase);
+  const mpWinner = useMultiplayerStore((state) => state.winner);
+  const roundPhase = useRoundStore((state) => state.phase);
+  const roundWinner = useRoundStore((state) => state.winner);
+
+  const phase = connected ? mpPhase : roundPhase;
+  const winner = connected ? mpWinner : roundWinner;
 
   if (phase !== 'round-end' || !winner) {
     return null;

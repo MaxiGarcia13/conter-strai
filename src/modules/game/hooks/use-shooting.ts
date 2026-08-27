@@ -1,3 +1,4 @@
+import type { ShotPayload } from '@/modules/multiplayer/adapters/colyseus-adapter';
 import type { BulletHitResult } from '@/modules/weapons/types';
 import { useThree } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
@@ -5,6 +6,11 @@ import { Raycaster, Vector2 } from 'three';
 import { useHealthStore } from '@/modules/combat';
 import { DEFAULT_LOCAL_TEAM, LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
 import { useRoundStore } from '@/modules/game/state/round-store';
+import {
+  getActiveMatch,
+  sendShot,
+} from '@/modules/multiplayer/adapters/colyseus-adapter';
+import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { DEFAULT_WEAPON_ID, weapons } from '@/modules/weapons/weapon-registry';
 import { resolveHitDamage } from '../services/resolve-hit-damage';
 import { getPlayerPose } from '../state/player-state';
@@ -32,7 +38,8 @@ export function useShooting(domElement: HTMLElement | null) {
       if (document.pointerLockElement !== domElement) {
         return;
       }
-      if (useRoundStore.getState().phase !== 'live') {
+      const match = getActiveMatch();
+      if (match ? useMultiplayerStore.getState().phase !== 'live' : useRoundStore.getState().phase !== 'live') {
         return;
       }
 
@@ -62,7 +69,20 @@ export function useShooting(domElement: HTMLElement | null) {
         raycaster.intersectObject(scene, true),
         LOCAL_PLAYER_ENTITY_ID,
       );
-      if (!hit) {
+      if (!hit || !hit.entityId || !hit.hitZone) {
+        return;
+      }
+
+      // Multiplayer: hit detection stays client-side (raycast against peer
+      // hitboxes) but damage is server-authoritative — the server resolves HP,
+      // elimination, and round end from the shot message.
+      if (match) {
+        const target = useMultiplayerStore.getState().remotePlayers[hit.entityId];
+        const self = match.players.find((player) => player.sessionId === match.sessionId);
+        if (!target || !self || self.team === target.team) {
+          return;
+        }
+        sendShot({ targetId: target.sessionId, zone: hit.hitZone as ShotPayload['zone'] });
         return;
       }
 

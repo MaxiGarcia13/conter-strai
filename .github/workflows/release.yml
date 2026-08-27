@@ -25,6 +25,7 @@ jobs:
     uses: MaxiGarcia13/gh-actions/.github/workflows/bump-version.yml@main
     secrets: inherit
     with:
+      # TODO: Remove release notes in this reusable workflow
       use_release_notes: false
 
   deploy:

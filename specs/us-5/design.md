@@ -186,7 +186,7 @@ Register rooms when the Node server boots (Colyseus attach to Astro Node server 
 
 ```
 // src/modules/multiplayer/adapters/colyseus-adapter/ (public entry: index.ts)
-initMatch({ roomId, reservation?, options? }) → MatchHandle { localPlayerId, players, … }
+initMatch({ roomId, reservation?, options?, endpoint? }) → MatchHandle { localPlayerId, players, … }
 syncTransform({ x, z, yaw })            // throttled ~20 Hz
 sendShot({ targetId, zone })           // server ShotMessage wire shape
 onPlayerUpdate(callback)               // full player snapshot per state change
@@ -214,7 +214,7 @@ onLeave(callback)
 - Host waiting room **Close Room** → `DELETE /api/v1/room/{id}` then clear session and return to create
 - Waiting room / invite snapshot → `useQuery` on `GET /api/v1/room/{id}` (`queryKey: ['room', roomId]`); waiting room polls every 2s while `phase === 'waiting'`. Stop polling once Colyseus Schema sync is on that page.
 - `GameCanvas` calls adapter on mount
-- `LocalPlayer` / FPS controls sync local transform (throttled)
+- `LocalPlayer` / FPS controls sync local transform (throttled): `LocalTransformSync` mounts in the Canvas, reads the shared `player-state` transform per frame and forwards via the adapter proxy; the match handle coalesces to ~20 Hz (`TRANSFORM_SYNC_INTERVAL_MS`). No-op without an active match.
 - `useShooting` calls `sendShot`; opposing team only
 - `RemotePlayer` reads remote players from multiplayer store (fed by Schema callbacks)
 

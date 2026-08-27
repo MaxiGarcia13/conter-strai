@@ -5,6 +5,7 @@ import type { Team } from '@/modules/teams';
 import { Canvas } from '@react-three/fiber';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { HealthBar } from '@/modules/combat';
+import { LocalTransformSync } from '@/modules/multiplayer/components/local-transform-sync';
 import {
   getScenarioById,
   ScenarioScene,
@@ -95,6 +96,7 @@ export function GameCanvas({
 
         <AimMarker />
         <ShootingController />
+        <LocalTransformSync />
 
         <LazyDevSceneTools skinId={skinId} />
       </Canvas>

@@ -1,21 +1,17 @@
 import type { Client } from 'colyseus';
 import type { MatchState } from '../schema/match-state';
-import type { PlayerState } from '../schema/player-state';
 
 import type { ScenarioId } from '@/modules/scenarios';
 import type { Team } from '@/modules/teams';
 import { Room } from 'colyseus';
-import { applyDamage } from '@/modules/combat/apply-damage';
-import { DEFAULT_MAX_HP } from '@/modules/combat/constants/health';
 import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
-import { getScenarioById, spawnYawFor } from '@/modules/scenarios';
-
-import { opposingTeam, TEAM_SKINS, TEAMS } from '@/modules/teams';
+import { getScenarioById } from '@/modules/scenarios';
+import { TEAM_SKINS } from '@/modules/teams';
 import { createMatchState } from '../schema/match-state';
 import { createPlayerState } from '../schema/player-state';
-
-// Pure weapon data — no React/three.js imports.
-const PISTOL_DAMAGE_BY_ZONE = { head: 0.4, body: 0.2, limb: 0.15 } as const;
+import { applyMatchShot } from './apply-match-shot';
+import { assignTeam, checkTeamWipe, teamCount } from './match-teams';
+import { placePlayerAtSpawn, resolveTeamSpawn, respawnMatchPlayers } from './place-match-player';
 
 export interface MatchMetadata {
   roomCode: string;
@@ -34,54 +30,9 @@ interface MoveMessage {
   rotY: number;
 }
 
-interface ShotMessage {
-  targetId: string;
-  zone: 'head' | 'body' | 'limb';
-}
-
 const MAX_CLIENTS = DEFAULT_MAX_PER_TEAM * 2;
 const COUNTDOWN_START = 3;
 const COUNTDOWN_TICK_MS = 1_000;
-
-function teamCount(state: MatchState, team: Team): number {
-  let count = 0;
-  for (const [, player] of state.players) {
-    if (player.team === team) {
-      count++;
-    }
-  }
-  return count;
-}
-
-function assignTeam(state: MatchState, preferred?: Team): Team | null {
-  if (preferred) {
-    if (teamCount(state, preferred) < DEFAULT_MAX_PER_TEAM) {
-      return preferred;
-    }
-  }
-  for (const team of TEAMS) {
-    if (teamCount(state, team) < DEFAULT_MAX_PER_TEAM) {
-      return team;
-    }
-  }
-  return null;
-}
-
-function checkTeamWipe(state: MatchState): Team | null {
-  for (const team of TEAMS) {
-    let hasAlive = false;
-    for (const [, player] of state.players) {
-      if (player.team === team && !player.eliminated) {
-        hasAlive = true;
-        break;
-      }
-    }
-    if (!hasAlive) {
-      return opposingTeam(team);
-    }
-  }
-  return null;
-}
 
 export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata }> {
   private hostSessionId: string | null = null;
@@ -117,35 +68,8 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
       this.startRound();
     });
 
-    this.onMessage('shot', (_client, data: ShotMessage) => {
-      if (this.state.roundPhase !== 'in_progress') {
-        return;
-      }
-      const shooter = this.state.players.get(_client.sessionId);
-      if (!shooter || shooter.eliminated) {
-        return;
-      }
-
-      const target = this.state.players.get(data.targetId);
-      if (!target || target.eliminated) {
-        return;
-      }
-      if (target.team === shooter.team) {
-        return;
-      }
-
-      const nextHp = applyDamage({
-        currentHp: target.hp,
-        maxHp: DEFAULT_MAX_HP,
-        zone: data.zone,
-        difficulty: 'normal',
-        damageByZone: PISTOL_DAMAGE_BY_ZONE,
-      });
-
-      target.hp = nextHp;
-      target.eliminated = nextHp <= 0;
-
-      const winner = checkTeamWipe(this.state);
+    this.onMessage('shot', (client, data: { targetId: string; zone: 'head' | 'body' | 'limb' }) => {
+      const winner = applyMatchShot(this.state, client.sessionId, data);
       if (winner) {
         this.state.winner = winner;
         this.state.roundPhase = 'ended';
@@ -172,16 +96,14 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
     }
 
     const scenario = getScenarioById(this.state.scenario as ScenarioId);
-    const spawns = scenario.teamSpawns[team];
-    const spawnIndex = this.countTeamMembers(team);
-    const spawn = spawns?.[spawnIndex % (spawns?.length ?? 1)] ?? [0, 0, 0];
-    const yaw = spawnYawFor(scenario, team, spawn);
+    const spawnIndex = teamCount(this.state, team);
+    const { spawn, yaw } = resolveTeamSpawn(scenario, team, spawnIndex);
 
     const player = createPlayerState({
       team,
       skin: options?.skin ?? TEAM_SKINS[team][0],
     });
-    this.placeAtSpawn(player, spawn, yaw);
+    placePlayerAtSpawn(player, spawn, yaw);
     this.spawnIndexBySession.set(client.sessionId, spawnIndex);
 
     this.state.players.set(client.sessionId, player);
@@ -220,18 +142,7 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
   }
 
   startRound() {
-    const scenario = getScenarioById(this.state.scenario as ScenarioId);
-
-    for (const [sessionId, player] of this.state.players) {
-      const team = player.team as Team;
-      const spawnIndex = this.spawnIndexBySession.get(sessionId) ?? 0;
-      const spawns = scenario.teamSpawns[team];
-      const spawn = spawns?.[spawnIndex % (spawns?.length ?? 1)] ?? [0, 0, 0];
-      const yaw = spawnYawFor(scenario, team, spawn);
-      this.placeAtSpawn(player, spawn, yaw);
-      player.hp = DEFAULT_MAX_HP;
-      player.eliminated = false;
-    }
+    respawnMatchPlayers(this.state, this.spawnIndexBySession);
     this.state.winner = '';
     this.state.countdown = COUNTDOWN_START;
     this.state.roundPhase = 'countdown';
@@ -266,26 +177,5 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
       clearInterval(this.countdownTimer);
       this.countdownTimer = null;
     }
-  }
-
-  private placeAtSpawn(
-    player: PlayerState,
-    spawn: readonly [number, number, number],
-    yaw: number,
-  ) {
-    player.x = spawn[0];
-    player.y = spawn[1];
-    player.z = spawn[2];
-    player.rotY = yaw;
-  }
-
-  private countTeamMembers(team: Team): number {
-    let count = 0;
-    for (const [, player] of this.state.players) {
-      if (player.team === team) {
-        count++;
-      }
-    }
-    return count;
   }
 }

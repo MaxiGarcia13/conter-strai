@@ -39,6 +39,8 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
   /** Spawn slot claimed at join — reused on round restart. */
   private spawnIndexBySession = new Map<string, number>();
   private countdownTimer: ReturnType<typeof setInterval> | null = null;
+  /** Host close / API dispose — skip the reconnection grace window on teardown. */
+  private disposing = false;
 
   onCreate(options: { metadata?: MatchMetadata }) {
     const meta = options.metadata ?? { roomCode: '', scenario: 'arena-01' as ScenarioId };
@@ -115,11 +117,21 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
    * `/play` can `client.reconnect` with the persisted token.
    */
   async onLeave(client: Client, _code?: number) {
+    if (this.disposing) {
+      this.removePlayer(client.sessionId);
+      return;
+    }
     try {
       await this.allowReconnection(client, 60);
     } catch {
       this.removePlayer(client.sessionId);
     }
+  }
+
+  /** Tear down the lobby immediately (host Close Room / DELETE handler). */
+  async disposeLobby(): Promise<void> {
+    this.disposing = true;
+    await this.disconnect();
   }
 
   private removePlayer(sessionId: string) {

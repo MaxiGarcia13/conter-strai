@@ -45,13 +45,18 @@ test('host close room deletes the match and returns to create', async ({ page, r
   await expect(page).toHaveURL(/\/room\/[A-Z0-9]{6}$/);
 
   const roomId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
+  await expect.poll(async () => (await request.get(`/api/v1/room/${roomId}`)).status()).toBe(200);
+
+  const closeRoom = page.getByRole('button', { name: 'Close Room' });
+  await expect(closeRoom).toBeEnabled();
+
   const disposed = page.waitForResponse(
     (response) =>
       response.url().includes(`/api/v1/room/${roomId}`)
       && response.request().method() === 'DELETE',
+    { timeout: 15_000 },
   );
-
-  await page.getByRole('button', { name: 'Close Room' }).click();
+  await closeRoom.click();
   expect((await disposed).status()).toBe(204);
   await expect(page).toHaveURL(/\/room$/);
 

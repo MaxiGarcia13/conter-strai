@@ -52,7 +52,10 @@ jobs:
           lfs: true
 
       - name: Pull LFS files
-        run: git lfs pull
+        run: |
+          git lfs install
+          git lfs checkout
+          git lfs pull
 
       - name: Fetch tags
         run: git pull --tags

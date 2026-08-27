@@ -2,7 +2,7 @@
   "name": "conter-strai",
   "type": "module",
   "version": "0.0.1",
-  "description": "Shooter game",
+  "description": "Browser tactical shooter — Civilians vs Soldiers, round-based team elimination. Astro, React Three Fiber, and Colyseus.",
   "author": "Maximiliano Garcia Mortigliengo",
   "license": "ISC",
   "homepage": "https://github.com/MaxiGarcia13/conter-strai#readme",
@@ -13,6 +13,21 @@
   "bugs": {
     "url": "https://github.com/MaxiGarcia13/conter-strai/issues"
   },
+  "keywords": [
+    "tactical-shooter",
+    "browser-game",
+    "web-game",
+    "fps",
+    "pvp",
+    "multiplayer",
+    "team-deathmatch",
+    "round-based",
+    "astro",
+    "react-three-fiber",
+    "threejs",
+    "colyseus",
+    "open-source"
+  ],
   "scripts": {
     "prepare": "simple-git-hooks || true",
     "dev": "astro dev",

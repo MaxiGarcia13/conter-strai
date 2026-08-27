@@ -1,5 +1,9 @@
 ---
-import { author } from '@root/package.json';
+import {
+  author,
+  keywords,
+  description as packageDescription,
+} from '@root/package.json';
 import '@/styles/global.css';
 
 interface Props {
@@ -13,12 +17,14 @@ interface Props {
 
 const {
   title = 'Conter Strai',
-  description = 'Shooter game',
+  description = packageDescription,
   image = '/favicon.png',
-  imageAlt = 'Conter Strai, shooter game',
+  imageAlt = 'Conter Strai — browser tactical shooter',
   type = 'website',
   noindex = false,
 } = Astro.props;
+
+const metaKeywords = keywords.join(', ');
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
 const imageURL = new URL(image, Astro.site ?? Astro.url);
@@ -33,6 +39,7 @@ const themeColor = '#0d0f14';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="keywords" content={metaKeywords} />
     <meta name="author" content={author} />
     <meta name="creator" content={author} />
     <meta name="theme-color" content={themeColor} />

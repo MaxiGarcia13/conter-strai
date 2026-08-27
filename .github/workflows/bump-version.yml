@@ -17,7 +17,7 @@ on:
         description: Directory containing package.json (use . for repo root)
         type: string
         required: false
-        default: '.'
+        default: .
       use_release_notes:
         description: Whether to use release notes
         type: boolean

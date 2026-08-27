@@ -13,9 +13,9 @@ const chromiumLaunchArgs = isCI
 
 export default defineConfig({
   testDir: 'tests/e2e',
-  retries: isCI ? 2 : 1,
+  retries: 1,
   workers: 1,
-  timeout: isCI ? 60_000 : 30_000,
+  timeout: 30_000,
   expect: {
     timeout: isCI ? 15_000 : 5_000,
   },
@@ -37,7 +37,6 @@ export default defineConfig({
     command: 'npm run dev',
     reuseExistingServer: !isCI,
     port,
-    timeout: isCI ? 120_000 : 60_000,
     env: {
       ...process.env,
       E2E: 'true',

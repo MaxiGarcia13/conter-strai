@@ -21,4 +21,4 @@
 
 ## Acceptance
 
-Two+ browsers create/join via REST (same public room code), connect over Colyseus WebSocket, sit in waiting then play on opposing teams (≤4 each), fight with pistols until one team is eliminated; round resets and repeats.
+Two+ browsers create/join via REST (same public room code), connect over Colyseus WebSocket, sit in waiting then play on opposing teams (≤4 each), fight with pistols until one team is eliminated; host Restart starts the next round (no auto-timer).

@@ -5,6 +5,7 @@ import type {
   MatchRoom,
   PlayersUpdatePayload,
   PlayerUpdateListener,
+  RoomClosedListener,
   RoundUpdateListener,
   RoundUpdatePayload,
   ShotPayload,
@@ -33,20 +34,24 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
     ? (room.state.roundPhase as MatchRoundPhase)
     : null;
   let lastWinner = room.state?.winner ?? '';
+  let lastCountdown = room.state?.countdown ?? 0;
 
   const playerListeners = new Set<PlayerUpdateListener>();
   const roundListeners = new Set<RoundUpdateListener>();
   const leaveListeners = new Set<LeaveListener>();
+  const roomClosedListeners = new Set<RoomClosedListener>();
 
   function emitRoundUpdate(state: MatchState): void {
     const phase = state.roundPhase as MatchRoundPhase;
     const winner = state.winner ?? '';
-    if (phase === lastPhase && winner === lastWinner) {
+    const countdown = state.countdown ?? 0;
+    if (phase === lastPhase && winner === lastWinner && countdown === lastCountdown) {
       return;
     }
     lastPhase = phase;
     lastWinner = winner;
-    const payload: RoundUpdatePayload = { phase, winner };
+    lastCountdown = countdown;
+    const payload: RoundUpdatePayload = { phase, winner, countdown };
     for (const listener of roundListeners) {
       listener(payload);
     }
@@ -67,9 +72,16 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
     const winner = message?.winner ?? room.state?.winner ?? '';
     lastPhase = 'ended';
     lastWinner = winner;
-    const payload: RoundUpdatePayload = { phase: 'ended', winner };
+    lastCountdown = 0;
+    const payload: RoundUpdatePayload = { phase: 'ended', winner, countdown: 0 };
     for (const listener of roundListeners) {
       listener(payload);
+    }
+  });
+
+  room.onMessage('roomClosed', () => {
+    for (const listener of roomClosedListeners) {
+      listener();
     }
   });
 
@@ -141,11 +153,13 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
         listener({
           phase: room.state.roundPhase as MatchRoundPhase,
           winner: room.state.winner ?? '',
+          countdown: room.state.countdown ?? 0,
         });
       }
       return unsubscribe;
     },
     onLeave: (listener) => subscribe(leaveListeners, listener),
+    onRoomClosed: (listener) => subscribe(roomClosedListeners, listener),
     leave: () => room.leave(true),
   };
 

@@ -68,6 +68,20 @@ describe('updateRemoteMotion', () => {
     );
     expect(walking.locomotion).toBe('walk');
   });
+
+  it('snaps to idle on teleport-sized jumps (round respawn)', () => {
+    const start = updateRemoteMotion(null, { x: 0, z: 0 }, 0);
+    const walking = updateRemoteMotion(start, { x: 0.25, z: 0 }, 50);
+    expect(walking.locomotion).toBe('walk');
+
+    const respawned = updateRemoteMotion(
+      walking,
+      { x: walking.x + REMOTE_SNAP_DISTANCE + 1, z: 0 },
+      100,
+    );
+    expect(respawned.locomotion).toBe('idle');
+    expect(respawned.x).toBe(walking.x + REMOTE_SNAP_DISTANCE + 1);
+  });
 });
 
 describe('stepRemoteRenderTransform', () => {

@@ -8,6 +8,7 @@ import {
 } from '@/modules/multiplayer/adapters/colyseus-adapter';
 import { bindMatch } from '@/modules/multiplayer/services/bind-match';
 import { putClaimSeat } from '@/modules/multiplayer/services/put-claim-seat';
+import { wait } from '@/utils/wait';
 
 export interface MatchJoinState {
   joining: boolean;
@@ -59,7 +60,7 @@ async function resolveReservation(roomId: string): Promise<SeatReservation | nul
 
 function bindRoomMatch(roomId: string, handle: MatchHandle): void {
   boundByRoom.get(roomId)?.();
-  boundByRoom.set(roomId, bindMatch(handle));
+  boundByRoom.set(roomId, bindMatch(handle, roomId));
 }
 
 /** Persist reconnect token; drop the consumed seat reservation. */
@@ -85,9 +86,7 @@ async function reconnectWithRetry(reconnectionToken: string): Promise<MatchHandl
       });
     } catch (cause) {
       lastError = cause;
-      await new Promise((resolve) => {
-        setTimeout(resolve, 200 * (attempt + 1));
-      });
+      await wait(200 * (attempt + 1));
     }
   }
   throw lastError instanceof Error

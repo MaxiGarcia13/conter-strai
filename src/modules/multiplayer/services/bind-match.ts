@@ -1,12 +1,30 @@
 import type { MatchHandle } from '../adapters/colyseus-adapter';
+import type { MatchRoundPhase } from '../schema';
 import type { EntityId } from '@/modules/soldiers';
 import { useHealthStore } from '@/modules/combat';
 import { LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
+import {
+  resetPlayerTransform,
+  setPlayerLocomotion,
+  setPlayerPose,
+} from '@/modules/game/state/player-state';
+import { clearRoomSession } from '@/modules/lobby/utils/room-session';
 import { requestHitReaction } from '@/modules/soldiers/state/hit-reaction-state';
 import { useMultiplayerStore } from '../stores/multiplayer-store';
 import { resolveServerHealthEffects } from './resolve-server-health-effects';
 
 const toClientEntity = (sessionId: string): EntityId => sessionId;
+
+/** Snap local FPS state after a server round restart (spawn + clear dying). */
+function applyLocalRoundRespawn(handle: MatchHandle): void {
+  const local = handle.players.find((player) => player.sessionId === handle.localPlayerId);
+  if (!local) {
+    return;
+  }
+  resetPlayerTransform(local.x, local.z, local.rotY);
+  setPlayerPose(null);
+  setPlayerLocomotion('idle');
+}
 
 /**
  * Feeds an active match into the stores: player/round snapshots populate the
@@ -14,8 +32,9 @@ const toClientEntity = (sessionId: string): EntityId => sessionId;
  * HealthBar / movement freeze / dying pose stay server-driven), and HP drops
  * trigger hit reactions. Returns an unbind for cleanup on leave/dev remount.
  */
-export function bindMatch(handle: MatchHandle): () => void {
+export function bindMatch(handle: MatchHandle, roomId: string): () => void {
   let prevById = new Map<EntityId, number>();
+  let prevRoundPhase: MatchRoundPhase | null = null;
 
   const offPlayerUpdate = handle.onPlayerUpdate((payload) => {
     const { localHealth, hitReactions, nextById } = resolveServerHealthEffects(payload, prevById);
@@ -41,7 +60,13 @@ export function bindMatch(handle: MatchHandle): () => void {
   });
 
   const offRoundUpdate = handle.onRoundUpdate((payload) => {
+    const enteringCountdown = payload.phase === 'countdown' && prevRoundPhase !== 'countdown';
+    prevRoundPhase = payload.phase;
     useMultiplayerStore.getState().applyRoundUpdate(payload);
+
+    if (enteringCountdown) {
+      applyLocalRoundRespawn(handle);
+    }
   });
 
   const offLeave = handle.onLeave(() => {
@@ -49,9 +74,17 @@ export function bindMatch(handle: MatchHandle): () => void {
     useHealthStore.getState().resetAll();
   });
 
+  const offRoomClosed = handle.onRoomClosed(() => {
+    clearRoomSession(roomId);
+    useMultiplayerStore.getState().reset();
+    useHealthStore.getState().resetAll();
+    window.location.href = '/';
+  });
+
   return () => {
     offPlayerUpdate();
     offRoundUpdate();
     offLeave();
+    offRoomClosed();
   };
 }

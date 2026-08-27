@@ -15,8 +15,21 @@ import {
 import { checkRoundEnd } from '../services/check-round-end';
 import { resetPlayerTransform, setPlayerPose } from './player-state';
 
+const COUNTDOWN_START = 3;
+const COUNTDOWN_TICK_MS = 1_000;
+
+let countdownTimer: ReturnType<typeof setInterval> | null = null;
+
+function clearCountdownTimer() {
+  if (countdownTimer) {
+    clearInterval(countdownTimer);
+    countdownTimer = null;
+  }
+}
+
 export interface RoundState {
   phase: RoundPhase;
+  countdown: number;
   roundNumber: number;
   winner: Team | null;
   roster: RosterEntry[];
@@ -30,6 +43,7 @@ export interface RoundState {
 
 export const useRoundStore = create<RoundState>()((set, get) => ({
   phase: 'live',
+  countdown: 0,
   roundNumber: 0,
   winner: null,
   roster: [],
@@ -39,6 +53,7 @@ export const useRoundStore = create<RoundState>()((set, get) => ({
 
     useHealthStore.getState().resetAll();
     setPlayerPose(null);
+    clearCountdownTimer();
 
     const roster: RosterEntry[] = [];
 
@@ -62,15 +77,31 @@ export const useRoundStore = create<RoundState>()((set, get) => ({
     }
 
     set((prev) => ({
-      phase: 'live',
+      phase: 'countdown',
+      countdown: COUNTDOWN_START,
       roundNumber: prev.roundNumber + 1,
       winner: null,
       roster,
     }));
+
+    countdownTimer = setInterval(() => {
+      const { phase, countdown } = get();
+      if (phase !== 'countdown') {
+        clearCountdownTimer();
+        return;
+      }
+      if (countdown <= 1) {
+        clearCountdownTimer();
+        set({ phase: 'live', countdown: 0 });
+        return;
+      }
+      set({ countdown: countdown - 1 });
+    }, COUNTDOWN_TICK_MS);
   },
 
   endRound: (winner) => {
-    set({ phase: 'round-end', winner });
+    clearCountdownTimer();
+    set({ phase: 'round-end', winner, countdown: 0 });
   },
 
   updateRoster: (entries) => {

@@ -41,6 +41,7 @@ export interface PlayersUpdatePayload {
 export interface RoundUpdatePayload {
   phase: MatchRoundPhase;
   winner: string;
+  countdown: number;
 }
 
 export interface InitMatchOptions {
@@ -69,6 +70,7 @@ export interface MoveMessage {
 export type PlayerUpdateListener = (payload: PlayersUpdatePayload) => void;
 export type RoundUpdateListener = (payload: RoundUpdatePayload) => void;
 export type LeaveListener = (code: number) => void;
+export type RoomClosedListener = () => void;
 
 /** The `@colyseus/sdk` room whose state is the authoritative `MatchState`. */
 export type MatchRoom = Room<any, MatchState>;
@@ -88,10 +90,12 @@ export interface MatchHandle {
   players: MatchPlayerSnapshot[];
   syncTransform: (transform: TransformSyncPayload) => void;
   sendShot: (shot: ShotPayload) => void;
-  /** Host-only: flips the room from `waiting` to `in_progress`. */
+  /** Host-only: flips the room from `waiting` | `ended` into the countdown. */
   startRound: () => void;
   onPlayerUpdate: (listener: PlayerUpdateListener) => () => void;
   onRoundUpdate: (listener: RoundUpdateListener) => () => void;
   onLeave: (listener: LeaveListener) => () => void;
+  /** Fired when the room is disposed (Home / Close Room) — all clients should exit. */
+  onRoomClosed: (listener: RoomClosedListener) => () => void;
   leave: () => Promise<number>;
 }

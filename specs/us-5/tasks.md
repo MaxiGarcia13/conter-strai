@@ -45,7 +45,7 @@ Lobby REST wraps Colyseus `matchMaker`; presence and play stay on WebSocket. See
 
 ## Verification
 
-- [ ] Two browsers: create via REST, join via PUT + WebSocket, teams ≤4 each, shoot until one team eliminated; round resets
+- [ ] Two browsers: create via REST, join via PUT + WebSocket, teams ≤4 each, shoot until one team eliminated; host Restart starts next round; Home returns to `/`
 - [ ] Status reflects `canJoin` false when full or `in_progress`; PUT returns `409` when team full
 
 ## Do not

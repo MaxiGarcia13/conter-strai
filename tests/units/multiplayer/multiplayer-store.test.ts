@@ -7,6 +7,7 @@ import {
 
 describe('mapMatchRoundPhase', () => {
   it('maps the server phases onto the client RoundPhase', () => {
+    expect(mapMatchRoundPhase('countdown')).toBe('countdown');
     expect(mapMatchRoundPhase('in_progress')).toBe('live');
     expect(mapMatchRoundPhase('ended')).toBe('round-end');
   });
@@ -81,19 +82,46 @@ describe('useMultiplayerStore', () => {
   });
 
   it('applies server round phase and winner via the mapped client phase', () => {
-    useMultiplayerStore.getState().applyRoundUpdate({ phase: 'ended', winner: 'civilian' });
+    useMultiplayerStore.getState().applyRoundUpdate({
+      phase: 'ended',
+      winner: 'civilian',
+      countdown: 0,
+    });
 
     expect(useMultiplayerStore.getState()).toMatchObject({
       phase: 'round-end',
       winner: 'civilian',
+      countdown: null,
       connected: true,
     });
   });
 
-  it('clears the winner when the server has none', () => {
-    useMultiplayerStore.getState().applyRoundUpdate({ phase: 'in_progress', winner: '' });
+  it('tracks countdown while the server is counting down', () => {
+    useMultiplayerStore.getState().applyRoundUpdate({
+      phase: 'countdown',
+      winner: '',
+      countdown: 3,
+    });
 
-    expect(useMultiplayerStore.getState()).toMatchObject({ phase: 'live', winner: null });
+    expect(useMultiplayerStore.getState()).toMatchObject({
+      phase: 'countdown',
+      countdown: 3,
+      winner: null,
+    });
+  });
+
+  it('clears the winner when the server has none', () => {
+    useMultiplayerStore.getState().applyRoundUpdate({
+      phase: 'in_progress',
+      winner: '',
+      countdown: 0,
+    });
+
+    expect(useMultiplayerStore.getState()).toMatchObject({
+      phase: 'live',
+      winner: null,
+      countdown: null,
+    });
   });
 
   it('reset clears state for the leave/reconnect path', () => {
@@ -103,6 +131,7 @@ describe('useMultiplayerStore', () => {
       remotePlayers: {},
       phase: null,
       winner: null,
+      countdown: null,
       connected: false,
       applyPlayersUpdate: expect.any(Function),
       applyRoundUpdate: expect.any(Function),

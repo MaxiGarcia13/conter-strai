@@ -47,6 +47,17 @@ describe('toRoomSnapshot', () => {
     expect(snapshot.playerCount).toBe(1);
   });
 
+  it('maps countdown to in_progress so lobby joins stay locked', () => {
+    const state = createMatchState();
+    addPlayer(state, 'c1', 'civilian');
+    state.roundPhase = 'countdown';
+    state.countdown = 2;
+
+    const snapshot = toRoomSnapshot(ROOM_CODE, state);
+    expect(snapshot.phase).toBe('in_progress');
+    expect(snapshot.canJoin).toBe(false);
+  });
+
   it('closes a team at 4 and canJoin when both teams are full', () => {
     const state = createMatchState();
     fillTeam(state, 'civilian', 4);

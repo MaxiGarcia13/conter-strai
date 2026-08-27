@@ -286,7 +286,7 @@ Local team-elimination on `/room/.../play`. Colyseus authority stays US-5.
 ```
 startRound() → roster from ScenarioConfig.teamSpawns, resetAll HP, teleport local player, equip pistol
 checkRoundEnd() → if all civilians eliminated OR all soldiers eliminated → endRound(winner)
-endRound(winner) → RoundPhase 'round-end', winner banner (no local auto-restart; US-5 owns the next round)
+endRound(winner) → RoundPhase 'round-end', winner banner with Restart / Home (no auto-restart; host or offline Restart starts the next round)
 ```
 
 Local player occupies the session skin/team (default civilian `remy`); remaining spawns are `ScenarioSoldiers` NPCs (opposing-team dummies until US-5).

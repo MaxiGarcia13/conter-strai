@@ -1,4 +1,5 @@
 import type { LocomotionState } from '@/modules/soldiers';
+import { REMOTE_SNAP_DISTANCE } from './step-remote-render-transform';
 
 /** Below this speed (m/s) a remote peer counts as idle. */
 export const REMOTE_IDLE_SPEED_MPS = 0.5;
@@ -27,6 +28,7 @@ export interface RemoteMotionSample {
  * actually changes; holds the last moving gait briefly so frame-rate reads
  * between 20 Hz syncs do not thrash the animation mixer. Walk↔run uses
  * hysteresis so noisy 20 Hz deltas do not restart clips every tick.
+ * Teleports (round respawn) snap to idle instead of a fake sprint.
  */
 export function updateRemoteMotion(
   prev: RemoteMotionSample | null,
@@ -38,6 +40,10 @@ export function updateRemoteMotion(
   }
 
   const distance = Math.hypot(next.x - prev.x, next.z - prev.z);
+  if (distance > REMOTE_SNAP_DISTANCE) {
+    return { x: next.x, z: next.z, movedAt: nowMs, locomotion: 'idle' };
+  }
+
   if (distance > REMOTE_POSITION_EPSILON) {
     const dtMs = Math.max(nowMs - prev.movedAt, 1);
     const speed = distance / (dtMs / 1000);

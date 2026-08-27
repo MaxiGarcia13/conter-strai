@@ -16,7 +16,7 @@ export function sendShot(shot: ShotPayload): void {
   requireActiveMatch().sendShot(shot);
 }
 
-/** Host-only: request the server start the round (`waiting` → `in_progress`). */
+/** Host-only: start or restart the round (`waiting` | `ended` → `countdown` → `in_progress`). */
 export function startMatch(): void {
   requireActiveMatch().startRound();
 }

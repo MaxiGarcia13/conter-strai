@@ -20,6 +20,7 @@ export type {
   MoveMessage,
   PlayersUpdatePayload,
   PlayerUpdateListener,
+  RoomClosedListener,
   RoundUpdateListener,
   RoundUpdatePayload,
   ShotPayload,

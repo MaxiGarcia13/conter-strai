@@ -6,6 +6,7 @@ import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { resolveRoomSession } from '@/modules/lobby/utils/room-session';
 import { MatchJoinError } from '@/modules/multiplayer/components/match-join-error';
 import { useMatchJoin } from '@/modules/multiplayer/hooks/use-match-join';
+import { CountdownBanner } from './countdown-banner';
 import { PlayLoader } from './play-loader';
 
 const GameCanvas = lazy(async () => {
@@ -49,7 +50,12 @@ function MatchPlayCanvas({
   }
 
   if (joining) {
-    return <PlayLoader label="Connecting to match" progress={null} />;
+    return (
+      <>
+        <PlayLoader label="Connecting to match" progress={null} />
+        <CountdownBanner />
+      </>
+    );
   }
 
   return (
@@ -57,12 +63,14 @@ function MatchPlayCanvas({
       {visible && <PlayLoader {...loader} />}
       <Suspense fallback={null}>
         <GameCanvas
+          roomId={roomId}
           scenarioId={scenarioId}
           team={team}
           skinId={skinId}
           onLoaderChange={onLoaderChange}
         />
       </Suspense>
+      <CountdownBanner />
     </>
   );
 }

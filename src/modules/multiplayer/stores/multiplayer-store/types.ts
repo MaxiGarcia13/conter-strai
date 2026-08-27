@@ -24,6 +24,8 @@ export interface MultiplayerStoreState {
   phase: RoundPhase | null;
   /** Server-declared winning team id, or null before a wipe. */
   winner: Team | null;
+  /** 3|2|1 during countdown; null otherwise. */
+  countdown: number | null;
   connected: boolean;
   applyPlayersUpdate: (payload: PlayersUpdatePayload) => void;
   applyRoundUpdate: (payload: RoundUpdatePayload) => void;

@@ -30,7 +30,9 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
   const [starting, setStarting] = useState(false);
 
   useEffect(() => {
-    if (phase === 'live') {
+    // Countdown UI lives on `/play` — leave the waiting room as soon as the
+    // match starts counting down (or is already live).
+    if (phase === 'countdown' || phase === 'live') {
       window.location.href = `/room/${roomId}/play`;
     }
   }, [phase, roomId]);
@@ -67,7 +69,6 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
 
   return (
     <div className="flex flex-1 flex-col gap-6">
-
       <div className="hud-corners border-surface-border p-4">
         <p className="font-mono text-xs tracking-[0.32em] uppercase text-foreground-muted">
           // Room
@@ -172,6 +173,8 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
                   }
                   setStarting(true);
                   startMatch();
+                  // Countdown UI is only on `/play` — go there immediately.
+                  window.location.href = `/room/${roomId}/play`;
                 }}
               >
                 {starting ? 'Starting…' : 'Start Match'}

@@ -4,6 +4,8 @@ import type { MatchRoundPhase } from '@/modules/multiplayer/schema';
 /** Map the authoritative server phase onto the client `RoundPhase`; `waiting` has no live equivalent. */
 export function mapMatchRoundPhase(phase: MatchRoundPhase): RoundPhase | null {
   switch (phase) {
+    case 'countdown':
+      return 'countdown';
     case 'in_progress':
       return 'live';
     case 'ended':

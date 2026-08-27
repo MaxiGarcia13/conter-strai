@@ -118,7 +118,7 @@ interface RoomSnapshot {
 
 ### `DELETE /api/v1/room/:roomId`
 
-- Host (or empty-room cleanup) disposes the Colyseus room.
+- Host (or round-end **Home**) disposes the Colyseus room: broadcasts `roomClosed` so every connected client clears session and navigates to `/`, then disconnects.
 - Response **`204`**; **`404`** if unknown.
 
 ### Join for presence / play
@@ -204,11 +204,12 @@ onLeave(callback)
 
 ## Round sync (server-authoritative)
 
-- Host or ready flow moves `roundPhase` from `waiting` → `in_progress` (lock joins / set `canJoin: false`): host (first joiner) sends `startRound`; waits for the room to fill any number of players — no minimum
+- Host or ready flow moves `roundPhase` from `waiting` → `countdown` → `in_progress` (lock joins / set `canJoin: false`): host (first joiner) sends `startRound`; waits for the room to fill any number of players — no minimum
 - `startRound` also `lock()`s the room client-side and server-side: REST `PUT` returns `409` outside `waiting`, `onJoin`/`joinById` reject, and room `canJoin` is false. Reserved seats (guests who already claimed seats) still connect after the lock
-- Server tracks `hostSessionId` (first to join; reassigned on host leave) and gates `startRound` to that client while the room is `waiting`
+- Server tracks `hostSessionId` (first to join; reassigned on host leave) and gates `startRound` to that client while the room is `waiting` or `ended`
 - Server assigns / validates teams on join / round start (respect preferred team when capacity allows)
-- Server detects team wipe → sets `winner`, `roundPhase: 'ended'` → after delay, reset players and `roundPhase: 'in_progress'`
+- Server detects team wipe → sets `winner`, `roundPhase: 'ended'` and stays there until the host sends `startRound` again (no auto-timer)
+- Host `startRound` is allowed from `waiting` or `ended` → resets HP / eliminated, places each player on their join spawn slot, sets `roundPhase: 'countdown'` with `countdown: 3`, then ticks 3→2→1 (1s each) before `in_progress`. Clients on `/play` show a full-screen **Get Ready** countdown overlay (above loaders). Waiting room navigates to `/play` when countdown (or live) begins. Move/shot stay locked until `in_progress`. Local FPS snaps to spawn and clears dying on entering `countdown`.
 - Clients react to Schema changes only — do not decide round winners locally in multiplayer mode
 
 ## Integration
@@ -223,7 +224,7 @@ onLeave(callback)
 - `bindMatch(handle)` feeds an active match into the stores: player/round snapshots → multiplayer store; local player HP mirrors into `useHealthStore[LOCAL_PLAYER_ENTITY_ID]` (HealthBar, movement freeze, dying pose all reuse the solo path); HP drops trigger `requestHitReaction` (flinch) for the survivor, keyed to `LOCAL_PLAYER_ENTITY_ID` locally and session ids for peers; unbind clears stores on leave
 - Bots are disabled while a match is connected (`ScenarioSoldiers` skipped) — opponents are the `RemotePlayers`; `RoundEndBanner` reads the multiplayer store `phase`/`winner` in match mode
 - `RemotePlayer` reads remote players from multiplayer store (fed by Schema callbacks); skin comes from the store roster; locomotion is inferred from transform deltas; transforms are applied via `getState()` in `useFrame`
-- Round-end: schema `roundPhase: ended` (+ `roundEnd` message) maps to the multiplayer store; `RoundEndBanner` reads that store while connected. Overlay stays up for the server reset delay (~5s).
+- Round-end: schema `roundPhase: ended` (+ `roundEnd` message) maps to the multiplayer store; `RoundEndBanner` reads that store while connected. Centered overlay shows **Restart** (host / offline) and **Home**. **Home** calls `DELETE /api/v1/room/{id}` → server `roomClosed` → all clients clear session and go `/`. No auto-reset of the round.
 
 ## Astro config (US-5)
 

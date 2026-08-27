@@ -16,10 +16,12 @@ import {
   setPlayerLocomotion,
   setPlayerPose,
 } from '@/modules/game/state/player-state';
+import { useRoundStore } from '@/modules/game/state/round-store';
 import { advancePlayerTransform } from '@/modules/game/utils/advance-player-transform';
 import { applyCameraMode } from '@/modules/game/utils/apply-camera-mode';
 import { axesFromPressedCodes } from '@/modules/game/utils/axes-from-pressed-codes';
 import { MOVE_CODES } from '@/modules/game/utils/move-codes';
+import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 
 interface UsePlayerMovementFrameOptions {
   camera: Camera;
@@ -61,7 +63,21 @@ export function usePlayerMovementFrame({
       return;
     }
 
-    wasEliminatedRef.current = false;
+    if (wasEliminatedRef.current) {
+      wasEliminatedRef.current = false;
+      setPlayerPose(null);
+      setPlayerLocomotion('idle');
+    }
+
+    const matchConnected = useMultiplayerStore.getState().connected;
+    const phase = matchConnected
+      ? useMultiplayerStore.getState().phase
+      : useRoundStore.getState().phase;
+    if (phase === 'countdown' || phase === 'round-end') {
+      setPlayerLocomotion('idle');
+      applyCameraMode(camera, getCameraMode(), getPlayerTransform(), getBodyAnchorY());
+      return;
+    }
 
     // External controls (DEV free-cam) own the camera; freeze the soldier.
     if (externalControlsRef.current) {

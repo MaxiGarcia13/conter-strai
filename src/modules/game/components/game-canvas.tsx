@@ -30,6 +30,7 @@ import { ShootingController } from './shooting-controller';
 const DEFAULT_LIGHTING = { ambient: 0.6, sunIntensity: 1.2 };
 
 interface GameCanvasProps {
+  roomId?: string;
   scenarioId?: ScenarioId;
   team?: Team;
   skinId?: SoldierSkinId;
@@ -37,6 +38,7 @@ interface GameCanvasProps {
 }
 
 export function GameCanvas({
+  roomId,
   scenarioId = DEFAULT_SCENARIO_ID,
   team,
   skinId = DEFAULT_PLAY_SKIN_ID,
@@ -110,7 +112,7 @@ export function GameCanvas({
       <CrosshairHud />
       <LazyDevGameChrome />
       <HealthBar />
-      <RoundEndBanner />
+      <RoundEndBanner roomId={roomId} scenarioId={scenarioId} />
     </div>
   );
 }

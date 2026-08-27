@@ -249,7 +249,7 @@ describe('initMatch', () => {
     expect(match.players).toHaveLength(1);
   });
 
-  it('emits round updates only when phase or winner changes', async () => {
+  it('emits round updates only when phase, winner, or countdown changes', async () => {
     const match = await initMatch({ roomId: 'host-room' });
     const room = match.room as unknown as FakeRoom;
     const roundUpdates: unknown[] = [];
@@ -257,17 +257,25 @@ describe('initMatch', () => {
       roundUpdates.push(payload);
     });
 
-    room.state.roundPhase = 'in_progress';
+    room.state.roundPhase = 'countdown';
+    room.state.countdown = 3;
     room.callbacks.stateChange[0]!(room.state);
+    room.state.countdown = 2;
+    room.callbacks.stateChange[0]!(room.state);
+    room.callbacks.stateChange[0]!(room.state);
+    room.state.countdown = 0;
+    room.state.roundPhase = 'in_progress';
     room.callbacks.stateChange[0]!(room.state);
     room.state.winner = 'civilian';
     room.state.roundPhase = 'ended';
     room.callbacks.stateChange[0]!(room.state);
 
     expect(roundUpdates).toEqual([
-      { phase: 'waiting', winner: '' },
-      { phase: 'in_progress', winner: '' },
-      { phase: 'ended', winner: 'civilian' },
+      { phase: 'waiting', winner: '', countdown: 0 },
+      { phase: 'countdown', winner: '', countdown: 3 },
+      { phase: 'countdown', winner: '', countdown: 2 },
+      { phase: 'in_progress', winner: '', countdown: 0 },
+      { phase: 'ended', winner: 'civilian', countdown: 0 },
     ]);
   });
 

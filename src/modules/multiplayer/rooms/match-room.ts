@@ -1,12 +1,12 @@
 import type { Client } from 'colyseus';
 import type { MatchState } from '../schema/match-state';
 
-import type { ScenarioId } from '@/modules/scenarios';
-import type { Team } from '@/modules/teams';
+import type { ScenarioId } from '@/modules/scenarios/types';
+import type { Team } from '@/modules/teams/types';
 import { Room } from 'colyseus';
 import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
-import { getScenarioById } from '@/modules/scenarios';
-import { TEAM_SKINS } from '@/modules/teams';
+import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
+import { TEAM_SKINS } from '@/modules/teams/constants/team-skins';
 import { createMatchState } from '../schema/match-state';
 import { createPlayerState } from '../schema/player-state';
 import { applyMatchShot } from './apply-match-shot';

@@ -1,9 +1,10 @@
 import type { MatchState } from '../schema/match-state';
 import type { PlayerState } from '../schema/player-state';
-import type { ScenarioConfig, ScenarioId, Vec3 } from '@/modules/scenarios';
-import type { Team } from '@/modules/teams';
+import type { ScenarioConfig, ScenarioId, Vec3 } from '@/modules/scenarios/types';
+import type { Team } from '@/modules/teams/types';
 import { DEFAULT_MAX_HP } from '@/modules/combat/constants/health';
-import { getScenarioById, spawnYawFor } from '@/modules/scenarios';
+import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
+import { spawnYawFor } from '@/modules/scenarios/utils/spawn-helpers';
 
 export function placePlayerAtSpawn(
   player: PlayerState,

@@ -57,6 +57,9 @@ sequenceDiagram
 
 Astro `APIRoute` handlers must run only after Colyseus/`matchMaker` is initialized in the shared Node boot. If matchMaker is not ready, REST returns **`503`**. Keep adapter + room registration separate from page routes; wire both at server start.
 
+- **Dev** (`npm run dev`): `src/modules/multiplayer/integration.ts` listens on `COLYSEUS_PORT` (default `2567`); client uses `PUBLIC_COLYSEUS_URL`.
+- **Production** (`npm run build` → `npm run preview`): `src/server.ts` → `dist/server/custom-entry.mjs` attaches Colyseus to the same HTTP `$PORT` as Astro (Render-friendly). The browser client derives `ws:` / `wss:` from `location` (same host) so a leftover `localhost:2567` env cannot break deploy.
+
 ## Hybrid responsibilities
 
 | Concern                          | HTTP REST (`/api/v1/room…`)                            | Colyseus WebSocket                           |
@@ -240,10 +243,10 @@ export default defineConfig({
 
 ## Env
 
-| Variable              | Purpose                                                                    |
-| --------------------- | -------------------------------------------------------------------------- |
-| `PUBLIC_COLYSEUS_URL` | Client WebSocket endpoint (e.g. `ws://localhost:2567` or same-origin path) |
-| `COLYSEUS_PORT`       | Optional if Colyseus listens on a dedicated port                           |
+| Variable              | Purpose                                                                                                          |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `PUBLIC_COLYSEUS_URL` | Dev client WebSocket endpoint (e.g. `ws://localhost:2567`). Prod uses same-origin `ws`/`wss` from the page host. |
+| `COLYSEUS_PORT`       | Dev-only Colyseus listen port (default `2567`)                                                                   |
 
 REST lobby routes are same-origin (no extra public URL). They require matchMaker in-process.
 

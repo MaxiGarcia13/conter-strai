@@ -1,8 +1,10 @@
 import type { AstroIntegration } from 'astro';
 /**
- * Astro integration — boots Colyseus in dev mode alongside Vite.
+ * Astro integration — boots Colyseus in dev mode alongside Vite
+ * (`COLYSEUS_PORT`, default 2567).
  *
- * In production, use src/server.ts instead (ASTRO_NODE_AUTOSTART=disabled).
+ * Production / `npm run preview` uses `src/server.ts` → `dist/server/custom-entry.mjs`
+ * (Astro + Colyseus on the same `$PORT`).
  */
 import process from 'node:process';
 import { WebSocketTransport } from '@colyseus/ws-transport';

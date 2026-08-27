@@ -1,7 +1,8 @@
 import type { MatchState } from '../schema/match-state';
-import type { Team } from '@/modules/teams';
+import type { Team } from '@/modules/teams/types';
 import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
-import { opposingTeam, TEAMS } from '@/modules/teams';
+import { TEAMS } from '@/modules/teams/constants/teams';
+import { opposingTeam } from '@/modules/teams/utils/opposing-team';
 
 export function teamCount(state: MatchState, team: Team): number {
   let count = 0;

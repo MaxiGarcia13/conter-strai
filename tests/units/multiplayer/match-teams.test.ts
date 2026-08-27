@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { createMatchState, createPlayerState } from '@/modules/multiplayer/schema';
 import {
   assignTeam,
   checkTeamWipe,
   teamCount,
 } from '@/modules/multiplayer/rooms/match-teams';
+import { createMatchState, createPlayerState } from '@/modules/multiplayer/schema';
 
 describe('teamCount', () => {
   it('counts players on a team', () => {

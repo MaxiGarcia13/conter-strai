@@ -25,6 +25,7 @@ Browser tactical shooter: **Civilians** vs **Soldiers**, round-based team elimin
 ```bash
 npm run dev          # http://localhost:4321
 npm run build
+npm run preview       # production: Astro + Colyseus on $PORT
 npm run test:unit    # Vitest
 npm run test:e2e     # Playwright (PORT=4326)
 npm run lint

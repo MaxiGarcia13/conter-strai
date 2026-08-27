@@ -1,6 +1,6 @@
 import type { MatchState } from '../schema/match-state';
-import type { HitZone } from '@/modules/combat';
-import type { Team } from '@/modules/teams';
+import type { HitZone } from '@/modules/combat/types';
+import type { Team } from '@/modules/teams/types';
 import { applyDamage } from '@/modules/combat/apply-damage';
 import { DEFAULT_MAX_HP } from '@/modules/combat/constants/health';
 

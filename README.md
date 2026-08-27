@@ -49,25 +49,32 @@ Open [http://localhost:4321](http://localhost:4321).
 
 ### Scripts
 
-| Command                             | Description                                      |
-| ----------------------------------- | ------------------------------------------------ |
-| `npm run dev`                       | Dev server                                       |
-| `npm run build`                     | Production build                                 |
-| `npm run preview`                   | Preview production build                         |
-| `npm run lint` / `npm run lint:fix` | ESLint                                           |
-| `npm run test`                      | Unit + e2e                                       |
-| `npm run test:unit`                 | Vitest                                           |
-| `npm run test:e2e`                  | Playwright                                       |
-| `npm run phoenix`                   | Clean install (`node_modules`, `dist`, `.astro`) |
+| Command                             | Description                                                        |
+| ----------------------------------- | ------------------------------------------------------------------ |
+| `npm run dev`                       | Dev server                                                         |
+| `npm run build`                     | Production build (+ custom Astro/Colyseus entry)                   |
+| `npm run preview`                   | Run production entry (`dist/server/custom-entry.mjs`; build first) |
+| `npm run lint` / `npm run lint:fix` | ESLint                                                             |
+| `npm run test`                      | Unit + e2e                                                         |
+| `npm run test:unit`                 | Vitest                                                             |
+| `npm run test:e2e`                  | Playwright                                                         |
+| `npm run phoenix`                   | Clean install (`node_modules`, `dist`, `.astro`)                   |
 
-Optional env (see `.env.example`):
+**Render:** Build Command `npm run build`, Start Command `npm run preview`. One Web Service — Astro + Colyseus share `$PORT`.
 
-| Variable              | Default                  | Purpose                                          |
-| --------------------- | ------------------------ | ------------------------------------------------ |
-| `PORT`                | `4321`                   | Dev / preview port                               |
-| `SITE`                | `http://localhost:$PORT` | Canonical site URL (sitemap, meta)               |
-| `PUBLIC_COLYSEUS_URL` | — (required for lobby)   | Client WebSocket URL, e.g. `ws://localhost:2567` |
-| `COLYSEUS_PORT`       | `2567`                   | Colyseus listen port (keep URL in sync)          |
+Optional env:
+
+| Variable              | Default                        | Purpose                                                                      |
+| --------------------- | ------------------------------ | ---------------------------------------------------------------------------- |
+| `PORT`                | `4321`                         | HTTP listen port (`npm run preview` / Render `$PORT`)                        |
+| `SITE`                | `http://localhost:$PORT`       | Canonical site URL (sitemap, meta)                                           |
+| `PUBLIC_COLYSEUS_URL` | — (required for `npm run dev`) | Dev WebSocket URL, e.g. `ws://localhost:2567`. Prod client uses same-origin. |
+| `COLYSEUS_PORT`       | `2567`                         | Dev-only Colyseus listen port (`npm run dev`)                                |
+
+`PUBLIC_COLYSEUS_URL` examples:
+
+- Dev (`npm run dev`): `ws://localhost:2567` (must match `COLYSEUS_PORT`) — **required**
+- Prod (`npm run preview` / Render): client uses **same-origin** `ws:` / `wss:` automatically (ignores a baked `localhost:2567`). Optional override is unused in the browser when `import.meta.env.PROD`.
 
 ## Project layout
 

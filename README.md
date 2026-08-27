@@ -111,12 +111,9 @@ Specs land before code for each user story. Read `specs/current/` and the open `
 
 ## Contributing
 
-1. Read [`AGENTS.md`](./AGENTS.md), then [`specs/current/`](./specs/current/) and the open [`specs/us-*/`](./specs/) delta you are implementing.
-2. Follow module conventions: one `types.ts` per module, data registries at module root — see [design.md](./specs/current/design.md#module-types).
-3. Prefer small modules and pure domain services over render-coupled logic.
-4. Unit-test domain logic; skip Three.js render internals.
-5. Pre-commit runs `lint-staged` (ESLint fix on staged files).
-6. The landing footer links to this repo — PRs welcome.
+Contributions are welcome. Please read the full contribution guide in [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request or submitting an issue.
+
+The guide covers project setup, workflow, coding conventions, spec-first changes, testing expectations, and contributor etiquette.
 
 ## License
 

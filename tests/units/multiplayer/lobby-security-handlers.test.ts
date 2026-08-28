@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createRoom } from '@/modules/multiplayer/handlers/create-room';
 import { disposeRoom } from '@/modules/multiplayer/handlers/dispose-room';
 import { getRoom } from '@/modules/multiplayer/handlers/get-room';
-import { createMatchState } from '@/modules/multiplayer/schema';
+import { createMatchState, createPlayerState } from '@/modules/multiplayer/schema';
 import { claimSeat } from '@/modules/multiplayer/utils/claim-seat';
 
 const matchMakerMock = vi.hoisted(() => ({
@@ -22,7 +22,7 @@ const PAST_EXPIRY = '2000-01-01T00:00:00.000Z';
 
 function requestWith(
   url: string,
-  init: { method?: string; origin?: string; authorization?: string } = {},
+  init: { method?: string; origin?: string; authorization?: string; body?: string } = {},
 ): Request {
   const headers = new Headers();
   if (init.origin) {
@@ -37,14 +37,21 @@ function requestWith(
   return new Request(`http://localhost:4321${url}`, {
     method: init.method ?? 'GET',
     headers,
-    body: init.method === 'POST' || init.method === 'PUT' ? '{}' : undefined,
+    body: init.method === 'POST' || init.method === 'PUT' ? (init.body ?? '{}') : undefined,
   });
 }
 
-function stubFoundRoom(metadata: Record<string, unknown>): { broadcast: ReturnType<typeof vi.fn> } {
+function stubFoundRoom(
+  metadata: Record<string, unknown>,
+  overrides: { clients?: number } = {},
+): { state: MatchState; broadcast: ReturnType<typeof vi.fn> } {
   const state = createMatchState({ scenario: 'arena-01' }) as MatchState;
   matchMakerMock.query.mockResolvedValue([
-    { roomId: 'r1', metadata: { roomCode: ROOM_CODE, ...metadata } },
+    {
+      roomId: 'r1',
+      clients: overrides.clients,
+      metadata: { roomCode: ROOM_CODE, ...metadata },
+    },
   ]);
   const broadcast = vi.fn();
   matchMakerMock.getLocalRoomById.mockReturnValue({
@@ -52,7 +59,7 @@ function stubFoundRoom(metadata: Record<string, unknown>): { broadcast: ReturnTy
     broadcast,
     disposeLobby: vi.fn().mockResolvedValue(undefined),
   });
-  return { broadcast };
+  return { state, broadcast };
 }
 
 beforeEach(() => {
@@ -271,5 +278,61 @@ describe('claimSeat (origin)', () => {
     } as never);
     expect(response.status).toBe(403);
     expect(matchMakerMock.query).not.toHaveBeenCalled();
+  });
+
+  it('returns 409 when the room is not waiting', async () => {
+    const { state } = stubFoundRoom({});
+    state.roundPhase = 'in_progress';
+    const response = await claimSeat({
+      request: requestWith(`/api/v1/room/${ROOM_CODE}`, {
+        method: 'PUT',
+        body: JSON.stringify({ team: 'civilian', skin: 'remy' }),
+      }),
+      params: { roomId: ROOM_CODE },
+    } as never);
+    expect(response.status).toBe(409);
+    expect(matchMakerMock.reserveSeatFor).not.toHaveBeenCalled();
+  });
+
+  it('returns 409 at maximum room capacity', async () => {
+    const { state } = stubFoundRoom({ }, { clients: 2 });
+    state.maxPerTeam = 1;
+    const response = await claimSeat({
+      request: requestWith(`/api/v1/room/${ROOM_CODE}`, {
+        method: 'PUT',
+        body: JSON.stringify({ team: 'civilian', skin: 'remy' }),
+      }),
+      params: { roomId: ROOM_CODE },
+    } as never);
+    expect(response.status).toBe(409);
+    expect(matchMakerMock.reserveSeatFor).not.toHaveBeenCalled();
+  });
+
+  it('returns 409 when the seated team is full', async () => {
+    const { state } = stubFoundRoom({});
+    state.maxPerTeam = 1;
+    state.players.set('existing', createPlayerState({ team: 'soldier' }));
+    const response = await claimSeat({
+      request: requestWith(`/api/v1/room/${ROOM_CODE}`, {
+        method: 'PUT',
+        body: JSON.stringify({ team: 'soldier', skin: 'swat-1' }),
+      }),
+      params: { roomId: ROOM_CODE },
+    } as never);
+    expect(response.status).toBe(409);
+    expect(matchMakerMock.reserveSeatFor).not.toHaveBeenCalled();
+  });
+
+  it('returns 409 when reserveSeatFor throws a full-room error', async () => {
+    stubFoundRoom({});
+    matchMakerMock.reserveSeatFor.mockRejectedValue(new Error('Room is already full'));
+    const response = await claimSeat({
+      request: requestWith(`/api/v1/room/${ROOM_CODE}`, {
+        method: 'PUT',
+        body: JSON.stringify({ team: 'civilian', skin: 'remy' }),
+      }),
+      params: { roomId: ROOM_CODE },
+    } as never);
+    expect(response.status).toBe(409);
   });
 });

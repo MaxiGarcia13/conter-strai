@@ -7,6 +7,7 @@ Work queue points to open US deltas. Tick tasks in the delta folder; ship into `
 US numbers are not execution order. Ship in this sequence:
 
 1. **US-8** — Server security — host token, origin guard, shot/move validation, room TTL
+2. **US-9** — Pause menu, auto pointer lock, deploy-ready countdown
 
 US-4 (local PvP loop), **US-5** (Colyseus multiplayer), **US-7** (match lobby), and the [improvements backlog](../improvements.md) polish pass are **shipped**. Fire **pose clip** on LMB is deferred — see [tech-debt.md](../tech-debt.md).
 
@@ -17,3 +18,4 @@ US-4 (local PvP loop), **US-5** (Colyseus multiplayer), **US-7** (match lobby), 
 ## Open deltas
 
 - [specs/us-8/tasks.md](../us-8/tasks.md) — Server security hardening
+- [specs/us-9/tasks.md](../us-9/tasks.md) — Pause menu, auto pointer lock, deploy-ready countdown

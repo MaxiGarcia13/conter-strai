@@ -5,6 +5,7 @@ import { createEmptyRoomSnapshot, toRoomSnapshot } from '@/modules/multiplayer/a
 import { createMatchState, createPlayerState } from '@/modules/multiplayer/schema';
 
 const ROOM_CODE = 'ABC123';
+const EXPIRES_AT = '2099-01-01T00:00:00.000Z';
 
 function addPlayer(state: MatchState, sessionId: string, team: Team): void {
   state.players.set(sessionId, createPlayerState({ team }));
@@ -22,12 +23,13 @@ describe('toRoomSnapshot', () => {
     addPlayer(state, 'c1', 'civilian');
     addPlayer(state, 's1', 'soldier');
 
-    expect(toRoomSnapshot(ROOM_CODE, state)).toEqual({
+    expect(toRoomSnapshot(ROOM_CODE, state, EXPIRES_AT)).toEqual({
       id: ROOM_CODE,
       phase: 'waiting',
       canJoin: true,
       maxPerTeam: 4,
       playerCount: 2,
+      expiresAt: EXPIRES_AT,
       scenario: 'arena-01',
       teams: {
         civilian: { count: 1, max: 4, open: true },
@@ -41,7 +43,7 @@ describe('toRoomSnapshot', () => {
     addPlayer(state, 'c1', 'civilian');
     state.roundPhase = 'in_progress';
 
-    const snapshot = toRoomSnapshot(ROOM_CODE, state);
+    const snapshot = toRoomSnapshot(ROOM_CODE, state, EXPIRES_AT);
     expect(snapshot.phase).toBe('in_progress');
     expect(snapshot.canJoin).toBe(false);
     expect(snapshot.playerCount).toBe(1);
@@ -53,7 +55,7 @@ describe('toRoomSnapshot', () => {
     state.roundPhase = 'countdown';
     state.countdown = 2;
 
-    const snapshot = toRoomSnapshot(ROOM_CODE, state);
+    const snapshot = toRoomSnapshot(ROOM_CODE, state, EXPIRES_AT);
     expect(snapshot.phase).toBe('in_progress');
     expect(snapshot.canJoin).toBe(false);
   });
@@ -63,13 +65,13 @@ describe('toRoomSnapshot', () => {
     fillTeam(state, 'civilian', 4);
     fillTeam(state, 'soldier', 3);
 
-    const almostFull = toRoomSnapshot(ROOM_CODE, state);
+    const almostFull = toRoomSnapshot(ROOM_CODE, state, EXPIRES_AT);
     expect(almostFull.canJoin).toBe(true);
     expect(almostFull.teams.civilian).toEqual({ count: 4, max: 4, open: false });
     expect(almostFull.teams.soldier).toEqual({ count: 3, max: 4, open: true });
 
     addPlayer(state, 'soldier-3', 'soldier');
-    const full = toRoomSnapshot(ROOM_CODE, state);
+    const full = toRoomSnapshot(ROOM_CODE, state, EXPIRES_AT);
     expect(full.canJoin).toBe(false);
     expect(full.playerCount).toBe(8);
     expect(full.teams.soldier.open).toBe(false);
@@ -78,12 +80,13 @@ describe('toRoomSnapshot', () => {
 
 describe('createEmptyRoomSnapshot', () => {
   it('returns a joinable waiting room with empty seats', () => {
-    expect(createEmptyRoomSnapshot(ROOM_CODE, 'arena-01')).toEqual({
+    expect(createEmptyRoomSnapshot(ROOM_CODE, EXPIRES_AT, 'arena-01')).toEqual({
       id: ROOM_CODE,
       phase: 'waiting',
       canJoin: true,
       maxPerTeam: 4,
       playerCount: 0,
+      expiresAt: EXPIRES_AT,
       scenario: 'arena-01',
       teams: {
         civilian: { count: 0, max: 4, open: true },

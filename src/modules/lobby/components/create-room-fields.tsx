@@ -37,7 +37,7 @@ export function CreateRoomFields() {
       return;
     }
     try {
-      const roomId = await createRoom.mutateAsync({
+      const { roomId, hostToken } = await createRoom.mutateAsync({
         team,
         skin: skinId,
         scenario: scenarioId,
@@ -47,6 +47,7 @@ export function CreateRoomFields() {
         skin: skinId,
         scenario: scenarioId,
         role: 'host',
+        hostToken,
       });
       window.location.href = `/room/${roomId}`;
     } catch {

@@ -15,7 +15,8 @@ function jsonResponse(status: number, body: unknown): Response {
   });
 }
 
-const SNAPSHOT = createEmptyRoomSnapshot('K7M2PQ', 'arena-01');
+const EXPIRES_AT = '2099-01-01T00:00:00.000Z';
+const SNAPSHOT = createEmptyRoomSnapshot('K7M2PQ', EXPIRES_AT, 'arena-01');
 const RESERVATION = {
   name: 'match',
   sessionId: 'sess-1',

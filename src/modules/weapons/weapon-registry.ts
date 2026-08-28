@@ -1,6 +1,10 @@
 import type { PistolWeaponConfig } from './types';
 import { useGLTF } from '@react-three/drei';
 import {
+  PISTOL_DAMAGE_BY_ZONE,
+  PISTOL_FIRE_COOLDOWN_MS,
+} from './constants/pistol';
+import {
   DEFAULT_PISTOL_GRIP_POSITION,
   DEFAULT_PISTOL_GRIP_ROTATION,
 } from './utils/pistol-grip-alignment';
@@ -14,8 +18,8 @@ export const weapons: Record<string, PistolWeaponConfig> = {
   [DEFAULT_WEAPON_ID]: {
     id: 'pistol',
     name: 'Pistol',
-    fireCooldownSeconds: 0.35,
-    damageByZone: { head: 0.4, body: 0.2, limb: 0.15 },
+    fireCooldownSeconds: PISTOL_FIRE_COOLDOWN_MS / 1000,
+    damageByZone: PISTOL_DAMAGE_BY_ZONE,
     modelUrl: '/assets/weapons/pistol_a.glb',
     // Precomputed for swat idle + neutral aim — barrel +X → camera / crosshair forward.
     gripRotation: DEFAULT_PISTOL_GRIP_ROTATION,

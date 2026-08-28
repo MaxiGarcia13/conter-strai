@@ -1,4 +1,4 @@
-import type { CreateRoomOptions, RoomSnapshot } from '../types';
+import type { CreateRoomOptions, CreateRoomResponse, CreateRoomResult } from '../types';
 import { ROOM_ID_LENGTH } from '@/modules/lobby/constants/room-id';
 import {
   JSON_HEADERS,
@@ -8,8 +8,8 @@ import {
   readJson,
 } from './lobby-rest';
 
-/** `POST /api/v1/room` — server generates the public room code. */
-export async function postCreateRoom(options: CreateRoomOptions): Promise<string> {
+/** `POST /api/v1/room` — server generates the public room code + host token. */
+export async function postCreateRoom(options: CreateRoomOptions): Promise<CreateRoomResult> {
   const response = await fetch(LOBBY_ROOM_COLLECTION_PATH, {
     method: 'POST',
     headers: JSON_HEADERS,
@@ -24,20 +24,23 @@ export async function postCreateRoom(options: CreateRoomOptions): Promise<string
     );
   }
 
-  const roomId = readCreatedRoomId(body);
-  if (!roomId) {
+  const created = readCreatedRoom(body);
+  if (!created) {
     throw new LobbyRestError(500, 'Invalid create-room response');
   }
-  return roomId;
+  return created;
 }
 
-export function readCreatedRoomId(value: unknown): string | null {
+export function readCreatedRoom(value: unknown): CreateRoomResult | null {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     return null;
   }
-  const id = (value as Partial<RoomSnapshot>).id;
-  if (typeof id !== 'string' || id.length !== ROOM_ID_LENGTH) {
+  const body = value as Partial<CreateRoomResponse>;
+  if (typeof body.id !== 'string' || body.id.length !== ROOM_ID_LENGTH) {
     return null;
   }
-  return id;
+  if (typeof body.hostToken !== 'string' || body.hostToken.length === 0) {
+    return null;
+  }
+  return { roomId: body.id, hostToken: body.hostToken };
 }

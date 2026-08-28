@@ -15,6 +15,8 @@ export interface RoomSnapshot {
   canJoin: boolean;
   maxPerTeam: 4;
   playerCount: number;
+  /** ISO timestamp the room code expires at. */
+  expiresAt: string;
   scenario?: ScenarioId;
   teams: Record<Team, TeamSeatSummary>;
 }
@@ -23,6 +25,17 @@ export interface CreateRoomOptions {
   team?: Team;
   skin?: SoldierSkinId;
   scenario?: ScenarioId;
+}
+
+/** `RoomSnapshot` + one-time `hostToken` returned by `POST /api/v1/room`. */
+export interface CreateRoomResponse extends RoomSnapshot {
+  hostToken: string;
+}
+
+/** What the create-room client keeps after `POST /api/v1/room`. */
+export interface CreateRoomResult {
+  roomId: string;
+  hostToken: string;
 }
 
 export interface SeatClaimOptions {

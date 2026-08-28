@@ -4,7 +4,9 @@ import { matchMaker } from 'colyseus';
 import { decodeSeatClaim } from '@/modules/multiplayer/adapters/decode-seat-claim';
 import { toRoomSnapshot } from '@/modules/multiplayer/adapters/to-room-snapshot';
 import { findMatchRoomByCode } from '@/modules/multiplayer/utils/find-match-room';
+import { isRoomExpired } from '@/modules/multiplayer/utils/room-expiry';
 import { jsonResponse, readJsonBody, requireMatchMaker } from './http';
+import { requireSameSiteOrigin } from './request-guards';
 
 function isRoomFullError(error: unknown): boolean {
   return error instanceof Error && /already full/i.test(error.message);
@@ -14,6 +16,11 @@ export const claimSeat: APIRoute = async ({ params, request }) => {
   const unavailable = requireMatchMaker();
   if (unavailable) {
     return unavailable;
+  }
+
+  const crossOrigin = requireSameSiteOrigin(request);
+  if (crossOrigin) {
+    return crossOrigin;
   }
 
   const roomCode = params.roomId;
@@ -39,7 +46,12 @@ export const claimSeat: APIRoute = async ({ params, request }) => {
     return jsonResponse(500, { error: 'Room state unavailable' });
   }
 
-  const snapshot = toRoomSnapshot(roomCode, found.state);
+  const expiresAt = found.roomCache.metadata?.expiresAt;
+  if (isRoomExpired(expiresAt)) {
+    return jsonResponse(410, { error: 'Room expired' });
+  }
+
+  const snapshot = toRoomSnapshot(roomCode, found.state, expiresAt);
   if (snapshot.phase !== 'waiting') {
     return jsonResponse(409, {
       error: 'Room is not in waiting phase',
@@ -60,7 +72,7 @@ export const claimSeat: APIRoute = async ({ params, request }) => {
   try {
     const reservation = await matchMaker.reserveSeatFor(found.roomCache, options);
     const response: ClaimSeatResponse = {
-      snapshot: toRoomSnapshot(roomCode, found.state),
+      snapshot: toRoomSnapshot(roomCode, found.state, expiresAt),
       reservation,
     };
     return jsonResponse(200, response);

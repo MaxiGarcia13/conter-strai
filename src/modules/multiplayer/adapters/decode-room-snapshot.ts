@@ -29,6 +29,9 @@ export function decodeRoomSnapshot(value: unknown): RoomSnapshot | null {
   if (typeof body.canJoin !== 'boolean' || body.maxPerTeam !== 4 || typeof body.playerCount !== 'number') {
     return null;
   }
+  if (typeof body.expiresAt !== 'string' || Number.isNaN(Date.parse(body.expiresAt))) {
+    return null;
+  }
   if (body.teams === null || typeof body.teams !== 'object' || Array.isArray(body.teams)) {
     return null;
   }
@@ -44,6 +47,7 @@ export function decodeRoomSnapshot(value: unknown): RoomSnapshot | null {
     canJoin: body.canJoin,
     maxPerTeam: 4,
     playerCount: body.playerCount,
+    expiresAt: body.expiresAt,
     teams: {
       civilian: teams.civilian as TeamSeatSummary,
       soldier: teams.soldier as TeamSeatSummary,

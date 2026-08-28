@@ -4,16 +4,16 @@ Depends on **US-5** (shipped).
 
 ## Requirements
 
-| ID      | Requirement                                                                                                                                                                                      |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| US-8.1  | Mutating REST routes (`POST`, `PUT`, `DELETE` on `/api/v1/room`) reject cross-origin requests without a matching `Origin` / `Referer` (same-site policy).                                        |
-| US-8.2  | `DELETE /api/v1/room/{id}` requires a valid `hostToken`; returns `401` / `403` without it.                                                                                                       |
-| US-8.3  | `POST /api/v1/room` returns `hostToken`; create handler persists it in Colyseus room metadata.                                                                                                   |
-| US-8.5  | Server validates shot messages — never trust client HP/score; checks opposing team, alive, in-range, fire-rate; `zone` constrained to a known enum (no full server geometry raycast in this US). |
-| US-8.6  | Server validates movement (max speed / teleport threshold per message).                                                                                                                          |
-| US-8.8  | Unit + e2e tests cover unauthorized DELETE, cross-origin POST rejection, and at least one spoofing case (e.g. friendly-fire shot ignored).                                                       |
-| US-8.9  | Every room code has a server-side **`expiresAt`** (ISO timestamp) set at create; default TTL via `ROOM_CODE_TTL_MS` (**4 h**).                                                                   |
-| US-8.11 | `MatchRoom` schedules auto-dispose at `expiresAt` (clear timer in `onDispose`); `RoomSnapshot` exposes `expiresAt`. Expired REST lookups return **`410 Gone`**.                                  |
+| ID      | Requirement                                                                                                                                                                                                                                         |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| US-8.1  | Mutating REST routes (`POST`, `PUT`, `DELETE` on `/api/v1/room`) reject cross-origin requests without a matching `Origin` / `Referer` (same-site policy).                                                                                           |
+| US-8.2  | `DELETE /api/v1/room/{id}` requires a valid `hostToken`; returns `401` / `403` without it.                                                                                                                                                          |
+| US-8.3  | `POST /api/v1/room` returns `hostToken`; create handler persists it in Colyseus room metadata.                                                                                                                                                      |
+| US-8.5  | Server validates shot messages — never trust client HP/score; checks opposing team, alive, in-range, fire-rate; `zone` constrained to a known enum (no full server geometry raycast in this US).                                                    |
+| US-8.6  | Server validates movement (max speed / teleport threshold per message).                                                                                                                                                                             |
+| US-8.8  | Unit + e2e tests cover unauthorized DELETE, cross-origin POST rejection, and at least one spoofing case (e.g. friendly-fire shot ignored).                                                                                                          |
+| US-8.9  | Every room code has a server-side **`expiresAt`** (ISO timestamp) set at create; default TTL via `ROOM_CODE_TTL_MS` (**40 min**). Each host **Restart** / `startRound` slides `expiresAt` forward by another TTL window (`hostToken` is unchanged). |
+| US-8.11 | `MatchRoom` schedules auto-dispose at `expiresAt` (clear timer in `onDispose`); `RoomSnapshot` exposes `expiresAt`. Expired REST lookups return **`410 Gone`**.                                                                                     |
 
 ## Acceptance
 

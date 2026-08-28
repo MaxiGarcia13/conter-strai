@@ -67,15 +67,25 @@ export function RoundEndBanner({
     setClosing(true);
 
     if (roomId) {
-      try {
-        await deleteRoom(roomId);
-      } catch (cause) {
-        if (!(cause instanceof LobbyRestError) || cause.status !== 404) {
-          setClosing(false);
-          return;
+      const session = readRoomSession(roomId);
+      if (isHost && session?.hostToken) {
+        try {
+          await deleteRoom(roomId, session.hostToken);
+        } catch (cause) {
+          if (!(cause instanceof LobbyRestError) || cause.status !== 404) {
+            setClosing(false);
+            return;
+          }
         }
+        // Peers navigate via `roomClosed`; still exit locally if the message is missed.
+        clearRoomSession(roomId);
+        window.location.href = '/';
+        return;
       }
-      // Peers navigate via `roomClosed`; still exit locally if the message is missed.
+
+      if (connected) {
+        await leaveMatch();
+      }
       clearRoomSession(roomId);
       window.location.href = '/';
       return;

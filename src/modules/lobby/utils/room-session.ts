@@ -19,6 +19,8 @@ export interface RoomSession {
   reservation?: SeatReservation;
   /** Persisted after join so `/play` can `client.reconnect` after a hard nav. */
   reconnectionToken?: string;
+  /** Opaque bearer secret from create — authorizes Host Close Room DELETE. */
+  hostToken?: string;
 }
 
 const PREFIX = 'cs:room:';
@@ -77,6 +79,7 @@ function isRoomSession(value: unknown): value is RoomSession {
     && (session.role === 'host' || session.role === 'guest')
     && (session.reservation === undefined || isSeatReservation(session.reservation))
     && (session.reconnectionToken === undefined || typeof session.reconnectionToken === 'string')
+    && (session.hostToken === undefined || typeof session.hostToken === 'string')
   );
 }
 

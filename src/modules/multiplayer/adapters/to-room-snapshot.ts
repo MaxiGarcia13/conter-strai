@@ -35,6 +35,7 @@ function teamSeats(
 /** Empty waiting-room snapshot for `POST /api/v1/room` before anyone joins. */
 export function createEmptyRoomSnapshot(
   roomCode: string,
+  expiresAt: string,
   scenario: ScenarioId = DEFAULT_SCENARIO_ID,
 ): RoomSnapshot {
   return {
@@ -43,13 +44,18 @@ export function createEmptyRoomSnapshot(
     canJoin: true,
     maxPerTeam: DEFAULT_MAX_PER_TEAM,
     playerCount: 0,
+    expiresAt,
     scenario,
     teams: teamSeats(DEFAULT_MAX_PER_TEAM),
   };
 }
 
 /** Encode authoritative match state into the lobby REST `RoomSnapshot` DTO. */
-export function toRoomSnapshot(roomCode: string, state: MatchState): RoomSnapshot {
+export function toRoomSnapshot(
+  roomCode: string,
+  state: MatchState,
+  expiresAt: string,
+): RoomSnapshot {
   const maxPerTeam = state.maxPerTeam || DEFAULT_MAX_PER_TEAM;
   const playerCount = state.players.size;
   // Lobby REST only exposes waiting | in_progress | ended — countdown locks joins.
@@ -68,6 +74,7 @@ export function toRoomSnapshot(roomCode: string, state: MatchState): RoomSnapsho
     canJoin: phase === 'waiting' && playerCount < maxClients,
     maxPerTeam: maxPerTeam as RoomSnapshot['maxPerTeam'],
     playerCount,
+    expiresAt,
     scenario: state.scenario as ScenarioId,
     teams: teamSeats(maxPerTeam, counts),
   };

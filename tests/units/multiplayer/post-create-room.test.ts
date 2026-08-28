@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { LobbyRestError } from '@/modules/multiplayer/services/lobby-rest';
 import {
   postCreateRoom,
-  readCreatedRoomId,
+  readCreatedRoom,
 } from '@/modules/multiplayer/services/post-create-room';
 
 afterEach(() => {
@@ -17,26 +17,35 @@ function jsonResponse(status: number, body: unknown): Response {
   });
 }
 
-describe('readCreatedRoomId', () => {
-  it('accepts a 6-character snapshot id', () => {
-    expect(readCreatedRoomId({ id: 'ABC123' })).toBe('ABC123');
+describe('readCreatedRoom', () => {
+  it('accepts a 6-character snapshot id with a host token', () => {
+    expect(readCreatedRoom({ id: 'ABC123', hostToken: 'tok' })).toEqual({
+      roomId: 'ABC123',
+      hostToken: 'tok',
+    });
   });
 
   it('rejects missing or short ids', () => {
-    expect(readCreatedRoomId(null)).toBeNull();
-    expect(readCreatedRoomId({})).toBeNull();
-    expect(readCreatedRoomId({ id: 'AB' })).toBeNull();
+    expect(readCreatedRoom(null)).toBeNull();
+    expect(readCreatedRoom({})).toBeNull();
+    expect(readCreatedRoom({ id: 'AB' })).toBeNull();
+  });
+
+  it('rejects a missing host token', () => {
+    expect(readCreatedRoom({ id: 'ABC123' })).toBeNull();
   });
 });
 
 describe('postCreateRoom', () => {
-  it('posts options and returns the server room id', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(jsonResponse(201, { id: 'K7M2PQ' }));
+  it('posts options and returns the server room id + host token', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(jsonResponse(201, { id: 'K7M2PQ', hostToken: 'tok-123' }));
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(
       postCreateRoom({ team: 'civilian', skin: 'remy', scenario: 'arena-01' }),
-    ).resolves.toBe('K7M2PQ');
+    ).resolves.toEqual({ roomId: 'K7M2PQ', hostToken: 'tok-123' });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/v1/room', {
       method: 'POST',
@@ -56,5 +65,16 @@ describe('postCreateRoom', () => {
     const error = await postCreateRoom({}).catch((cause: unknown) => cause);
     expect(error).toBeInstanceOf(LobbyRestError);
     expect(error).toMatchObject({ status: 503, message: 'Matchmaker is not ready' });
+  });
+
+  it('throws when the create response has no host token', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(jsonResponse(201, { id: 'K7M2PQ' })),
+    );
+
+    const error = await postCreateRoom({}).catch((cause: unknown) => cause);
+    expect(error).toBeInstanceOf(LobbyRestError);
+    expect(error).toMatchObject({ status: 500, message: 'Invalid create-room response' });
   });
 });

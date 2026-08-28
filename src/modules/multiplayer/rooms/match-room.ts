@@ -1,34 +1,33 @@
 import type { Client } from 'colyseus';
 import type { MatchState } from '../schema/match-state';
-
 import type { ScenarioId } from '@/modules/scenarios/types';
 import type { Team } from '@/modules/teams/types';
 import { Room } from 'colyseus';
 import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
 import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
 import { TEAM_SKINS } from '@/modules/teams/constants/team-skins';
+import { PISTOL_FIRE_COOLDOWN_MS } from '@/modules/weapons/constants/pistol';
 import { createMatchState } from '../schema/match-state';
 import { createPlayerState } from '../schema/player-state';
+import { assertRoomJoinable, computeExpiresAt } from '../utils/room-expiry';
 import { isRemotePoseMessage } from '../utils/syncable-remote-pose';
-import { applyMatchShot } from './apply-match-shot';
+import { isMoveMessage, moveExceedsThreshold } from '../utils/validate-move';
+import { applyMatchShot, isShotMessage } from './apply-match-shot';
 import { assignTeam, checkTeamWipe, teamCount } from './match-teams';
 import { placePlayerAtSpawn, resolveTeamSpawn, respawnMatchPlayers } from './place-match-player';
 
 export interface MatchMetadata {
   roomCode: string;
   scenario: ScenarioId;
+  /** Opaque bearer secret — REST `DELETE` only, never in Schema state. */
+  hostToken?: string;
+  /** ISO timestamp the room code expires at (auto-dispose in onCreate). */
+  expiresAt?: string;
 }
 
 interface JoinOptions {
   team?: Team;
   skin?: string;
-}
-
-interface MoveMessage {
-  x: number;
-  y: number;
-  z: number;
-  rotY: number;
 }
 
 const MAX_CLIENTS = DEFAULT_MAX_PER_TEAM * 2;
@@ -40,22 +39,36 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
   /** Spawn slot claimed at join — reused on round restart. */
   private spawnIndexBySession = new Map<string, number>();
   private countdownTimer: ReturnType<typeof setInterval> | null = null;
+  private expiryTimer: ReturnType<typeof setTimeout> | null = null;
   /** Host close / API dispose — skip the reconnection grace window on teardown. */
   private disposing = false;
   /** Clients that sent `leaveLobby` — skip the reconnect grace on disconnect. */
   private abandonedSessions = new Set<string>();
+  /** Last accepted move per session (validate-move clamps teleports). */
+  private lastMoveBySession = new Map<string, { x: number; z: number; atMs: number }>();
+  /** Last accepted shot per session (fire-rate cooldown). */
+  private lastShotAtBySession = new Map<string, number>();
 
   onCreate(options: { metadata?: MatchMetadata }) {
     const meta = options.metadata ?? { roomCode: '', scenario: 'arena-01' as ScenarioId };
     this.maxClients = MAX_CLIENTS;
     this.state = createMatchState({ scenario: meta.scenario });
     this.metadata = meta;
+    this.scheduleExpiry();
 
-    this.onMessage('move', (_client, data: MoveMessage) => {
-      const player = this.state.players.get(_client.sessionId);
+    this.onMessage('move', (client, data) => {
+      const player = this.state.players.get(client.sessionId);
       if (!player || this.state.roundPhase !== 'in_progress') {
         return;
       }
+      if (!isMoveMessage(data)) {
+        return;
+      }
+      const previous = this.lastMoveBySession.get(client.sessionId);
+      if (previous && moveExceedsThreshold(previous, { x: data.x, z: data.z }, Date.now())) {
+        return;
+      }
+      this.lastMoveBySession.set(client.sessionId, { x: data.x, z: data.z, atMs: Date.now() });
       player.x = data.x;
       player.y = data.y;
       player.z = data.z;
@@ -73,7 +86,15 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
       this.startRound();
     });
 
-    this.onMessage('shot', (client, data: { targetId: string; zone: 'head' | 'body' | 'limb' }) => {
+    this.onMessage('shot', (client, data) => {
+      if (!isShotMessage(data)) {
+        return;
+      }
+      const lastShotAt = this.lastShotAtBySession.get(client.sessionId) ?? 0;
+      if (Date.now() - lastShotAt < PISTOL_FIRE_COOLDOWN_MS) {
+        return;
+      }
+      this.lastShotAtBySession.set(client.sessionId, Date.now());
       const winner = applyMatchShot(this.state, client.sessionId, data);
       if (winner) {
         this.state.winner = winner;
@@ -108,6 +129,8 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
   }
 
   onJoin(client: Client, options?: JoinOptions) {
+    assertRoomJoinable(this.metadata.expiresAt);
+
     if (this.hostSessionId === null) {
       this.hostSessionId = client.sessionId;
     }
@@ -184,7 +207,10 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
   }
 
   startRound() {
+    this.renewExpiry();
     respawnMatchPlayers(this.state, this.spawnIndexBySession);
+    this.lastMoveBySession.clear();
+    this.lastShotAtBySession.clear();
     this.state.winner = '';
     this.state.countdown = COUNTDOWN_START;
     this.state.roundPhase = 'countdown';
@@ -195,6 +221,39 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
 
   onDispose() {
     this.clearCountdown();
+    if (this.expiryTimer) {
+      clearTimeout(this.expiryTimer);
+      this.expiryTimer = null;
+    }
+  }
+
+  /** Slide `expiresAt` forward and reschedule auto-dispose (host restart / first match). */
+  private renewExpiry() {
+    this.metadata.expiresAt = computeExpiresAt();
+    if (this.expiryTimer) {
+      clearTimeout(this.expiryTimer);
+      this.expiryTimer = null;
+    }
+    this.scheduleExpiry();
+  }
+
+  /** Auto-dispose when the room code TTL elapses (see Room code TTL). */
+  private scheduleExpiry() {
+    const expiresAtMs = this.metadata.expiresAt ? Date.parse(this.metadata.expiresAt) : Number.NaN;
+    if (Number.isNaN(expiresAtMs)) {
+      return;
+    }
+    const delay = expiresAtMs - Date.now();
+    if (delay <= 0) {
+      this.broadcast('roomClosed');
+      void this.disposeLobby();
+      return;
+    }
+    this.expiryTimer = setTimeout(() => {
+      this.expiryTimer = null;
+      this.broadcast('roomClosed');
+      void this.disposeLobby();
+    }, delay);
   }
 
   private beginCountdown() {

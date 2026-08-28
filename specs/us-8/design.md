@@ -72,19 +72,19 @@ On `move` messages:
 
 ## Room code TTL (US-8.9 / US-8.11)
 
-- On create: `expiresAt = now + ROOM_CODE_TTL_MS` (default `14_400_000` = 4 h) in metadata
+- On create: `expiresAt = now + ROOM_CODE_TTL_MS` (default `2_400_000` = 40 min) in metadata
 - Expose `expiresAt` on `RoomSnapshot` (lobby may show countdown later; optional UI)
 - `MatchRoom.onCreate`: schedule dispose at `expiresAt`; clear timer in `onDispose`
 - Shared `isRoomExpired(metadata)` — REST `GET` / `PUT` / `DELETE` return **`410 Gone`** `{ error: 'Room expired' }` when past expiry (dispose if still listed)
-- Reject WS join after expiry
-- **v1:** TTL fixed from create (does not pause during `in_progress`). Tune TTL or extend-on-round-start later if matches outlive codes.
+- Reject WS join after expiry (`onJoin` throws when `expiresAt` is past)
+- **Restart:** host `startRound` (waiting → countdown or ended → countdown) calls `renewExpiry()` — new `expiresAt`, reschedule dispose timer; **`hostToken` stays the same** so the create-time bearer in `RoomSession` still authorizes `DELETE`
 
 ## Env
 
-| Variable           | Purpose                                                       |
-| ------------------ | ------------------------------------------------------------- |
-| `ROOM_CODE_TTL_MS` | Room lifetime from create (default `14400000`)                |
-| `SITE`             | Allowed origin base for US-8.1 (already used by Astro config) |
+| Variable           | Purpose                                                            |
+| ------------------ | ------------------------------------------------------------------ |
+| `ROOM_CODE_TTL_MS` | Room lifetime from create / each round restart (default `2400000`) |
+| `SITE`             | Allowed origin base for US-8.1 (already used by Astro config)      |
 
 ## Deferred
 

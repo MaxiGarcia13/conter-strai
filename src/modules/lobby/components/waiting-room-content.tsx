@@ -23,7 +23,8 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
   const [session] = useState(() => readRoomSession(roomId));
   const snapshotQuery = useRoomSnapshot(session ? roomId : '', { poll: true });
   const dispose = useMutation({
-    mutationFn: deleteRoom,
+    mutationFn: ([closeRoomId, hostToken]: [string, string | undefined]) =>
+      deleteRoom(closeRoomId, hostToken),
   });
 
   const { joining, error: joinError } = useMatchJoin(roomId);
@@ -61,7 +62,7 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
       return;
     }
     try {
-      await dispose.mutateAsync(roomId);
+      await dispose.mutateAsync([roomId, readRoomSession(roomId)?.hostToken]);
     } catch (cause) {
       if (!(cause instanceof LobbyRestError) || cause.status !== 404) {
         return;

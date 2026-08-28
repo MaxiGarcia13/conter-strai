@@ -1,8 +1,10 @@
 import type { SoldierSkinId } from '@/modules/soldiers';
+import type { Team } from '@/modules/teams';
 
 import { useThree } from '@react-three/fiber';
 
 import { useEffect } from 'react';
+import { getActiveMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
 import { countActiveSoldierMixers as countLocomotionMixers } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { SOLDIER_ROOT_NAME } from '@/modules/soldiers/utils/clone-soldier-root';
 import { resolveAnimationClipKey } from '@/modules/soldiers/utils/resolve-animation-clip-key';
@@ -51,6 +53,8 @@ declare global {
       setPose: (pose: 'kneel' | null) => void;
       setLocomotion: (locomotion: 'idle' | 'walk' | 'run') => void;
       cycleMode: () => string;
+      /** Host-only E2E hook — ends the live round via Colyseus `e2eEndRound`. */
+      forceRoundEnd: (winner?: Team) => void;
     };
   }
 }
@@ -113,6 +117,9 @@ export function PlayTestHook({ skinId }: PlayTestHookProps) {
       setPose: (pose) => setPlayerPose(pose),
       setLocomotion: (next) => setPlayerLocomotion(next),
       cycleMode: () => cycleCameraMode(),
+      forceRoundEnd: (winner = 'civilian') => {
+        getActiveMatch()?.room.send('e2eEndRound', { winner });
+      },
     };
     const timer = window.setInterval(update, POLL_INTERVAL_MS);
     return () => {

@@ -26,18 +26,14 @@ export function RoundEndBanner({
   const roundPhase = useRoundStore((state) => state.phase);
   const roundWinner = useRoundStore((state) => state.winner);
   const startRound = useRoundStore((state) => state.startRound);
-  const [isHost] = useState(() => {
-    if (!roomId) {
-      return true;
-    }
-    return readRoomSession(roomId)?.role === 'host';
-  });
+  const session = roomId ? readRoomSession(roomId) : null;
+  const isHost = session?.role === 'host' || !roomId;
   const [closing, setClosing] = useState(false);
 
-  const phase = connected ? mpPhase : roundPhase;
-  const winner = connected ? mpWinner : roundWinner;
+  const phase = roomId ? mpPhase : roundPhase;
+  const winner = roomId ? mpWinner : roundWinner;
   /** Multiplayer: host only. Offline: always. */
-  const canRestart = connected ? isHost : true;
+  const canRestart = roomId ? isHost : true;
 
   useEffect(() => {
     if (phase === 'round-end' && document.pointerLockElement) {
@@ -67,10 +63,10 @@ export function RoundEndBanner({
     setClosing(true);
 
     if (roomId) {
-      const session = readRoomSession(roomId);
-      if (isHost && session?.hostToken) {
+      const sessionNow = readRoomSession(roomId);
+      if (sessionNow?.role === 'host' && sessionNow.hostToken) {
         try {
-          await deleteRoom(roomId, session.hostToken);
+          await deleteRoom(roomId, sessionNow.hostToken);
         } catch (cause) {
           if (!(cause instanceof LobbyRestError) || cause.status !== 404) {
             setClosing(false);
@@ -84,7 +80,8 @@ export function RoundEndBanner({
       }
 
       if (connected) {
-        await leaveMatch();
+        // Hard-nav tears the page down — do not await Colyseus reconnect grace.
+        void leaveMatch();
       }
       clearRoomSession(roomId);
       window.location.href = '/';
@@ -92,7 +89,7 @@ export function RoundEndBanner({
     }
 
     if (connected) {
-      await leaveMatch();
+      void leaveMatch();
     }
     window.location.href = '/';
   }

@@ -8,6 +8,7 @@ import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
 import { TEAM_SKINS } from '@/modules/teams/constants/team-skins';
 import { PISTOL_FIRE_COOLDOWN_MS } from '@/modules/weapons/constants/pistol';
 import { isE2e } from '../dev/is-e2e';
+import { registerE2eEndRound } from '../dev/register-e2e-end-round';
 import { createMatchState } from '../schema/match-state';
 import { createPlayerState } from '../schema/player-state';
 import { assertRoomJoinable, computeExpiresAt } from '../utils/room-expiry';
@@ -128,6 +129,13 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
       }
       this.abandonedSessions.add(client.sessionId);
       this.removePlayer(client.sessionId);
+    });
+
+    registerE2eEndRound({
+      state: this.state,
+      getHostSessionId: () => this.hostSessionId,
+      onMessage: (type, callback) => this.onMessage(type, callback),
+      broadcast: (type, message) => this.broadcast(type, message),
     });
   }
 

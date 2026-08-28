@@ -85,6 +85,22 @@ export async function waitForPlayTest(page: Page): Promise<PlayTestSnapshot> {
   return snapshot as PlayTestSnapshot;
 }
 
+/** Host-only E2E hook — ends the live round and waits for the round-end banner. */
+export async function forceRoundEnd(page: Page): Promise<void> {
+  await expect
+    .poll(async () => {
+      const ready = await page.evaluate(() => typeof window.__PLAY_TEST_API__?.forceRoundEnd === 'function');
+      if (!ready) {
+        return false;
+      }
+      await page.evaluate(() => {
+        window.__PLAY_TEST_API__?.forceRoundEnd?.('civilian');
+      });
+      return page.getByRole('alert', { name: /win the round/i }).isVisible();
+    }, { timeout: 45_000, intervals: [500, 1_000] })
+    .toBe(true);
+}
+
 export function expectNoConsoleErrors(consoleErrors: string[]): void {
   expect(consoleErrors.filter((error) => /PropertyBinding/i.test(error))).toEqual([]);
   expect(consoleErrors).toEqual([]);

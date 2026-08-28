@@ -10,7 +10,10 @@ import { useSoldierLocomotion } from '@/modules/soldiers/hooks/use-soldier-locom
 import { useSoldierMesh } from '@/modules/soldiers/hooks/use-soldier-mesh';
 import { resolveNpcPose } from '@/modules/soldiers/utils/resolve-soldier-pose';
 import { useMultiplayerStore } from '../stores/multiplayer-store';
-import { updateRemoteMotion } from '../utils/resolve-remote-locomotion';
+import {
+  resolveRemoteLocomotionForAnimation,
+  updateRemoteMotion,
+} from '../utils/resolve-remote-locomotion';
 import { stepRemoteRenderTransform } from '../utils/step-remote-render-transform';
 
 interface RemotePlayerProps {
@@ -24,7 +27,8 @@ interface RemotePlayerProps {
  * parent (stable for the session); per-frame reads use `getState()` so the
  * 20 Hz transform sync never needs a React re-render to move the rig.
  * Visual pose eases toward the latest sync; locomotion is inferred from the
- * raw network samples (with idle hold + walk/run hysteresis).
+ * raw network samples (with idle hold + walk/run hysteresis), then kneel-aware
+ * filtering keeps crouch-walk stable instead of flickering to run or kneel enter.
  */
 export function RemotePlayer({ sessionId, skinId }: RemotePlayerProps) {
   const rigRef = useRef<Group>(null);
@@ -32,13 +36,34 @@ export function RemotePlayer({ sessionId, skinId }: RemotePlayerProps) {
   const renderRef = useRef<RemoteRenderTransform | null>(null);
   const { modelRef, source, scale, skin, animations } = useSoldierMesh(skinId);
 
+  const clearRemotePose = () => {
+    useMultiplayerStore.getState().applyRemotePose(sessionId, 'clear');
+  };
+
   useSoldierLocomotion(modelRef, animations, skin.meshData.animations, {
     entityId: sessionId,
-    getLocomotionState: () => motionRef.current?.locomotion ?? 'idle',
+    getLocomotionState: () => {
+      const entry = useMultiplayerStore.getState().remotePlayers[sessionId];
+      return resolveRemoteLocomotionForAnimation(
+        motionRef.current,
+        entry?.pose,
+        performance.now(),
+      );
+    },
     getPose: () => {
       const entry = useMultiplayerStore.getState().remotePlayers[sessionId];
-      return entry ? resolveNpcPose(sessionId, entry.health.isEliminated) : null;
+      if (!entry) {
+        return null;
+      }
+      const npcPose = resolveNpcPose(sessionId, entry.health.isEliminated);
+      if (npcPose) {
+        return npcPose;
+      }
+      return entry.pose ?? null;
     },
+    onJumpFinished: clearRemotePose,
+    onReloadingFinished: clearRemotePose,
+    onShootingFinished: clearRemotePose,
   });
 
   useFrame((_, delta) => {

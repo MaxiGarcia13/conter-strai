@@ -1,3 +1,4 @@
+import type { PlayersUpdatePayload } from '@/modules/multiplayer/adapters/colyseus-adapter';
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
   mapMatchRoundPhase,
@@ -135,7 +136,62 @@ describe('useMultiplayerStore', () => {
       connected: false,
       applyPlayersUpdate: expect.any(Function),
       applyRoundUpdate: expect.any(Function),
+      applyRemotePose: expect.any(Function),
       reset: expect.any(Function),
     });
+  });
+
+  it('preserves an ephemeral pose across transform updates', () => {
+    const payload: PlayersUpdatePayload = {
+      localSessionId: 'local-session',
+      players: [
+        {
+          sessionId: 'session-2',
+          x: 3,
+          y: 0,
+          z: 4,
+          rotY: 0.5,
+          hp: 60,
+          eliminated: false,
+          team: 'soldier',
+          skin: 'swat-1',
+        },
+      ],
+    };
+
+    useMultiplayerStore.getState().applyPlayersUpdate(payload);
+    useMultiplayerStore.getState().applyRemotePose('session-2', 'kneel');
+
+    expect(useMultiplayerStore.getState().remotePlayers['session-2']?.pose).toBe('kneel');
+
+    // Position patch rebuilds the entry — the pose must survive.
+    useMultiplayerStore.getState().applyPlayersUpdate(payload);
+
+    expect(useMultiplayerStore.getState().remotePlayers['session-2']?.pose).toBe('kneel');
+  });
+
+  it('applies and clears a remote pose', () => {
+    useMultiplayerStore.getState().applyPlayersUpdate({
+      localSessionId: 'local-session',
+      players: [
+        {
+          sessionId: 'session-2',
+          x: 0,
+          y: 0,
+          z: 0,
+          rotY: 0,
+          hp: 100,
+          eliminated: false,
+          team: 'soldier',
+          skin: 'swat-1',
+        },
+      ],
+    });
+
+    useMultiplayerStore.getState().applyRemotePose('session-2', 'jump');
+    expect(useMultiplayerStore.getState().remotePlayers['session-2']?.pose).toBe('jump');
+
+    useMultiplayerStore.getState().applyRemotePose('session-2', 'clear');
+    expect(useMultiplayerStore.getState().remotePlayers['session-2']?.pose).toBeUndefined();
   });
 });

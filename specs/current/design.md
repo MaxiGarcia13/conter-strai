@@ -316,3 +316,8 @@ When `HealthState.isEliminated`, FPS move/look/shoot is disabled and pointer loc
 - Schema per player: `{ x, y, z, rotY, hp, eliminated, team }`.
 - Shots and round wipe are **server-authoritative** (room messages + Schema mutations).
 - Client uses `colyseus-adapter` only — game modules do not import Colyseus directly.
+- **Cosmetic pose relay:** jump / kneel are not Schema-authoritative. The local player
+  emits an ephemeral `pose` message (`jump` | `kneel` | `clear`) on state change; the
+  server relays it to peers, who drive a one-shot jump or toggle kneel on the remote
+  rig. `clear` (and the remote mixer finishing its own jump) returns to locomotion
+  inferred from position deltas.

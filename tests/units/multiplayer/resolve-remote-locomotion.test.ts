@@ -4,6 +4,7 @@ import {
   REMOTE_IDLE_SPEED_MPS,
   REMOTE_RUN_ENTER_MPS,
   REMOTE_RUN_EXIT_MPS,
+  resolveRemoteLocomotionForAnimation,
   updateRemoteMotion,
 } from '@/modules/multiplayer/utils/resolve-remote-locomotion';
 import {
@@ -51,6 +52,15 @@ describe('updateRemoteMotion', () => {
     expect(running.locomotion).toBe('run');
   });
 
+  it('does not false-promote to run on bursty sync deltas', () => {
+    const start = updateRemoteMotion(null, { x: 0, z: 0 }, 0);
+    const walking = updateRemoteMotion(start, { x: 0.25, z: 0 }, 50);
+    expect(walking.locomotion).toBe('walk');
+
+    const bursty = updateRemoteMotion(walking, { x: 0.5, z: 0 }, 60);
+    expect(bursty.locomotion).toBe('walk');
+  });
+
   it('keeps run until speed drops below the exit threshold', () => {
     const start = updateRemoteMotion(null, { x: 0, z: 0 }, 0);
     const running = updateRemoteMotion(start, { x: REMOTE_RUN_ENTER_MPS * 0.05, z: 0 }, 50);
@@ -81,6 +91,32 @@ describe('updateRemoteMotion', () => {
     );
     expect(respawned.locomotion).toBe('idle');
     expect(respawned.x).toBe(walking.x + REMOTE_SNAP_DISTANCE + 1);
+  });
+});
+
+describe('resolveRemoteLocomotionForAnimation', () => {
+  it('caps inferred run to walk while kneeling', () => {
+    const motion = { x: 1, z: 0, movedAt: 100, locomotion: 'run' as const };
+    expect(resolveRemoteLocomotionForAnimation(motion, 'kneel', 150)).toBe('walk');
+  });
+
+  it('holds walk during idle gaps while kneeling and recently moving', () => {
+    const motion = { x: 1, z: 0, movedAt: 100, locomotion: 'idle' as const };
+    expect(resolveRemoteLocomotionForAnimation(motion, 'kneel', 100 + REMOTE_IDLE_HOLD_MS - 1)).toBe(
+      'walk',
+    );
+  });
+
+  it('allows idle kneel when movement has stopped', () => {
+    const motion = { x: 1, z: 0, movedAt: 100, locomotion: 'idle' as const };
+    expect(resolveRemoteLocomotionForAnimation(motion, 'kneel', 100 + REMOTE_IDLE_HOLD_MS)).toBe(
+      'idle',
+    );
+  });
+
+  it('passes through locomotion when not kneeling', () => {
+    const motion = { x: 1, z: 0, movedAt: 100, locomotion: 'run' as const };
+    expect(resolveRemoteLocomotionForAnimation(motion, undefined, 150)).toBe('run');
   });
 });
 

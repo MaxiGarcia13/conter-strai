@@ -69,6 +69,10 @@ export function bindMatch(handle: MatchHandle, roomId: string): () => void {
     }
   });
 
+  const offPose = handle.onPose((payload) => {
+    useMultiplayerStore.getState().applyRemotePose(payload.sessionId, payload.pose);
+  });
+
   const offLeave = handle.onLeave(() => {
     useMultiplayerStore.getState().reset();
     useHealthStore.getState().resetAll();
@@ -84,6 +88,7 @@ export function bindMatch(handle: MatchHandle, roomId: string): () => void {
   return () => {
     offPlayerUpdate();
     offRoundUpdate();
+    offPose();
     offLeave();
     offRoomClosed();
   };

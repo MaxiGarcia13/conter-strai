@@ -1,5 +1,9 @@
+import type { SyncableRemotePose } from './syncable-remote-pose';
 import type { LocomotionState } from '@/modules/soldiers';
 import { REMOTE_SNAP_DISTANCE } from './step-remote-render-transform';
+
+/** Matches transform sync throttle (~20 Hz) — floors speed dt to avoid burst false-runs. */
+export const REMOTE_SYNC_INTERVAL_MS = 50;
 
 /** Below this speed (m/s) a remote peer counts as idle. */
 export const REMOTE_IDLE_SPEED_MPS = 0.5;
@@ -45,7 +49,7 @@ export function updateRemoteMotion(
   }
 
   if (distance > REMOTE_POSITION_EPSILON) {
-    const dtMs = Math.max(nowMs - prev.movedAt, 1);
+    const dtMs = Math.max(nowMs - prev.movedAt, REMOTE_SYNC_INTERVAL_MS);
     const speed = distance / (dtMs / 1000);
     const locomotion = resolveSpeedToLocomotion(speed, prev.locomotion);
     return { x: next.x, z: next.z, movedAt: nowMs, locomotion };
@@ -75,4 +79,37 @@ function resolveSpeedToLocomotion(
   }
 
   return speed >= REMOTE_RUN_ENTER_MPS ? 'run' : 'walk';
+}
+
+const KNEEL_ANIMATION_POSES = new Set<SyncableRemotePose>(['kneel', 'reloadingKneel']);
+
+/**
+ * Locomotion fed to the remote mixer — caps false run/idle flicker while a
+ * peer is kneeling so clip resolve stays on crouch-walk instead of restarting
+ * kneel enter or stand-run.
+ */
+export function resolveRemoteLocomotionForAnimation(
+  motion: RemoteMotionSample | null,
+  syncedPose: SyncableRemotePose | undefined,
+  nowMs: number,
+): LocomotionState {
+  const locomotion = motion?.locomotion ?? 'idle';
+
+  if (!syncedPose || !KNEEL_ANIMATION_POSES.has(syncedPose)) {
+    return locomotion;
+  }
+
+  if (locomotion === 'run') {
+    return 'walk';
+  }
+
+  if (
+    locomotion === 'idle'
+    && motion
+    && nowMs - motion.movedAt < REMOTE_IDLE_HOLD_MS
+  ) {
+    return 'walk';
+  }
+
+  return locomotion;
 }

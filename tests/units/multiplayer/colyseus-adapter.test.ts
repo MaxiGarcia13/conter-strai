@@ -5,8 +5,10 @@ import {
   initMatch,
   leaveMatch,
   onPlayerUpdate,
+  onPose,
   onRoundUpdate,
   readMatchPlayers,
+  sendPose,
   sendShot,
   startMatch,
   syncTransform,
@@ -203,6 +205,42 @@ describe('initMatch', () => {
     match.sendShot({ targetId: 'session-2', zone: 'head' });
 
     expect(room.sent).toContainEqual({ type: 'shot', payload: { targetId: 'session-2', zone: 'head' } });
+  });
+
+  it('relays a cosmetic pose without a session id (server stamps the sender)', async () => {
+    const match = await initMatch({ roomId: 'host-room' });
+    const room = match.room as unknown as FakeRoom;
+
+    sendPose('kneel');
+
+    expect(room.sent).toContainEqual({ type: 'pose', payload: { pose: 'kneel' } });
+  });
+
+  it('emits peer poses received from the room', async () => {
+    const match = await initMatch({ roomId: 'host-room' });
+    const room = match.room as unknown as FakeRoom;
+    const poses: unknown[] = [];
+    onPose((payload) => {
+      poses.push(payload);
+    });
+
+    room.callbacks.messages.pose![0]!({ sessionId: 'peer-1', pose: 'jump' });
+
+    expect(poses).toEqual([{ sessionId: 'peer-1', pose: 'jump' }]);
+  });
+
+  it('ignores malformed pose messages', async () => {
+    const match = await initMatch({ roomId: 'host-room' });
+    const room = match.room as unknown as FakeRoom;
+    const poses: unknown[] = [];
+    onPose((payload) => {
+      poses.push(payload);
+    });
+
+    room.callbacks.messages.pose![0]!({});
+    room.callbacks.messages.pose![0]!({ sessionId: 'peer-1' });
+
+    expect(poses).toEqual([]);
   });
 
   it('starts the round via the adapter proxy', async () => {

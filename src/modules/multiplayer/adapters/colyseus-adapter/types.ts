@@ -2,8 +2,11 @@ import type { Room } from '@colyseus/sdk';
 import type { HitZone } from '@/modules/combat';
 import type { MatchRoundPhase, MatchState } from '@/modules/multiplayer/schema';
 import type { SeatReservation } from '@/modules/multiplayer/types';
+import type { RemotePoseMessage } from '@/modules/multiplayer/utils/syncable-remote-pose';
 import type { SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
+
+export type { RemotePoseMessage };
 
 /** Throttle window for local transform sync (~20 Hz), matching the design. */
 export const TRANSFORM_SYNC_INTERVAL_MS = 50;
@@ -18,6 +21,11 @@ export interface TransformSyncPayload {
 export interface ShotPayload {
   targetId: string;
   zone: HitZone;
+}
+
+export interface PosePayload {
+  sessionId: string;
+  pose: RemotePoseMessage;
 }
 
 /** Flattened, store-friendly view of one connected player (schema fields). */
@@ -69,6 +77,7 @@ export interface MoveMessage {
 
 export type PlayerUpdateListener = (payload: PlayersUpdatePayload) => void;
 export type RoundUpdateListener = (payload: RoundUpdatePayload) => void;
+export type PoseListener = (payload: PosePayload) => void;
 export type LeaveListener = (code: number) => void;
 export type RoomClosedListener = () => void;
 
@@ -90,10 +99,13 @@ export interface MatchHandle {
   players: MatchPlayerSnapshot[];
   syncTransform: (transform: TransformSyncPayload) => void;
   sendShot: (shot: ShotPayload) => void;
+  sendPose: (pose: RemotePoseMessage) => void;
   /** Host-only: flips the room from `waiting` | `ended` into the countdown. */
   startRound: () => void;
   onPlayerUpdate: (listener: PlayerUpdateListener) => () => void;
   onRoundUpdate: (listener: RoundUpdateListener) => () => void;
+  /** Cosmetic peer pose events (jump / kneel / clear) — no authority. */
+  onPose: (listener: PoseListener) => () => void;
   onLeave: (listener: LeaveListener) => () => void;
   /** Fired when the room is disposed (Home / Close Room) — all clients should exit. */
   onRoomClosed: (listener: RoomClosedListener) => () => void;

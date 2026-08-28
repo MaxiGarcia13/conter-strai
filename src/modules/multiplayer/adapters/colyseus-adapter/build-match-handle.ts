@@ -5,6 +5,9 @@ import type {
   MatchRoom,
   PlayersUpdatePayload,
   PlayerUpdateListener,
+  PoseListener,
+  PosePayload,
+  RemotePoseMessage,
   RoomClosedListener,
   RoundUpdateListener,
   RoundUpdatePayload,
@@ -38,6 +41,7 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
 
   const playerListeners = new Set<PlayerUpdateListener>();
   const roundListeners = new Set<RoundUpdateListener>();
+  const poseListeners = new Set<PoseListener>();
   const leaveListeners = new Set<LeaveListener>();
   const roomClosedListeners = new Set<RoomClosedListener>();
 
@@ -85,6 +89,16 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
     }
   });
 
+  room.onMessage('pose', (message: { sessionId?: string; pose?: RemotePoseMessage }) => {
+    if (!message?.sessionId || !message?.pose) {
+      return;
+    }
+    const payload: PosePayload = { sessionId: message.sessionId, pose: message.pose };
+    for (const listener of poseListeners) {
+      listener(payload);
+    }
+  });
+
   function flushTransform(): void {
     flushTimer = null;
     if (!connected || !latestTransform) {
@@ -107,6 +121,13 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
       return;
     }
     room.send('shot', shot);
+  }
+
+  function sendPose(pose: RemotePoseMessage): void {
+    if (!connected) {
+      return;
+    }
+    room.send('pose', { pose });
   }
 
   room.onLeave((code) => {
@@ -135,6 +156,7 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
     },
     syncTransform,
     sendShot,
+    sendPose,
     startRound: () => {
       if (connected) {
         room.send('startRound');
@@ -158,6 +180,7 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
       }
       return unsubscribe;
     },
+    onPose: (listener) => subscribe(poseListeners, listener),
     onLeave: (listener) => subscribe(leaveListeners, listener),
     onRoomClosed: (listener) => subscribe(roomClosedListeners, listener),
     leave: () => room.leave(true),

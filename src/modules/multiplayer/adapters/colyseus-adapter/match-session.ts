@@ -1,6 +1,8 @@
 import type {
   LeaveListener,
   PlayerUpdateListener,
+  PoseListener,
+  RemotePoseMessage,
   RoundUpdateListener,
   ShotPayload,
   TransformSyncPayload,
@@ -16,9 +18,18 @@ export function sendShot(shot: ShotPayload): void {
   requireActiveMatch().sendShot(shot);
 }
 
+/** Relay a cosmetic local pose to peers (jump / kneel / clear). */
+export function sendPose(pose: RemotePoseMessage): void {
+  requireActiveMatch().sendPose(pose);
+}
+
 /** Host-only: start or restart the round (`waiting` | `ended` → `countdown` → `in_progress`). */
 export function startMatch(): void {
   requireActiveMatch().startRound();
+}
+
+export function onPose(listener: PoseListener): () => void {
+  return requireActiveMatch().onPose(listener);
 }
 
 export function onPlayerUpdate(listener: PlayerUpdateListener): () => void {

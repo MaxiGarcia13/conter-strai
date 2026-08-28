@@ -9,6 +9,7 @@ import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
 import { TEAM_SKINS } from '@/modules/teams/constants/team-skins';
 import { createMatchState } from '../schema/match-state';
 import { createPlayerState } from '../schema/player-state';
+import { isRemotePoseMessage } from '../utils/syncable-remote-pose';
 import { applyMatchShot } from './apply-match-shot';
 import { assignTeam, checkTeamWipe, teamCount } from './match-teams';
 import { placePlayerAtSpawn, resolveTeamSpawn, respawnMatchPlayers } from './place-match-player';
@@ -76,6 +77,13 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
         this.state.winner = winner;
         this.state.roundPhase = 'ended';
         this.broadcast('roundEnd', { winner });
+      }
+    });
+
+    // Relay cosmetic local poses to peers (no authority).
+    this.onMessage('pose', (client, data: { pose: unknown }) => {
+      if (isRemotePoseMessage(data?.pose)) {
+        this.broadcast('pose', { sessionId: client.sessionId, pose: data.pose }, { except: client });
       }
     });
   }

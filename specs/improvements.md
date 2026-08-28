@@ -49,7 +49,7 @@ Player-facing polish and feel items. Not tied to a user story — pick when touc
 
 ---
 
-[ ] ## 3. Remote kneel / jump not visible in multiplayer
+[x] ## 3. Remote kneel / jump not visible in multiplayer
 
 **Symptom:** When a remote player kneels or jumps, other clients only see idle / walk / run inferred from position deltas — not the pose animation.
 
@@ -95,3 +95,43 @@ Then:
 **Acceptance:** Standing near a remote player, gunshots and injury grunts are audible and quieter when far away (~40 m falloff). Local player's own gunshot remains full volume at the camera.
 
 **Spec touch:** Extend US-5 design with fire-event broadcast; no FR change unless audio is listed as a functional requirement.
+
+---
+
+[ ] ## 5. New shared animations (reload, jump-idle, backward locomotion) + multiplayer sync
+
+**Symptom:** New clips in [`base-animations.glb`](../public/assets/characters/shared/base-animations.glb) are not wired locally; remote peers still miss reload variants, `jump-idle`, and backward walk/run gaits (§3 pose relay only covers `jump` / `kneel` / `clear`).
+
+**Scope:** Soldier registry + mixer, local locomotion, pose actions, ephemeral `pose` relay (extends §3), remote locomotion inference.
+
+**GLB contract:**
+
+| Registry key     | GLB clip          | Notes                                |
+| ---------------- | ----------------- | ------------------------------------ |
+| `reloading`      | `reloading`       | local only today                     |
+| `reloadingKneel` | `reloading-kneel` | synced as `kneel` today (wrong clip) |
+| `jumpIdle`       | `jump-idle`       | new                                  |
+| `jump`           | `jump`            | keep for walk/run jumps              |
+| `walkBackward`   | `walk-backward`   | new                                  |
+| `runBackward`    | `run-backward`    | new                                  |
+
+**Tasks:**
+
+- [ ] **Registry + clips** — Add `jumpIdle`, `walkBackward`, `runBackward` to `SoldierAnimationClips`, `SHARED_CLIP_MAP`, `resolve-soldier-clips`, mixer actions (`soldier-actions.ts`), and asset tests (`soldier-assets.test.ts`, clip resolver tests). Strip hips root motion on backward locomotion clips.
+- [ ] **Local backward locomotion** — Extend `LocomotionState` with `walkBackward` / `runBackward`; detect dominant backpedal (`forward < 0` and `|forward| >= |strafe|`) in `advancePlayerTransform`; slower speeds via named constants in `player.ts` (~70% walk, ~60% run). Kneel + S keeps `crouchWalking` / run-over-kneel (no crouch-backward clip).
+- [ ] **Jump-idle selection** — `jump-idle` when **F** from idle or kneel; `jump` when walking/running. Fix `requestJump()` so kneel → jump sets `jumpIdle` same keypress. `onJumpFinished` clears both `jump` and `jumpIdle`.
+- [ ] **Pose relay (multiplayer)** — Extend `RemotePoseMessage` with `jumpIdle`, `reloading`, `reloadingKneel`; update `toSyncPose()`, `RemotePlayerEntry.pose`, `remote-player.tsx` finish callbacks (`onReloadingFinished`, jump clear). No schema migration — keep ephemeral `pose` relay.
+- [ ] **Remote backward inference** — Pass `rotY` into `updateRemoteMotion`; when velocity is mostly opposite facing (`|angleDiff| > 135°`), emit `walkBackward` / `runBackward`. Unit tests in `resolve-remote-locomotion.test.ts`.
+- [ ] **Spec** — Note pose relay values + backward inference in `specs/current/design.md`; optional FR line for backward locomotion.
+
+**Acceptance (two clients):**
+
+1. Stand reload (**R**) → peer sees `reloading` clip.
+2. Kneel reload → peer sees `reloading-kneel`, returns to kneel on finish.
+3. **F** from idle/kneel → peer sees `jump-idle`; **F** while walking → peer sees `jump`.
+4. **S** / **S+Shift** → local backward clips + slower speed; peer sees `walk-backward` / `run-backward` when backpedaling.
+5. WASD during reload → peer pose clears / returns to kneel.
+
+**Out of scope:** `shooting` pose sync (deferred on LMB); crouch-walk-backward clip; schema-authoritative `pose` field.
+
+**Spec touch:** Extend `specs/current/design.md` (pose relay + backward inference); optional FR for backward locomotion.

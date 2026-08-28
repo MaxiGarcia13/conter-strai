@@ -1,6 +1,7 @@
 import type { HealthState } from '@/modules/combat';
 import type { RoundPhase } from '@/modules/game/types';
 import type { PlayersUpdatePayload, RoundUpdatePayload } from '@/modules/multiplayer/adapters/colyseus-adapter';
+import type { RemotePoseMessage, SyncableRemotePose } from '@/modules/multiplayer/utils/syncable-remote-pose';
 import type { EntityId, SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
 
@@ -15,6 +16,8 @@ export interface RemotePlayerEntry {
     rotY: number;
   };
   health: HealthState;
+  /** Cosmetic pose synced from the peer; missing when idle. */
+  pose?: SyncableRemotePose;
 }
 
 export interface MultiplayerStoreState {
@@ -29,5 +32,6 @@ export interface MultiplayerStoreState {
   connected: boolean;
   applyPlayersUpdate: (payload: PlayersUpdatePayload) => void;
   applyRoundUpdate: (payload: RoundUpdatePayload) => void;
+  applyRemotePose: (sessionId: EntityId, pose: RemotePoseMessage) => void;
   reset: () => void;
 }

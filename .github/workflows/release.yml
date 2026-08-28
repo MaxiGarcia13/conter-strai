@@ -26,8 +26,8 @@ jobs:
     secrets: inherit
     with:
       paths: |
-        './public/**'
         './src/**'
+        './public/**'
         './tests/**'
 
   deploy:

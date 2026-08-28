@@ -88,11 +88,26 @@ export interface SpawnerConfig {
 // Environment
 // ---------------------------------------------------------------------------
 
+export interface ScenarioHemisphereLighting {
+  skyColor: string;
+  groundColor: string;
+  intensity: number;
+}
+
+export interface ScenarioLighting {
+  ambient: number;
+  sunIntensity: number;
+  /** Sun position feeding the directional light's shadow setup. */
+  sunPosition?: Vec3;
+  /** Fill from the sky/ground gradient so dark fabrics keep their form. */
+  hemisphere?: ScenarioHemisphereLighting;
+  /** ACES filmic tone mapping for a flatter PBR response on dark materials. */
+  toneMapping?: boolean;
+  toneMappingExposure?: number;
+}
+
 export interface ArenaEnvironment {
-  lighting?: {
-    ambient: number;
-    sunIntensity: number;
-  };
+  lighting?: ScenarioLighting;
 }
 
 // ---------------------------------------------------------------------------

@@ -45,8 +45,16 @@ const arena01Spawns: SpawnerConfig = {
 
 const arena01Environment: ArenaEnvironment = {
   lighting: {
-    ambient: 0.6,
+    ambient: 0.75,
     sunIntensity: 1.2,
+    sunPosition: [40, 60, 20],
+    hemisphere: {
+      skyColor: '#c3d5e8',
+      groundColor: '#4c463d',
+      intensity: 0.7,
+    },
+    toneMapping: true,
+    toneMappingExposure: 1.1,
   },
 };
 

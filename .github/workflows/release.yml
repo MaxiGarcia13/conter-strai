@@ -26,9 +26,9 @@ jobs:
     secrets: inherit
     with:
       paths: |
-        'src/**'
-        'public/**'
-        'tests/**'
+        src/**
+        public/**
+        tests/**
 
   deploy:
     needs: bump

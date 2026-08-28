@@ -2,7 +2,7 @@
 
 Player-facing polish and feel items. Not tied to a user story — pick when touching nearby systems or during a dedicated polish pass. For hygiene / dead code, see [tech-debt.md](./tech-debt.md).
 
-## 1. Dark clothing / lighting
+## 1. Dark clothing / lighting ✅
 
 **Symptom:** Skins with black or very dark clothing look crushed and unreadably black in the arena and in the lobby character preview.
 

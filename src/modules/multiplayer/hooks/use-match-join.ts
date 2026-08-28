@@ -63,6 +63,12 @@ function bindRoomMatch(roomId: string, handle: MatchHandle): void {
   boundByRoom.set(roomId, bindMatch(handle, roomId));
 }
 
+/** Tear down store listeners for a room without leaving the Colyseus connection. */
+export function unbindRoomMatch(roomId: string): void {
+  boundByRoom.get(roomId)?.();
+  boundByRoom.delete(roomId);
+}
+
 /** Persist reconnect token; drop the consumed seat reservation. */
 function persistAfterJoin(roomId: string, handle: MatchHandle): void {
   const session = readRoomSession(roomId);

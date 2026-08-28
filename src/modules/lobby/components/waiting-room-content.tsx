@@ -1,7 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { CsButton } from '@/components/cs-button';
+import { navigateToPlay } from '@/modules/lobby/utils/play-handoff';
 import { startMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
+import { useLobbyPresence } from '@/modules/multiplayer/hooks/use-lobby-presence';
 import { useMatchJoin } from '@/modules/multiplayer/hooks/use-match-join';
 import { deleteRoom } from '@/modules/multiplayer/services/delete-room';
 import { LobbyRestError } from '@/modules/multiplayer/services/lobby-rest';
@@ -29,11 +31,13 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
   const phase = useMultiplayerStore((s) => s.phase);
   const [starting, setStarting] = useState(false);
 
+  useLobbyPresence(roomId, Boolean(session));
+
   useEffect(() => {
     // Countdown UI lives on `/play` — leave the waiting room as soon as the
     // match starts counting down (or is already live).
     if (phase === 'countdown' || phase === 'live') {
-      window.location.href = `/room/${roomId}/play`;
+      navigateToPlay(roomId);
     }
   }, [phase, roomId]);
 
@@ -174,7 +178,7 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
                   setStarting(true);
                   startMatch();
                   // Countdown UI is only on `/play` — go there immediately.
-                  window.location.href = `/room/${roomId}/play`;
+                  navigateToPlay(roomId);
                 }}
               >
                 {starting ? 'Starting…' : 'Start Match'}

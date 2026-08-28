@@ -42,6 +42,8 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
   private countdownTimer: ReturnType<typeof setInterval> | null = null;
   /** Host close / API dispose — skip the reconnection grace window on teardown. */
   private disposing = false;
+  /** Clients that sent `leaveLobby` — skip the reconnect grace on disconnect. */
+  private abandonedSessions = new Set<string>();
 
   onCreate(options: { metadata?: MatchMetadata }) {
     const meta = options.metadata ?? { roomCode: '', scenario: 'arena-01' as ScenarioId };
@@ -86,6 +88,14 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
         this.broadcast('pose', { sessionId: client.sessionId, pose: data.pose }, { except: client });
       }
     });
+
+    this.onMessage('leaveLobby', (client) => {
+      if (this.state.roundPhase !== 'waiting') {
+        return;
+      }
+      this.abandonedSessions.add(client.sessionId);
+      this.removePlayer(client.sessionId);
+    });
   }
 
   onJoin(client: Client, options?: JoinOptions) {
@@ -127,6 +137,9 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
   async onLeave(client: Client, _code?: number) {
     if (this.disposing) {
       this.removePlayer(client.sessionId);
+      return;
+    }
+    if (this.abandonedSessions.delete(client.sessionId)) {
       return;
     }
     try {

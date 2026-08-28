@@ -253,6 +253,15 @@ describe('initMatch', () => {
     expect(getActiveMatch()).toBe(match);
   });
 
+  it('sends leaveLobby while connected', async () => {
+    const match = await initMatch({ roomId: 'host-room' });
+    const room = match.room as unknown as FakeRoom;
+
+    match.leaveLobby();
+
+    expect(room.sent).toContainEqual({ type: 'leaveLobby', payload: undefined });
+  });
+
   it('notifies player listeners with a flattened snapshot on state change', async () => {
     const match = await initMatch({ roomId: 'host-room' });
     const room = match.room as unknown as FakeRoom;

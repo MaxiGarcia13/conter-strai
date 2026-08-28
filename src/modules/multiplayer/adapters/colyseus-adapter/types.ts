@@ -102,6 +102,8 @@ export interface MatchHandle {
   sendPose: (pose: RemotePoseMessage) => void;
   /** Host-only: flips the room from `waiting` | `ended` into the countdown. */
   startRound: () => void;
+  /** Voluntary lobby exit — server drops the seat immediately while `waiting`. */
+  leaveLobby: () => void;
   onPlayerUpdate: (listener: PlayerUpdateListener) => () => void;
   onRoundUpdate: (listener: RoundUpdateListener) => () => void;
   /** Cosmetic peer pose events (jump / kneel / clear) — no authority. */

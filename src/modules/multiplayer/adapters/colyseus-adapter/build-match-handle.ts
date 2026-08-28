@@ -162,6 +162,11 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
         room.send('startRound');
       }
     },
+    leaveLobby: () => {
+      if (connected) {
+        room.send('leaveLobby');
+      }
+    },
     onPlayerUpdate: (listener) => {
       const unsubscribe = subscribe(playerListeners, listener);
       if (players.length > 0) {

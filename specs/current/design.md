@@ -374,12 +374,12 @@ interface RoomSnapshot {
 }
 ```
 
-| Route                         | Behavior                                                                                      |
-| ----------------------------- | --------------------------------------------------------------------------------------------- |
-| `POST /api/v1/room`           | Creates `MatchRoom`; **`201`** `RoomSnapshot` + `hostToken`; **`403`** cross-origin; **`503`** if matchMaker not ready |
-| `GET /api/v1/room/:roomId`    | **`200`** snapshot; **`404`** unknown/disposed; **`410`** expired                               |
+| Route                         | Behavior                                                                                                                                 |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /api/v1/room`           | Creates `MatchRoom`; **`201`** `RoomSnapshot` + `hostToken`; **`403`** cross-origin; **`503`** if matchMaker not ready                   |
+| `GET /api/v1/room/:roomId`    | **`200`** snapshot; **`404`** unknown/disposed; **`410`** expired                                                                        |
 | `PUT /api/v1/room/:roomId`    | Seat claim while `waiting`; **`200`** `{ snapshot, reservation }`; **`403`** cross-origin; **`409`** full/wrong phase; **`410`** expired |
-| `DELETE /api/v1/room/:roomId` | Host dispose; **`Authorization: Bearer <hostToken>`**; **`401`** / **`403`** / **`410`**; broadcast `roomClosed`; **`204`** |
+| `DELETE /api/v1/room/:roomId` | Host dispose; **`Authorization: Bearer <hostToken>`**; **`401`** / **`403`** / **`410`**; broadcast `roomClosed`; **`204`**              |
 
 After REST create or PUT, client connects with `joinById` or `consumeSeatReservation` on waiting-room and/or play mount.
 
@@ -451,24 +451,24 @@ Ephemeral pose relay (not Schema-authoritative): local player emits the same cli
 
 ### Env
 
-| Variable              | Purpose                                                        |
-| --------------------- | -------------------------------------------------------------- |
-| `PUBLIC_COLYSEUS_URL` | Dev WebSocket endpoint (e.g. `ws://localhost:2567`)            |
-| `COLYSEUS_PORT`       | Dev-only Colyseus listen port (default `2567`)                 |
+| Variable              | Purpose                                                                    |
+| --------------------- | -------------------------------------------------------------------------- |
+| `PUBLIC_COLYSEUS_URL` | Dev WebSocket endpoint (e.g. `ws://localhost:2567`)                        |
+| `COLYSEUS_PORT`       | Dev-only Colyseus listen port (default `2567`)                             |
 | `ROOM_CODE_TTL_MS`    | Room lifetime from create / each `startRound` (default `2400000` = 40 min) |
-| `SITE`                | Allowed origin base for lobby REST same-site guard             |
+| `SITE`                | Allowed origin base for lobby REST same-site guard                         |
 
 ### Security (shipped US-8)
 
 Anonymous invite game — 6-char codes, no accounts. Hardening layered on US-5 lobby + `MatchRoom` messages:
 
-| Layer | Behavior |
-| ----- | -------- |
-| **Origin guard** | `requireSameSiteOrigin` on `POST` / `PUT` / `DELETE`; `403` when `Origin`/`Referer` present and mismatched; missing headers allowed (CSRF-ish, not a substitute for host token) |
-| **Host token** | `generateHostToken()` on create → Colyseus **metadata** + one-time create response; host `sessionStorage` (`RoomSession.hostToken`); `DELETE` compares bearer with `timingSafeEqual` |
-| **Shot validation** | `applyMatchShot` — `in_progress`, alive, opposing team, ground-plane range ≤ pistol max, per-shooter cooldown, `zone` enum; shared constants in `weapons/constants/pistol.ts` |
-| **Move validation** | `moveExceedsThreshold` — max delta vs `RUN_SPEED` + hard cap; drop outliers |
-| **Room TTL** | `expiresAt` on metadata + `RoomSnapshot`; `scheduleExpiry` + `renewExpiry` on `startRound`; REST **`410`** when past; WS `onJoin` rejects expired |
+| Layer               | Behavior                                                                                                                                                                             |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Origin guard**    | `requireSameSiteOrigin` on `POST` / `PUT` / `DELETE`; `403` when `Origin`/`Referer` present and mismatched; missing headers allowed (CSRF-ish, not a substitute for host token)      |
+| **Host token**      | `generateHostToken()` on create → Colyseus **metadata** + one-time create response; host `sessionStorage` (`RoomSession.hostToken`); `DELETE` compares bearer with `timingSafeEqual` |
+| **Shot validation** | `applyMatchShot` — `in_progress`, alive, opposing team, ground-plane range ≤ pistol max, per-shooter cooldown, `zone` enum; shared constants in `weapons/constants/pistol.ts`        |
+| **Move validation** | `moveExceedsThreshold` — max delta vs `RUN_SPEED` + hard cap; drop outliers                                                                                                          |
+| **Room TTL**        | `expiresAt` on metadata + `RoomSnapshot`; `scheduleExpiry` + `renewExpiry` on `startRound`; REST **`410`** when past; WS `onJoin` rejects expired                                    |
 
 **Deferred:** reservation-only join beyond US-5, in-app rate limits, HttpOnly sessions, server hitscan raycast, API-key proxies.
 

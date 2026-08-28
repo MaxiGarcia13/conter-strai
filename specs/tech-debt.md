@@ -126,7 +126,7 @@ Post-split leftovers from `use-player-controls` → folder + `game/utils`. Pick 
 
 `lobby-security-handlers.test.ts` already covers origin guard, host token DELETE, expiry `410`, and create metadata — reuse its `matchMaker` mock / `stubFoundRoom` helper when extending coverage. Remaining gaps:
 
-- [ ] **503 when matchMaker is not ready** — all four handlers
+- [x] **503 when matchMaker is not ready** — all four handlers
 - [ ] **`getRoom`** — `400` missing `roomId`; `500` lookup without `state` (404/410 partially covered)
 - [ ] **`createRoom`** — `400` invalid body
 - [ ] **`claimSeat`** — `409` wrong phase / team full / reserve throws (origin `403` covered)

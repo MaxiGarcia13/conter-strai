@@ -64,6 +64,51 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+describe('matchMaker not ready', () => {
+  it('returns 503 from getRoom', async () => {
+    matchMakerMock.state = 0;
+    const response = await getRoom({
+      request: requestWith(`/api/v1/room/${ROOM_CODE}`),
+      params: { roomId: ROOM_CODE },
+    } as never);
+    expect(response.status).toBe(503);
+    expect(matchMakerMock.query).not.toHaveBeenCalled();
+  });
+
+  it('returns 503 from createRoom', async () => {
+    matchMakerMock.state = 0;
+    const response = await createRoom({
+      request: requestWith(`/api/v1/room`, { method: 'POST' }),
+      params: {},
+    } as never);
+    expect(response.status).toBe(503);
+    expect(matchMakerMock.createRoom).not.toHaveBeenCalled();
+  });
+
+  it('returns 503 from claimSeat', async () => {
+    matchMakerMock.state = 0;
+    const response = await claimSeat({
+      request: requestWith(`/api/v1/room/${ROOM_CODE}`, { method: 'PUT' }),
+      params: { roomId: ROOM_CODE },
+    } as never);
+    expect(response.status).toBe(503);
+    expect(matchMakerMock.query).not.toHaveBeenCalled();
+  });
+
+  it('returns 503 from disposeRoom', async () => {
+    matchMakerMock.state = 0;
+    const response = await disposeRoom({
+      request: requestWith(`/api/v1/room/${ROOM_CODE}`, {
+        method: 'DELETE',
+        authorization: 'Bearer token',
+      }),
+      params: { roomId: ROOM_CODE },
+    } as never);
+    expect(response.status).toBe(503);
+    expect(matchMakerMock.query).not.toHaveBeenCalled();
+  });
+});
+
 describe('disposeRoom (host token)', () => {
   it('returns 401 when the bearer token is missing', async () => {
     const response = await disposeRoom({

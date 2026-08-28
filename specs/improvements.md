@@ -27,7 +27,7 @@ Player-facing polish and feel items. Not tied to a user story — pick when touc
 
 ---
 
-## 2. Kneel (and jump) while walking — local controls
+## 2. Kneel (and jump) while walking — local controls ✅
 
 **Symptom:** Player cannot kneel while already walking. Jump while walking may feel broken (verify in-game).
 

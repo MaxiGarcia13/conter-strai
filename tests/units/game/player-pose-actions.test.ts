@@ -37,19 +37,20 @@ describe('player pose actions', () => {
   });
 
   describe('toggleKneel', () => {
-    it('enters kneel when idle and not moving', () => {
-      toggleKneel(false);
+    it('enters kneel when idle', () => {
+      toggleKneel();
       expect(getPlayerPose()).toBe('kneel');
     });
 
-    it('does not kneel while moving', () => {
-      toggleKneel(true);
-      expect(getPlayerPose()).toBeNull();
+    it('kneels while moving (crouch-walk)', () => {
+      setPlayerLocomotion('walk');
+      toggleKneel();
+      expect(getPlayerPose()).toBe('kneel');
     });
 
     it('stands up from kneel', () => {
       setPlayerPose('kneel');
-      toggleKneel(false);
+      toggleKneel();
       expect(getPlayerPose()).toBeNull();
     });
   });

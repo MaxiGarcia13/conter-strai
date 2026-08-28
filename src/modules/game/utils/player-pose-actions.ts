@@ -17,13 +17,13 @@ export function requestJump(): void {
   }
 }
 
-export function toggleKneel(movePressed: boolean): void {
+export function toggleKneel(): void {
   const pose = getPlayerPose();
   if (pose === 'kneel') {
     setPlayerPose(null);
     return;
   }
-  if (pose === null && !movePressed) {
+  if (pose === null) {
     setPlayerPose('kneel');
   }
 }

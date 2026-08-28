@@ -1,7 +1,7 @@
 import type { RefObject } from 'react';
 import { useEffect } from 'react';
 import { cycleCameraMode } from '@/modules/game/state/player-state';
-import { isMovePressed, MOVE_CODES, MOVE_KEY_CODES } from '@/modules/game/utils/move-codes';
+import { MOVE_CODES, MOVE_KEY_CODES } from '@/modules/game/utils/move-codes';
 import {
   cancelReload,
   requestJump,
@@ -50,7 +50,7 @@ export function usePlayerKeyboard({
       } else if (event.code === MOVE_CODES.jump) {
         requestJump();
       } else if (event.code === MOVE_CODES.kneelToggle) {
-        toggleKneel(isMovePressed(pressed));
+        toggleKneel();
       } else if (event.code === MOVE_CODES.reload) {
         requestReload();
       }

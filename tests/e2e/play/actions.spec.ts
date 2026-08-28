@@ -27,6 +27,12 @@ test('room play: jump on F; kneel + WASD crouch-walks; kneel + Space runs then r
     .poll(async () => (await readPlayTest(page))?.activeClip, { timeout: 10_000 })
     .toBe('walk');
 
+  // E directly from a walk enters crouch-walk; E again stands up while moving.
+  await page.keyboard.press('KeyE');
+  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('crouchWalking');
+  await page.keyboard.press('KeyE');
+  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('walk');
+
   await page.keyboard.up('KeyW');
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('idle');
 

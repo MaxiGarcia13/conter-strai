@@ -2,7 +2,7 @@
 
 Player-facing polish and feel items. Not tied to a user story — pick when touching nearby systems or during a dedicated polish pass. For hygiene / dead code, see [tech-debt.md](./tech-debt.md).
 
-## 1. Dark clothing / lighting ✅
+[x] ## 1. Dark clothing / lighting
 
 **Symptom:** Skins with black or very dark clothing look crushed and unreadably black in the arena and in the lobby character preview.
 
@@ -27,7 +27,7 @@ Player-facing polish and feel items. Not tied to a user story — pick when touc
 
 ---
 
-## 2. Kneel (and jump) while walking — local controls ✅
+[x] ## 2. Kneel (and jump) while walking — local controls
 
 **Symptom:** Player cannot kneel while already walking. Jump while walking may feel broken (verify in-game).
 
@@ -49,7 +49,7 @@ Player-facing polish and feel items. Not tied to a user story — pick when touc
 
 ---
 
-## 3. Remote kneel / jump not visible in multiplayer
+[ ] ## 3. Remote kneel / jump not visible in multiplayer
 
 **Symptom:** When a remote player kneels or jumps, other clients only see idle / walk / run inferred from position deltas — not the pose animation.
 
@@ -75,7 +75,7 @@ Then:
 
 ---
 
-## 4. Spatial combat SFX for remote players
+[ ] ## 4. Spatial combat SFX for remote players
 
 **Symptom:** Gunshots and injury sounds from remote players are not heard (or not distance-attenuated) by peers.
 

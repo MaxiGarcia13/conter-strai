@@ -199,7 +199,7 @@ describe('getRoom (expiry)', () => {
 });
 
 describe('createRoom (origin + host token)', () => {
-  function roomCreateRequest(origin?: string): Request {
+  function roomCreateRequest(origin?: string, body = {}): Request {
     const headers = new Headers({ 'content-type': 'application/json' });
     if (origin) {
       headers.set('origin', origin);
@@ -207,9 +207,18 @@ describe('createRoom (origin + host token)', () => {
     return new Request('http://localhost:4321/api/v1/room', {
       method: 'POST',
       headers,
-      body: JSON.stringify({ scenario: 'arena-01' }),
+      body: JSON.stringify(body),
     });
   }
+
+  it('rejects an invalid body with 400', async () => {
+    const response = await createRoom({
+      request: roomCreateRequest('http://localhost:4321', { scenario: 'not-a-map' }),
+      params: {},
+    } as never);
+    expect(response.status).toBe(400);
+    expect(matchMakerMock.createRoom).not.toHaveBeenCalled();
+  });
 
   it('rejects a cross-origin create with 403', async () => {
     const response = await createRoom({

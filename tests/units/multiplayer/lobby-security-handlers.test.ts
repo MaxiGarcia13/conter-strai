@@ -158,6 +158,25 @@ describe('disposeRoom (host token)', () => {
 });
 
 describe('getRoom (expiry)', () => {
+  it('returns 400 for a missing roomId', async () => {
+    const response = await getRoom({
+      request: requestWith(`/api/v1/room/`),
+      params: {},
+    } as never);
+    expect(response.status).toBe(400);
+    expect(matchMakerMock.query).not.toHaveBeenCalled();
+  });
+
+  it('returns 500 when the found room cache has no state', async () => {
+    stubFoundRoom({});
+    matchMakerMock.getLocalRoomById.mockReturnValue(undefined);
+    const response = await getRoom({
+      request: requestWith(`/api/v1/room/${ROOM_CODE}`),
+      params: { roomId: ROOM_CODE },
+    } as never);
+    expect(response.status).toBe(500);
+  });
+
   it('returns 410 Gone for an expired room', async () => {
     stubFoundRoom({ expiresAt: PAST_EXPIRY });
     const response = await getRoom({

@@ -36,6 +36,7 @@ jobs:
     secrets: inherit
 
   release-notes:
+    if: ${{ needs.bump.outputs.tag != '' }}
     needs: bump
     uses: MaxiGarcia13/gh-actions/.github/workflows/create-release-notes.yml@main
     with:

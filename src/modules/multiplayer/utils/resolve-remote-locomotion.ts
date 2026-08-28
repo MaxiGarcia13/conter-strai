@@ -1,6 +1,10 @@
 import type { SyncableRemotePose } from './syncable-remote-pose';
-import type { LocomotionState } from '@/modules/soldiers';
+import type { LocomotionState, SoldierActionId } from '@/modules/soldiers';
 import { REMOTE_SNAP_DISTANCE } from './step-remote-render-transform';
+import {
+  isStickyRemoteOneShot,
+  isSyncedLocomotionClip,
+} from './syncable-remote-pose';
 
 /** Matches transform sync throttle (~20 Hz) — floors speed dt to avoid burst false-runs. */
 export const REMOTE_SYNC_INTERVAL_MS = 50;
@@ -18,41 +22,53 @@ export const REMOTE_POSITION_EPSILON = 0.001;
  * flicker the mixer back to idle every frame.
  */
 export const REMOTE_IDLE_HOLD_MS = 180;
+/**
+ * A peer counts as backpedaling when velocity is mostly opposite their facing
+ * (dot of facing × velocity below ~135°).
+ */
+export const REMOTE_BACKWARD_DOT_THRESHOLD = -0.7;
 
 export interface RemoteMotionSample {
   x: number;
   z: number;
+  rotY: number;
   /** Timestamp of the last real position change. */
   movedAt: number;
   locomotion: LocomotionState;
 }
 
 /**
- * Infer walk/run/idle from network transforms. Only samples when position
- * actually changes; holds the last moving gait briefly so frame-rate reads
- * between 20 Hz syncs do not thrash the animation mixer. Walk↔run uses
- * hysteresis so noisy 20 Hz deltas do not restart clips every tick.
+ * Infer walk/run/idle (plus backward gaits) from network transforms. Only
+ * samples when position actually changes; holds the last moving gait briefly so
+ * frame-rate reads between 20 Hz syncs do not thrash the animation mixer.
+ * Walk↔run uses hysteresis so noisy 20 Hz deltas do not restart clips every tick.
  * Teleports (round respawn) snap to idle instead of a fake sprint.
  */
 export function updateRemoteMotion(
   prev: RemoteMotionSample | null,
-  next: { x: number; z: number },
+  next: { x: number; z: number; rotY: number },
   nowMs: number,
 ): RemoteMotionSample {
   if (!prev) {
-    return { x: next.x, z: next.z, movedAt: nowMs, locomotion: 'idle' };
+    return { x: next.x, z: next.z, rotY: next.rotY, movedAt: nowMs, locomotion: 'idle' };
   }
 
-  const distance = Math.hypot(next.x - prev.x, next.z - prev.z);
+  const dx = next.x - prev.x;
+  const dz = next.z - prev.z;
+  const distance = Math.hypot(dx, dz);
   if (distance > REMOTE_SNAP_DISTANCE) {
-    return { x: next.x, z: next.z, movedAt: nowMs, locomotion: 'idle' };
+    return { x: next.x, z: next.z, rotY: next.rotY, movedAt: nowMs, locomotion: 'idle' };
   }
 
   if (distance > REMOTE_POSITION_EPSILON) {
     const dtMs = Math.max(nowMs - prev.movedAt, REMOTE_SYNC_INTERVAL_MS);
     const speed = distance / (dtMs / 1000);
-    const locomotion = resolveSpeedToLocomotion(speed, prev.locomotion);
-    return { x: next.x, z: next.z, movedAt: nowMs, locomotion };
+    const locomotion = resolveSpeedToLocomotion(
+      speed,
+      prev.locomotion,
+      isBackpedal(dx, dz, next.rotY),
+    );
+    return { x: next.x, z: next.z, rotY: next.rotY, movedAt: nowMs, locomotion };
   }
 
   if (prev.locomotion !== 'idle' && nowMs - prev.movedAt < REMOTE_IDLE_HOLD_MS) {
@@ -66,12 +82,32 @@ export function updateRemoteMotion(
   return { ...prev, locomotion: 'idle' };
 }
 
+function isBackpedal(dx: number, dz: number, rotY: number): boolean {
+  const distance = Math.hypot(dx, dz);
+  if (distance === 0) {
+    return false;
+  }
+  // Facing unit vector for yaw (matches local `advancePlayerTransform`).
+  const facingX = -Math.sin(rotY);
+  const facingZ = -Math.cos(rotY);
+  const dot = (facingX * dx + facingZ * dz) / distance;
+  return dot < REMOTE_BACKWARD_DOT_THRESHOLD;
+}
+
 function resolveSpeedToLocomotion(
   speed: number,
   previous: LocomotionState,
+  backward: boolean,
 ): LocomotionState {
   if (speed < REMOTE_IDLE_SPEED_MPS) {
     return 'idle';
+  }
+
+  if (backward) {
+    if (previous === 'runBackward') {
+      return speed < REMOTE_RUN_EXIT_MPS ? 'walkBackward' : 'runBackward';
+    }
+    return speed >= REMOTE_RUN_ENTER_MPS ? 'runBackward' : 'walkBackward';
   }
 
   if (previous === 'run') {
@@ -86,7 +122,8 @@ const KNEEL_ANIMATION_POSES = new Set<SyncableRemotePose>(['kneel', 'reloadingKn
 /**
  * Locomotion fed to the remote mixer — caps false run/idle flicker while a
  * peer is kneeling so clip resolve stays on crouch-walk instead of restarting
- * kneel enter or stand-run.
+ * kneel enter or stand-run. There is no crouch-backward clip, so backpedaling
+ * while knelt falls back to crouch-walk / run-over-kneel.
  */
 export function resolveRemoteLocomotionForAnimation(
   motion: RemoteMotionSample | null,
@@ -99,8 +136,12 @@ export function resolveRemoteLocomotionForAnimation(
     return locomotion;
   }
 
-  if (locomotion === 'run') {
+  if (locomotion === 'run' || locomotion === 'runBackward') {
     return 'walk';
+  }
+
+  if (locomotion === 'walkBackward' || locomotion === 'crouchWalking') {
+    return 'crouchWalking';
   }
 
   if (
@@ -112,4 +153,56 @@ export function resolveRemoteLocomotionForAnimation(
   }
 
   return locomotion;
+}
+
+export interface RemotePlaybackInput {
+  synced: SyncableRemotePose | undefined;
+  poseEpoch: number;
+  inferredLocomotion: LocomotionState;
+  heldOneShot: SyncableRemotePose | null;
+  consumedEpoch: number;
+}
+
+export interface RemotePlayback {
+  pose: SoldierActionId | null;
+  locomotion: LocomotionState;
+  heldOneShot: SyncableRemotePose | null;
+}
+
+/**
+ * Prefer the clip the sender resolved (same `resolveAnimationClipKey` as local)
+ * over inferred gaits. One-shots play until the mixer finishes or the sender
+ * resumes a locomotion clip — whichever comes first (prevents stuck jumps).
+ */
+export function resolveRemotePlayback({
+  synced,
+  poseEpoch,
+  inferredLocomotion,
+  heldOneShot,
+  consumedEpoch,
+}: RemotePlaybackInput): RemotePlayback {
+  if (isSyncedLocomotionClip(synced)) {
+    return { pose: null, locomotion: synced, heldOneShot: null };
+  }
+
+  if (synced === 'kneel') {
+    return { pose: 'kneel', locomotion: 'idle', heldOneShot: null };
+  }
+
+  if (synced && isStickyRemoteOneShot(synced)) {
+    if (poseEpoch !== consumedEpoch) {
+      return { pose: synced, locomotion: 'idle', heldOneShot: synced };
+    }
+    return { pose: null, locomotion: inferredLocomotion, heldOneShot: null };
+  }
+
+  if (heldOneShot) {
+    return { pose: heldOneShot as SoldierActionId, locomotion: 'idle', heldOneShot };
+  }
+
+  if (synced === 'clear' || !synced) {
+    return { pose: null, locomotion: inferredLocomotion, heldOneShot: null };
+  }
+
+  return { pose: synced as SoldierActionId, locomotion: inferredLocomotion, heldOneShot: null };
 }

@@ -13,7 +13,7 @@ export function resolveLocalPlayerPose(
   if (playerPose === 'dying') {
     return 'dying';
   }
-  if (playerPose === 'reloading' || playerPose === 'reloadingKneel' || playerPose === 'jump') {
+  if (playerPose === 'reloading' || playerPose === 'reloadingKneel' || playerPose === 'jump' || playerPose === 'jumpIdle') {
     return playerPose;
   }
   if (peekHitReaction(entityId)) {

@@ -12,6 +12,9 @@ export interface SoldierAnimationClips {
   run: string;
   crouchWalking: string;
   jump: string;
+  jumpIdle: string;
+  walkBackward: string;
+  runBackward: string;
   kneel: string;
   dying: string;
   reloading?: string;
@@ -23,6 +26,7 @@ export interface SoldierAnimationClips {
 /** Action poses layered above locomotion. */
 export type SoldierActionId
   = | 'jump'
+    | 'jumpIdle'
     | 'kneel'
     | 'dying'
     | 'crouchWalking'
@@ -69,7 +73,13 @@ export interface SoldierSkin {
 // Controller
 // ---------------------------------------------------------------------------
 
-export type LocomotionState = 'idle' | 'walk' | 'run' | 'crouchWalking';
+export type LocomotionState
+  = | 'idle'
+    | 'walk'
+    | 'run'
+    | 'crouchWalking'
+    | 'walkBackward'
+    | 'runBackward';
 
 /** Per-frame movement request produced by a controller. */
 export interface LocomotionIntent {

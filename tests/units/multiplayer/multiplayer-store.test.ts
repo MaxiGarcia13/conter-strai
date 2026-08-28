@@ -190,8 +190,13 @@ describe('useMultiplayerStore', () => {
 
     useMultiplayerStore.getState().applyRemotePose('session-2', 'jump');
     expect(useMultiplayerStore.getState().remotePlayers['session-2']?.pose).toBe('jump');
+    expect(useMultiplayerStore.getState().remotePlayers['session-2']?.poseEpoch).toBe(1);
+
+    useMultiplayerStore.getState().applyRemotePose('session-2', 'jump');
+    expect(useMultiplayerStore.getState().remotePlayers['session-2']?.poseEpoch).toBe(2);
 
     useMultiplayerStore.getState().applyRemotePose('session-2', 'clear');
     expect(useMultiplayerStore.getState().remotePlayers['session-2']?.pose).toBeUndefined();
+    expect(useMultiplayerStore.getState().remotePlayers['session-2']?.poseEpoch).toBe(2);
   });
 });

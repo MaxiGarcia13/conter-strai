@@ -14,7 +14,10 @@ export function createSoldierActions(
     walk: mixer.clipAction(resolved.walk),
     run: mixer.clipAction(resolved.run),
     crouchWalking: mixer.clipAction(resolved.crouchWalking),
+    walkBackward: mixer.clipAction(resolved.walkBackward),
+    runBackward: mixer.clipAction(resolved.runBackward),
     jump: mixer.clipAction(resolved.jump),
+    jumpIdle: mixer.clipAction(resolved.jumpIdle),
     kneel: mixer.clipAction(resolved.kneel),
     dying: mixer.clipAction(resolved.dying),
   };
@@ -35,7 +38,7 @@ export function createSoldierActions(
 
 /** Set loop modes: locomotion clips repeat, one-shots play once and hold. */
 export function configureActionLoops(actions: SoldierActions): void {
-  for (const key of ['idle', 'walk', 'run', 'crouchWalking'] as const) {
+  for (const key of ['idle', 'walk', 'run', 'crouchWalking', 'walkBackward', 'runBackward'] as const) {
     actions[key].loop = LoopRepeat;
   }
   for (const key of ONE_SHOT_KEYS) {

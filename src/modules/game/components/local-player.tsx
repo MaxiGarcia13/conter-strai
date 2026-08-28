@@ -4,6 +4,7 @@ import type { SoldierAimRig } from '@/modules/soldiers/utils/aim-body-rig';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import { Vector3 } from 'three';
+import { flushLocalClipSync } from '@/modules/multiplayer/utils/sync-local-clip';
 import { SoldierMeshBody } from '@/modules/soldiers/components/soldier-mesh-body';
 import { useSoldierLocomotion } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { useSoldierMesh } from '@/modules/soldiers/hooks/use-soldier-mesh';
@@ -15,19 +16,28 @@ import {
   LOCAL_PLAYER_ROOT_NAME,
   MODEL_FORWARD_YAW_OFFSET,
 } from '../constants/player';
-import { clearPlayerPoseIf, getCameraMode, getPlayerLocomotion, getPlayerPose, getPlayerTransform, setBodyAnchorY, setPlayerPose } from '../state/player-state';
+import { clearPlayerPoseIf, getCameraMode, getPlayerLocomotion, getPlayerPose, getPlayerPoseEpoch, getPlayerTransform, setBodyAnchorY, setPlayerPose } from '../state/player-state';
 import { placeCameraAtHead } from '../utils/fps-head-camera';
 
 interface LocalPlayerProps {
   skinId?: SoldierSkinId;
 }
 
-const clearJumpPose = () => clearPlayerPoseIf('jump');
+function clearJumpPose() {
+  const pose = getPlayerPose();
+  if (pose === 'jump' || pose === 'jumpIdle') {
+    setPlayerPose(null);
+    flushLocalClipSync();
+  }
+}
 function clearReloadingPose() {
   const pose = getPlayerPose();
   clearPlayerPoseIf('reloading');
   if (pose === 'reloadingKneel') {
     setPlayerPose('kneel');
+  }
+  if (pose === 'reloading' || pose === 'reloadingKneel') {
+    flushLocalClipSync();
   }
 }
 const clearShootingPose = () => clearPlayerPoseIf('shooting');
@@ -67,6 +77,7 @@ export function LocalPlayer({ skinId = DEFAULT_PLAY_SKIN_ID }: LocalPlayerProps)
       entityId: LOCAL_PLAYER_ENTITY_ID,
       getLocomotionState: getPlayerLocomotion,
       getPose: () => resolveLocalPlayerPose(getPlayerPose(), LOCAL_PLAYER_ENTITY_ID),
+      getPoseEpoch: getPlayerPoseEpoch,
       onJumpFinished: clearJumpPose,
       onReloadingFinished: clearReloadingPose,
       onShootingFinished: clearShootingPose,

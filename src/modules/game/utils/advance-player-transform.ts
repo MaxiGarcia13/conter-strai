@@ -1,6 +1,12 @@
 import type { CircleBlocker } from './resolve-player-collision';
 import type { CollisionSegment } from '@/modules/scenarios/types';
-import { PLAYER_RADIUS } from '@/modules/game/constants/player';
+import {
+  PLAYER_RADIUS,
+  RUN_BACKWARD_SPEED,
+  RUN_SPEED,
+  WALK_BACKWARD_SPEED,
+  WALK_SPEED,
+} from '@/modules/game/constants/player';
 import { resolveLocomotionState } from '@/modules/soldiers/utils/resolve-locomotion-state';
 import { clamp } from '@/utils/clamp';
 import { resolveCircleBlockers, resolvePlayerCollision } from './resolve-player-collision';
@@ -21,7 +27,12 @@ export interface AdvanceInput {
 export interface AdvanceResult {
   x: number;
   z: number;
-  locomotion: 'idle' | 'walk' | 'run' | 'crouchWalking';
+  locomotion: 'idle' | 'walk' | 'run' | 'crouchWalking' | 'walkBackward' | 'runBackward';
+}
+
+/** Dominant backpedal: moving mostly away from facing. */
+function isBackward(strafe: number, forward: number): boolean {
+  return forward < 0 && Math.abs(forward) >= Math.abs(strafe);
 }
 
 /**
@@ -41,14 +52,18 @@ export function advancePlayerTransform({
   bounds,
 }: AdvanceInput): AdvanceResult {
   const moving = strafe !== 0 || forward !== 0;
-  const locomotion = resolveLocomotionState({ moving, running });
+  const backward = isBackward(strafe, forward);
+  const locomotion = resolveLocomotionState({ moving, running, backward });
 
   let x = transform.x;
   let z = transform.z;
 
   if (moving) {
     const inputLength = Math.hypot(strafe, forward);
-    const speed = running ? 9 : 5;
+    let speed = running ? RUN_SPEED : WALK_SPEED;
+    if (backward) {
+      speed = running ? RUN_BACKWARD_SPEED : WALK_BACKWARD_SPEED;
+    }
     const sinYaw = Math.sin(transform.yaw);
     const cosYaw = Math.cos(transform.yaw);
     const intendedPosition = {

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
   getPlayerPose,
+  resetPlayerPoseEpoch,
   setPlayerLocomotion,
   setPlayerPose,
 } from '@/modules/game/state/player-state';
@@ -15,21 +16,34 @@ describe('player pose actions', () => {
   beforeEach(() => {
     setPlayerPose(null);
     setPlayerLocomotion('idle');
+    resetPlayerPoseEpoch();
   });
 
   describe('requestJump', () => {
-    it('starts a jump from idle', () => {
+    it('starts an in-place jump from idle', () => {
+      requestJump();
+      expect(getPlayerPose()).toBe('jumpIdle');
+    });
+
+    it('starts a forward jump from a moving gait', () => {
+      setPlayerLocomotion('walk');
       requestJump();
       expect(getPlayerPose()).toBe('jump');
     });
 
-    it('clears kneel instead of jumping immediately', () => {
+    it('jumps immediately from kneel (kneel lifts as the clip plays)', () => {
       setPlayerPose('kneel');
       requestJump();
-      expect(getPlayerPose()).toBeNull();
+      expect(getPlayerPose()).toBe('jumpIdle');
     });
 
-    it('ignores jump while already posing', () => {
+    it('ignores jump while already jumping', () => {
+      setPlayerPose('jump');
+      requestJump();
+      expect(getPlayerPose()).toBe('jump');
+    });
+
+    it('ignores jump while reloading', () => {
       setPlayerPose('reloading');
       requestJump();
       expect(getPlayerPose()).toBe('reloading');

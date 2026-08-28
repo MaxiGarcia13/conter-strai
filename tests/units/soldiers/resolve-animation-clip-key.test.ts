@@ -7,10 +7,13 @@ describe('resolveAnimationClipKey', () => {
     expect(resolveAnimationClipKey(null, 'idle')).toBe('idle');
     expect(resolveAnimationClipKey(null, 'walk')).toBe('walk');
     expect(resolveAnimationClipKey(null, 'run')).toBe('run');
+    expect(resolveAnimationClipKey(null, 'walkBackward')).toBe('walkBackward');
+    expect(resolveAnimationClipKey(null, 'runBackward')).toBe('runBackward');
   });
 
-  it('returns pose when pose is jump, shooting, or dying', () => {
+  it('returns pose when pose is jump, jumpIdle, shooting, or dying', () => {
     expect(resolveAnimationClipKey('jump', 'idle')).toBe('jump');
+    expect(resolveAnimationClipKey('jumpIdle', 'idle')).toBe('jumpIdle');
     expect(resolveAnimationClipKey('jump', 'walk')).toBe('jump');
     expect(resolveAnimationClipKey('shooting', 'walk')).toBe('shooting');
     expect(resolveAnimationClipKey('hitReaction', 'run')).toBe('hitReaction');
@@ -28,5 +31,10 @@ describe('resolveAnimationClipKey', () => {
 
   it('returns run when kneeling and running', () => {
     expect(resolveAnimationClipKey('kneel', 'run')).toBe('run');
+  });
+
+  it('handles kneel with backward gaits (no crouch-backward clip)', () => {
+    expect(resolveAnimationClipKey('kneel', 'walkBackward')).toBe('crouchWalking');
+    expect(resolveAnimationClipKey('kneel', 'runBackward')).toBe('run');
   });
 });

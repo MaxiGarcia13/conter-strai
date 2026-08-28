@@ -16,8 +16,10 @@ export interface RemotePlayerEntry {
     rotY: number;
   };
   health: HealthState;
-  /** Cosmetic pose synced from the peer; missing when idle. */
+  /** Cosmetic clip synced from the peer; missing when never received. */
   pose?: SyncableRemotePose;
+  /** Increments on each relayed one-shot so a second jump retriggers the mixer. */
+  poseEpoch?: number;
 }
 
 export interface MultiplayerStoreState {

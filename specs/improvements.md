@@ -98,7 +98,7 @@ Then:
 
 ---
 
-[ ] ## 5. New shared animations (reload, jump-idle, backward locomotion) + multiplayer sync
+[x] ## 5. New shared animations (reload, jump-idle, backward locomotion) + multiplayer sync
 
 **Symptom:** New clips in [`base-animations.glb`](../public/assets/characters/shared/base-animations.glb) are not wired locally; remote peers still miss reload variants, `jump-idle`, and backward walk/run gaits (§3 pose relay only covers `jump` / `kneel` / `clear`).
 
@@ -117,12 +117,12 @@ Then:
 
 **Tasks:**
 
-- [ ] **Registry + clips** — Add `jumpIdle`, `walkBackward`, `runBackward` to `SoldierAnimationClips`, `SHARED_CLIP_MAP`, `resolve-soldier-clips`, mixer actions (`soldier-actions.ts`), and asset tests (`soldier-assets.test.ts`, clip resolver tests). Strip hips root motion on backward locomotion clips.
-- [ ] **Local backward locomotion** — Extend `LocomotionState` with `walkBackward` / `runBackward`; detect dominant backpedal (`forward < 0` and `|forward| >= |strafe|`) in `advancePlayerTransform`; slower speeds via named constants in `player.ts` (~70% walk, ~60% run). Kneel + S keeps `crouchWalking` / run-over-kneel (no crouch-backward clip).
-- [ ] **Jump-idle selection** — `jump-idle` when **F** from idle or kneel; `jump` when walking/running. Fix `requestJump()` so kneel → jump sets `jumpIdle` same keypress. `onJumpFinished` clears both `jump` and `jumpIdle`.
-- [ ] **Pose relay (multiplayer)** — Extend `RemotePoseMessage` with `jumpIdle`, `reloading`, `reloadingKneel`; update `toSyncPose()`, `RemotePlayerEntry.pose`, `remote-player.tsx` finish callbacks (`onReloadingFinished`, jump clear). No schema migration — keep ephemeral `pose` relay.
-- [ ] **Remote backward inference** — Pass `rotY` into `updateRemoteMotion`; when velocity is mostly opposite facing (`|angleDiff| > 135°`), emit `walkBackward` / `runBackward`. Unit tests in `resolve-remote-locomotion.test.ts`.
-- [ ] **Spec** — Note pose relay values + backward inference in `specs/current/design.md`; optional FR line for backward locomotion.
+- [x] **Registry + clips** — Add `jumpIdle`, `walkBackward`, `runBackward` to `SoldierAnimationClips`, `SHARED_CLIP_MAP`, `resolve-soldier-clips`, mixer actions (`soldier-actions.ts`), and asset tests (`soldier-assets.test.ts`, clip resolver tests). Strip hips root motion on backward locomotion clips.
+- [x] **Local backward locomotion** — Extend `LocomotionState` with `walkBackward` / `runBackward`; detect dominant backpedal (`forward < 0` and `|forward| >= |strafe|`) in `advancePlayerTransform`; slower speeds via named constants in `player.ts` (~70% walk, ~60% run). Kneel + S keeps `crouchWalking` / run-over-kneel (no crouch-backward clip).
+- [x] **Jump-idle selection** — `jump-idle` when **F** from idle or kneel; `jump` when walking/running. Fix `requestJump()` so kneel → jump sets `jumpIdle` same keypress. `onJumpFinished` clears both `jump` and `jumpIdle`.
+- [x] **Pose relay (multiplayer)** — Extend `RemotePoseMessage` with `jumpIdle`, `reloading`, `reloadingKneel`; update `toSyncPose()`, `RemotePlayerEntry.pose`, `remote-player.tsx` finish callbacks (`onReloadingFinished`, jump clear). No schema migration — keep ephemeral `pose` relay.
+- [x] **Remote backward inference** — Pass `rotY` into `updateRemoteMotion`; when velocity is mostly opposite facing (`|angleDiff| > 135°`), emit `walkBackward` / `runBackward`. Unit tests in `resolve-remote-locomotion.test.ts`.
+- [x] **Spec** — Note pose relay values + backward inference in `specs/current/design.md`; optional FR line for backward locomotion.
 
 **Acceptance (two clients):**
 

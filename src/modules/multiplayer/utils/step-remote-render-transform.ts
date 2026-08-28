@@ -1,5 +1,5 @@
 /** Exponential follow rate (higher = snappier). Tuned for ~20 Hz network targets. */
-export const REMOTE_FOLLOW_RATE = 14;
+export const REMOTE_FOLLOW_RATE = 7;
 /** Snap instead of easing when the target jumps farther than this (spawn / teleport). */
 export const REMOTE_SNAP_DISTANCE = 4;
 

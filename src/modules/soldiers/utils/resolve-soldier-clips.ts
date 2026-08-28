@@ -9,6 +9,9 @@ export interface ResolvedSoldierClips {
   run: AnimationClip;
   crouchWalking: AnimationClip;
   jump: AnimationClip;
+  jumpIdle: AnimationClip;
+  walkBackward: AnimationClip;
+  runBackward: AnimationClip;
   kneel: AnimationClip;
   dying: AnimationClip;
   reloading?: AnimationClip;
@@ -23,6 +26,9 @@ const CLIP_KEYS = [
   'run',
   'crouchWalking',
   'jump',
+  'jumpIdle',
+  'walkBackward',
+  'runBackward',
   'kneel',
   'dying',
 ] as const;
@@ -35,6 +41,8 @@ const STRIP_HIPS_KEYS: readonly (keyof ResolvedSoldierClips)[] = [
   'walk',
   'run',
   'crouchWalking',
+  'walkBackward',
+  'runBackward',
 ];
 
 /** Resolves registry clip names; selected clips get hips root motion stripped. */

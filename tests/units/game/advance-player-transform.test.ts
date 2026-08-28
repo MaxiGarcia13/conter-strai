@@ -73,6 +73,73 @@ describe('advancePlayerTransform', () => {
     expect(Math.abs(run.z)).toBeGreaterThan(Math.abs(walk.z));
   });
 
+  it('moves backward toward +Z and selects backward gait', () => {
+    const result = advancePlayerTransform({
+      transform: { x: 0, z: 0, yaw: 0 },
+      strafe: 0,
+      forward: -1,
+      running: false,
+      delta: 1,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [],
+      solidNpcFlags: [],
+      bounds: defaultBounds,
+    });
+
+    expect(result.locomotion).toBe('walkBackward');
+    expect(result.z).toBeGreaterThan(0);
+  });
+
+  it('selects runBackward and moves slower than forward run', () => {
+    const run = advancePlayerTransform({
+      transform: { x: 0, z: 0, yaw: 0 },
+      strafe: 0,
+      forward: 1,
+      running: true,
+      delta: 1,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [],
+      solidNpcFlags: [],
+      bounds: defaultBounds,
+    });
+
+    const runBack = advancePlayerTransform({
+      transform: { x: 0, z: 0, yaw: 0 },
+      strafe: 0,
+      forward: -1,
+      running: true,
+      delta: 1,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [],
+      solidNpcFlags: [],
+      bounds: defaultBounds,
+    });
+
+    expect(runBack.locomotion).toBe('runBackward');
+    expect(Math.abs(runBack.z)).toBeGreaterThan(0);
+    expect(Math.abs(runBack.z)).toBeLessThan(Math.abs(run.z));
+  });
+
+  it('does not backpedal when strafe dominates forward', () => {
+    const result = advancePlayerTransform({
+      transform: { x: 0, z: 0, yaw: 0 },
+      strafe: 2,
+      forward: -1,
+      running: false,
+      delta: 1,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [],
+      solidNpcFlags: [],
+      bounds: defaultBounds,
+    });
+
+    expect(result.locomotion).toBe('walk');
+  });
+
   it('clamps to bounds', () => {
     const result = advancePlayerTransform({
       transform: { x: 18, z: 0, yaw: 0 },

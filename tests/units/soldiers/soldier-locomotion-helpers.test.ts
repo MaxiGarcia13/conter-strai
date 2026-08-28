@@ -1,6 +1,7 @@
 import type { AnimationAction } from 'three';
 import type { SoldierActions } from '@/modules/soldiers/hooks/use-soldier-locomotion/types';
 import { describe, expect, it, vi } from 'vitest';
+import { JUMP_CROSSFADE_SECONDS, resolveCrossfadeSeconds } from '@/modules/soldiers/hooks/use-soldier-locomotion/apply-clip-transition';
 import { createOneShotFinishedHandler } from '@/modules/soldiers/hooks/use-soldier-locomotion/create-one-shot-finished-handler';
 import { resolvePlayableClipKey } from '@/modules/soldiers/hooks/use-soldier-locomotion/resolve-playable-clip-key';
 
@@ -14,7 +15,10 @@ function stubActions(overrides: Partial<SoldierActions> = {}): SoldierActions {
     walk: stubAction(),
     run: stubAction(),
     crouchWalking: stubAction(),
+    walkBackward: stubAction(),
+    runBackward: stubAction(),
     jump: stubAction(),
+    jumpIdle: stubAction(),
     kneel: stubAction(),
     dying: stubAction(),
     ...overrides,
@@ -42,6 +46,7 @@ describe('resolvePlayableClipKey', () => {
   it('keeps required one-shots that are always present', () => {
     const actions = stubActions();
     expect(resolvePlayableClipKey('jump', 'idle', actions)).toBe('jump');
+    expect(resolvePlayableClipKey('jumpIdle', 'idle', actions)).toBe('jumpIdle');
     expect(resolvePlayableClipKey('dying', 'run', actions)).toBe('dying');
   });
 });
@@ -68,6 +73,9 @@ describe('createOneShotFinishedHandler', () => {
     handler({ action: actions.jump });
     expect(onJumpFinished).toHaveBeenCalledOnce();
 
+    handler({ action: actions.jumpIdle });
+    expect(onJumpFinished).toHaveBeenCalledTimes(2);
+
     handler({ action: actions.reloading! });
     handler({ action: actions.reloadingKneel! });
     expect(onReloadingFinished).toHaveBeenCalledTimes(2);
@@ -85,5 +93,13 @@ describe('createOneShotFinishedHandler', () => {
     const handler = createOneShotFinishedHandler(actions, { onJumpFinished });
     handler({ action: stubAction() });
     expect(onJumpFinished).not.toHaveBeenCalled();
+  });
+});
+
+describe('resolveCrossfadeSeconds', () => {
+  it('snaps jump one-shots in instantly', () => {
+    expect(resolveCrossfadeSeconds('jump')).toBe(JUMP_CROSSFADE_SECONDS);
+    expect(resolveCrossfadeSeconds('jumpIdle')).toBe(JUMP_CROSSFADE_SECONDS);
+    expect(resolveCrossfadeSeconds('walk')).toBeGreaterThan(JUMP_CROSSFADE_SECONDS);
   });
 });

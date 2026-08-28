@@ -21,7 +21,7 @@ export function createOneShotFinishedHandler(
   } = callbacks;
 
   return (event: { action: AnimationAction }) => {
-    if (event.action === actions.jump) {
+    if (event.action === actions.jump || event.action === actions.jumpIdle) {
       onJumpFinished?.();
     } else if (event.action === actions.reloading) {
       onReloadingFinished?.();

@@ -103,12 +103,15 @@ export function useSoldierMixer({
     };
   }, [
     animationConfig.idle,
+    animationConfig.walk,
+    animationConfig.run,
+    animationConfig.crouchWalking,
     animationConfig.jump,
+    animationConfig.jumpIdle,
+    animationConfig.walkBackward,
+    animationConfig.runBackward,
     animationConfig.kneel,
     animationConfig.dying,
-    animationConfig.run,
-    animationConfig.walk,
-    animationConfig.crouchWalking,
     animationConfig.reloading,
     animationConfig.reloadingKneel,
     animationConfig.shooting,

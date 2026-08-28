@@ -2,6 +2,7 @@ import type { MultiplayerStoreState, RemotePlayerEntry } from './types';
 import type { EntityId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
 import { create } from 'zustand';
+import { isStickyRemoteOneShot } from '@/modules/multiplayer/utils/syncable-remote-pose';
 import { mapMatchRoundPhase } from './map-match-round-phase';
 import { toRemotePlayerEntry } from './to-remote-player-entry';
 
@@ -20,11 +21,14 @@ export const useMultiplayerStore = create<MultiplayerStoreState>()((set, get) =>
         continue;
       }
       const entry = toRemotePlayerEntry(snapshot);
-      // Transform patches rebuild entries each update; keep an ephemeral pose
+      // Transform patches rebuild entries each update; keep an ephemeral clip
       // so a relayed jump/kneel is not wiped by the next position sync.
-      const pose = prev[snapshot.sessionId]?.pose;
-      if (pose) {
-        entry.pose = pose;
+      const prevEntry = prev[snapshot.sessionId];
+      if (prevEntry?.pose) {
+        entry.pose = prevEntry.pose;
+      }
+      if (prevEntry?.poseEpoch) {
+        entry.poseEpoch = prevEntry.poseEpoch;
       }
       remotePlayers[snapshot.sessionId] = entry;
     }
@@ -48,7 +52,13 @@ export const useMultiplayerStore = create<MultiplayerStoreState>()((set, get) =>
     }
     const next = pose === 'clear'
       ? { ...entry, pose: undefined }
-      : { ...entry, pose };
+      : {
+          ...entry,
+          pose,
+          poseEpoch: isStickyRemoteOneShot(pose)
+            ? (entry.poseEpoch ?? 0) + 1
+            : entry.poseEpoch,
+        };
     set({ remotePlayers: { ...get().remotePlayers, [sessionId]: next } });
   },
 

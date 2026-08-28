@@ -3,7 +3,7 @@ import type { LocomotionState, SoldierActionId } from '@/modules/soldiers/types'
 
 export type ClipKey = LocomotionState | SoldierActionId;
 
-export const ONE_SHOT_KEYS = ['jump', 'kneel', 'dying', 'reloading', 'reloadingKneel', 'shooting', 'hitReaction'] as const;
+export const ONE_SHOT_KEYS = ['jump', 'jumpIdle', 'kneel', 'dying', 'reloading', 'reloadingKneel', 'shooting', 'hitReaction'] as const;
 export type OneShotKey = (typeof ONE_SHOT_KEYS)[number];
 
 export interface SoldierActions {
@@ -11,7 +11,10 @@ export interface SoldierActions {
   walk: AnimationAction;
   run: AnimationAction;
   crouchWalking: AnimationAction;
+  walkBackward: AnimationAction;
+  runBackward: AnimationAction;
   jump: AnimationAction;
+  jumpIdle: AnimationAction;
   kneel: AnimationAction;
   dying: AnimationAction;
   reloading?: AnimationAction;

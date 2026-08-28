@@ -174,19 +174,23 @@ Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-stat
 
 ### Locomotion / actions
 
-| Input              | Clip             | Notes                                                         |
-| ------------------ | ---------------- | ------------------------------------------------------------- |
-| Stand still        | `idle`           | Default                                                       |
-| WASD               | `walk`           | In-place; hips translation stripped                           |
-| WASD + Space       | `run`            | Faster move + run clip                                        |
-| **E**              | `kneel`          | Toggle; `LoopOnce` + clamp; WASD does **not** clear kneel     |
-| Kneel + WASD       | `crouch-walking` | Loop; walk-speed; kneel pose kept                             |
-| Kneel + WASD+Space | `run`            | Run speed + stand run clip; kneel pose kept → resumes on stop |
-| **F**              | `jump`           | One-shot; animation-only (no Y physics); clears kneel first   |
-| **R**              | `reloading`      | One-shot; stand+idle or `reloading-kneel`; WASD cancels       |
-| **LMB**            | —                | Hitscan pistol (no `shooting` pose until a shippable clip)    |
+| Input              | Clip                     | Notes                                                                               |
+| ------------------ | ------------------------ | ----------------------------------------------------------------------------------- |
+| Stand still        | `idle`                   | Default                                                                             |
+| WASD               | `walk`                   | In-place; hips translation stripped                                                 |
+| WASD + Space       | `run`                    | Faster move + run clip                                                              |
+| **S**              | `walk-backward`          | ~70% walk speed; dominant backpedal (`forward < 0` and `\|forward\| >= \|strafe\|`) |
+| **S** + Space      | `run-backward`           | ~60% run speed; backpedal clip                                                      |
+| **E**              | `kneel`                  | Toggle; `LoopOnce` + clamp; WASD does **not** clear kneel                           |
+| Kneel + WASD       | `crouch-walking`         | Loop; walk-speed; kneel pose kept                                                   |
+| Kneel + WASD+Space | `run`                    | Run speed + stand run clip; kneel pose kept → resumes on stop                       |
+| Kneel + S          | `crouch-walking` / `run` | No crouch-backward clip; falls back to crouch-walk or run-over-kneel                |
+| **F** (idle/kneel) | `jump-idle`              | In-place one-shot; no Y physics; kneel lifts on keypress                            |
+| **F** (walk/run)   | `jump`                   | Forward one-shot; clears kneel first                                                |
+| **R**              | `reloading`              | One-shot; stand+idle or `reloading-kneel`; WASD cancels                             |
+| **LMB**            | —                        | Hitscan pistol (no `shooting` pose until a shippable clip)                          |
 
-Priority: blocking one-shots (`reloading` / `reloading-kneel` > `jump`) → kneel + run → run → kneel + walk → crouch-walk → kneel + idle → locomotion → **`dying`** on elimination. Optional `shooting` is mixer-ready but not triggered.
+Priority: blocking one-shots (`reloading` / `reloading-kneel` > `jump` / `jump-idle`) → kneel + run → run → kneel + walk → crouch-walk → kneel + idle → locomotion run-backward / walk-backward → walk / run → idle → **`dying`** on elimination. Optional `shooting` is mixer-ready but not triggered.
 
 ### Interior collision
 
@@ -222,7 +226,7 @@ Default play skin from session is `remy` (civilian, east spawn) when unset; non-
 
 **Skeleton contract:** Mixamo `Armature` with bone names `mixamorig:*` (colon form). Vendor exports with numbered prefixes (`mixamorig9:`, …) are rewritten in-asset (`npm run assets:normalize-characters`) so shared-pack tracks and aim/FPS lookups bind.
 
-**Required shared clips:** `idle`, `walk`, `run`, `jump`, `kneel`, `crouch-walking`, `dying`, `reloading`, `reloading-kneel`. Optional: `shooting` (deferred — not played on LMB), `hit-reaction`.
+**Required shared clips:** `idle`, `walk`, `run`, `jump`, `jump-idle`, `kneel`, `crouch-walking`, `walk-backward`, `run-backward`, `dying`, `reloading`, `reloading-kneel`. Optional: `shooting` (deferred — not played on LMB), `hit-reaction`. Backward locomotion clips have hips translation stripped.
 
 **Clip resolve:** `useGLTF` mesh + shared pack; merge lists (**shared wins** on name); resolve by registry names (null if a required clip is missing); strip hips translation on `idle` / `walk` / `run` / `crouch-walking`.
 
@@ -316,8 +320,18 @@ When `HealthState.isEliminated`, FPS move/look/shoot is disabled and pointer loc
 - Schema per player: `{ x, y, z, rotY, hp, eliminated, team }`.
 - Shots and round wipe are **server-authoritative** (room messages + Schema mutations).
 - Client uses `colyseus-adapter` only — game modules do not import Colyseus directly.
-- **Cosmetic pose relay:** jump / kneel are not Schema-authoritative. The local player
-  emits an ephemeral `pose` message (`jump` | `kneel` | `clear`) on state change; the
-  server relays it to peers, who drive a one-shot jump or toggle kneel on the remote
-  rig. `clear` (and the remote mixer finishing its own jump) returns to locomotion
-  inferred from position deltas.
+- **Cosmetic clip relay (ephemeral, not Schema-authoritative):** the local player
+  emits the same clip the local mixer plays (`resolveAnimationClipKey(pose, locomotion)`)
+  over `jump-idle` | `jump` | `kneel` | `crouch-walking` | `walk` | `run` |
+  `walk-backward` | `run-backward` | `idle` | `reloading` | `reloading-kneel` | `clear`.
+  Jump / reload flush immediately on keydown (not the next frame). Peers play that
+  clip directly instead of inferring kneel-walk or backpedal from position. Jump
+  one-shots stick on the receiver until that mixer finishes so a follow-up idle/walk
+  does not truncate them; a pose epoch retriggers a second jump. `clear` and missing
+  clips still fall back to locomotion inferred from position deltas. `dying` /
+  `hit-reaction` stay visual-only (not relayed); `shooting` is deferred.
+- **Remote backward inference (fallback only):** if no clip has arrived yet, peers
+  infer `walk-backward` / `run-backward` when the position delta is mostly opposite
+  the synced `rotY` facing (`dot(facing, velocity) < -0.7`, i.e. `|angleDiff| > ~135°`);
+  otherwise forward `walk` / `run`. Backward hysteresis follows the forward walk↔run
+  thresholds.

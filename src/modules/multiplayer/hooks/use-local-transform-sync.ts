@@ -1,29 +1,22 @@
 import { useFrame } from '@react-three/fiber';
-import { useRef } from 'react';
-import { getPlayerPose, getPlayerTransform } from '@/modules/game/state/player-state';
-import { getActiveMatch, sendPose, syncTransform } from '@/modules/multiplayer/adapters/colyseus-adapter';
-import { toRemotePoseMessage } from '@/modules/multiplayer/utils/syncable-remote-pose';
+import { getPlayerTransform } from '@/modules/game/state/player-state';
+import { getActiveMatch, syncTransform } from '@/modules/multiplayer/adapters/colyseus-adapter';
+import { flushLocalClipSync } from '@/modules/multiplayer/utils/sync-local-clip';
 
 /**
  * Streams the shared local player transform to the active match. Called every
- * frame; the adapter coalesces to the latest transform every ~20 Hz. Also
- * relays pose changes once per transition so peers can play cosmetic actions.
- * No-op outside a match so single-player play stays untouched.
+ * frame; the adapter coalesces to the latest transform every ~20 Hz. Relays the
+ * resolved mixer clip (same `resolveAnimationClipKey` the local soldier uses)
+ * on gait / pose changes so peers do not have to infer kneel-walk or backpedal.
+ * Jump / reload also flush immediately from pose actions. No-op outside a match.
  */
 export function useLocalTransformSync(): void {
-  const lastSyncPoseRef = useRef<ReturnType<typeof toRemotePoseMessage> | null>(null);
-
   useFrame(() => {
     if (!getActiveMatch()) {
       return;
     }
     const transform = getPlayerTransform();
     syncTransform({ x: transform.x, z: transform.z, yaw: transform.yaw });
-
-    const syncPose = toRemotePoseMessage(getPlayerPose());
-    if (syncPose !== lastSyncPoseRef.current) {
-      lastSyncPoseRef.current = syncPose;
-      sendPose(syncPose);
-    }
+    flushLocalClipSync();
   });
 }

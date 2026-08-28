@@ -32,6 +32,9 @@ describe('resolve-soldier-clips', () => {
       'run',
       'crouchWalking',
       'jump',
+      'jumpIdle',
+      'walkBackward',
+      'runBackward',
       'kneel',
       'dying',
       'reloading',
@@ -60,10 +63,10 @@ describe('resolve-soldier-clips', () => {
       skin.meshData.animations,
     )!;
 
-    for (const key of ['idle', 'walk', 'run', 'crouchWalking'] as const) {
+    for (const key of ['idle', 'walk', 'run', 'crouchWalking', 'walkBackward', 'runBackward'] as const) {
       expect(resolved[key].tracks.some((track) => HIPS_TRACK.test(track.name))).toBe(false);
     }
-    for (const key of ['jump', 'kneel', 'dying'] as const) {
+    for (const key of ['jump', 'jumpIdle', 'kneel', 'dying'] as const) {
       expect(resolved[key].tracks.some((track) => HIPS_TRACK.test(track.name))).toBe(true);
     }
   });

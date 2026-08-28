@@ -1,47 +1,63 @@
 import {
+  bumpPlayerPoseEpoch,
   getPlayerLocomotion,
   getPlayerPose,
   setPlayerPose,
 } from '@/modules/game/state/player-state';
+import { flushLocalClipSync } from '@/modules/multiplayer/utils/sync-local-clip';
+
+function applyPoseAndSync(
+  next: ReturnType<typeof getPlayerPose>,
+  options?: { retriggerOneShot?: boolean },
+): void {
+  setPlayerPose(next);
+  if (options?.retriggerOneShot) {
+    bumpPlayerPoseEpoch();
+  }
+  flushLocalClipSync(options);
+}
+
+function resolveJumpPose(): 'jump' | 'jumpIdle' {
+  return getPlayerLocomotion() === 'idle' ? 'jumpIdle' : 'jump';
+}
 
 export function requestJump(): void {
   const pose = getPlayerPose();
-  // If kneeling, clear kneel first; next frame will pick up the jump.
-  if (pose === 'kneel') {
-    setPlayerPose(null);
+  const jumpPose = resolveJumpPose();
+  if (pose === 'reloading' || pose === 'reloadingKneel' || pose === 'dying') {
     return;
   }
   // Busy until the mixer finishes; LocalPlayer clears the pose on completion.
-  if (pose === null) {
-    setPlayerPose('jump');
+  if (pose === 'kneel' || pose === null) {
+    applyPoseAndSync(jumpPose, { retriggerOneShot: true });
   }
 }
 
 export function toggleKneel(): void {
   const pose = getPlayerPose();
   if (pose === 'kneel') {
-    setPlayerPose(null);
+    applyPoseAndSync(null);
     return;
   }
   if (pose === null) {
-    setPlayerPose('kneel');
+    applyPoseAndSync('kneel');
   }
 }
 
 export function requestReload(): void {
   const pose = getPlayerPose();
   if (pose === null && getPlayerLocomotion() === 'idle') {
-    setPlayerPose('reloading');
+    applyPoseAndSync('reloading', { retriggerOneShot: true });
   } else if (pose === 'kneel') {
-    setPlayerPose('reloadingKneel');
+    applyPoseAndSync('reloadingKneel', { retriggerOneShot: true });
   }
 }
 
 export function cancelReload(): void {
   const pose = getPlayerPose();
   if (pose === 'reloading') {
-    setPlayerPose(null);
+    applyPoseAndSync(null);
   } else if (pose === 'reloadingKneel') {
-    setPlayerPose('kneel');
+    applyPoseAndSync('kneel');
   }
 }

@@ -25,6 +25,8 @@ const CAMERA_MODE_CYCLE: CameraMode[] = ['fps', 'ots', 'tps'];
 const transform: PlayerTransform = { x: 0, z: 0, yaw: 0, pitch: 0 };
 let locomotion: LocomotionState = 'idle';
 let pose: SoldierActionId | null = null;
+/** Bumps on jump retrigger so the local mixer restarts the same one-shot. */
+let poseEpoch = 0;
 let cameraMode: CameraMode = 'ots';
 const modeListeners = new Set<CameraModeListener>();
 
@@ -55,6 +57,19 @@ export function getPlayerPose(): SoldierActionId | null {
 
 export function setPlayerPose(next: SoldierActionId | null): void {
   pose = next;
+}
+
+export function getPlayerPoseEpoch(): number {
+  return poseEpoch;
+}
+
+export function bumpPlayerPoseEpoch(): void {
+  poseEpoch += 1;
+}
+
+/** Test hook — resets the pose epoch counter. */
+export function resetPlayerPoseEpoch(): void {
+  poseEpoch = 0;
 }
 
 /** Clears only a still-current pose so a finished jump cannot cancel a newer one. */

@@ -10,7 +10,7 @@ export function resolveAnimationClipKey(
   locomotion: LocomotionState,
 ): SoldierActionId | LocomotionState {
   if (pose === 'kneel') {
-    if (locomotion === 'run') {
+    if (locomotion === 'run' || locomotion === 'runBackward') {
       return 'run';
     }
     if (locomotion !== 'idle') {

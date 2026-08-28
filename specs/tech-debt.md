@@ -130,7 +130,7 @@ Post-split leftovers from `use-player-controls` → folder + `game/utils`. Pick 
 - [x] **`getRoom`** — `400` missing `roomId`; `500` lookup without `state` (404/410 partially covered)
 - [x] **`createRoom`** — `400` invalid body
 - [x] **`claimSeat`** — `409` wrong phase / team full / reserve throws (origin `403` covered)
-- [ ] **`disposeRoom`** — `500` if `disconnect` throws (`404`/`401`/`403`/`410`/`204` covered)
+- [x] **`disposeRoom`** — `500` if `disconnect` throws (`404`/`401`/`403`/`410`/`204` covered)
 
 ## Lobby rejoin after browser back
 

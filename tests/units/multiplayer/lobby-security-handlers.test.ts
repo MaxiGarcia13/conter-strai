@@ -162,6 +162,28 @@ describe('disposeRoom (host token)', () => {
     expect(response.status).toBe(204);
     expect(broadcast).toHaveBeenCalledWith('roomClosed');
   });
+
+  it('returns 500 when lobby dispose throws', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    stubFoundRoom({ hostToken: 'real-token' });
+    matchMakerMock.getLocalRoomById.mockReturnValue({
+      state: createMatchState({ scenario: 'arena-01' }),
+      broadcast: vi.fn(),
+      disposeLobby: vi.fn().mockRejectedValue(new Error('boom')),
+    });
+    const response = await disposeRoom({
+      request: requestWith(`/api/v1/room/${ROOM_CODE}`, {
+        method: 'DELETE',
+        authorization: 'Bearer real-token',
+      }),
+      params: { roomId: ROOM_CODE },
+    } as never);
+    try {
+      expect(response.status).toBe(500);
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
 });
 
 describe('getRoom (expiry)', () => {

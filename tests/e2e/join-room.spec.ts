@@ -106,3 +106,13 @@ test('rejoin after browser back claims a fresh seat', async ({ page, request }) 
   await expect(page).toHaveURL(new RegExp(`/room/${roomId}$`));
   await expect(page.getByRole('button', { name: 'Join Room' })).toHaveCount(0);
 });
+
+test('stale waiting URL without a session redirects to join', async ({ page, request }) => {
+  const roomId = await createMatchRoomViaApi(request);
+
+  await page.goto(`/room/${roomId}`);
+
+  await expect(page).toHaveURL(new RegExp(`/room/${roomId}/join$`));
+  await expect(page.getByLabel('Room id')).toHaveValue(roomId);
+  await expect(page.getByRole('button', { name: 'Join Room' })).toBeVisible();
+});

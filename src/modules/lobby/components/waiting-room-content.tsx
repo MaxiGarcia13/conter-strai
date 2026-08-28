@@ -35,6 +35,15 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
   useLobbyPresence(roomId, Boolean(session));
 
   useEffect(() => {
+    // Stale waiting-URL (cleared session / browser-back to the room page):
+    // the join form pre-fills the room id from the URL, so rejoin is one click.
+    if (session) {
+      return;
+    }
+    window.location.replace(`/room/${roomId}/join`);
+  }, [roomId, session]);
+
+  useEffect(() => {
     // Countdown UI lives on `/play` — leave the waiting room as soon as the
     // match starts counting down (or is already live).
     if (phase === 'countdown' || phase === 'live') {
@@ -43,16 +52,7 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
   }, [phase, roomId]);
 
   if (!session) {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-4">
-        <p className="font-mono text-sm tracking-widest uppercase text-foreground-muted">
-          No session found for this room.
-        </p>
-        <CsButton href="/room" variant="secondary">
-          Create a Room
-        </CsButton>
-      </div>
-    );
+    return null;
   }
 
   const scenario = getScenarioById(snapshotQuery.data?.scenario ?? session.scenario);

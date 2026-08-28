@@ -3,7 +3,7 @@ import type { ClaimSeatResponse } from '@/modules/multiplayer/types';
 import { matchMaker } from 'colyseus';
 import { decodeSeatClaim } from '@/modules/multiplayer/adapters/decode-seat-claim';
 import { toRoomSnapshot } from '@/modules/multiplayer/adapters/to-room-snapshot';
-import { findMatchRoomByCode } from '@/modules/multiplayer/utils/find-match-room';
+import { expiresAtFromFound, findMatchRoomByCode } from '@/modules/multiplayer/utils/find-match-room';
 import { isRoomExpired } from '@/modules/multiplayer/utils/room-expiry';
 import { jsonResponse, readJsonBody, requireMatchMaker } from './http';
 import { requireSameSiteOrigin } from './request-guards';
@@ -46,7 +46,10 @@ export const claimSeat: APIRoute = async ({ params, request }) => {
     return jsonResponse(500, { error: 'Room state unavailable' });
   }
 
-  const expiresAt = found.roomCache.metadata?.expiresAt;
+  const expiresAt = expiresAtFromFound(found);
+  if (!expiresAt) {
+    return jsonResponse(500, { error: 'Room expiry unavailable' });
+  }
   if (isRoomExpired(expiresAt)) {
     return jsonResponse(410, { error: 'Room expired' });
   }

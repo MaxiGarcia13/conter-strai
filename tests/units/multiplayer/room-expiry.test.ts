@@ -13,6 +13,11 @@ describe('computeExpiresAt', () => {
     expect(computeExpiresAt(now)).toBe('2026-08-28T12:40:00.000Z');
     expect(Date.parse(computeExpiresAt(now)) - now).toBe(ROOM_CODE_TTL_MS);
   });
+
+  it('uses an explicit ttl when provided', () => {
+    const now = Date.UTC(2026, 7, 28, 12, 0, 0);
+    expect(computeExpiresAt(now, 500)).toBe('2026-08-28T12:00:00.500Z');
+  });
 });
 
 describe('isRoomExpired', () => {

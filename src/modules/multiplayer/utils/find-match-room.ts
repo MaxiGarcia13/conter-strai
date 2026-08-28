@@ -25,3 +25,9 @@ export async function findMatchRoomByCode(roomCode: string): Promise<MatchRoomLo
     state: room?.state as MatchState | undefined,
   };
 }
+
+/** Prefer live room listing — query cache can lag `onCreate` metadata. */
+export function expiresAtFromFound(found: MatchRoomLookup): string | undefined {
+  const live = found.room as { metadata?: { expiresAt?: string } } | undefined;
+  return live?.metadata?.expiresAt ?? found.roomCache.metadata?.expiresAt;
+}

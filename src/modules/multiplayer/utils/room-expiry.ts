@@ -1,8 +1,8 @@
 import { ROOM_CODE_TTL_MS } from '../constants/room-ttl';
 
 /** ISO timestamp a newly created room expires at (create + TTL). */
-export function computeExpiresAt(now = Date.now()): string {
-  return new Date(now + ROOM_CODE_TTL_MS).toISOString();
+export function computeExpiresAt(now = Date.now(), ttlMs = ROOM_CODE_TTL_MS): string {
+  return new Date(now + ttlMs).toISOString();
 }
 
 /** True when an ISO `expiresAt` is in the past; invalid/missing means not expired. */

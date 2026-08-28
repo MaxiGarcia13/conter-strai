@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { toRoomSnapshot } from '@/modules/multiplayer/adapters/to-room-snapshot';
-import { findMatchRoomByCode } from '@/modules/multiplayer/utils/find-match-room';
+import { expiresAtFromFound, findMatchRoomByCode } from '@/modules/multiplayer/utils/find-match-room';
 import { isRoomExpired } from '@/modules/multiplayer/utils/room-expiry';
 import { jsonResponse, requireMatchMaker } from '../utils/http';
 
@@ -23,7 +23,10 @@ export const getRoom: APIRoute = async ({ params }) => {
     return jsonResponse(500, { error: 'Room state unavailable' });
   }
 
-  const expiresAt = found.roomCache.metadata?.expiresAt;
+  const expiresAt = expiresAtFromFound(found);
+  if (!expiresAt) {
+    return jsonResponse(500, { error: 'Room expiry unavailable' });
+  }
   if (isRoomExpired(expiresAt)) {
     return jsonResponse(410, { error: 'Room expired' });
   }

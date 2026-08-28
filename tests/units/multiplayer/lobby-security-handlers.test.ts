@@ -69,6 +69,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 describe('matchMaker not ready', () => {
@@ -206,8 +207,30 @@ describe('getRoom (expiry)', () => {
     expect(response.status).toBe(500);
   });
 
+  it('returns 500 when expiry metadata is missing', async () => {
+    stubFoundRoom({});
+    const response = await getRoom({
+      request: requestWith(`/api/v1/room/${ROOM_CODE}`),
+      params: { roomId: ROOM_CODE },
+    } as never);
+    expect(response.status).toBe(500);
+  });
+
   it('returns 410 Gone for an expired room', async () => {
     stubFoundRoom({ expiresAt: PAST_EXPIRY });
+    const response = await getRoom({
+      request: requestWith(`/api/v1/room/${ROOM_CODE}`),
+      params: { roomId: ROOM_CODE },
+    } as never);
+    expect(response.status).toBe(410);
+  });
+
+  it('returns 410 when live room metadata is expired even if the query cache is not', async () => {
+    const { state } = stubFoundRoom({ expiresAt: FUTURE_EXPIRY });
+    matchMakerMock.getLocalRoomById.mockReturnValue({
+      state,
+      metadata: { expiresAt: PAST_EXPIRY },
+    });
     const response = await getRoom({
       request: requestWith(`/api/v1/room/${ROOM_CODE}`),
       params: { roomId: ROOM_CODE },
@@ -279,6 +302,38 @@ describe('createRoom (origin + host token)', () => {
     expect(metadata.expiresAt).toBe(body.expiresAt);
   });
 
+  it('honors ttlMs on create in non-production', async () => {
+    matchMakerMock.createRoom.mockResolvedValue({});
+    const before = Date.now();
+    const response = await createRoom({
+      request: roomCreateRequest('http://localhost:4321', { scenario: 'arena-01', ttlMs: 400 }),
+      params: {},
+    } as never);
+    expect(response.status).toBe(201);
+    const body = await response.json() as Record<string, string>;
+    const ttl = Date.parse(body.expiresAt) - before;
+    expect(ttl).toBeGreaterThanOrEqual(300);
+    expect(ttl).toBeLessThan(2_000);
+
+    const createCall = matchMakerMock.createRoom.mock.calls[0];
+    const metadata = (createCall[1] as { metadata: Record<string, string> }).metadata;
+    expect(metadata.expiresAt).toBe(body.expiresAt);
+  });
+
+  it('ignores ttlMs in production unless E2E is set', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('E2E', 'false');
+    matchMakerMock.createRoom.mockResolvedValue({});
+    const before = Date.now();
+    const response = await createRoom({
+      request: roomCreateRequest('http://localhost:4321', { scenario: 'arena-01', ttlMs: 400 }),
+      params: {},
+    } as never);
+    expect(response.status).toBe(201);
+    const body = await response.json() as Record<string, string>;
+    expect(Date.parse(body.expiresAt) - before).toBeGreaterThan(60_000);
+  });
+
   it('allows an API client with no Origin header', async () => {
     matchMakerMock.createRoom.mockResolvedValue({});
     const response = await createRoom({
@@ -303,7 +358,7 @@ describe('claimSeat (origin)', () => {
   });
 
   it('returns 409 when the room is not waiting', async () => {
-    const { state } = stubFoundRoom({});
+    const { state } = stubFoundRoom({ expiresAt: FUTURE_EXPIRY });
     state.roundPhase = 'in_progress';
     const response = await claimSeat({
       request: requestWith(`/api/v1/room/${ROOM_CODE}`, {
@@ -317,7 +372,7 @@ describe('claimSeat (origin)', () => {
   });
 
   it('returns 409 at maximum room capacity', async () => {
-    const { state } = stubFoundRoom({ }, { clients: 2 });
+    const { state } = stubFoundRoom({ expiresAt: FUTURE_EXPIRY }, { clients: 2 });
     state.maxPerTeam = 1;
     const response = await claimSeat({
       request: requestWith(`/api/v1/room/${ROOM_CODE}`, {
@@ -331,7 +386,7 @@ describe('claimSeat (origin)', () => {
   });
 
   it('returns 409 when the seated team is full', async () => {
-    const { state } = stubFoundRoom({});
+    const { state } = stubFoundRoom({ expiresAt: FUTURE_EXPIRY });
     state.maxPerTeam = 1;
     state.players.set('existing', createPlayerState({ team: 'soldier' }));
     const response = await claimSeat({
@@ -345,8 +400,21 @@ describe('claimSeat (origin)', () => {
     expect(matchMakerMock.reserveSeatFor).not.toHaveBeenCalled();
   });
 
-  it('returns 409 when reserveSeatFor throws a full-room error', async () => {
+  it('returns 500 when expiry metadata is missing', async () => {
     stubFoundRoom({});
+    const response = await claimSeat({
+      request: requestWith(`/api/v1/room/${ROOM_CODE}`, {
+        method: 'PUT',
+        body: JSON.stringify({ team: 'civilian', skin: 'remy' }),
+      }),
+      params: { roomId: ROOM_CODE },
+    } as never);
+    expect(response.status).toBe(500);
+    expect(matchMakerMock.reserveSeatFor).not.toHaveBeenCalled();
+  });
+
+  it('returns 409 when reserveSeatFor throws a full-room error', async () => {
+    stubFoundRoom({ expiresAt: FUTURE_EXPIRY });
     matchMakerMock.reserveSeatFor.mockRejectedValue(new Error('Room is already full'));
     const response = await claimSeat({
       request: requestWith(`/api/v1/room/${ROOM_CODE}`, {

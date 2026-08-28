@@ -145,7 +145,7 @@ Join → waiting → browser **back** to `/room/{id}/join` → second **Join Roo
 `tests/e2e/lobby-security.spec.ts` covers API-only: cross-origin `POST` `403`, `DELETE` `401`/`403`/`204`, `GET` `expiresAt`. `create-room.spec.ts` covers host Close Room UI. Unit tests own shot/move validation and mocked `410`. Remaining Playwright gaps:
 
 - [x] **Cross-origin `PUT` claim seat → `403`** — extend `lobby-security.spec.ts` or new API test file
-- [ ] **Expired room → `410`** — e2e with short `ROOM_CODE_TTL_MS` in test env (or clock stub); `GET` and `PUT` on expired code; optional `DELETE` with valid token
+- [x] **Expired room → `410`** — e2e with short `ROOM_CODE_TTL_MS` in test env (or clock stub); `GET` and `PUT` on expired code; optional `DELETE` with valid token
 - [ ] **Guest round-end Home** — two-browser or single guest: after round end, guest **Home** leaves without `DELETE` (no `401`); host **Home** still disposes room
 - [ ] **Two-browser match smoke** — US-8 acceptance: create + join, start round, friendly-fire does not apply damage (or host-only wipe); optional full round to banner
 - [ ] **TTL renew on Restart** — after `startRound`, `GET` snapshot shows `expiresAt` slid forward (~40 min); API or UI assertion

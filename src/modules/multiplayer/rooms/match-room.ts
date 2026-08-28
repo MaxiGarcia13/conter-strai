@@ -7,6 +7,7 @@ import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
 import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
 import { TEAM_SKINS } from '@/modules/teams/constants/team-skins';
 import { PISTOL_FIRE_COOLDOWN_MS } from '@/modules/weapons/constants/pistol';
+import { isE2e } from '../dev/is-e2e';
 import { createMatchState } from '../schema/match-state';
 import { createPlayerState } from '../schema/player-state';
 import { assertRoomJoinable, computeExpiresAt } from '../utils/room-expiry';
@@ -33,6 +34,8 @@ interface JoinOptions {
 const MAX_CLIENTS = DEFAULT_MAX_PER_TEAM * 2;
 const COUNTDOWN_START = 3;
 const COUNTDOWN_TICK_MS = 1_000;
+/** Ms the room stays queryable after `expiresAt` so REST can return 410. */
+const DISPOSE_GRACE_MS = 1_000;
 
 export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata }> {
   private hostSessionId: string | null = null;
@@ -243,7 +246,12 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
     if (Number.isNaN(expiresAtMs)) {
       return;
     }
-    const delay = expiresAtMs - Date.now();
+    // E2E asserts REST 410; auto-dispose would race the query to 404.
+    if (isE2e()) {
+      return;
+    }
+    // Linger after expiresAt so REST can return 410 before the room is gone.
+    const delay = expiresAtMs + DISPOSE_GRACE_MS - Date.now();
     if (delay <= 0) {
       this.broadcast('roomClosed');
       void this.disposeLobby();

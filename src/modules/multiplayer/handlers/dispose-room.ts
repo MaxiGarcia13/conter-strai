@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import type { MatchRoom } from '@/modules/multiplayer/rooms/match-room';
-import { findMatchRoomByCode } from '@/modules/multiplayer/utils/find-match-room';
+import { expiresAtFromFound, findMatchRoomByCode } from '@/modules/multiplayer/utils/find-match-room';
 import { isHostToken } from '@/modules/multiplayer/utils/host-token';
 import { isRoomExpired } from '@/modules/multiplayer/utils/room-expiry';
 import { wait } from '@/utils/wait';
@@ -39,12 +39,12 @@ export const disposeRoom: APIRoute = async ({ request, params }) => {
 
   const found = await findMatchRoomByCode(roomCode);
   const room = found?.room as MatchRoom | undefined;
-  const expectedToken = found?.roomCache.metadata?.hostToken;
-  if (!room || !expectedToken) {
+  const expectedToken = room?.metadata?.hostToken ?? found?.roomCache.metadata?.hostToken;
+  if (!found || !room || !expectedToken) {
     return jsonResponse(404, { error: 'Room not found' });
   }
 
-  if (isRoomExpired(found?.roomCache.metadata?.expiresAt)) {
+  if (isRoomExpired(expiresAtFromFound(found))) {
     return jsonResponse(410, { error: 'Room expired' });
   }
 

@@ -65,8 +65,47 @@ test('PUT claim seat rejects a cross-origin request with 403', async ({ request 
   const roomId = await createRoom(request);
 
   const response = await request.put(`/api/v1/room/${roomId}`, {
-    headers: { origin: 'https://evil.example', 'content-type': 'application/json' },
+    headers: { 'origin': 'https://evil.example', 'content-type': 'application/json' },
     data: { team: 'civilian', skin: 'remy' },
   });
   expect(response.status()).toBe(403);
+});
+
+test('expired room returns 410 on GET and PUT, and DELETE with a valid host token', async ({ request }) => {
+  const created = await request.post('/api/v1/room', {
+    headers: { origin: ORIGIN },
+    data: { scenario: 'arena-01', ttlMs: 800 },
+  });
+  expect(created.status()).toBe(201);
+  const body = await created.json() as CreateRoomBody & { expiresAt: string };
+  expect(body.id).toMatch(/^[A-Z0-9]{6}$/);
+  expect(typeof body.hostToken).toBe('string');
+  const remainingMs = Date.parse(body.expiresAt) - Date.now();
+  expect(remainingMs).toBeGreaterThan(0);
+  expect(remainingMs).toBeLessThan(2_000);
+
+  const live = await request.get(`/api/v1/room/${body.id}`);
+  expect(live.status()).toBe(200);
+  const snapshot = await live.json() as { expiresAt?: string };
+  expect(Date.parse(snapshot.expiresAt as string) - Date.now()).toBeLessThan(2_000);
+
+  await expect.poll(async () => Date.now() >= Date.parse(body.expiresAt)).toBe(true);
+
+  const expiredGet = await request.get(`/api/v1/room/${body.id}`);
+  expect(expiredGet.status()).toBe(410);
+  expect(await expiredGet.json()).toMatchObject({ error: 'Room expired' });
+
+  const [claimed, disposed] = await Promise.all([
+    request.put(`/api/v1/room/${body.id}`, {
+      headers: { 'origin': ORIGIN, 'content-type': 'application/json' },
+      data: { team: 'civilian', skin: 'remy' },
+    }),
+    request.delete(`/api/v1/room/${body.id}`, {
+      headers: { origin: ORIGIN, authorization: `Bearer ${body.hostToken}` },
+    }),
+  ]);
+  expect(claimed.status()).toBe(410);
+  expect(await claimed.json()).toMatchObject({ error: 'Room expired' });
+  expect(disposed.status()).toBe(410);
+  expect(await disposed.json()).toMatchObject({ error: 'Room expired' });
 });

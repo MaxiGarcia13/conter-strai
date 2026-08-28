@@ -22,7 +22,7 @@ jobs:
 
   bump:
     needs: [lint, test]
-    uses: ./.github/workflows/bump-version.yml
+    uses: MaxiGarcia13/gh-actions/.github/workflows/bump-version.yml@main
     secrets: inherit
 
   deploy:

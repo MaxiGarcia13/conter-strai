@@ -6,7 +6,7 @@ Browser-based tactical shooter inspired by Counter-Strike. **Civilians** vs **So
 
 ## Status
 
-**Status:** US-1–US-4, US-6, and US-7 are shipped. Colyseus multiplayer (US-5) is open — see [CHANGELOG](./specs/CHANGELOG.md).
+**Status:** US-1–US-7 shipped (including Colyseus multiplayer, US-5). Open: US-8 server security — see [CHANGELOG](./specs/CHANGELOG.md).
 
 | Feature                                                           | State              |
 | ----------------------------------------------------------------- | ------------------ |
@@ -16,7 +16,7 @@ Browser-based tactical shooter inspired by Counter-Strike. **Civilians** vs **So
 | Shared skins + animation pack                                     | Done (US-6)        |
 | Round-based PvP (pistol, teams, reload)                           | Done (US-4)        |
 | Match lobby (`/room` create / join / wait / play)                 | Done (US-7)        |
-| Online sync via Colyseus (Astro Node)                             | In progress (US-5) |
+| Online sync via Colyseus (Astro Node)                             | Done (US-5)        |
 
 ## Game rules (MVP)
 
@@ -33,7 +33,7 @@ Browser-based tactical shooter inspired by Counter-Strike. **Civilians** vs **So
 - [React](https://react.dev) + [React Three Fiber](https://docs.pmnd.rs/react-three-fiber) + [Three.js](https://threejs.org) — game island
 - [Tailwind CSS](https://tailwindcss.com) — styling
 - [Zustand](https://zustand-demo.pmnd.rs) — client state
-- [Colyseus](https://colyseus.io/framework/) — multiplayer rooms (US-5)
+- [Colyseus](https://colyseus.io/framework/) — multiplayer rooms
 - [Vitest](https://vitest.dev) + [Playwright](https://playwright.dev) — unit & e2e tests
 
 ## Getting started
@@ -86,7 +86,7 @@ src/
     combat/         # Hitbox presets, zone damage, apply-damage
     game/           # GameCanvas, FPS controls, round types
     lobby/          # Room create / join UI and session helpers
-    multiplayer/    # Colyseus adapter, match sync (US-5)
+    multiplayer/    # Colyseus adapter, match sync
     props/          # Scenario prop registry (stub)
     scenarios/      # Maps (arena-01), ScenarioConfig, spawn helpers
     soldiers/       # SoldierSkin registry, model, locomotion

@@ -1,16 +1,16 @@
+import type { Scene } from 'three';
 import type { LocomotionSoundId } from '../utils/resolve-locomotion-sound';
 import type { RemoteMotionSample } from '@/modules/multiplayer/utils/resolve-remote-locomotion';
 import type { SyncableRemotePose } from '@/modules/multiplayer/utils/syncable-remote-pose';
-import type { Scene } from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import { Vector3 } from 'three';
+import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import {
   resolveRemoteLocomotionForAnimation,
   resolveRemotePlayback,
   updateRemoteMotion,
 } from '@/modules/multiplayer/utils/resolve-remote-locomotion';
-import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import {
   LOCOMOTION_SOUND_GAIN,
   LOCOMOTION_SOUND_MAX_DISTANCE,

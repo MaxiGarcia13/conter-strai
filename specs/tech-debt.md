@@ -132,7 +132,7 @@ Post-split leftovers from `use-player-controls` → folder + `game/utils`. Pick 
   3. `vi.mock` `findMatchRoomByCode`; stub `{ roomCache, room, state }` or `null`.
   4. Reset `matchMaker.state` to `MatchMakerState.READY` in `beforeEach`.
 
-- [ ] **503 when matchMaker is not ready** — also closes the open US-5 REST item
+- [ ] **503 when matchMaker is not ready**
   1. Set `matchMaker.state` to `MatchMakerState.INITIALIZING`.
   2. Call each handler (`createRoom`, `getRoom`, `claimSeat`, `disposeRoom`).
   3. Expect **503** `{ error: 'Matchmaker is not ready' }` and no matchMaker side effects.

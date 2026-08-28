@@ -1,6 +1,6 @@
 # US-8 — Tasks
 
-Ship **after US-5** acceptance. Tick only when the matching requirement passes.
+Ship **after US-5** (shipped). Tick only when the matching requirement passes.
 
 See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 

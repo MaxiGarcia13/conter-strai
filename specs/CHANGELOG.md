@@ -11,7 +11,6 @@
 
 | US | Summary |
 |----|---------|
-| **US-5** | Colyseus multiplayer (Astro Node adapter) + team rounds |
 | **US-8** | Server security — host token, origin guard, shot/move validation, room TTL |
 
 ## Shipped
@@ -22,6 +21,7 @@
 | **US-2** | 3D arena (`arena-01`), FPS/OTS/TPS cameras, locomotion + jump/kneel, interior collision, aim HUD |
 | **US-3** | Health & zone damage — weapon profiles, hitboxes, HUD bar, round-permanent elimination + `dying` clip |
 | **US-4** | Local PvP loop — pistol hitscan, teams, wipe banner, hand-attached pistol, reload clips. **`shooting` pose on LMB deferred** (no shippable fire clip) |
+| **US-5** | Colyseus multiplayer (Astro Node adapter) + REST lobby + team rounds + pose relay + spatial combat SFX |
 | **US-6** | Shared animation pack, six skins (`remy` / `james` / `liza` + `swat-1` / `swat-2` / `swat-3`), crouch-walk |
 | **US-7** | Match lobby — `/room` create / join / wait / play; sessionStorage; invite URL + QR; team/skin/arena boot (legacy `/play` removed) |
 
@@ -30,3 +30,4 @@
 | Date | Item | Summary |
 |------|------|---------|
 | 2026-08-23 | Type split | Module type domains; one `types.ts` per module; `ScenarioConfig` flat composition; `SoldierSkin` + `hitboxPresetId`; hitbox types/registry in `combat/`. See [current/design.md](./current/design.md#module-types). |
+| 2026-08-28 | Improvements polish | Dark-cloth lighting (IBL/fill), kneel-from-walk, remote pose relay, spatial combat SFX, backward locomotion + reload/jump-idle sync. See [improvements.md](./improvements.md). |

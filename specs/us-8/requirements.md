@@ -1,6 +1,6 @@
 # US-8 — Server security hardening
 
-Depends on **US-5** (Colyseus multiplayer + lobby REST) shipping first.
+Depends on **US-5** (shipped).
 
 ## Requirements
 

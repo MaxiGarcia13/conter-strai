@@ -2,11 +2,11 @@
 
 ## Stack
 
-- **Astro 7** — pages, layout; **Node.js adapter** (`@astrojs/node`, `output: 'server'`) for multiplayer (US-5)
+- **Astro 7** — pages, layout; **Node.js adapter** (`@astrojs/node`, `output: 'server'`) for multiplayer
 - **Three.js** via **@react-three/fiber** + **drei** — game island on `/room/{id}/play`
 - **Zustand** — game session, health, players, round state
 - **Tailwind 4** — landing UI + HUD
-- **[Colyseus](https://colyseus.io/framework/)** — real-time rooms, Schema sync, matchmaking (US-5)
+- **[Colyseus](https://colyseus.io/framework/)** — real-time rooms, Schema sync, matchmaking
 
 ## Game loop (round-based)
 
@@ -15,14 +15,14 @@ stateDiagram-v2
   [*] --> RoundStart
   RoundStart --> InProgress: assign teams, spawn, equip pistol
   InProgress --> RoundEnd: one team fully eliminated
-  RoundEnd --> RoundStart: US-5 server reset
+  RoundEnd --> RoundStart: host Restart (server reset in multiplayer)
 ```
 
-| Phase           | Behavior                                                                                |
-| --------------- | --------------------------------------------------------------------------------------- |
-| **Round start** | Split players into Civilians / Soldiers; teleport to team spawns; full HP; equip pistol |
-| **In progress** | PvP combat; eliminated players spectate or wait (no respawn)                            |
-| **Round end**   | One team wiped → opposing team wins; show banner. Next-round reset is US-5              |
+| Phase           | Behavior                                                                                                  |
+| --------------- | --------------------------------------------------------------------------------------------------------- |
+| **Round start** | Split players into Civilians / Soldiers; teleport to team spawns; full HP; equip pistol                   |
+| **In progress** | PvP combat; eliminated players spectate or wait (no respawn)                                              |
+| **Round end**   | One team wiped → opposing team wins; show banner. Next-round reset is server-authoritative in multiplayer |
 
 ## Teams
 
@@ -33,7 +33,7 @@ stateDiagram-v2
 
 Team IDs are `civilian` \| `soldier` everywhere in code. Display names: **Civilians** / **Soldiers** (`TEAM_DISPLAY_NAME`).
 
-Team assignment: random or balanced split in MVP; **server assigns teams** in Colyseus `MatchRoom` (US-5).
+Team assignment: random or balanced split in MVP; **server assigns teams** in Colyseus `MatchRoom`.
 
 ## Weapons (loadout)
 
@@ -60,7 +60,7 @@ src/
 │   ├── soldiers/         Skin registry, model, locomotion
 │   ├── combat/           Hitboxes, HP, zone damage, difficulty
 │   ├── weapons/          Loadout, pistol (MVP); knife/rifle later
-│   └── multiplayer/      Colyseus adapter + MatchRoom / Schema (US-5)
+│   └── multiplayer/      Colyseus adapter + MatchRoom / Schema
 ├── layouts/              Base shell (SEO, fonts, atmosphere)
 └── styles/               Design tokens + landing/HUD utilities
 ```
@@ -114,15 +114,15 @@ Shipped 2026-08-23 — see [CHANGELOG](../CHANGELOG.md#shipped--other).
 | `/room/[roomId]/join` | Invite join (room id from path)                 |
 | `/room/[roomId]/play` | Game canvas — boot from `sessionStorage`        |
 
-## Match lobby — shipped US-7
+## Match lobby — shipped US-7 + US-5 REST
 
-Local-first pre-play lobby (`src/modules/lobby/`). No Colyseus yet — US-5 wires these routes to rooms.
+Pre-play lobby (`src/modules/lobby/`). **REST** (`/api/v1/room`) owns create / snapshot / seat / dispose; **Colyseus WebSocket** owns presence and play. TanStack Query polls `GET` while waiting; play connects via `colyseus-adapter`.
 
 ```
 sessionStorage[`cs:room:${roomId}`] = {
   team: Team;
   skin: SoldierSkinId;
-  scenario: ScenarioId;   // create: chosen; join: arena-01 until host sync (US-5)
+  scenario: ScenarioId;   // create: chosen; join: arena-01 until host sync
   role: 'host' | 'guest';
 }
 ```
@@ -283,7 +283,7 @@ useShooting (raycast) → hit zone from mesh userData
 
 ## PvP loop — shipped US-4
 
-Local team-elimination on `/room/.../play`. Colyseus authority stays US-5.
+Local team-elimination on `/room/.../play`. In multiplayer, damage, elimination, and round end are **server-authoritative** via Colyseus.
 
 ### Round service (`game/state/round-store.ts`)
 
@@ -293,7 +293,7 @@ checkRoundEnd() → if all civilians eliminated OR all soldiers eliminated → e
 endRound(winner) → RoundPhase 'round-end', winner banner with Restart / Home (no auto-restart; host or offline Restart starts the next round)
 ```
 
-Local player occupies the session skin/team (default civilian `remy`); remaining spawns are `ScenarioSoldiers` NPCs (opposing-team dummies until US-5).
+Local player occupies the session skin/team (default civilian `remy`); offline play fills remaining spawns with `ScenarioSoldiers` NPCs. Multiplayer disables bots — opponents are `RemotePlayer` peers.
 
 When `HealthState.isEliminated`, FPS move/look/shoot is disabled and pointer lock is released until the next `startRound()`.
 
@@ -314,24 +314,150 @@ When `HealthState.isEliminated`, FPS move/look/shoot is disabled and pointer loc
 
 `resolveHitDamage` (self / friendly / zone) and `checkRoundEnd` (team wipe → winner).
 
-## Multiplayer (US-5)
+## Multiplayer — shipped US-5
 
-- Astro **Node adapter** serves the app; **Colyseus** rooms sync state over WebSocket.
-- Schema per player: `{ x, y, z, rotY, hp, eliminated, team }`.
-- Shots and round wipe are **server-authoritative** (room messages + Schema mutations).
-- Client uses `colyseus-adapter` only — game modules do not import Colyseus directly.
-- **Cosmetic clip relay (ephemeral, not Schema-authoritative):** the local player
-  emits the same clip the local mixer plays (`resolveAnimationClipKey(pose, locomotion)`)
-  over `jump-idle` | `jump` | `kneel` | `crouch-walking` | `walk` | `run` |
-  `walk-backward` | `run-backward` | `idle` | `reloading` | `reloading-kneel` | `clear`.
-  Jump / reload flush immediately on keydown (not the next frame). Peers play that
-  clip directly instead of inferring kneel-walk or backpedal from position. Jump
-  one-shots stick on the receiver until that mixer finishes so a follow-up idle/walk
-  does not truncate them; a pose epoch retriggers a second jump. `clear` and missing
-  clips still fall back to locomotion inferred from position deltas. `dying` /
-  `hit-reaction` stay visual-only (not relayed); `shooting` is deferred.
-- **Remote backward inference (fallback only):** if no clip has arrived yet, peers
-  infer `walk-backward` / `run-backward` when the position delta is mostly opposite
-  the synced `rotY` facing (`dot(facing, velocity) < -0.7`, i.e. `|angleDiff| > ~135°`);
-  otherwise forward `walk` / `run`. Backward hysteresis follows the forward walk↔run
-  thresholds.
+Hybrid: **REST for lobby lifecycle** (create / status / seat / dispose), **WebSocket for presence and play**.
+
+```mermaid
+flowchart LR
+  Browser["Browser"]
+  AstroREST["Astro REST /api/v1/room"]
+  AstroPages["Astro pages /room/..."]
+  MatchMaker["Colyseus matchMaker"]
+  MatchRoom["MatchRoom"]
+  Browser -->|"HTTP pages"| AstroPages
+  Browser -->|"REST lobby"| AstroREST
+  AstroREST --> MatchMaker
+  MatchMaker --> MatchRoom
+  Browser -->|"WebSocket"| MatchRoom
+  MatchRoom -->|"Schema deltas"| Browser
+```
+
+- **Astro Node** serves pages and `/api/v1/room` API routes.
+- **Colyseus** runs in the **same Node process** — `matchMaker` is available to Astro `APIRoute` handlers after boot.
+- Lobby UI uses REST for create / snapshot / seat / dispose; waiting room and `/play` use `@colyseus/sdk` via `colyseus-adapter`.
+- REST is same-origin under Astro; WebSocket uses `PUBLIC_COLYSEUS_URL` in dev; production derives `ws:` / `wss:` from the page host.
+
+### Boot wiring
+
+Astro `APIRoute` handlers must run only after Colyseus/`matchMaker` is initialized. If matchMaker is not ready, REST returns **`503`**.
+
+- **Dev** (`npm run dev`): `src/modules/multiplayer/integration.ts` listens on `COLYSEUS_PORT` (default `2567`); client uses `PUBLIC_COLYSEUS_URL`.
+- **Production** (`npm run build` → `npm run preview`): `src/server.ts` attaches Colyseus to the same HTTP `$PORT` as Astro.
+
+### Hybrid responsibilities
+
+| Concern                          | HTTP REST (`/api/v1/room…`)                            | Colyseus WebSocket                           |
+| -------------------------------- | ------------------------------------------------------ | -------------------------------------------- |
+| Create room + short code         | Yes — `matchMaker.createRoom`                          | Also possible via SDK `create`               |
+| Read status / open team slots    | Yes — `matchMaker.query` + metadata / `remoteRoomCall` | Better live via Schema                       |
+| Actually sit in the lobby / play | No — HTTP cannot hold presence                         | **Required** — `joinById` / seat reservation |
+| Transform / HP / shots           | No                                                     | **Required** — Schema + messages             |
+
+### Lobby HTTP API
+
+Public **`ROOM_ID`** is the 6-char code from `generate-room-id.ts`, stored in Colyseus room **metadata** as `roomCode`. Cap: `maxClients: 8`, `maxPerTeam: 4`.
+
+```typescript
+interface RoomSnapshot {
+  id: string; // public roomCode
+  phase: 'waiting' | 'in_progress' | 'ended';
+  canJoin: boolean;
+  maxPerTeam: 4;
+  playerCount: number;
+  scenario?: string;
+  teams: {
+    civilian: { count: number; max: 4; open: boolean };
+    soldier: { count: number; max: 4; open: boolean };
+  };
+}
+```
+
+| Route                         | Behavior                                                                                      |
+| ----------------------------- | --------------------------------------------------------------------------------------------- |
+| `POST /api/v1/room`           | Creates `MatchRoom`; **`201`** `RoomSnapshot`; **`503`** if matchMaker not ready              |
+| `GET /api/v1/room/:roomId`    | **`200`** snapshot; **`404`** unknown/disposed                                                |
+| `PUT /api/v1/room/:roomId`    | Seat claim while `waiting`; **`200`** `{ snapshot, reservation }`; **`409`** full/wrong phase |
+| `DELETE /api/v1/room/:roomId` | Dispose room; broadcast `roomClosed`; **`204`**                                               |
+
+After REST create or PUT, client connects with `joinById` or `consumeSeatReservation` on waiting-room and/or play mount.
+
+### Server layout
+
+```
+src/modules/multiplayer/
+├── adapters/colyseus-adapter/   # initMatch, syncTransform, sendShot, sendFire, listeners
+├── handlers/                    # Astro APIRoute implementations
+├── rooms/match-room.ts          # waiting → in_progress → ended
+├── schema/                      # MatchState, PlayerState
+└── stores/multiplayer-store/
+```
+
+**One `MatchRoom`** with `roundPhase: waiting → in_progress → ended` (no separate LobbyRoom).
+
+### Schema state
+
+```
+// PlayerState (per client.sessionId)
+{ x, y, z, rotY, hp, eliminated, team, skin }
+
+// MatchState
+{ players: MapSchema<PlayerState>, roundPhase, winner, scenario, maxPerTeam: 4 }
+```
+
+- `onJoin`: reject if `players.size >= 8` or team count `>= 4`.
+- REST PUT enforces the same caps before reservation.
+
+### Client adapter
+
+```
+initMatch({ roomId, reservation?, options?, endpoint? }) → MatchHandle
+syncTransform({ x, z, yaw })            // throttled ~20 Hz
+sendShot({ targetId, zone })           // server ShotMessage wire shape
+sendFire()                              // relay spatial gunshot SFX to peers
+startMatch()                            // host-only: waiting → in_progress
+onPlayerUpdate / onRoundUpdate / onLeave
+```
+
+- Transforms: server mutates player Schema in `move` handler; client sends `room.send('move', …)` throttled ~20 Hz.
+- Shots: `room.send('shot', { targetId, zone })`; server validates and applies damage — clients never decide kills in multiplayer.
+- Gunshot SFX: `room.send('fire')` during `in_progress`; server relays `{ sessionId }` to peers for spatial pistol audio (cosmetic only).
+- Round wipe: server runs `checkRoundEnd`, mutates `roundPhase` / `winner`; clients react to Schema deltas only.
+
+### Round sync (server-authoritative)
+
+- Host sends `startRound` from `waiting` or `ended` → resets HP / eliminated, spawn placement, `countdown: 3` → `in_progress`.
+- `startRound` locks joins: REST `PUT` returns `409` outside `waiting`; reserved seats still connect after lock.
+- Server tracks `hostSessionId` (first joiner; reassigned on host leave).
+- Team wipe → `winner`, `roundPhase: 'ended'` until host `startRound` again (no auto-timer).
+- **Home** on round-end banner → `DELETE /api/v1/room/{id}` → server `roomClosed` → all clients go `/`.
+
+### Integration
+
+- Create/join → `POST` / `PUT` via TanStack Query; write `sessionStorage` + server room code.
+- Waiting room joins early: `useMatchJoin` + `bindMatch`; `/play` reconnects via `room.reconnectionToken` after hard navigation.
+- `LocalTransformSync` forwards player transform via adapter (~20 Hz coalesced).
+- `useShooting` → `sendShot`; hit detection client-side; damage/elimination server-authoritative.
+- `bindMatch(handle)` feeds multiplayer store; local HP mirrors into `useHealthStore`; remote HP drives spatial injury SFX.
+- Bots disabled while match connected; `RoundEndBanner` reads multiplayer store in match mode.
+- `RemotePlayer` reads store roster; transforms via `getState()` in `useFrame`.
+
+### Cosmetic clip relay
+
+Ephemeral pose relay (not Schema-authoritative): local player emits the same clip the mixer plays (`resolveAnimationClipKey(pose, locomotion)`) over `jump-idle` | `jump` | `kneel` | `crouch-walking` | `walk` | `run` | `walk-backward` | `run-backward` | `idle` | `reloading` | `reloading-kneel` | `clear`. Jump / reload flush on keydown. Peers play that clip directly. Jump one-shots stick until mixer finishes. `clear` and missing clips fall back to locomotion inferred from position deltas. `dying` / `hit-reaction` stay visual-only; `shooting` deferred.
+
+**Remote backward inference (fallback):** when no clip has arrived, peers infer `walk-backward` / `run-backward` when position delta is mostly opposite synced `rotY` (`dot(facing, velocity) < -0.7`); otherwise forward `walk` / `run`.
+
+### Env
+
+| Variable              | Purpose                                             |
+| --------------------- | --------------------------------------------------- |
+| `PUBLIC_COLYSEUS_URL` | Dev WebSocket endpoint (e.g. `ws://localhost:2567`) |
+| `COLYSEUS_PORT`       | Dev-only Colyseus listen port (default `2567`)      |
+
+### Out of scope (US-5)
+
+- Colyseus Cloud deployment (local / self-hosted Node first)
+- Pure HTTP gameplay; custom REST-only session store
+- Separate LobbyRoom → MatchRoom migration
+- Schema-authoritative `pose` field (ephemeral relay used instead)

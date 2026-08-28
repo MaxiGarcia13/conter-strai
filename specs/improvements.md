@@ -1,6 +1,8 @@
-# Improvements backlog
+# Improvements backlog — shipped
 
-Player-facing polish and feel items. Not tied to a user story — pick when touching nearby systems or during a dedicated polish pass. For hygiene / dead code, see [tech-debt.md](./tech-debt.md).
+**Status: closed 2026-08-28.** All items below shipped with US-5 polish. New feel items go here as unchecked entries; for hygiene / dead code see [tech-debt.md](./tech-debt.md).
+
+---
 
 [x] ## 1. Dark clothing / lighting
 
@@ -71,7 +73,7 @@ Then:
 
 **Acceptance:** Two clients in a live match see each other's kneel and jump animations within one round-trip of the action.
 
-**Spec touch:** Extend US-5 multiplayer design or add a small US delta for pose sync semantics.
+**Spec touch:** Shipped in [current/design.md](./current/design.md#cosmetic-clip-relay) (ephemeral pose relay).
 
 ---
 
@@ -83,7 +85,7 @@ Then:
 
 **Likely cause:**
 
-- **Gunshots:** Only the shooter hears their shot (`src/modules/game/hooks/use-shooting.ts` plays at camera). The server applies damage via the `shot` message but does not broadcast a fire event to other clients ([US-5 design](./us-5/design.md): "no shot broadcast needed" for damage).
+- **Gunshots:** Only the shooter hears their shot (`src/modules/game/hooks/use-shooting.ts` plays at camera). The server applies damage via the `shot` message but does not broadcast a fire event to other clients.
 - **Ouch:** `useSpatialCombatSounds` (`src/modules/game/hooks/use-spatial-combat-sounds.ts`) subscribes to `useHealthStore`, but in multiplayer only the local player's HP is mirrored there (`src/modules/multiplayer/services/bind-match.ts`). Remote HP lives in `multiplayerStore` only, so peer injury SFX never fires. Spatial infra already exists (`src/modules/game/utils/play-game-sound.ts`, 40 m falloff via `COMBAT_SOUND_MAX_DISTANCE`).
 
 **Suggested direction:**
@@ -94,7 +96,7 @@ Then:
 
 **Acceptance:** Standing near a remote player, gunshots and injury grunts are audible and quieter when far away (~40 m falloff). Local player's own gunshot remains full volume at the camera.
 
-**Spec touch:** Extend US-5 design with fire-event broadcast; no FR change unless audio is listed as a functional requirement.
+**Spec touch:** Shipped in [current/design.md](./current/design.md#client-adapter) (`sendFire` relay) and FR-41.
 
 ---
 
@@ -134,4 +136,4 @@ Then:
 
 **Out of scope:** `shooting` pose sync (deferred on LMB); crouch-walk-backward clip; schema-authoritative `pose` field.
 
-**Spec touch:** Extend `specs/current/design.md` (pose relay + backward inference); optional FR for backward locomotion.
+**Spec touch:** Shipped FR-39–FR-40 and [current/design.md](./current/design.md#cosmetic-clip-relay).

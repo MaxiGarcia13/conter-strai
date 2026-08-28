@@ -24,6 +24,11 @@ jobs:
     needs: [lint, test]
     uses: MaxiGarcia13/gh-actions/.github/workflows/bump-version.yml@main
     secrets: inherit
+    with:
+      paths: |
+        './src/**'
+        './tests/**'
+        './public/**'
 
   deploy:
     needs: bump

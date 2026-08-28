@@ -1,6 +1,6 @@
 # US-9 — Pause menu, auto pointer lock, deploy-ready countdown
 
-Depends on **US-5** (shipped), **US-7** (shipped). Can ship after or alongside **US-8**.
+Depends on **US-5** (shipped), **US-7** (shipped), **US-8** (shipped).
 
 ## Requirements
 

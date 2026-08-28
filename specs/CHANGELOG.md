@@ -11,12 +11,13 @@
 
 | US | Summary |
 |----|---------|
-| **US-8** | Server security — host token, origin guard, shot/move validation, room TTL |
+| *(none)* | — |
 
 ## Shipped
 
 | US | Summary |
 |----|---------|
+| **US-8** | Server security — host token, origin guard, shot/move validation, room TTL (40 min, renew on restart) |
 | **US-1** | Landing page — hero, soldiers art, Start Game CTA, GitHub contribute footer, shooter theme, SEO |
 | **US-2** | 3D arena (`arena-01`), FPS/OTS/TPS cameras, locomotion + jump/kneel, interior collision, aim HUD |
 | **US-3** | Health & zone damage — weapon profiles, hitboxes, HUD bar, round-permanent elimination + `dying` clip |

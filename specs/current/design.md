@@ -365,6 +365,7 @@ interface RoomSnapshot {
   canJoin: boolean;
   maxPerTeam: 4;
   playerCount: number;
+  expiresAt: string; // ISO — room code TTL (see Security US-8)
   scenario?: string;
   teams: {
     civilian: { count: number; max: 4; open: boolean };
@@ -375,10 +376,10 @@ interface RoomSnapshot {
 
 | Route                         | Behavior                                                                                      |
 | ----------------------------- | --------------------------------------------------------------------------------------------- |
-| `POST /api/v1/room`           | Creates `MatchRoom`; **`201`** `RoomSnapshot`; **`503`** if matchMaker not ready              |
-| `GET /api/v1/room/:roomId`    | **`200`** snapshot; **`404`** unknown/disposed                                                |
-| `PUT /api/v1/room/:roomId`    | Seat claim while `waiting`; **`200`** `{ snapshot, reservation }`; **`409`** full/wrong phase |
-| `DELETE /api/v1/room/:roomId` | Dispose room; broadcast `roomClosed`; **`204`**                                               |
+| `POST /api/v1/room`           | Creates `MatchRoom`; **`201`** `RoomSnapshot` + `hostToken`; **`403`** cross-origin; **`503`** if matchMaker not ready |
+| `GET /api/v1/room/:roomId`    | **`200`** snapshot; **`404`** unknown/disposed; **`410`** expired                               |
+| `PUT /api/v1/room/:roomId`    | Seat claim while `waiting`; **`200`** `{ snapshot, reservation }`; **`403`** cross-origin; **`409`** full/wrong phase; **`410`** expired |
+| `DELETE /api/v1/room/:roomId` | Host dispose; **`Authorization: Bearer <hostToken>`**; **`401`** / **`403`** / **`410`**; broadcast `roomClosed`; **`204`** |
 
 After REST create or PUT, client connects with `joinById` or `consumeSeatReservation` on waiting-room and/or play mount.
 
@@ -405,7 +406,7 @@ src/modules/multiplayer/
 { players: MapSchema<PlayerState>, roundPhase, winner, scenario, maxPerTeam: 4 }
 ```
 
-- `onJoin`: reject if `players.size >= 8` or team count `>= 4`.
+- `onJoin`: reject if `players.size >= 8` or team count `>= 4`; reject if `expiresAt` is past (`assertRoomJoinable`).
 - REST PUT enforces the same caps before reservation.
 
 ### Client adapter
@@ -419,22 +420,22 @@ startMatch()                            // host-only: waiting → in_progress
 onPlayerUpdate / onRoundUpdate / onLeave
 ```
 
-- Transforms: server mutates player Schema in `move` handler; client sends `room.send('move', …)` throttled ~20 Hz.
-- Shots: `room.send('shot', { targetId, zone })`; server validates and applies damage — clients never decide kills in multiplayer.
+- Transforms: server mutates player Schema in `move` handler; client sends `room.send('move', …)` throttled ~20 Hz; server drops messages exceeding max speed/delta per tick.
+- Shots: `room.send('shot', { targetId, zone })`; server validates phase, teams, range, cooldown, and zone enum before `applyDamage` — clients never decide kills in multiplayer.
 - Gunshot SFX: `room.send('fire')` during `in_progress`; server relays `{ sessionId }` to peers for spatial pistol audio (cosmetic only).
 - Round wipe: server runs `checkRoundEnd`, mutates `roundPhase` / `winner`; clients react to Schema deltas only.
 
 ### Round sync (server-authoritative)
 
-- Host sends `startRound` from `waiting` or `ended` → resets HP / eliminated, spawn placement, `countdown: 3` → `in_progress`.
+- Host sends `startRound` from `waiting` or `ended` → resets HP / eliminated, spawn placement, `countdown: 3` → `in_progress`; **renews `expiresAt`** (+40 min TTL, same `hostToken`).
 - `startRound` locks joins: REST `PUT` returns `409` outside `waiting`; reserved seats still connect after lock.
 - Server tracks `hostSessionId` (first joiner; reassigned on host leave).
 - Team wipe → `winner`, `roundPhase: 'ended'` until host `startRound` again (no auto-timer).
-- **Home** on round-end banner → `DELETE /api/v1/room/{id}` → server `roomClosed` → all clients go `/`.
+- **Home** on round-end banner → host `DELETE` (bearer `hostToken`) disposes room for all; guests `leaveMatch` and exit locally.
 
 ### Integration
 
-- Create/join → `POST` / `PUT` via TanStack Query; write `sessionStorage` + server room code.
+- Create/join → `POST` / `PUT` via TanStack Query; write `sessionStorage` + server room code; host stores `hostToken` on create.
 - Waiting room joins early: `useMatchJoin` + `bindMatch`; `/play` reconnects via `room.reconnectionToken` after hard navigation.
 - `LocalTransformSync` forwards player transform via adapter (~20 Hz coalesced).
 - `useShooting` → `sendShot`; hit detection client-side; damage/elimination server-authoritative.
@@ -450,10 +451,26 @@ Ephemeral pose relay (not Schema-authoritative): local player emits the same cli
 
 ### Env
 
-| Variable              | Purpose                                             |
-| --------------------- | --------------------------------------------------- |
-| `PUBLIC_COLYSEUS_URL` | Dev WebSocket endpoint (e.g. `ws://localhost:2567`) |
-| `COLYSEUS_PORT`       | Dev-only Colyseus listen port (default `2567`)      |
+| Variable              | Purpose                                                        |
+| --------------------- | -------------------------------------------------------------- |
+| `PUBLIC_COLYSEUS_URL` | Dev WebSocket endpoint (e.g. `ws://localhost:2567`)            |
+| `COLYSEUS_PORT`       | Dev-only Colyseus listen port (default `2567`)                 |
+| `ROOM_CODE_TTL_MS`    | Room lifetime from create / each `startRound` (default `2400000` = 40 min) |
+| `SITE`                | Allowed origin base for lobby REST same-site guard             |
+
+### Security (shipped US-8)
+
+Anonymous invite game — 6-char codes, no accounts. Hardening layered on US-5 lobby + `MatchRoom` messages:
+
+| Layer | Behavior |
+| ----- | -------- |
+| **Origin guard** | `requireSameSiteOrigin` on `POST` / `PUT` / `DELETE`; `403` when `Origin`/`Referer` present and mismatched; missing headers allowed (CSRF-ish, not a substitute for host token) |
+| **Host token** | `generateHostToken()` on create → Colyseus **metadata** + one-time create response; host `sessionStorage` (`RoomSession.hostToken`); `DELETE` compares bearer with `timingSafeEqual` |
+| **Shot validation** | `applyMatchShot` — `in_progress`, alive, opposing team, ground-plane range ≤ pistol max, per-shooter cooldown, `zone` enum; shared constants in `weapons/constants/pistol.ts` |
+| **Move validation** | `moveExceedsThreshold` — max delta vs `RUN_SPEED` + hard cap; drop outliers |
+| **Room TTL** | `expiresAt` on metadata + `RoomSnapshot`; `scheduleExpiry` + `renewExpiry` on `startRound`; REST **`410`** when past; WS `onJoin` rejects expired |
+
+**Deferred:** reservation-only join beyond US-5, in-app rate limits, HttpOnly sessions, server hitscan raycast, API-key proxies.
 
 ### Out of scope (US-5)
 

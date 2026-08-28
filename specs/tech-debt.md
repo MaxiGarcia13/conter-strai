@@ -124,33 +124,16 @@ Post-split leftovers from `use-player-controls` → folder + `game/utils`. Pick 
 
 ## Multiplayer lobby REST handler tests
 
-`src/modules/multiplayer/handlers/` has no Vitest coverage. Adapter tests already own snapshot / decode shapes (`to-room-snapshot.test.ts`, `decode-seat-claim.test.ts`) — handler tests should own **HTTP status and wiring** only. Keep files under `tests/units/multiplayer/` (not next to handlers). Mock `colyseus` `matchMaker` and `findMatchRoomByCode`; do not boot a real Colyseus server.
+`lobby-security-handlers.test.ts` already covers origin guard, host token DELETE, expiry `410`, and create metadata — reuse its `matchMaker` mock / `stubFoundRoom` helper when extending coverage. Remaining gaps:
 
-- [ ] **Shared APIRoute test helper** — `tests/units/multiplayer/handlers/`
-  1. Fake `{ params, request }` for `APIRoute` (JSON `Request` body when needed).
-  2. `vi.mock('colyseus')` with `matchMaker.state`, `createRoom`, `reserveSeatFor`.
-  3. `vi.mock` `findMatchRoomByCode`; stub `{ roomCache, room, state }` or `null`.
-  4. Reset `matchMaker.state` to `MatchMakerState.READY` in `beforeEach`.
+- [ ] **503 when matchMaker is not ready** — all four handlers
+- [ ] **`getRoom`** — `400` missing `roomId`; `500` lookup without `state` (404/410 partially covered)
+- [ ] **`createRoom`** — `400` invalid body
+- [ ] **`claimSeat`** — `409` wrong phase / team full / reserve throws (origin `403` covered)
+- [ ] **`disposeRoom`** — `500` if `disconnect` throws (`404`/`401`/`403`/`410`/`204` covered)
 
-- [ ] **503 when matchMaker is not ready**
-  1. Set `matchMaker.state` to `MatchMakerState.INITIALIZING`.
-  2. Call each handler (`createRoom`, `getRoom`, `claimSeat`, `disposeRoom`).
-  3. Expect **503** `{ error: 'Matchmaker is not ready' }` and no matchMaker side effects.
+## Lobby rejoin after browser back
 
-- [ ] **`getRoom`** (`GET /api/v1/room/[roomId]`)
-  1. **400** missing `roomId`; **404** lookup null; **500** lookup without `state`.
-  2. **200** returns `toRoomSnapshot` for a waiting room stub — do not re-test seat/`canJoin` cases.
+Join → waiting → browser **back** to `/room/{id}/join` → second **Join Room** can fail (stuck `join.isPending` from bfcache, or ghost WS before `leaveMatch` completes). `useLobbyPresence` + `abandonLobbySync` clears `sessionStorage` on `pagehide` by design. Pick one: softer abandon (reconnect grace only), `pageshow` mutation reset on join page, or redirect stale waiting URLs to join.
 
-- [ ] **`createRoom`**
-  1. **400** invalid body (`decodeCreateRoomOptions` null).
-  2. **201** + `matchMaker.createRoom('match', { metadata: { roomCode, scenario } })`.
-  3. Mock `generateRoomId` if the 201 `id` needs to be stable.
-
-- [ ] **`claimSeat`**
-  1. **400** invalid claim; **404** unknown room.
-  2. **409** wrong phase / room full (`locked` or `clients` at cap) / team full.
-  3. **200** + `reserveSeatFor`; **409** when reserve throws an “already full” error.
-
-- [ ] **`disposeRoom`**
-  1. **404** when lookup has no `room`; **204** + `room.disconnect()`.
-  2. **500** if `disconnect` throws.
+- [ ] Reproduce in e2e; fix join-page bfcache / abandon race so invite rejoin works reliably

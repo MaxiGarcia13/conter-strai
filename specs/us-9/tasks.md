@@ -1,6 +1,6 @@
 # US-9 — Tasks
 
-Ship after **US-5** / **US-7** (shipped). Can parallel **US-8**. Tick only when the matching requirement passes.
+Ship after **US-5** / **US-7** / **US-8** (shipped). Tick only when the matching requirement passes.
 
 See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 

@@ -36,4 +36,3 @@ jobs:
     with:
       tag: ${{ needs.bump.outputs.tag }}
       default_branch: main
-      notes_template: .github/RELEASE_NOTES.template.md

@@ -67,6 +67,9 @@ jobs:
           cache: npm
           cache-dependency-path: ${{ (inputs.working_directory || '.') == '.' && 'package-lock.json' || format('{0}/package-lock.json', inputs.working_directory || '.') }}
 
+      - name: Reset HEAD
+        run: git reset --hard
+
       - name: Decide bump (minor if any feat:, else patch)
         id: bump
         shell: bash

@@ -136,8 +136,8 @@ Post-split leftovers from `use-player-controls` → folder + `game/utils`. Pick 
 
 Join → waiting → browser **back** to `/room/{id}/join` → second **Join Room** can fail (stuck `join.isPending` from bfcache, or ghost WS before `leaveMatch` completes). `useLobbyPresence` + `abandonLobbySync` clears `sessionStorage` on `pagehide` by design. Pick one: softer abandon (reconnect grace only), `pageshow` mutation reset on join page, or redirect stale waiting URLs to join.
 
-- [ ] **Reproduce in e2e** — `tests/e2e/join-room.spec.ts`: invite join → waiting → `page.goBack()` → change soldier → **Join Room** again; assert `PUT` 200 and waiting URL
-- [ ] **Fix join-page bfcache / abandon race** — reset TanStack `join` mutation on `pageshow` when `event.persisted`; await or harden `leaveMatch` in `abandonLobbySync` so ghost `roomCache.clients` does not block the next `PUT`
+- [x] **Reproduce in e2e** — `tests/e2e/join-room.spec.ts`: invite join → waiting → `page.goBack()` → change soldier → **Join Room** again; assert `PUT` 200 and waiting URL
+- [x] **Fix join-page bfcache / abandon race** — reset TanStack `join` mutation on `pageshow` when `event.persisted`; await or harden `leaveMatch` in `abandonLobbySync` so ghost `roomCache.clients` does not block the next `PUT`
 - [ ] **Stale waiting URL** — when `readRoomSession` is null on `/room/{id}`, redirect to `/room/{id}/join` instead of dead-end “No session found”
 
 ## Lobby security & multiplayer e2e (US-8 gaps)

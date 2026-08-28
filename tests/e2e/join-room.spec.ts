@@ -79,3 +79,30 @@ test('invite join reaches waiting with invite URL, copy, and QR', async ({ page,
   await expect(page.getByRole('button', { name: 'Close Room' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Start Match' })).toHaveCount(0);
 });
+
+test('rejoin after browser back claims a fresh seat', async ({ page, request }) => {
+  const roomId = await createMatchRoomViaApi(request);
+
+  await page.goto(`/room/${roomId}/join`);
+  await page.getByRole('button', { name: 'Join Room' }).click();
+  await expect(page).toHaveURL(new RegExp(`/room/${roomId}$`));
+  await expect.poll(async () => page.getByText('1 / 4').count()).toBe(1);
+  await expect(page.getByRole('button', { name: 'Join Room' })).toHaveCount(0);
+
+  await page.goBack();
+  await expect(page).toHaveURL(new RegExp(`/room/${roomId}/join$`));
+  await expect(page.getByLabel('Room id')).toHaveValue(roomId);
+
+  await page.getByRole('button', { name: 'Soldiers' }).click();
+  await expect(page.getByRole('button', { name: 'swat-1' })).toBeVisible();
+  const rejoined = page.waitForResponse(
+    (response) =>
+      response.url().includes(`/api/v1/room/${roomId}`)
+      && response.request().method() === 'PUT',
+  );
+  await page.getByRole('button', { name: 'Join Room' }).click();
+
+  expect((await rejoined).status()).toBe(200);
+  await expect(page).toHaveURL(new RegExp(`/room/${roomId}$`));
+  await expect(page.getByRole('button', { name: 'Join Room' })).toHaveCount(0);
+});

@@ -4,6 +4,7 @@ import type { Team } from '@/modules/teams';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { CsButton } from '@/components/cs-button';
+import { useBfcacheRestore } from '@/hooks/use-bfcache-restore';
 import {
   DEFAULT_PLAY_SKIN_ID,
   DEFAULT_ROOM_ROLE,
@@ -40,6 +41,10 @@ export function JoinRoomFields({ roomId: initialRoomId }: JoinRoomFieldsProps) {
     mutationFn: ({ id, claim }: { id: string; claim: SeatClaimOptions }) =>
       joinRoom(id, claim),
   });
+
+  // Back-forward cache freezes the page mid-Join; clear the stale pending
+  // mutation so a second Join Room after bfcache restore is not stuck disabled.
+  useBfcacheRestore(join.reset);
 
   function handleTeamChange(newTeam: Team) {
     setTeam(newTeam);

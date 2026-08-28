@@ -4,6 +4,7 @@ import type { Team } from '@/modules/teams';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { CsButton } from '@/components/cs-button';
+import { useBfcacheRestore } from '@/hooks/use-bfcache-restore';
 import {
   DEFAULT_PLAY_SKIN_ID,
   DEFAULT_SCENARIO_ID,
@@ -26,6 +27,8 @@ export function CreateRoomFields() {
   const createRoom = useMutation({
     mutationFn: postCreateRoom,
   });
+
+  useBfcacheRestore(createRoom.reset);
 
   function handleTeamChange(newTeam: Team) {
     setTeam(newTeam);

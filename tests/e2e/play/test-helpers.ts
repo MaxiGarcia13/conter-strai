@@ -63,6 +63,19 @@ export async function waitForCanvas(page: Page): Promise<void> {
   await expect(page.locator('canvas')).toBeVisible();
 }
 
+/**
+ * Hard-nav from the waiting room to `/play` without abandoning the lobby seat.
+ * Sets the same handoff flag as `navigateToPlay` and waits until match join
+ * finished so `reconnectionToken` is persisted before leaving.
+ */
+export async function navigateToPlayFromWaitingRoom(page: Page, roomId: string): Promise<void> {
+  await expect(page.getByRole('button', { name: 'Start Match' })).toBeEnabled({ timeout: 15_000 });
+  await page.evaluate((id) => {
+    sessionStorage.setItem(`cs:room:${id}:handoff`, '1');
+  }, roomId);
+  await page.goto(`/room/${roomId}/play`);
+}
+
 export async function waitForPlayTest(page: Page): Promise<PlayTestSnapshot> {
   await expect
     .poll(async () => (await readPlayTest(page))?.mixerReady, { timeout: 30_000 })

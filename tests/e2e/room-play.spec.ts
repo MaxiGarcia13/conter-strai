@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { readPlayTest, waitForPlayTest } from './play/test-helpers';
+import {
+  navigateToPlayFromWaitingRoom,
+  readPlayTest,
+  waitForPlayTest,
+} from './play/test-helpers';
 
 test('create room plays as the default civilian remy', async ({ page }) => {
   await page.goto('/room');
@@ -7,7 +11,7 @@ test('create room plays as the default civilian remy', async ({ page }) => {
   await expect(page).toHaveURL(/\/room\/[^/]+$/);
 
   const roomId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
-  await page.goto(`/room/${roomId}/play`);
+  await navigateToPlayFromWaitingRoom(page, roomId);
   await expect(page).toHaveURL(/\/room\/[^/]+\/play$/);
 
   await waitForPlayTest(page);
@@ -22,7 +26,7 @@ test('create room plays as the selected soldier swat-1', async ({ page }) => {
   await expect(page).toHaveURL(/\/room\/[^/]+$/);
 
   const roomId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
-  await page.goto(`/room/${roomId}/play`);
+  await navigateToPlayFromWaitingRoom(page, roomId);
   await expect(page).toHaveURL(/\/room\/[^/]+\/play$/);
 
   await waitForPlayTest(page);

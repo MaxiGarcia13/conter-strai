@@ -1,4 +1,6 @@
 import type {
+  FireListener,
+  FirePayload,
   LeaveListener,
   MatchHandle,
   MatchPlayerSnapshot,
@@ -42,6 +44,7 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
   const playerListeners = new Set<PlayerUpdateListener>();
   const roundListeners = new Set<RoundUpdateListener>();
   const poseListeners = new Set<PoseListener>();
+  const fireListeners = new Set<FireListener>();
   const leaveListeners = new Set<LeaveListener>();
   const roomClosedListeners = new Set<RoomClosedListener>();
 
@@ -99,6 +102,16 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
     }
   });
 
+  room.onMessage('fire', (message: { sessionId?: string }) => {
+    if (!message?.sessionId) {
+      return;
+    }
+    const payload: FirePayload = { sessionId: message.sessionId };
+    for (const listener of fireListeners) {
+      listener(payload);
+    }
+  });
+
   function flushTransform(): void {
     flushTimer = null;
     if (!connected || !latestTransform) {
@@ -130,6 +143,13 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
     room.send('pose', { pose });
   }
 
+  function sendFire(): void {
+    if (!connected) {
+      return;
+    }
+    room.send('fire');
+  }
+
   room.onLeave((code) => {
     connected = false;
     if (flushTimer !== null) {
@@ -157,6 +177,7 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
     syncTransform,
     sendShot,
     sendPose,
+    sendFire,
     startRound: () => {
       if (connected) {
         room.send('startRound');
@@ -186,6 +207,7 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
       return unsubscribe;
     },
     onPose: (listener) => subscribe(poseListeners, listener),
+    onFire: (listener) => subscribe(fireListeners, listener),
     onLeave: (listener) => subscribe(leaveListeners, listener),
     onRoomClosed: (listener) => subscribe(roomClosedListeners, listener),
     leave: () => room.leave(true),

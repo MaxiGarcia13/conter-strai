@@ -75,7 +75,7 @@ Then:
 
 ---
 
-[ ] ## 4. Spatial combat SFX for remote players
+[x] ## 4. Spatial combat SFX for remote players
 
 **Symptom:** Gunshots and injury sounds from remote players are not heard (or not distance-attenuated) by peers.
 

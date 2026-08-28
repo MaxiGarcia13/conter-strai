@@ -4,10 +4,12 @@ import {
   getActiveMatch,
   initMatch,
   leaveMatch,
+  onFire,
   onPlayerUpdate,
   onPose,
   onRoundUpdate,
   readMatchPlayers,
+  sendFire,
   sendPose,
   sendShot,
   startMatch,
@@ -214,6 +216,41 @@ describe('initMatch', () => {
     sendPose('kneel');
 
     expect(room.sent).toContainEqual({ type: 'pose', payload: { pose: 'kneel' } });
+  });
+
+  it('relays a gunshot without a session id (server stamps the sender)', async () => {
+    const match = await initMatch({ roomId: 'host-room' });
+    const room = match.room as unknown as FakeRoom;
+
+    sendFire();
+
+    expect(room.sent).toContainEqual({ type: 'fire', payload: undefined });
+  });
+
+  it('emits peer gunshots received from the room', async () => {
+    const match = await initMatch({ roomId: 'host-room' });
+    const room = match.room as unknown as FakeRoom;
+    const fires: unknown[] = [];
+    onFire((payload) => {
+      fires.push(payload);
+    });
+
+    room.callbacks.messages.fire![0]!({ sessionId: 'peer-1' });
+
+    expect(fires).toEqual([{ sessionId: 'peer-1' }]);
+  });
+
+  it('ignores malformed fire messages', async () => {
+    const match = await initMatch({ roomId: 'host-room' });
+    const room = match.room as unknown as FakeRoom;
+    const fires: unknown[] = [];
+    onFire((payload) => {
+      fires.push(payload);
+    });
+
+    room.callbacks.messages.fire![0]!({});
+
+    expect(fires).toEqual([]);
   });
 
   it('emits peer poses received from the room', async () => {

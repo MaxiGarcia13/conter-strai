@@ -192,6 +192,7 @@ Register rooms when the Node server boots (Colyseus attach to Astro Node server 
 initMatch({ roomId, reservation?, options?, endpoint? }) → MatchHandle { localPlayerId, players, … }
 syncTransform({ x, z, yaw })            // throttled ~20 Hz
 sendShot({ targetId, zone })           // server ShotMessage wire shape
+sendFire()                              // relay spatial gunshot SFX to peers
 startMatch()                            // host-only: waiting → in_progress
 onPlayerUpdate(callback)               // full player snapshot per state change
 onRoundUpdate(callback)                // roundPhase + winner deltas
@@ -202,7 +203,8 @@ onLeave(callback)
 - `roomId` is the **Colyseus internal room id** (from the reservation or a lookup), not the public 6-char code
 - Transforms: the server mutates player Schema state in its `move` handler; client sends `room.send('move', { x, y, z, rotY })` throttled to ~20 Hz
 - Shots: `room.send('shot', { targetId, zone })`; server validates (phase, alive, friendly-fire) and applies damage / `eliminated` — clients never decide kills in multiplayer
-- Round wipe: server runs `checkRoundEnd`, mutates `roundPhase` / `winner`; clients react to Schema deltas only (no shot broadcast needed)
+- Gunshot SFX: `room.send('fire')` during `in_progress`; server relays `{ sessionId }` to peers (except sender) for spatial pistol audio — cosmetic only, no authority
+- Round wipe: server runs `checkRoundEnd`, mutates `roundPhase` / `winner`; clients react to Schema deltas only (no damage broadcast on fire)
 - Lobby pages do **not** import Colyseus — call REST; waiting/play consume the adapter only
 
 ## Round sync (server-authoritative)

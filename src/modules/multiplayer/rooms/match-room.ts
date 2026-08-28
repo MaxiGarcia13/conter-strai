@@ -89,6 +89,15 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
       }
     });
 
+    // Relay gunshots for spatial SFX (no authority — damage stays on `shot`).
+    this.onMessage('fire', (client) => {
+      const player = this.state.players.get(client.sessionId);
+      if (!player || player.eliminated || this.state.roundPhase !== 'in_progress') {
+        return;
+      }
+      this.broadcast('fire', { sessionId: client.sessionId }, { except: client });
+    });
+
     this.onMessage('leaveLobby', (client) => {
       if (this.state.roundPhase !== 'waiting') {
         return;

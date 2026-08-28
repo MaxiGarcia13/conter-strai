@@ -8,6 +8,7 @@ import { DEFAULT_LOCAL_TEAM, LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/const
 import { useRoundStore } from '@/modules/game/state/round-store';
 import {
   getActiveMatch,
+  sendFire,
   sendShot,
 } from '@/modules/multiplayer/adapters/colyseus-adapter';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
@@ -59,6 +60,9 @@ export function useShooting(domElement: HTMLElement | null) {
         source: camera.position,
         listener: camera.position,
       });
+      if (match) {
+        sendFire();
+      }
 
       camera.updateMatrixWorld();
       const raycaster = raycasterRef.current;

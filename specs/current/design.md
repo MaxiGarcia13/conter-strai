@@ -302,7 +302,7 @@ When `HealthState.isEliminated`, FPS move/look/shoot is disabled and pointer loc
 - Pointer-locked **LMB** → `useShooting` raycast from camera center; range 100 m; cooldown `fireCooldownSeconds` (pistol 0.35 s).
 - Hits need `userData.hitZone` + `userData.entityId`; friendly fire skipped via round roster.
 - `resolveHitDamage` builds `DamageData` with equipped `weaponId` → health store `applyDamage`.
-- Gunshot SFX at the camera; injury SFX is spatial on the victim.
+- Gunshot SFX at the camera for the local shooter; peers hear spatial pistol audio via `fire` relay; injury SFX is spatial on the victim (local HP via `useHealthStore`, remote HP via `multiplayerStore`). Remote walk/run loops are per-peer with the same ~40 m linear falloff.
 - **`shooting` pose is not played** — mixer can resolve an optional clip, but LMB does not set the pose until a shippable fire animation is approved.
 
 ### Reload + weapon mesh

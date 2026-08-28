@@ -2,10 +2,12 @@ export { getActiveMatch } from './active-match';
 export { initMatch } from './init-match';
 export {
   leaveMatch,
+  onFire,
   onLeave,
   onPlayerUpdate,
   onPose,
   onRoundUpdate,
+  sendFire,
   sendPose,
   sendShot,
   startMatch,
@@ -14,6 +16,7 @@ export {
 export { readMatchPlayers } from './read-match-players';
 export { toMoveMessage } from './to-move-message';
 export type {
+  FirePayload,
   InitMatchOptions,
   LeaveListener,
   MatchHandle,

@@ -28,6 +28,10 @@ export interface PosePayload {
   pose: RemotePoseMessage;
 }
 
+export interface FirePayload {
+  sessionId: string;
+}
+
 /** Flattened, store-friendly view of one connected player (schema fields). */
 export interface MatchPlayerSnapshot {
   sessionId: string;
@@ -78,6 +82,7 @@ export interface MoveMessage {
 export type PlayerUpdateListener = (payload: PlayersUpdatePayload) => void;
 export type RoundUpdateListener = (payload: RoundUpdatePayload) => void;
 export type PoseListener = (payload: PosePayload) => void;
+export type FireListener = (payload: FirePayload) => void;
 export type LeaveListener = (code: number) => void;
 export type RoomClosedListener = () => void;
 
@@ -100,6 +105,7 @@ export interface MatchHandle {
   syncTransform: (transform: TransformSyncPayload) => void;
   sendShot: (shot: ShotPayload) => void;
   sendPose: (pose: RemotePoseMessage) => void;
+  sendFire: () => void;
   /** Host-only: flips the room from `waiting` | `ended` into the countdown. */
   startRound: () => void;
   /** Voluntary lobby exit — server drops the seat immediately while `waiting`. */
@@ -108,6 +114,8 @@ export interface MatchHandle {
   onRoundUpdate: (listener: RoundUpdateListener) => () => void;
   /** Cosmetic peer pose events (jump / kneel / clear) — no authority. */
   onPose: (listener: PoseListener) => () => void;
+  /** Cosmetic peer gunshot events — spatial SFX only, no authority. */
+  onFire: (listener: FireListener) => () => void;
   onLeave: (listener: LeaveListener) => () => void;
   /** Fired when the room is disposed (Home / Close Room) — all clients should exit. */
   onRoomClosed: (listener: RoomClosedListener) => () => void;

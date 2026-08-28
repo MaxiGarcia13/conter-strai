@@ -1,4 +1,5 @@
 import type {
+  FireListener,
   LeaveListener,
   PlayerUpdateListener,
   PoseListener,
@@ -23,6 +24,11 @@ export function sendPose(pose: RemotePoseMessage): void {
   requireActiveMatch().sendPose(pose);
 }
 
+/** Relay a local gunshot to peers for spatial SFX (shooter hears camera-local audio). */
+export function sendFire(): void {
+  requireActiveMatch().sendFire();
+}
+
 /** Host-only: start or restart the round (`waiting` | `ended` → `countdown` → `in_progress`). */
 export function startMatch(): void {
   requireActiveMatch().startRound();
@@ -30,6 +36,10 @@ export function startMatch(): void {
 
 export function onPose(listener: PoseListener): () => void {
   return requireActiveMatch().onPose(listener);
+}
+
+export function onFire(listener: FireListener): () => void {
+  return requireActiveMatch().onFire(listener);
 }
 
 export function onPlayerUpdate(listener: PlayerUpdateListener): () => void {

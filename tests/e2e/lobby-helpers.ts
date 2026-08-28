@@ -78,6 +78,5 @@ export async function waitForMatchSession(page: Page, roomId: string): Promise<v
       }
       const session = JSON.parse(raw) as { reconnectionToken?: string };
       return typeof session.reconnectionToken === 'string';
-    }, roomId),
-  { timeout: 20_000 }).toBe(true);
+    }, roomId), { timeout: 20_000 }).toBe(true);
 }

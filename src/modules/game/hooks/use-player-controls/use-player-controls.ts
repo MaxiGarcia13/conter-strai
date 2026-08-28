@@ -6,6 +6,7 @@ import { useHealthStore } from '@/modules/combat';
 import { LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
 import { resetPlayerTransform } from '@/modules/game/state/player-state';
 import { npcBlockersFromScenario } from '@/modules/game/utils/npc-blockers-from-scenario';
+import { useLocomotionSounds } from '../use-locomotion-sounds';
 import { usePressedKeyCodes } from '../use-pressed-key-codes';
 import { usePlayerKeyboard } from './use-player-keyboard';
 import { usePlayerMovementFrame } from './use-player-movement-frame';
@@ -77,4 +78,6 @@ export function usePlayerControls({
     eliminatedRef,
     externalControlsRef,
   });
+
+  useLocomotionSounds();
 }

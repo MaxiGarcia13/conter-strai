@@ -60,3 +60,13 @@ test('GET snapshot exposes expiresAt and rejects a wrong host token with 403', a
   });
   expect(denied.status()).toBe(403);
 });
+
+test('PUT claim seat rejects a cross-origin request with 403', async ({ request }) => {
+  const roomId = await createRoom(request);
+
+  const response = await request.put(`/api/v1/room/${roomId}`, {
+    headers: { origin: 'https://evil.example', 'content-type': 'application/json' },
+    data: { team: 'civilian', skin: 'remy' },
+  });
+  expect(response.status()).toBe(403);
+});

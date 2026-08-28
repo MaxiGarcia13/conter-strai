@@ -48,23 +48,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          lfs: true
-
-      - name: Remove .gitattributes
-        run: rm .gitattributes
-
-      - name: Pull LFS files
-        run: |
-          git lfs install
-          git lfs checkout
-          git lfs pull
-
-      - name: Fetch tags
-        run: git pull --tags
-
-      - name: Fetch
-        run: git pull
 
       - name: Setup Node
         uses: actions/setup-node@v4

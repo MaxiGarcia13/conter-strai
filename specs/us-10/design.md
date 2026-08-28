@@ -4,7 +4,7 @@
 
 Players pick a team at create/join. If everyone chooses the same side, the lobby has **no opponents** — friendly fire is blocked and the round cannot be won via team wipe.
 
-Design already notes *"random or balanced split"* ([`specs/current/design.md`](../current/design.md) § Teams) but join-time `assignTeam` only honors preference + overflow fallback; it does not split an all-one-team lobby at match start.
+Design already notes _"random or balanced split"_ ([`specs/current/design.md`](../current/design.md) § Teams) but join-time `assignTeam` only honors preference + overflow fallback; it does not split an all-one-team lobby at match start.
 
 ## Rule
 
@@ -16,12 +16,12 @@ on startRound:
   respawnMatchPlayers()
 ```
 
-| Situation               | Action                         |
-| ----------------------- | ------------------------------ |
-| 1 player, no opponents  | Skip                           |
-| 4 civilians, 0 soldiers | Shuffle → e.g. 2v2             |
-| 3 civilians, 1 soldier  | Skip — opponents exist         |
-| 5v2                     | Skip — uneven but mixed        |
+| Situation               | Action                  |
+| ----------------------- | ----------------------- |
+| 1 player, no opponents  | Skip                    |
+| 4 civilians, 0 soldiers | Shuffle → e.g. 2v2      |
+| 3 civilians, 1 soldier  | Skip — opponents exist  |
+| 5v2                     | Skip — uneven but mixed |
 
 ## Server
 
@@ -60,10 +60,10 @@ Rematches: after first shuffle both teams are occupied → subsequent `startRoun
 
 ## Tests
 
-| Layer | Target                                                                                         |
-| ----- | ---------------------------------------------------------------------------------------------- |
+| Layer | Target                                                                                          |
+| ----- | ----------------------------------------------------------------------------------------------- |
 | Unit  | `shuffleTeamsIfNoOpponents`: solo skip, mixed skip, 2→1v1, 3→2v1, 4→2v2, skin remap, seeded RNG |
-| Unit  | `recalculateSpawnIndices`: sequential slots per team                                           |
+| Unit  | `recalculateSpawnIndices`: sequential slots per team                                            |
 
 ## Ship checklist
 

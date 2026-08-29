@@ -1,7 +1,7 @@
 import type { ScenarioMaterials } from '../hooks/use-scenario-material';
 import type { ScenarioConfig } from '../types';
 import { useMemo } from 'react';
-import { outerWalls, segmentWall } from '../utils/wall-mesh-builders';
+import { interiorWalls, outerWalls } from '../utils/wall-mesh-builders';
 
 const DEFAULT_WALL_THICKNESS = 0.5;
 
@@ -20,12 +20,9 @@ export function ScenarioWalls({ scenario, materials }: ScenarioWallsProps) {
     const boxes = openPerimeter
       ? []
       : outerWalls(width, depth, outerHeight, thickness, scenario.walls.assetId, materials);
-    (scenario.wallSegments ?? []).forEach((segment, index) => {
-      const wall = segmentWall(segment, index, wallHeight, scenario.walls.assetId, thickness, materials);
-      if (wall) {
-        boxes.push(wall);
-      }
-    });
+    boxes.push(
+      ...interiorWalls(scenario.wallSegments ?? [], wallHeight, scenario.walls.assetId, thickness, materials),
+    );
     return boxes;
   }, [
     depth,
@@ -44,14 +41,13 @@ export function ScenarioWalls({ scenario, materials }: ScenarioWallsProps) {
       {walls.map((wall) => (
         <mesh
           key={wall.key}
+          geometry={wall.geometry}
           material={wall.material}
           position={wall.position}
           rotation={[0, wall.rotationY, 0]}
           castShadow
           receiveShadow
-        >
-          <boxGeometry args={wall.size} />
-        </mesh>
+        />
       ))}
     </group>
   );

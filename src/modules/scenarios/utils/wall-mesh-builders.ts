@@ -3,7 +3,8 @@ import type { ScenarioMaterials } from '../hooks/use-scenario-material';
 import type { ScenarioWallSegment, Vec3 } from '../types';
 import type { TextureId } from '@/modules/textures';
 
-import { getScenarioMaterial, materialWithRepeat } from '../hooks/use-scenario-material';
+import { createTiledBoxGeometry, getScenarioMaterial } from '../hooks/use-scenario-material';
+import { findWallCorners, trimSegmentEnds } from '../pieces/wall-corner-helpers';
 
 const WALL_TILE_SIZE = 4;
 
@@ -13,6 +14,24 @@ export interface WallBox {
   position: Vec3;
   rotationY: number;
   material: THREE.MeshStandardMaterial;
+  geometry: THREE.BoxGeometry;
+}
+
+function wallBox(
+  key: string,
+  size: Vec3,
+  position: Vec3,
+  rotationY: number,
+  material: THREE.MeshStandardMaterial,
+): WallBox {
+  return {
+    key,
+    size,
+    position,
+    rotationY,
+    material,
+    geometry: createTiledBoxGeometry(size[0], size[1], size[2], WALL_TILE_SIZE),
+  };
 }
 
 export function segmentWall(
@@ -32,16 +51,47 @@ export function segmentWall(
   }
   const height = segment.height ?? defaultHeight;
   const assetId = segment.assetId ?? defaultAssetId;
-  return {
-    key: segment.id ?? `seg-${index}`,
-    size: [length, height, thickness],
-    position: [(start[0] + end[0]) / 2, height / 2, (start[2] + end[2]) / 2],
-    rotationY: Math.atan2(dz, dx),
-    material: materialWithRepeat(getScenarioMaterial(materials, assetId), [
-      length / WALL_TILE_SIZE,
-      height / WALL_TILE_SIZE,
-    ]),
-  };
+  return wallBox(
+    segment.id ?? `seg-${index}`,
+    [length, height, thickness],
+    [(start[0] + end[0]) / 2, height / 2, (start[2] + end[2]) / 2],
+    Math.atan2(dz, dx),
+    getScenarioMaterial(materials, assetId),
+  );
+}
+
+/** Interior spans plus square posts at 90° unions. Collision still uses full authored segments. */
+export function interiorWalls(
+  segments: ScenarioWallSegment[],
+  defaultHeight: number,
+  defaultAssetId: TextureId,
+  thickness: number,
+  materials: ScenarioMaterials,
+): WallBox[] {
+  const corners = findWallCorners(segments, defaultHeight, defaultAssetId);
+  const boxes: WallBox[] = [];
+
+  segments.forEach((segment, index) => {
+    const { start, end } = trimSegmentEnds(segment, corners, thickness);
+    const wall = segmentWall({ ...segment, start, end }, index, defaultHeight, defaultAssetId, thickness, materials);
+    if (wall) {
+      boxes.push(wall);
+    }
+  });
+
+  corners.forEach((corner, index) => {
+    boxes.push(
+      wallBox(
+        `corner-${index}-${corner.position[0]}-${corner.position[2]}`,
+        [thickness, corner.height, thickness],
+        [corner.position[0], corner.height / 2, corner.position[2]],
+        0,
+        getScenarioMaterial(materials, corner.assetId),
+      ),
+    );
+  });
+
+  return boxes;
 }
 
 export function outerWalls(
@@ -52,44 +102,36 @@ export function outerWalls(
   assetId: TextureId,
   materials: ScenarioMaterials,
 ): WallBox[] {
-  const baseMaterial = getScenarioMaterial(materials, assetId);
+  const material = getScenarioMaterial(materials, assetId);
   const longLength = width + thickness * 2;
-  const longMaterial = materialWithRepeat(baseMaterial, [
-    longLength / WALL_TILE_SIZE,
-    wallHeight / WALL_TILE_SIZE,
-  ]);
-  const shortMaterial = materialWithRepeat(baseMaterial, [
-    depth / WALL_TILE_SIZE,
-    wallHeight / WALL_TILE_SIZE,
-  ]);
   return [
-    {
-      key: 'outer-n',
-      size: [longLength, wallHeight, thickness],
-      position: [0, wallHeight / 2, depth / 2 + thickness / 2],
-      rotationY: 0,
-      material: longMaterial,
-    },
-    {
-      key: 'outer-s',
-      size: [longLength, wallHeight, thickness],
-      position: [0, wallHeight / 2, -depth / 2 - thickness / 2],
-      rotationY: 0,
-      material: longMaterial,
-    },
-    {
-      key: 'outer-e',
-      size: [thickness, wallHeight, depth],
-      position: [width / 2 + thickness / 2, wallHeight / 2, 0],
-      rotationY: 0,
-      material: shortMaterial,
-    },
-    {
-      key: 'outer-w',
-      size: [thickness, wallHeight, depth],
-      position: [-width / 2 - thickness / 2, wallHeight / 2, 0],
-      rotationY: 0,
-      material: shortMaterial,
-    },
+    wallBox(
+      'outer-n',
+      [longLength, wallHeight, thickness],
+      [0, wallHeight / 2, depth / 2 + thickness / 2],
+      0,
+      material,
+    ),
+    wallBox(
+      'outer-s',
+      [longLength, wallHeight, thickness],
+      [0, wallHeight / 2, -depth / 2 - thickness / 2],
+      0,
+      material,
+    ),
+    wallBox(
+      'outer-e',
+      [thickness, wallHeight, depth],
+      [width / 2 + thickness / 2, wallHeight / 2, 0],
+      0,
+      material,
+    ),
+    wallBox(
+      'outer-w',
+      [thickness, wallHeight, depth],
+      [-width / 2 - thickness / 2, wallHeight / 2, 0],
+      0,
+      material,
+    ),
   ];
 }

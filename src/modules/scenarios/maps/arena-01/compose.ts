@@ -30,7 +30,7 @@ const arena01Layout: ArenaLayout = {
   },
   walls: {
     assetId: 'cliff_side',
-    thickness: 1.2,
+    thickness: 0.6,
     height: 8,
   },
   wallSegments: arena01Walls,

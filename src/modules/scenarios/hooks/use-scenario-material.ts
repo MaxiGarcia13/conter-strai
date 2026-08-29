@@ -1,28 +1,6 @@
 import type { TextureId } from '@/modules/textures';
 import * as THREE from 'three';
 
-const MAP_KEYS = ['map', 'normalMap', 'roughnessMap', 'aoMap'] as const;
-
-const materialRepeatCache = new Map<string, THREE.MeshStandardMaterial>();
-
-function cloneMapsWithRepeat(
-  material: THREE.MeshStandardMaterial,
-  repeat: [number, number],
-): void {
-  for (const key of MAP_KEYS) {
-    const map = material[key];
-    if (!map) {
-      continue;
-    }
-    const cloned = map.clone();
-    cloned.wrapS = THREE.RepeatWrapping;
-    cloned.wrapT = THREE.RepeatWrapping;
-    cloned.repeat.set(repeat[0], repeat[1]);
-    cloned.needsUpdate = true;
-    material[key] = cloned;
-  }
-}
-
 /** Scale plane UVs so one material can tile without cloning texture maps. */
 function applyUvRepeat(geometry: THREE.BufferGeometry, repeat: [number, number]): void {
   const uv = geometry.getAttribute('uv');
@@ -46,20 +24,38 @@ export function createTiledPlaneGeometry(
   return geometry;
 }
 
-/** Clone a base wall/floor material with independent UV tiling (cached by repeat key). */
-export function materialWithRepeat(
-  source: THREE.MeshStandardMaterial,
-  repeat: [number, number],
-): THREE.MeshStandardMaterial {
-  const key = `${source.uuid}:${repeat[0]}:${repeat[1]}`;
-  const cached = materialRepeatCache.get(key);
-  if (cached) {
-    return cached;
+/**
+ * Box UVs tiled per face so long walls and thin end-caps share one brick scale.
+ * Face order matches three.js BoxGeometry: +x, -x, +y, -y, +z, -z (4 verts each).
+ */
+export function createTiledBoxGeometry(
+  width: number,
+  height: number,
+  depth: number,
+  tileSize: number,
+): THREE.BoxGeometry {
+  const geometry = new THREE.BoxGeometry(width, height, depth);
+  const uv = geometry.getAttribute('uv');
+  if (!(uv instanceof THREE.BufferAttribute) || uv.count < 24) {
+    return geometry;
   }
-  const material = source.clone();
-  cloneMapsWithRepeat(material, repeat);
-  materialRepeatCache.set(key, material);
-  return material;
+  const faceUvScale: [number, number][] = [
+    [depth / tileSize, height / tileSize],
+    [depth / tileSize, height / tileSize],
+    [width / tileSize, depth / tileSize],
+    [width / tileSize, depth / tileSize],
+    [width / tileSize, height / tileSize],
+    [width / tileSize, height / tileSize],
+  ];
+  let vertex = 0;
+  for (const [uScale, vScale] of faceUvScale) {
+    for (let i = 0; i < 4; i += 1) {
+      uv.setXY(vertex, uv.getX(vertex) * uScale, uv.getY(vertex) * vScale);
+      vertex += 1;
+    }
+  }
+  uv.needsUpdate = true;
+  return geometry;
 }
 
 export type ScenarioMaterials = Partial<Record<TextureId, THREE.MeshStandardMaterial>>;

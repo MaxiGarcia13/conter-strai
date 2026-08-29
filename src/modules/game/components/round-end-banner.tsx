@@ -55,7 +55,6 @@ export function RoundEndBanner({ roomId, scenarioId }: RoundEndBannerProps) {
         try {
           await deleteRoom(roomId, sessionNow.hostToken);
         } catch (cause) {
-          console.error(cause);
           if (!(cause instanceof LobbyRestError) || cause.status !== 404) {
             setClosing(false);
             return;

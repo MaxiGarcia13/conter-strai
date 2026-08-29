@@ -3,7 +3,7 @@ import type { RoundPhase } from '@/modules/game/types';
 import { useEffect, useRef } from 'react';
 import { LOOK_PITCH_FLOOR, MOUSE_SENSITIVITY, PITCH_LIMIT } from '@/modules/game/constants/player';
 import { useGamePauseStore } from '@/modules/game/state/game-pause-store';
-import { getPlayerTransform, isLookEnabled, setLookEnabled } from '@/modules/game/state/player-state';
+import { getPlayerTransform } from '@/modules/game/state/player-state';
 import { requestPointerLock } from '@/modules/game/utils/request-pointer-lock';
 import { clamp } from '@/utils/clamp';
 
@@ -18,33 +18,20 @@ interface UsePlayerPointerLockOptions {
   externalControlsRef: RefObject<unknown>;
 }
 
-function setGameCursorCaptured(captured: boolean): void {
-  document.getElementById('game-canvas')?.classList.toggle('cursor-none', captured);
-}
-
-function releaseLook(
+function exitLock(
   domElement: HTMLElement,
   intentionalUnlockRef: RefObject<boolean>,
 ): void {
-  setLookEnabled(false);
-  setGameCursorCaptured(false);
   if (document.pointerLockElement === domElement) {
     intentionalUnlockRef.current = true;
     document.exitPointerLock();
   }
 }
 
-function engageLook(domElement: HTMLElement): void {
-  setLookEnabled(true);
-  setGameCursorCaptured(true);
-  requestPointerLock(domElement);
-}
-
 /** Browser Esc exits pointer lock before keydown may reach the page — open pause on that unlock. */
 export function shouldOpenPauseOnPointerUnlock(options: {
   wasIntentionalUnlock: boolean;
   suppressResumeUnlock: boolean;
-  lookEnabled: boolean;
   eliminated: boolean;
   phase: RoundPhase | null;
   isPaused: boolean;
@@ -52,14 +39,13 @@ export function shouldOpenPauseOnPointerUnlock(options: {
   return (
     !options.wasIntentionalUnlock
     && !options.suppressResumeUnlock
-    && options.lookEnabled
     && !options.eliminated
     && options.phase === 'live'
     && !options.isPaused
   );
 }
 
-/** Document mouse look; Esc opens pause (keyboard hook + pointer-unlock fallback). */
+/** Click-to-lock pointer look; pause / round-end release lock (pre-US-10 mouse capture). */
 export function usePlayerPointerLock({
   domElement,
   eliminated,
@@ -77,29 +63,27 @@ export function usePlayerPointerLock({
 
   useEffect(() => {
     if (eliminated || paused || phase === 'round-end') {
-      releaseLook(domElement, intentionalUnlockRef);
-      return;
-    }
-
-    // Defer re-lock so the same Esc that closes pause does not lock-then-unlock and reopen it.
-    suppressUnlockPauseRef.current = true;
-    const resumeFrame = requestAnimationFrame(() => {
-      if (useGamePauseStore.getState().isPaused) {
-        suppressUnlockPauseRef.current = false;
-        return;
-      }
-      engageLook(domElement);
+      suppressUnlockPauseRef.current = true;
+      exitLock(domElement, intentionalUnlockRef);
       requestAnimationFrame(() => {
         suppressUnlockPauseRef.current = false;
       });
-    });
-
-    return () => {
-      cancelAnimationFrame(resumeFrame);
-    };
+    }
   }, [eliminated, paused, phase, domElement]);
 
   useEffect(() => {
+    const requestLock = () => {
+      if (
+        eliminatedRef.current
+        || externalControlsRef.current
+        || isPausedRef.current
+        || phaseRef.current === 'round-end'
+      ) {
+        return;
+      }
+      requestPointerLock(domElement);
+    };
+
     const onPointerLockChange = () => {
       if (document.pointerLockElement === domElement) {
         return;
@@ -112,7 +96,6 @@ export function usePlayerPointerLock({
         shouldOpenPauseOnPointerUnlock({
           wasIntentionalUnlock: wasIntentional,
           suppressResumeUnlock: suppressUnlockPauseRef.current,
-          lookEnabled: isLookEnabled(),
           eliminated: eliminatedRef.current,
           phase: phaseRef.current,
           isPaused: useGamePauseStore.getState().isPaused,
@@ -120,28 +103,11 @@ export function usePlayerPointerLock({
       ) {
         useGamePauseStore.getState().setPaused(true);
       }
-
-      if (isLookEnabled()) {
-        releaseLook(domElement, intentionalUnlockRef);
-      }
-    };
-
-    const onClick = () => {
-      if (
-        eliminatedRef.current
-        || externalControlsRef.current
-        || isPausedRef.current
-        || isLookEnabled()
-        || phaseRef.current === 'round-end'
-      ) {
-        return;
-      }
-      engageLook(domElement);
     };
 
     const onMouseMove = (event: MouseEvent) => {
       if (
-        !isLookEnabled()
+        document.pointerLockElement !== domElement
         || isPausedRef.current
         || eliminatedRef.current
         || externalControlsRef.current
@@ -158,12 +124,12 @@ export function usePlayerPointerLock({
       }
     };
 
-    domElement.addEventListener('click', onClick);
+    domElement.addEventListener('click', requestLock);
     document.addEventListener('pointerlockchange', onPointerLockChange);
     document.addEventListener('mousemove', onMouseMove);
 
     return () => {
-      domElement.removeEventListener('click', onClick);
+      domElement.removeEventListener('click', requestLock);
       document.removeEventListener('pointerlockchange', onPointerLockChange);
       document.removeEventListener('mousemove', onMouseMove);
     };

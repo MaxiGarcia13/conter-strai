@@ -7,7 +7,6 @@ describe('shouldOpenPauseOnPointerUnlock', () => {
       shouldOpenPauseOnPointerUnlock({
         wasIntentionalUnlock: false,
         suppressResumeUnlock: false,
-        lookEnabled: true,
         eliminated: false,
         phase: 'live',
         isPaused: false,
@@ -20,7 +19,6 @@ describe('shouldOpenPauseOnPointerUnlock', () => {
       shouldOpenPauseOnPointerUnlock({
         wasIntentionalUnlock: true,
         suppressResumeUnlock: false,
-        lookEnabled: true,
         eliminated: false,
         phase: 'live',
         isPaused: false,
@@ -33,7 +31,6 @@ describe('shouldOpenPauseOnPointerUnlock', () => {
       shouldOpenPauseOnPointerUnlock({
         wasIntentionalUnlock: false,
         suppressResumeUnlock: true,
-        lookEnabled: true,
         eliminated: false,
         phase: 'live',
         isPaused: false,
@@ -46,7 +43,6 @@ describe('shouldOpenPauseOnPointerUnlock', () => {
       shouldOpenPauseOnPointerUnlock({
         wasIntentionalUnlock: false,
         suppressResumeUnlock: false,
-        lookEnabled: true,
         eliminated: false,
         phase: 'live',
         isPaused: true,
@@ -57,7 +53,6 @@ describe('shouldOpenPauseOnPointerUnlock', () => {
       shouldOpenPauseOnPointerUnlock({
         wasIntentionalUnlock: false,
         suppressResumeUnlock: false,
-        lookEnabled: true,
         eliminated: false,
         phase: 'round-end',
         isPaused: false,

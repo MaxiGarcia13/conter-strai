@@ -3,7 +3,6 @@ import { expect, test } from '@playwright/test';
 import {
   captureConsoleErrors,
   expectNoConsoleErrors,
-  MOVE_CODES,
   navigateToRoomPlay,
   readPlayTest,
   waitForCanvas,
@@ -23,16 +22,16 @@ test('room play cycles camera modes without duplicating the local soldier', asyn
   const crosshair = page.getByTestId('crosshair');
   await expect(crosshair).toBeVisible();
 
-  await page.keyboard.press(MOVE_CODES.cameraCycle);
+  await page.keyboard.press('C');
   await expect(hud).toContainText('Third-person');
   expect((await readPlayTest(page))?.soldierCount).toBe(atSpawn?.soldierCount);
 
-  await page.keyboard.press(MOVE_CODES.cameraCycle);
+  await page.keyboard.press('C');
   await expect(hud).toContainText('First-person');
   expect((await readPlayTest(page))?.soldierCount).toBe(atSpawn?.soldierCount);
   await expect(crosshair).toBeVisible();
 
-  await page.keyboard.press(MOVE_CODES.cameraCycle);
+  await page.keyboard.press('C');
   await expect(hud).toContainText('Over-the-shoulder');
   expect((await readPlayTest(page))?.soldierCount).toBe(atSpawn?.soldierCount);
 

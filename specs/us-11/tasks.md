@@ -21,8 +21,8 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 ## Prop movement collision (US-11.3)
 
 - [x] Add `src/modules/game/utils/prop-blockers-from-scenario.ts`
-- [ ] Merge prop blockers in `src/modules/game/hooks/use-player-controls/use-player-controls.ts`
-- [ ] Unit: `tests/units/game/prop-blockers-from-scenario.test.ts`
+- [x] Merge prop blockers in `src/modules/game/hooks/use-player-controls/use-player-controls.ts`
+- [x] Unit: `tests/units/game/prop-blockers-from-scenario.test.ts`
 
 ## House variants (US-11.4)
 

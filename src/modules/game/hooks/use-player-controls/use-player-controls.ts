@@ -8,6 +8,7 @@ import { useGamePauseStore } from '@/modules/game/state/game-pause-store';
 import { resetPlayerTransform } from '@/modules/game/state/player-state';
 import { useRoundStore } from '@/modules/game/state/round-store';
 import { npcBlockersFromScenario } from '@/modules/game/utils/npc-blockers-from-scenario';
+import { propBlockersFromScenario } from '@/modules/game/utils/prop-blockers-from-scenario';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { useLocomotionSounds } from '../use-locomotion-sounds';
 import { usePressedKeyCodes } from '../use-pressed-key-codes';
@@ -50,6 +51,14 @@ export function usePlayerControls({
     () => npcBlockersFromScenario(scenario, spawn.key),
     [scenario, spawn.key],
   );
+  const propBlockers = useMemo(
+    () => propBlockersFromScenario(scenario),
+    [scenario],
+  );
+  const blockers = useMemo(
+    () => [...npcBlockers, ...propBlockers],
+    [npcBlockers, propBlockers],
+  );
 
   const pressedCodesRef = usePressedKeyCodes();
   const eliminatedRef = useRef(eliminated);
@@ -91,7 +100,7 @@ export function usePlayerControls({
     bounds,
     collisionSegments,
     wallThickness,
-    npcBlockers,
+    npcBlockers: blockers,
     pressedCodesRef,
     eliminatedRef,
     isPausedRef,

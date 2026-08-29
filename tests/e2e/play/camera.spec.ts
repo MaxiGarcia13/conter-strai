@@ -22,7 +22,6 @@ test('room play cycles camera modes without duplicating the local soldier', asyn
   const crosshair = page.getByTestId('crosshair');
   await expect(crosshair).toBeVisible();
 
-  await page.mouse.click(640, 400);
   await page.keyboard.press('C');
   await expect(hud).toContainText('Third-person');
   expect((await readPlayTest(page))?.soldierCount).toBe(atSpawn?.soldierCount);

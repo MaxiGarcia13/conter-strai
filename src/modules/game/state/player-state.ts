@@ -29,6 +29,16 @@ let pose: SoldierActionId | null = null;
 let poseEpoch = 0;
 let cameraMode: CameraMode = 'ots';
 const modeListeners = new Set<CameraModeListener>();
+/** Mouse-look capture — Esc releases; canvas click re-engages (mirrors pointer-lock UX). */
+let lookEnabled = true;
+
+export function isLookEnabled(): boolean {
+  return lookEnabled;
+}
+
+export function setLookEnabled(value: boolean): void {
+  lookEnabled = value;
+}
 
 export function getPlayerTransform(): PlayerTransform {
   return transform;
@@ -40,6 +50,7 @@ export function resetPlayerTransform(x: number, z: number, yaw: number): void {
   transform.z = z;
   transform.yaw = yaw;
   transform.pitch = 0;
+  lookEnabled = true;
 }
 
 export function getPlayerLocomotion(): LocomotionState {

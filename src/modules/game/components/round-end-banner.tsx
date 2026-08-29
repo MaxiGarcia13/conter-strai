@@ -1,5 +1,5 @@
 import type { ScenarioId } from '@/modules/scenarios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CsButton } from '@/components/cs-button';
 import { clearRoomSession, readRoomSession } from '@/modules/lobby/utils/room-session';
 import { leaveMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
@@ -31,12 +31,6 @@ export function RoundEndBanner({ roomId }: RoundEndBannerProps) {
   const winner = roomId ? mpWinner : roundWinner;
   /** Multiplayer: host only. Offline: always. */
   const canRestart = roomId ? isHost : true;
-
-  useEffect(() => {
-    if (phase === 'round-end' && document.pointerLockElement) {
-      document.exitPointerLock();
-    }
-  }, [phase]);
 
   if (phase !== 'round-end' || !winner) {
     return null;

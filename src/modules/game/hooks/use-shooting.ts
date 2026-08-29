@@ -15,7 +15,7 @@ import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-st
 import { PISTOL_MAX_RANGE_METERS } from '@/modules/weapons/constants/pistol';
 import { DEFAULT_WEAPON_ID, weapons } from '@/modules/weapons/weapon-registry';
 import { resolveHitDamage } from '../services/resolve-hit-damage';
-import { getPlayerPose } from '../state/player-state';
+import { getPlayerPose, isLookEnabled } from '../state/player-state';
 import { pickBulletHit } from '../utils/pick-bullet-hit';
 import { playGameSound } from '../utils/play-game-sound';
 
@@ -36,7 +36,7 @@ export function useShooting(domElement: HTMLElement | null) {
       if (event.button !== 0) {
         return;
       }
-      if (document.pointerLockElement !== domElement) {
+      if (!isLookEnabled()) {
         return;
       }
       const match = getActiveMatch();

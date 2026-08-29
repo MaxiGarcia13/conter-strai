@@ -1,8 +1,10 @@
 import type { RefObject } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { LOOK_PITCH_FLOOR, MOUSE_SENSITIVITY, PITCH_LIMIT } from '@/modules/game/constants/player';
-import { getPlayerTransform } from '@/modules/game/state/player-state';
+import { getPlayerTransform, isLookEnabled, setLookEnabled } from '@/modules/game/state/player-state';
+import { useRoundStore } from '@/modules/game/state/round-store';
 import { requestPointerLock } from '@/modules/game/utils/request-pointer-lock';
+import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { clamp } from '@/utils/clamp';
 
 interface UsePlayerPointerLockOptions {
@@ -12,33 +14,77 @@ interface UsePlayerPointerLockOptions {
   externalControlsRef: RefObject<unknown>;
 }
 
-/** Click-to-lock and mouse look into the shared player transform. */
+function setGameCursorCaptured(captured: boolean): void {
+  document.getElementById('game-canvas')?.classList.toggle('cursor-none', captured);
+}
+
+function releaseLook(domElement: HTMLElement): void {
+  setLookEnabled(false);
+  setGameCursorCaptured(false);
+  if (document.pointerLockElement === domElement) {
+    document.exitPointerLock();
+  }
+}
+
+function engageLook(domElement: HTMLElement): void {
+  setLookEnabled(true);
+  setGameCursorCaptured(true);
+  requestPointerLock(domElement);
+}
+
+/** Document mouse look on mount; Esc releases capture, canvas click re-engages. */
 export function usePlayerPointerLock({
   domElement,
   eliminated,
   eliminatedRef,
   externalControlsRef,
 }: UsePlayerPointerLockOptions): void {
-  useEffect(() => {
-    if (eliminated && document.pointerLockElement === domElement) {
-      document.exitPointerLock();
-    }
-  }, [eliminated, domElement]);
+  const connected = useMultiplayerStore((state) => state.connected);
+  const mpPhase = useMultiplayerStore((state) => state.phase);
+  const roundPhase = useRoundStore((state) => state.phase);
+  const phase = connected ? mpPhase : roundPhase;
+  const phaseRef = useRef(phase);
+  phaseRef.current = phase;
 
   useEffect(() => {
-    const requestLock = () => {
-      if (eliminatedRef.current || externalControlsRef.current) {
+    if (eliminated || phase === 'round-end') {
+      releaseLook(domElement);
+      return;
+    }
+    engageLook(domElement);
+  }, [eliminated, phase, domElement]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.code !== 'Escape' || event.repeat) {
         return;
       }
-      requestPointerLock(domElement);
+      if (eliminatedRef.current || externalControlsRef.current || !isLookEnabled()) {
+        return;
+      }
+      releaseLook(domElement);
+    };
+
+    const onPointerLockChange = () => {
+      if (document.pointerLockElement !== domElement && isLookEnabled()) {
+        releaseLook(domElement);
+      }
+    };
+
+    const onClick = () => {
+      if (
+        eliminatedRef.current
+        || externalControlsRef.current
+        || isLookEnabled()
+        || phaseRef.current === 'round-end'
+      ) {
+        return;
+      }
+      engageLook(domElement);
     };
 
     const onMouseMove = (event: MouseEvent) => {
-      if (
-        document.pointerLockElement !== domElement
-        || eliminatedRef.current
-        || externalControlsRef.current
-      ) {
+      if (!isLookEnabled() || eliminatedRef.current || externalControlsRef.current) {
         return;
       }
 
@@ -51,11 +97,18 @@ export function usePlayerPointerLock({
       }
     };
 
-    domElement.addEventListener('click', requestLock);
+    setLookEnabled(true);
+    setGameCursorCaptured(true);
+
+    domElement.addEventListener('click', onClick);
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('pointerlockchange', onPointerLockChange);
     document.addEventListener('mousemove', onMouseMove);
 
     return () => {
-      domElement.removeEventListener('click', requestLock);
+      domElement.removeEventListener('click', onClick);
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('pointerlockchange', onPointerLockChange);
       document.removeEventListener('mousemove', onMouseMove);
     };
   }, [domElement, eliminatedRef, externalControlsRef]);

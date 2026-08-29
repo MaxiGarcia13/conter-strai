@@ -65,7 +65,7 @@ export function GameCanvas({
   );
 
   return (
-    <div className="fixed inset-0" id="game-canvas">
+    <div className="fixed inset-0 cursor-none" id="game-canvas">
       <Canvas
         shadows="percentage"
         className="h-full w-full"

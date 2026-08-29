@@ -8,8 +8,8 @@ describe('game-bindings', () => {
       'WASD',
       'Space',
       'C',
-      'F',
-      'E',
+      'Q',
+      'Shift',
       'R',
       'LMB',
       'Esc',
@@ -18,7 +18,7 @@ describe('game-bindings', () => {
   });
 
   it('derives runtime keyboard codes from the same registry', () => {
-    expect(GAME_BINDINGS.jump.code).toBe('KeyF');
+    expect(GAME_BINDINGS.jump.code).toBe('KeyQ');
     expect(GAME_BINDINGS.pause.code).toBe('Escape');
     expect(GAME_BINDINGS.freeCamera.code).toBe('KeyV');
   });

@@ -100,16 +100,17 @@ test('host round-end Home disposes the room', async ({ page, request }) => {
   await expect(roundEnd).toBeVisible();
   await expect(roundEnd.getByRole('button', { name: 'Restart' })).toBeVisible();
 
-  const [disposed] = await Promise.all([
-    page.waitForResponse(
-      (response) =>
-        response.url().includes(`/api/v1/room/${roomId}`)
-        && response.request().method() === 'DELETE',
+  // Hard nav (roomClosed / Home) can abort the DELETE response — assert the request was sent.
+  const [deleteReq] = await Promise.all([
+    page.waitForRequest(
+      (req) =>
+        req.method() === 'DELETE'
+        && req.url().includes(`/api/v1/room/${roomId}`),
       { timeout: 15_000 },
     ),
     roundEnd.getByRole('button', { name: 'Home' }).click(),
   ]);
-  expect(disposed.status()).toBe(204);
+  expect(deleteReq.headers().authorization).toMatch(/^Bearer /);
   await expect(page).toHaveURL('/', { timeout: 15_000 });
   expect(await page.evaluate((id) => sessionStorage.getItem(`cs:room:${id}`), roomId)).toBeNull();
   expect((await request.get(`/api/v1/room/${roomId}`)).status()).toBe(404);

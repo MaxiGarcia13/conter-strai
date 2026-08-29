@@ -50,14 +50,17 @@ test('host close room deletes the match and returns to create', async ({ page, r
   const closeRoom = page.getByRole('button', { name: 'Close Room' });
   await expect(closeRoom).toBeEnabled();
 
-  const disposed = page.waitForResponse(
-    (response) =>
-      response.url().includes(`/api/v1/room/${roomId}`)
-      && response.request().method() === 'DELETE',
-    { timeout: 15_000 },
-  );
-  await closeRoom.click();
-  expect((await disposed).status()).toBe(204);
+  // Hard nav (roomClosed / Close Room) can abort the DELETE response — assert the request was sent.
+  const [deleteReq] = await Promise.all([
+    page.waitForRequest(
+      (req) =>
+        req.method() === 'DELETE'
+        && req.url().includes(`/api/v1/room/${roomId}`),
+      { timeout: 15_000 },
+    ),
+    closeRoom.click(),
+  ]);
+  expect(deleteReq.headers().authorization).toMatch(/^Bearer /);
   await expect(page).toHaveURL(/\/room$/);
 
   const leftover = await page.evaluate(

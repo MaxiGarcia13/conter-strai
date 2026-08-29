@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { BrowserContext, Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 import {
   createHostRoom,
@@ -48,22 +48,36 @@ async function startTwoPlayerRound(
   await expect(guestPage.getByRole('alert', { name: /win the round/i })).toBeVisible();
 }
 
-test('guest round-end Home leaves without DELETE', async ({ browser, request }) => {
-  test.setTimeout(120_000);
-  const hostRoom = await createHostRoom(request);
-  const { roomId } = hostRoom;
+test.describe.serial('two-player round-end Home', () => {
+  test.describe.configure({ timeout: 120_000 });
 
-  const hostContext = await browser.newContext();
-  const guestContext = await browser.newContext();
-  const hostPage = await hostContext.newPage();
-  const guestPage = await guestContext.newPage();
+  let hostContext: BrowserContext;
+  let guestContext: BrowserContext;
+  let hostPage: Page;
+  let guestPage: Page;
+  let roomId: string;
 
-  try {
+  test.beforeAll(async ({ browser, request }) => {
+    const hostRoom = await createHostRoom(request);
+    roomId = hostRoom.roomId;
+    hostContext = await browser.newContext();
+    guestContext = await browser.newContext();
+    hostPage = await hostContext.newPage();
+    guestPage = await guestContext.newPage();
     await startTwoPlayerRound(hostPage, guestPage, hostRoom);
+  });
 
+  test.afterAll(async () => {
+    await hostContext?.close();
+    await guestContext?.close();
+  });
+
+  test('Restart is host-only', async () => {
     await expect(guestPage.getByRole('button', { name: 'Restart' })).toHaveCount(0);
     await expect(hostPage.getByRole('button', { name: 'Restart' })).toBeVisible();
+  });
 
+  test('guest Home leaves without DELETE', async ({ request }) => {
     let guestDeleteSeen = false;
     guestPage.on('request', (req) => {
       if (req.method() === 'DELETE' && req.url().includes(`/api/v1/room/${roomId}`)) {
@@ -76,10 +90,7 @@ test('guest round-end Home leaves without DELETE', async ({ browser, request }) 
     expect(guestDeleteSeen).toBe(false);
     expect(await guestPage.evaluate((id) => sessionStorage.getItem(`cs:room:${id}`), roomId)).toBeNull();
     expect((await request.get(`/api/v1/room/${roomId}`)).status()).toBe(200);
-  } finally {
-    await hostContext.close();
-    await guestContext.close();
-  }
+  });
 });
 
 test('host round-end Home disposes the room', async ({ page, request }) => {

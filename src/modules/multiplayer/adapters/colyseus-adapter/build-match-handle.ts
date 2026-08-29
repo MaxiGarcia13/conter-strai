@@ -211,6 +211,8 @@ export function buildMatchHandle(room: MatchRoom): MatchHandle {
     onLeave: (listener) => subscribe(leaveListeners, listener),
     onRoomClosed: (listener) => subscribe(roomClosedListeners, listener),
     leave: () => room.leave(true),
+    playerReady: () => room.send('playerReady', { sessionId }),
+    restartRound: () => room.send('restartRound', { sessionId }),
   };
 
   setActiveMatch(handle);

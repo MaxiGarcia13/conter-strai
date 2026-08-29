@@ -73,7 +73,7 @@ export function usePlayerMovementFrame({
     const phase = matchConnected
       ? useMultiplayerStore.getState().phase
       : useRoundStore.getState().phase;
-    if (phase === 'countdown' || phase === 'round-end') {
+    if (phase === 'loading' || phase === 'countdown' || phase === 'round-end') {
       setPlayerLocomotion('idle');
       applyCameraMode(camera, getCameraMode(), getPlayerTransform(), getBodyAnchorY());
       return;

@@ -34,6 +34,14 @@ export function startMatch(): void {
   requireActiveMatch().startRound();
 }
 
+export function playerReady(): void {
+  requireActiveMatch().playerReady();
+}
+
+export function restartRound(): void {
+  requireActiveMatch().restartRound();
+}
+
 export function onPose(listener: PoseListener): () => void {
   return requireActiveMatch().onPose(listener);
 }

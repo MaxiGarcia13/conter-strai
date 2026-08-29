@@ -8,6 +8,7 @@ import {
 
 describe('mapMatchRoundPhase', () => {
   it('maps the server phases onto the client RoundPhase', () => {
+    expect(mapMatchRoundPhase('deploying')).toBe('loading');
     expect(mapMatchRoundPhase('countdown')).toBe('countdown');
     expect(mapMatchRoundPhase('in_progress')).toBe('live');
     expect(mapMatchRoundPhase('ended')).toBe('round-end');

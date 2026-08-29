@@ -6,18 +6,22 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## Deploy-ready countdown (US-9.10–US-9.15)
 
-- [ ] Add `deploying` to `MatchRoundPhase` in `src/modules/multiplayer/schema/match-state.ts`
-- [ ] Add per-player `ready: boolean` on `PlayerState` (default false); reset on `startRound`
-- [ ] `MatchRoom.startRound()`: set `roundPhase = 'deploying'`, clear ready flags, **do not** start countdown timer
-- [ ] Add `onMessage('playerReady')`: mark sender ready; when all connected players ready → `beginCountdown()`
-- [ ] On disconnect during **`deploying`**: re-check ready gate
-- [ ] Map `deploying` in `map-match-round-phase.ts` → client phase `'deploying'`
-- [ ] Add `'deploying'` to `src/modules/game/types.ts` `RoundPhase`
-- [ ] Adapter: `sendPlayerReady()` + export from colyseus adapter
-- [ ] Remove mount-time `startRound()` from `game-canvas.tsx`; call after loader clears (offline)
-- [ ] On `onLoaderChange(null)` in `game-canvas-island` / canvas: `sendPlayerReady()` (multiplayer) or `startRound()` (offline)
-- [ ] Extend `countdown-banner.tsx` (or new banner) for **`deploying`** copy (“Deploying…” / “Waiting for players…”)
-- [ ] Update `to-room-snapshot.ts` mapping for REST phase during **`deploying`**
+- [x] Add `deploying` to `MatchRoundPhase` in `src/modules/multiplayer/schema/match-state.ts`
+- [x] Add per-player `ready: boolean` on `PlayerState` (default false); reset on `startRound`
+- [x] `MatchRoom.startRound()`: `resetRound()` → `roundPhase = 'deploying'`, clear ready flags, lock room; **do not** start countdown
+- [x] Add `onMessage('playerReady')` → `playerReady()` → `tryBeginRoundWhenAllReady()` → `startCountdown()`
+- [x] On disconnect during **`deploying`**: re-check ready gate in `removePlayer`
+- [x] Map server `deploying` in `map-match-round-phase.ts` → client phase **`loading`**
+- [x] Add **`loading`** to `RoundPhase` in `src/modules/game/types.ts`
+- [x] Adapter: `playerReady()` on `MatchHandle` + export from `match-session.ts`
+- [x] `MatchPlayCanvas`: call `playerReady()` when deploy loader clears (`visible === false`, join succeeded)
+- [x] Gate movement during **`loading`** in `use-player-movement-frame.ts`
+- [x] Waiting room redirects to `/play` on **`loading`** phase (`waiting-room-content.tsx`)
+- [x] Deploy UX via existing **`PlayLoader`** / `LoadingReporter`; numeric countdown only in **`countdown`** (`countdown-banner.tsx`)
+- [x] Update `to-room-snapshot.ts`: REST phase **`in_progress`** while server is **`deploying`**
+- [x] Add `onMessage('restartRound')` + adapter `restartRound()`; wire `round-end-banner` restart through deploy gate
+- [x] `bind-match.ts`: local respawn + health sync on entering deploying / countdown / in_progress
+- [x] Unit: `mapMatchRoundPhase('deploying')` + `to-room-snapshot` deploying snapshot
 - [ ] Unit: `MatchRoom` ready gate — 1 player, 2 players, disconnect mid-deploy
 - [ ] E2e: countdown does not appear until deploy loader clears
 

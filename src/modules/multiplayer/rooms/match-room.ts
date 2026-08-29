@@ -87,6 +87,7 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
       ) {
         return;
       }
+
       this.startRound();
     });
 
@@ -129,6 +130,14 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
       }
       this.abandonedSessions.add(client.sessionId);
       this.removePlayer(client.sessionId);
+    });
+
+    this.onMessage('playerReady', (client) => {
+      this.playerReady(client.sessionId);
+    });
+
+    this.onMessage('restartRound', () => {
+      this.restartRound();
     });
 
     registerE2eEndRound({
@@ -207,6 +216,10 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
       this.hostSessionId = remaining.done ? null : remaining.value;
     }
 
+    if (this.state.roundPhase === 'deploying') {
+      this.tryBeginRoundWhenAllReady();
+    }
+
     if (this.state.roundPhase === 'in_progress') {
       const winner = checkTeamWipe(this.state);
       if (winner) {
@@ -217,16 +230,71 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
     }
   }
 
-  startRound() {
+  private resetRound() {
+    this.clearCountdown();
     this.renewExpiry();
     respawnMatchPlayers(this.state, this.spawnIndexBySession);
+
     this.lastMoveBySession.clear();
     this.lastShotAtBySession.clear();
     this.state.winner = '';
-    this.state.countdown = COUNTDOWN_START;
-    this.state.roundPhase = 'countdown';
+    this.state.countdown = 0;
+  }
+
+  startRound() {
+    this.resetRound();
+
+    this.state.roundPhase = 'deploying';
+    this.state.players.forEach((player) => {
+      player.ready = false;
+    });
+
     // Reserved seats still connect; only fresh joinById/PUT joins are blocked.
     this.lock();
+  }
+
+  private restartRound() {
+    this.resetRound();
+
+    this.state.roundPhase = 'deploying';
+
+    this.tryBeginRoundWhenAllReady();
+  }
+
+  playerReady(sessionId: string) {
+    if (this.state.roundPhase !== 'deploying') {
+      return;
+    }
+
+    const player = this.state.players.get(sessionId);
+
+    if (!player) {
+      return;
+    }
+
+    player.ready = true;
+    this.tryBeginRoundWhenAllReady();
+  }
+
+  private tryBeginRoundWhenAllReady() {
+    if (this.state.roundPhase !== 'deploying' || this.clients.length === 0) {
+      return;
+    }
+    const allReady = this.clients.every((client) => {
+      const player = this.state.players.get(client.sessionId);
+      return player?.ready ?? false;
+    });
+
+    if (!allReady) {
+      return;
+    }
+
+    this.startCountdown();
+  }
+
+  private startCountdown() {
+    this.state.countdown = COUNTDOWN_START;
+    this.state.roundPhase = 'countdown';
     this.beginCountdown();
   }
 

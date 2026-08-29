@@ -49,6 +49,16 @@ describe('toRoomSnapshot', () => {
     expect(snapshot.playerCount).toBe(1);
   });
 
+  it('maps deploying to in_progress so lobby joins stay locked', () => {
+    const state = createMatchState();
+    addPlayer(state, 'c1', 'civilian');
+    state.roundPhase = 'deploying';
+
+    const snapshot = toRoomSnapshot(ROOM_CODE, state, EXPIRES_AT);
+    expect(snapshot.phase).toBe('in_progress');
+    expect(snapshot.canJoin).toBe(false);
+  });
+
   it('maps countdown to in_progress so lobby joins stay locked', () => {
     const state = createMatchState();
     addPlayer(state, 'c1', 'civilian');

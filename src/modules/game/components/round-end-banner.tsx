@@ -2,12 +2,12 @@ import type { ScenarioId } from '@/modules/scenarios';
 import { useEffect, useState } from 'react';
 import { CsButton } from '@/components/cs-button';
 import { clearRoomSession, readRoomSession } from '@/modules/lobby/utils/room-session';
-import { leaveMatch, startMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
+import { leaveMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
+import { restartRound } from '@/modules/multiplayer/adapters/colyseus-adapter/match-session';
 import { deleteRoom } from '@/modules/multiplayer/services/delete-room';
 import { LobbyRestError } from '@/modules/multiplayer/services/lobby-rest';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
-import { DEFAULT_SCENARIO_ID } from '../constants/play-defaults';
 import { useRoundStore } from '../state/round-store';
 
 interface RoundEndBannerProps {
@@ -16,16 +16,13 @@ interface RoundEndBannerProps {
 }
 
 /** Full-screen overlay shown when a round ends. Server-driven in a match. */
-export function RoundEndBanner({
-  roomId,
-  scenarioId = DEFAULT_SCENARIO_ID,
-}: RoundEndBannerProps) {
+export function RoundEndBanner({ roomId }: RoundEndBannerProps) {
   const connected = useMultiplayerStore((state) => state.connected);
   const mpPhase = useMultiplayerStore((state) => state.phase);
   const mpWinner = useMultiplayerStore((state) => state.winner);
   const roundPhase = useRoundStore((state) => state.phase);
   const roundWinner = useRoundStore((state) => state.winner);
-  const startRound = useRoundStore((state) => state.startRound);
+
   const session = roomId ? readRoomSession(roomId) : null;
   const isHost = session?.role === 'host' || !roomId;
   const [closing, setClosing] = useState(false);
@@ -50,10 +47,8 @@ export function RoundEndBanner({
       return;
     }
     if (connected) {
-      startMatch();
-      return;
+      restartRound();
     }
-    startRound(scenarioId);
   }
 
   async function handleHome() {

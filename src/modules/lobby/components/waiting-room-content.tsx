@@ -44,9 +44,8 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
   }, [roomId, session]);
 
   useEffect(() => {
-    // Countdown UI lives on `/play` — leave the waiting room as soon as the
-    // match starts counting down (or is already live).
-    if (phase === 'countdown' || phase === 'live') {
+    // Countdown UI lives on `/play` — leave the waiting room when deploy starts.
+    if (phase === 'loading' || phase === 'countdown' || phase === 'live') {
       navigateToPlay(roomId);
     }
   }, [phase, roomId]);

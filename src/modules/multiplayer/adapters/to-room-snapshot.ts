@@ -58,10 +58,10 @@ export function toRoomSnapshot(
 ): RoomSnapshot {
   const maxPerTeam = state.maxPerTeam || DEFAULT_MAX_PER_TEAM;
   const playerCount = state.players.size;
-  // Lobby REST only exposes waiting | in_progress | ended — countdown locks joins.
-  const phase: RoomSnapshot['phase'] = state.roundPhase === 'countdown'
-    ? 'in_progress'
-    : (state.roundPhase as RoomSnapshot['phase']);
+  // Lobby REST only exposes waiting | in_progress | ended — deploy/countdown lock joins.
+  const phase: RoomSnapshot['phase'] = state.roundPhase === 'waiting' || state.roundPhase === 'ended'
+    ? state.roundPhase
+    : 'in_progress';
   const maxClients = maxPerTeam * 2;
 
   const counts = Object.fromEntries(

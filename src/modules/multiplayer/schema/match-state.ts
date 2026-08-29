@@ -4,7 +4,7 @@ import { DEFAULT_MAX_PER_TEAM, DEFAULT_SCENARIO_ID } from '@/modules/game/consta
 
 import { PlayerStateSchema } from './player-state';
 
-export type MatchRoundPhase = 'waiting' | 'countdown' | 'in_progress' | 'ended';
+export type MatchRoundPhase = 'waiting' | 'deploying' | 'countdown' | 'in_progress' | 'ended';
 
 /**
  * Authoritative match state — one instance per `MatchRoom`.

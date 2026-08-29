@@ -108,6 +108,8 @@ export interface MatchHandle {
   sendFire: () => void;
   /** Host-only: flips the room from `waiting` | `ended` into the countdown. */
   startRound: () => void;
+  playerReady: () => void;
+  restartRound: () => void;
   /** Voluntary lobby exit — server drops the seat immediately while `waiting`. */
   leaveLobby: () => void;
   onPlayerUpdate: (listener: PlayerUpdateListener) => () => void;

@@ -2,7 +2,7 @@ import { CsButton } from '@/components/cs-button';
 import { clearRoomSession } from '@/modules/lobby/utils/room-session';
 
 interface MatchJoinErrorProps {
-  roomId: string;
+  roomId?: string;
   message: string;
 }
 
@@ -20,7 +20,9 @@ export function MatchJoinError({ roomId, message }: MatchJoinErrorProps) {
         type="button"
         variant="primary"
         onClick={() => {
-          clearRoomSession(roomId);
+          if (roomId) {
+            clearRoomSession(roomId);
+          }
           window.location.href = '/room';
         }}
       >

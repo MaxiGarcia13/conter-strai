@@ -20,6 +20,7 @@ export const PlayerStateSchema = schema(
     eliminated: t.boolean(),
     team: t.string(),
     skin: t.string(),
+    ready: t.boolean(),
   },
   'PlayerState',
 );
@@ -34,5 +35,6 @@ export function createPlayerState(
   state.eliminated = false;
   state.team = opts.team ?? DEFAULT_TEAM;
   state.skin = opts.skin ?? DEFAULT_PLAY_SKIN_ID;
+  state.ready = false;
   return state;
 }

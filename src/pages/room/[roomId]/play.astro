@@ -2,6 +2,7 @@
 import PlayLoader from '@/components/play-loader.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
 import { GameCanvasIsland } from '@/modules/game/components/game-canvas-island';
+import { MatchJoinError } from '@/modules/multiplayer/components/match-join-error';
 
 const { roomId } = Astro.params;
 ---
@@ -13,10 +14,13 @@ const { roomId } = Astro.params;
   <main class="fixed inset-0 z-10 bg-black">
     <PlayLoader />
 
-    <GameCanvasIsland
-      client:only="react"
-      roomId={roomId}
-    />
+    {
+      roomId ? (
+        <GameCanvasIsland client:only="react" roomId={roomId} />
+      ) : (
+        <MatchJoinError client:only="react" message="Room not found" />
+      )
+    }
 
     <noscript>
       <p

@@ -2,6 +2,7 @@ import type { MatchHandle } from '../adapters/colyseus-adapter';
 import type { MatchRoundPhase } from '../schema';
 import type { EntityId } from '@/modules/soldiers';
 import { useHealthStore } from '@/modules/combat';
+import { DEFAULT_MAX_HP } from '@/modules/combat/constants/health';
 import { LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
 import {
   resetPlayerTransform,
@@ -24,6 +25,11 @@ function applyLocalRoundRespawn(handle: MatchHandle): void {
   resetPlayerTransform(local.x, local.z, local.rotY);
   setPlayerPose(null);
   setPlayerLocomotion('idle');
+  useHealthStore.getState().syncHealth(LOCAL_PLAYER_ENTITY_ID, {
+    currentHp: local.hp,
+    maxHp: DEFAULT_MAX_HP,
+    isEliminated: local.eliminated,
+  });
 }
 
 /**
@@ -60,11 +66,13 @@ export function bindMatch(handle: MatchHandle, roomId: string): () => void {
   });
 
   const offRoundUpdate = handle.onRoundUpdate((payload) => {
+    const enteringDeploying = payload.phase === 'deploying' && prevRoundPhase !== 'deploying';
     const enteringCountdown = payload.phase === 'countdown' && prevRoundPhase !== 'countdown';
+    const enteringInProgress = payload.phase === 'in_progress' && prevRoundPhase !== 'in_progress';
     prevRoundPhase = payload.phase;
     useMultiplayerStore.getState().applyRoundUpdate(payload);
 
-    if (enteringCountdown) {
+    if (enteringDeploying || enteringCountdown || enteringInProgress) {
       applyLocalRoundRespawn(handle);
     }
   });

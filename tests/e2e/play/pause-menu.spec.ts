@@ -4,6 +4,8 @@ import {
   captureConsoleErrors,
   countdownBanner,
   expectNoConsoleErrors,
+  GAME_BINDINGS,
+  MOVE_CODES,
   readPlayTest,
   startMatchFromWaitingRoom,
   waitForCanvas,
@@ -24,7 +26,7 @@ test('Escape opens the pause panel in a live round with Resume / Restart / Leave
   await waitForPlayTest(page);
   await waitForLiveRound(page);
 
-  await page.keyboard.press('Escape');
+  await page.keyboard.press(GAME_BINDINGS.pause.code);
 
   const dialog = page.getByRole('dialog', { name: 'Game paused' });
   await expect(dialog).toBeVisible();
@@ -58,16 +60,16 @@ test('Resume closes the pause panel and restores gameplay input', async ({ page 
   await waitForPlayTest(page);
   await waitForLiveRound(page);
 
-  await page.keyboard.press('Escape');
+  await page.keyboard.press(GAME_BINDINGS.pause.code);
   await expect(page.getByRole('dialog', { name: 'Game paused' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Resume' }).click();
   await expect(page.getByRole('dialog', { name: 'Game paused' })).toBeHidden();
 
   // Movement reacts again after resume.
-  await page.keyboard.down('KeyW');
+  await page.keyboard.down(MOVE_CODES.forward);
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('walk');
-  await page.keyboard.up('KeyW');
+  await page.keyboard.up(MOVE_CODES.forward);
 
   expectNoConsoleErrors(consoleErrors);
 });
@@ -80,7 +82,7 @@ test('Leave from the pause panel navigates home', async ({ page }) => {
   await waitForPlayTest(page);
   await waitForLiveRound(page);
 
-  await page.keyboard.press('Escape');
+  await page.keyboard.press(GAME_BINDINGS.pause.code);
   await page.getByRole('button', { name: 'Leave' }).click();
 
   await expect(page).toHaveURL('/');

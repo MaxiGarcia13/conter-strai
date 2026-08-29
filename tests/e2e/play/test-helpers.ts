@@ -2,7 +2,10 @@ import type { Page } from '@playwright/test';
 import type { SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
 import { expect } from '@playwright/test';
+import { GAME_BINDINGS, MOVE_CODES } from '@/modules/game/constants/game-bindings';
 import { createMatchRoomViaApi } from '../lobby-helpers';
+
+export { GAME_BINDINGS, MOVE_CODES };
 
 export interface PlayTestSnapshot {
   soldierCount: number;

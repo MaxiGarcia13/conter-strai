@@ -23,7 +23,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 - [x] `bind-match.ts`: local respawn + health sync on entering deploying / countdown / in_progress
 - [x] Unit: `mapMatchRoundPhase('deploying')` + `to-room-snapshot` deploying snapshot
 - [x] Unit: `MatchRoom` ready gate — 1 player, 2 players, disconnect mid-deploy
-- [ ] E2e: countdown does not appear until deploy loader clears
+- [x] E2e: countdown does not appear until deploy loader clears
 
 ## Auto pointer lock (US-9.1 / US-9.2)
 

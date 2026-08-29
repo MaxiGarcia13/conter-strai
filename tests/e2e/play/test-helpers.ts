@@ -85,6 +85,41 @@ export async function waitForPlayTest(page: Page): Promise<PlayTestSnapshot> {
   return snapshot as PlayTestSnapshot;
 }
 
+/** Create a room, join from the waiting room, and start the match on `/play`. */
+export async function startMatchFromWaitingRoom(page: Page): Promise<string> {
+  await page.goto('/room');
+  await page.getByRole('button', { name: 'Create Room' }).click();
+  await expect(page).toHaveURL(/\/room\/[^/]+$/);
+
+  const roomId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
+  await expect(page.getByRole('button', { name: 'Start Match' })).toBeEnabled({ timeout: 15_000 });
+  await page.getByRole('button', { name: 'Start Match' }).click();
+  await expect(page).toHaveURL(new RegExp(`/room/${roomId}/play$`));
+  return roomId;
+}
+
+export function deployingLoader(page: Page) {
+  return page.locator('.play-loader').filter({ hasText: 'Deploying' });
+}
+
+export function countdownBanner(page: Page) {
+  return page.getByRole('status', { name: /Starting in/i });
+}
+
+/** Playwright hook — assets may finish before the test observes the loader. */
+export async function holdDeployComplete(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    window.__E2E_HOLD_DEPLOY_COMPLETE__ = true;
+  });
+}
+
+export async function releaseDeployHold(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    window.__E2E_HOLD_DEPLOY_COMPLETE__ = false;
+    window.dispatchEvent(new Event('e2e-deploy-hold-release'));
+  });
+}
+
 /** Host-only E2E hook — ends the live round and waits for the round-end banner. */
 export async function forceRoundEnd(page: Page): Promise<void> {
   await expect

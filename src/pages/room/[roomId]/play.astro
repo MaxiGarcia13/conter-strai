@@ -15,9 +15,11 @@ const { roomId } = Astro.params;
     <PlayLoader />
 
     {
-      roomId ? (
+      roomId
+? (
         <GameCanvasIsland client:only="react" roomId={roomId} />
-      ) : (
+      )
+: (
         <MatchJoinError client:only="react" message="Room not found" />
       )
     }

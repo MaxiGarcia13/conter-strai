@@ -12,7 +12,7 @@ function bootstrapMatchRoom() {
   const room = new MatchRoom();
   room.__init();
   room.roomId = 'test-room';
-  room['_listing'] = { metadata: {} };
+  room._listing = { metadata: {} };
   room.lock = vi.fn();
 
   room.onCreate({
@@ -23,7 +23,7 @@ function bootstrapMatchRoom() {
     },
   });
 
-  room['_internalState'] = 1;
+  room._internalState = 1;
 
   return room;
 }
@@ -41,7 +41,7 @@ async function disconnectPlayer(room: MatchRoom, client: Client) {
   await room.onLeave(client);
 }
 
-describe('MatchRoom deploy ready gate', () => {
+describe('matchRoom deploy ready gate', () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });

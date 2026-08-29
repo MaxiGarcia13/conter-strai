@@ -65,8 +65,12 @@ export function GameCanvas({
   );
 
   return (
-    <div className="fixed inset-0">
-      <Canvas shadows="percentage" className="h-full w-full" camera={{ fov: 75, near: 0.1, far: 300 }}>
+    <div className="fixed inset-0" id="game-canvas">
+      <Canvas
+        shadows="percentage"
+        className="h-full w-full"
+        camera={{ fov: 75, near: 0.1, far: 300 }}
+      >
         {trackLoading && onLoaderChange && <LoadingReporter onLoaderChange={handleLoaderChange} />}
         <ScenarioLighting lighting={scenario.lighting} shadows />
 

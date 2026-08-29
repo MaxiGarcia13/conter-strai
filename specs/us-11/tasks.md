@@ -40,7 +40,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 ## Floor overlap fix (US-11.6)
 
 - [x] Add `src/modules/scenarios/pieces/floor-zone-helpers.ts` (`findFloorOverlaps`, `assertNoFloorOverlaps`)
-- [ ] Refactor `ground.ts` — non-overlapping street segments at junctions
+- [x] Refactor `ground.ts` — non-overlapping street segments at junctions
 - [ ] Inset house floor zones in `house-helpers.ts` / presets
 - [ ] Call `assertNoFloorOverlaps` from `compose.ts` (dev) or test only
 - [ ] Unit: `tests/units/scenarios/floor-zone-overlap.test.ts` — zero overlaps for arena-01

@@ -36,6 +36,10 @@ const TARGETS = [
 
   // Weapons
   'public/assets/weapons/pistol_a.glb',
+
+  // Greenery
+  'public/assets/greenery/celandine.glb',
+  'public/assets/greenery/jacaranda.glb',
 ];
 
 function formatMb(bytes) {

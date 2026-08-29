@@ -33,9 +33,9 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## Modular map layout (US-11.5)
 
-- [ ] Split `maps/arena-01/` into `compose.ts`, `ground.ts`, `houses.ts`, `greenery.ts`, `spawns.ts`, `environment.ts`
-- [ ] Thin `index.ts` — exports `ScenarioConfig` only
-- [ ] Remove or replace monolithic `layout.ts`
+- [x] Split `maps/arena-01/` into `compose.ts`, `ground.ts`, `houses.ts`, `greenery.ts`, `spawns.ts`, `environment.ts`
+- [x] Thin `index.ts` — exports `ScenarioConfig` only
+- [x] Remove or replace monolithic `layout.ts`
 
 ## Floor overlap fix (US-11.6)
 

@@ -6,7 +6,7 @@ Browser-based tactical shooter inspired by Counter-Strike. **Civilians** vs **So
 
 ## Status
 
-**Status:** US-1–US-8 shipped (including Colyseus multiplayer US-5 and server security US-8). Open: US-9, US-10 — see [CHANGELOG](./specs/CHANGELOG.md).
+**Status:** US-1–US-9 shipped (including Colyseus multiplayer US-5 and server security US-8). Open: US-10 — see [CHANGELOG](./specs/CHANGELOG.md).
 
 | Feature                                                           | State              |
 | ----------------------------------------------------------------- | ------------------ |

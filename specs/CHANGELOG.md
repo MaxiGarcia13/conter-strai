@@ -11,12 +11,13 @@
 
 | US | Summary |
 |----|---------|
-| *(none)* | — |
+| **US-10** | Shuffle teams when lobby has no opponents |
 
 ## Shipped
 
 | US | Summary |
 |----|---------|
+| **US-9** | Pause menu (Esc), look without pre-click, deploy-ready countdown gate (`deploying` → all `playerReady` → 3‑2‑1) |
 | **US-8** | Server security — host token, origin guard, shot/move validation, room TTL (40 min, renew on restart) |
 | **US-1** | Landing page — hero, soldiers art, Start Game CTA, GitHub contribute footer, shooter theme, SEO |
 | **US-2** | 3D arena (`arena-01`), FPS/OTS/TPS cameras, locomotion + jump/kneel, interior collision, aim HUD |

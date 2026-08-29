@@ -87,7 +87,7 @@ src/modules/
 | **Soldier**  | `SoldierSkin`, `CharacterMeshData`, `Soldier`, `SoldierController` | Visual preset decoupled from hitbox via `hitboxPresetId`      |
 | **Combat**   | `HitboxPreset`, `HitZone`, `DamageData`, `HealthSystem`            | Owns collider presets and raycast zones                       |
 | **Weapons**  | `PistolWeaponConfig` / `WeaponConfig`, `Loadout`                   | Per-weapon `damageByZone`; combat applies × difficulty        |
-| **Game**     | `GameMode`, `RoundPhase`                                           | `'team-elimination'`; `'live' \| 'round-end'`                 |
+| **Game**     | `GameMode`, `RoundPhase`                                           | `'team-elimination'`; `'live' \| 'loading' \| 'countdown' \| 'round-end'` |
 
 Shipped 2026-08-23 — see [CHANGELOG](../CHANGELOG.md#shipped--other).
 
@@ -189,6 +189,7 @@ Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-stat
 | **F** (walk/run)   | `jump`                   | Forward one-shot; clears kneel first                                                |
 | **R**              | `reloading`              | One-shot; stand+idle or `reloading-kneel`; WASD cancels                             |
 | **LMB**            | —                        | Hitscan pistol (no `shooting` pose until a shippable clip)                          |
+| **Esc** (live)     | —                        | Toggle pause menu; releases look; no pause during **`loading`** / **`countdown`**     |
 
 Priority: blocking one-shots (`reloading` / `reloading-kneel` > `jump` / `jump-idle`) → kneel + run → run → kneel + walk → crouch-walk → kneel + idle → locomotion run-backward / walk-backward → walk / run → idle → **`dying`** on elimination. Optional `shooting` is mixer-ready but not triggered.
 
@@ -211,7 +212,7 @@ Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`
 | Layer          | Scope                                                                                                                           |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | **Vitest**     | Registries; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide |
-| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; optional `__PLAY_TEST__` hook          |
+| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook          |
 
 ## Characters — shipped US-6
 
@@ -295,7 +296,48 @@ endRound(winner) → RoundPhase 'round-end', winner banner with Restart / Home (
 
 Local player occupies the session skin/team (default civilian `remy`); offline play fills remaining spawns with `ScenarioSoldiers` NPCs. Multiplayer disables bots — opponents are `RemotePlayer` peers.
 
-When `HealthState.isEliminated`, FPS move/look/shoot is disabled and pointer lock is released until the next `startRound()`.
+When `HealthState.isEliminated`, FPS move/look/shoot is disabled and look is released until the next `startRound()`.
+
+## Pause, look, deploy gate — shipped US-9
+
+### Look capture
+
+Browsers may reject `requestPointerLock()` without a user gesture. On mount, **`use-player-pointer-lock`** enables document-level `mousemove` look (`isLookEnabled` in `player-state.ts`); `#game-canvas` gets `cursor-none` while captured. Canvas **click** re-engages and best-effort upgrades to pointer lock (`request-pointer-lock.ts` swallows rejections). **Esc** / pause / elimination / **`round-end`** release look; re-engage when phase returns to **`live`** and player is alive. **`use-shooting`** gates fire on `isLookEnabled()`.
+
+### Pause menu
+
+[`game-pause-store.ts`](../../src/modules/game/state/game-pause-store.ts) (Zustand) + [`game-pause-panel.tsx`](../../src/modules/game/components/game-pause-panel.tsx) — visible when `isPaused && phase === 'live'`. **Escape** toggles pause in [`use-player-keyboard.ts`](../../src/modules/game/hooks/use-player-controls/use-player-keyboard.ts). While paused: movement, look, shoot, and pose actions early-out via `isPausedRef` in control hooks.
+
+| Action  | Behavior                                                                                                                                                      |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Restart | [`restart-round.ts`](../../src/modules/game/utils/restart-round.ts) — host `startMatch()` / offline `startRound`; triggers deploy gate again                  |
+| Leave   | [`leave-match-to-home.ts`](../../src/modules/game/utils/leave-match-to-home.ts) — `leaveMatch`, clear session, `location.href = '/'` **without** `deleteRoom` |
+| Resume  | `setPaused(false)` + re-engage look / pointer lock                                                                                                            |
+
+Bindings listed in **Commands** come from [`game-bindings.ts`](../../src/modules/game/constants/game-bindings.ts). Pause store resets on round end / navigate away.
+
+### Deploy-ready countdown
+
+```mermaid
+stateDiagram-v2
+  [*] --> waiting
+  waiting --> deploying: host_startRound
+  ended --> deploying: host_startRound
+  deploying --> countdown: all_connected_ready
+  countdown --> in_progress: timer_zero
+  in_progress --> ended: team_wipe
+  deploying --> deploying: playerReady
+  deploying --> deploying: player_disconnect_recheck
+```
+
+Server **`deploying`** sits between **`waiting`/`ended`** and **`countdown`**. Client maps server `deploying` → **`loading`** (`map-match-round-phase.ts`); movement gated during **`loading`**. REST snapshot maps `deploying` → lobby **`in_progress`** (joins stay locked).
+
+When [`LoadingReporter`](../../src/modules/game/components/loading-reporter.tsx) clears (`onLoaderChange(null)`):
+
+- **Multiplayer:** adapter `playerReady()` → `room.send('playerReady')`
+- **Offline:** local `startRound(scenarioId)` (no immediate mount `startRound`)
+
+Per-player `ready: boolean` on `PlayerState`; cleared on `startRound`. Countdown numeric overlay ([`countdown-banner.tsx`](../../src/modules/game/components/countdown-banner.tsx)) only during **`countdown`**; deploy copy via **`PlayLoader`** (“Deploying…”). Waiting room redirects to `/play` on **`loading`**. **`restartRound`** message + adapter for round-end / pause restart through the same gate.
 
 ### Shooting
 
@@ -389,21 +431,21 @@ After REST create or PUT, client connects with `joinById` or `consumeSeatReserva
 src/modules/multiplayer/
 ├── adapters/colyseus-adapter/   # initMatch, syncTransform, sendShot, sendFire, listeners
 ├── handlers/                    # Astro APIRoute implementations
-├── rooms/match-room.ts          # waiting → in_progress → ended
+├── rooms/match-room.ts          # waiting → deploying → countdown → in_progress → ended
 ├── schema/                      # MatchState, PlayerState
 └── stores/multiplayer-store/
 ```
 
-**One `MatchRoom`** with `roundPhase: waiting → in_progress → ended` (no separate LobbyRoom).
+**One `MatchRoom`** with `roundPhase: waiting → deploying → countdown → in_progress → ended` (no separate LobbyRoom).
 
 ### Schema state
 
 ```
 // PlayerState (per client.sessionId)
-{ x, y, z, rotY, hp, eliminated, team, skin }
+{ x, y, z, rotY, hp, eliminated, team, skin, ready }
 
 // MatchState
-{ players: MapSchema<PlayerState>, roundPhase, winner, scenario, maxPerTeam: 4 }
+{ players: MapSchema<PlayerState>, roundPhase, winner, countdown, scenario, maxPerTeam: 4 }
 ```
 
 - `onJoin`: reject if `players.size >= 8` or team count `>= 4`; reject if `expiresAt` is past (`assertRoomJoinable`).
@@ -416,7 +458,9 @@ initMatch({ roomId, reservation?, options?, endpoint? }) → MatchHandle
 syncTransform({ x, z, yaw })            // throttled ~20 Hz
 sendShot({ targetId, zone })           // server ShotMessage wire shape
 sendFire()                              // relay spatial gunshot SFX to peers
-startMatch()                            // host-only: waiting → in_progress
+startMatch()                            // host-only: waiting → deploying (US-9 gate)
+playerReady()                           // client deploy complete → may start countdown
+restartRound()                          // host-only: ended/waiting → deploying again
 onPlayerUpdate / onRoundUpdate / onLeave
 ```
 
@@ -427,11 +471,13 @@ onPlayerUpdate / onRoundUpdate / onLeave
 
 ### Round sync (server-authoritative)
 
-- Host sends `startRound` from `waiting` or `ended` → resets HP / eliminated, spawn placement, `countdown: 3` → `in_progress`; **renews `expiresAt`** (+40 min TTL, same `hostToken`).
+- Host sends `startRound` from `waiting` or `ended` → resets HP / eliminated, spawn placement, `roundPhase: 'deploying'`, clears `ready` flags, locks joins; **renews `expiresAt`** (+40 min TTL, same `hostToken`).
+- Each connected client sends `playerReady` after deploy loader clears; when all connected players are ready → `countdown: 3` → `in_progress`.
+- Disconnect during **`deploying`**: re-evaluate ready gate; countdown starts when remaining connected players are all ready.
 - `startRound` locks joins: REST `PUT` returns `409` outside `waiting`; reserved seats still connect after lock.
 - Server tracks `hostSessionId` (first joiner; reassigned on host leave).
 - Team wipe → `winner`, `roundPhase: 'ended'` until host `startRound` again (no auto-timer).
-- **Home** on round-end banner → host `DELETE` (bearer `hostToken`) disposes room for all; guests `leaveMatch` and exit locally.
+- **Home** on round-end banner → host `DELETE` (bearer `hostToken`) disposes room for all; guests `leaveMatch` and exit locally. Pause **Leave** → `/` without DELETE.
 
 ### Integration
 

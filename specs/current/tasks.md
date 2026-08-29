@@ -6,8 +6,7 @@ Work queue points to open US deltas. Tick tasks in the delta folder; ship into `
 
 US numbers are not execution order. Ship in this sequence:
 
-1. **US-9** — Pause menu, auto pointer lock, deploy-ready countdown
-2. **US-10** — Shuffle teams when lobby has no opponents
+1. **US-10** — Shuffle teams when lobby has no opponents
 
 US-4 (local PvP loop), **US-5** (Colyseus multiplayer), **US-7** (match lobby), **US-8** (server security), and the [improvements backlog](../improvements.md) polish pass are **shipped**. Fire **pose clip** on LMB is deferred — see [tech-debt.md](../tech-debt.md).
 
@@ -17,5 +16,4 @@ US-4 (local PvP loop), **US-5** (Colyseus multiplayer), **US-7** (match lobby), 
 
 ## Open deltas
 
-- [specs/us-9/tasks.md](../us-9/tasks.md) — Pause menu, auto pointer lock, deploy-ready countdown
 - [specs/us-10/tasks.md](../us-10/tasks.md) — Shuffle teams when lobby has no opponents

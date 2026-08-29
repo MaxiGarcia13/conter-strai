@@ -15,7 +15,7 @@ import { assertRoomJoinable, computeExpiresAt } from '../utils/room-expiry';
 import { isRemotePoseMessage } from '../utils/syncable-remote-pose';
 import { isMoveMessage, moveExceedsThreshold } from '../utils/validate-move';
 import { applyMatchShot, isShotMessage } from './apply-match-shot';
-import { assignTeam, checkTeamWipe, teamCount } from './match-teams';
+import { assignTeam, checkTeamWipe, recalculateSpawnIndices, shuffleTeamsIfNoOpponents, teamCount } from './match-teams';
 import { placePlayerAtSpawn, resolveTeamSpawn, respawnMatchPlayers } from './place-match-player';
 
 export interface MatchMetadata {
@@ -242,6 +242,9 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
   }
 
   startRound() {
+    if (shuffleTeamsIfNoOpponents(this.state)) {
+      recalculateSpawnIndices(this.state, this.spawnIndexBySession);
+    }
     this.resetRound();
 
     this.state.roundPhase = 'deploying';

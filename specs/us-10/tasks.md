@@ -6,9 +6,9 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## Server shuffle (US-10.1–US-10.5, US-10.7)
 
-- [ ] Add `shuffleTeamsIfNoOpponents(state, rng?)` in `src/modules/multiplayer/rooms/match-teams.ts`
-- [ ] Add `recalculateSpawnIndices(state, spawnIndexBySession)` in `match-teams.ts`
-- [ ] Call both from `MatchRoom.startRound()` before `respawnMatchPlayers`
+- [x] Add `shuffleTeamsIfNoOpponents(state, rng?)` in `src/modules/multiplayer/rooms/match-teams.ts`
+- [x] Add `recalculateSpawnIndices(state, spawnIndexBySession)` in `match-teams.ts`
+- [x] Call both from `MatchRoom.startRound()` before `respawnMatchPlayers`
 - [ ] Unit: solo skip, mixed lobby skip, shuffle splits (2/3/4 players), skin remap, spawn index recalc, seeded RNG
 
 ## Client sync (US-10.6)

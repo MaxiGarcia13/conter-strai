@@ -1,32 +1,46 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { GAME_BINDINGS, GAME_COMMANDS } from '@/modules/game/constants/game-bindings';
+import { GAME_BINDINGS, GAME_COMMANDS, MOVE_CODES, MOVE_KEY_CODES } from '@/modules/game/constants/game-bindings';
 import { useGamePauseStore } from '@/modules/game/state/game-pause-store';
 
 describe('game-bindings', () => {
-  it('lists the gameplay bindings from the single source of truth', () => {
-    expect(GAME_COMMANDS.map((command) => command.key)).toEqual([
-      'WASD',
-      'Space',
-      'C',
-      'Q',
-      'Shift',
-      'R',
-      'LMB',
-      'Esc',
-      'V (dev)',
+  it('derives GAME_COMMANDS from the registry', () => {
+    expect(GAME_COMMANDS).toEqual([
+      { key: GAME_BINDINGS.move.label, action: GAME_BINDINGS.move.action },
+      { key: GAME_BINDINGS.sprint.label, action: GAME_BINDINGS.sprint.action },
+      { key: GAME_BINDINGS.cameraCycle.label, action: GAME_BINDINGS.cameraCycle.action },
+      { key: GAME_BINDINGS.jump.label, action: GAME_BINDINGS.jump.action },
+      { key: GAME_BINDINGS.kneelToggle.label, action: GAME_BINDINGS.kneelToggle.action },
+      { key: GAME_BINDINGS.reload.label, action: GAME_BINDINGS.reload.action },
+      { key: GAME_BINDINGS.shoot.label, action: GAME_BINDINGS.shoot.action },
+      { key: GAME_BINDINGS.pause.label, action: GAME_BINDINGS.pause.action },
+      { key: GAME_BINDINGS.freeCamera.label, action: GAME_BINDINGS.freeCamera.action },
     ]);
   });
 
-  it('derives runtime keyboard codes from the same registry', () => {
-    expect(GAME_BINDINGS.jump.code).toBe('KeyQ');
-    expect(GAME_BINDINGS.pause.code).toBe('Escape');
-    expect(GAME_BINDINGS.freeCamera.code).toBe('KeyV');
+  it('derives MOVE_CODES from the registry', () => {
+    expect(MOVE_CODES).toMatchObject({
+      forward: GAME_BINDINGS.move.codes.forward,
+      back: GAME_BINDINGS.move.codes.back,
+      left: GAME_BINDINGS.move.codes.left,
+      right: GAME_BINDINGS.move.codes.right,
+      cameraCycle: GAME_BINDINGS.cameraCycle.code,
+      jump: GAME_BINDINGS.jump.code,
+      kneelToggle: GAME_BINDINGS.kneelToggle.code,
+      reload: GAME_BINDINGS.reload.code,
+      runModifier: GAME_BINDINGS.sprint.code,
+    });
+    expect(MOVE_KEY_CODES).toEqual([
+      GAME_BINDINGS.move.codes.forward,
+      GAME_BINDINGS.move.codes.back,
+      GAME_BINDINGS.move.codes.left,
+      GAME_BINDINGS.move.codes.right,
+    ]);
   });
 
   it('marks free-camera as dev-only in the key label', () => {
     expect(GAME_BINDINGS.freeCamera.devOnly).toBe(true);
-    expect(GAME_COMMANDS.find((command) => command.key === 'V (dev)')?.action).toBe(
-      'Toggle free camera',
+    expect(GAME_COMMANDS.find((command) => command.key === GAME_BINDINGS.freeCamera.label)?.action).toBe(
+      GAME_BINDINGS.freeCamera.action,
     );
   });
 });

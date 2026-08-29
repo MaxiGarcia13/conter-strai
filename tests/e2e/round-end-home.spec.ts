@@ -7,13 +7,6 @@ import {
 } from './lobby-helpers';
 import { forceRoundEnd, waitForPlayTest } from './play/test-helpers';
 
-async function navigateGuestToPlay(page: import('@playwright/test').Page, roomId: string): Promise<void> {
-  await page.evaluate((id) => {
-    sessionStorage.setItem(`cs:room:${id}:handoff`, '1');
-  }, roomId);
-  await page.goto(`/room/${roomId}/play`);
-}
-
 async function startTwoPlayerRound(
   hostPage: import('@playwright/test').Page,
   guestPage: import('@playwright/test').Page,
@@ -32,12 +25,10 @@ async function startTwoPlayerRound(
 
   await hostPage.getByRole('button', { name: 'Start Match' }).click();
   await expect(hostPage).toHaveURL(new RegExp(`/room/${roomId}/play$`));
+  // Guest auto-navigates when deploy starts — do not manual-nav (races page.evaluate).
+  await expect(guestPage).toHaveURL(new RegExp(`/room/${roomId}/play$`), { timeout: 30_000 });
 
-  await navigateGuestToPlay(guestPage, roomId);
-  await expect(guestPage).toHaveURL(new RegExp(`/room/${roomId}/play$`));
-
-  await waitForPlayTest(hostPage);
-  await waitForPlayTest(guestPage);
+  await Promise.all([waitForPlayTest(hostPage), waitForPlayTest(guestPage)]);
   await forceRoundEnd(hostPage);
 
   await expect(hostPage.getByRole('alert', { name: /win the round/i })).toBeVisible();
@@ -45,7 +36,7 @@ async function startTwoPlayerRound(
 }
 
 test('guest round-end Home leaves without DELETE', async ({ browser, request }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(120_000);
   const hostRoom = await createHostRoom(request);
   const { roomId } = hostRoom;
 
@@ -79,7 +70,7 @@ test('guest round-end Home leaves without DELETE', async ({ browser, request }) 
 });
 
 test('host round-end Home disposes the room', async ({ page, request }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(120_000);
   const hostRoom = await createHostRoom(request);
   const { roomId } = hostRoom;
 

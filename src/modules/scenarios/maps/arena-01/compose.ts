@@ -1,4 +1,5 @@
 import type { ArenaLayout, ScenarioConfig, ScenarioMeta } from '@/modules/scenarios/types';
+import { assertNoFloorOverlaps } from '@/modules/scenarios/pieces/floor-zone-helpers';
 import { arena01Environment } from './environment';
 import { arena01Greenery } from './greenery';
 import { arena01GroundFloors } from './ground';
@@ -41,3 +42,8 @@ export const arena01: ScenarioConfig = {
   ...arena01Spawns,
   ...arena01Environment,
 };
+
+// Fail fast on z-fighting floor zones during authoring; stripped from production.
+if (import.meta.env.DEV) {
+  assertNoFloorOverlaps(arena01.floorZones ?? []);
+}

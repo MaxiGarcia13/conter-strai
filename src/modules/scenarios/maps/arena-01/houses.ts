@@ -80,9 +80,9 @@ const arena01Houses: HouseFootprint[] = [
   {
     id: 'house-right-tall',
     centerX: 38,
-    centerZ: 5,
+    centerZ: 3,
     width: 18,
-    depth: 22,
+    depth: 16,
     material: FORT,
     walls: { west: { hole: HOLE }, north: { hole: HOLE } },
   },

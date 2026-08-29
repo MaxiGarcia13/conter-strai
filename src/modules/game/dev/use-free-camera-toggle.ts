@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
+import { GAME_BINDINGS } from '../constants/game-bindings';
 import { toggleFreeCamera } from './free-camera-state';
-
-const TOGGLE_KEY = 'KeyV';
 
 /** Listens for KeyV to toggle free-cam mode. */
 export function useFreeCameraToggle(): void {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.repeat || event.code !== TOGGLE_KEY) {
+      if (event.repeat || event.code !== GAME_BINDINGS.freeCamera.code) {
         return;
       }
       toggleFreeCamera();

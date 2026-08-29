@@ -20,7 +20,7 @@ import { useRoundStore } from '@/modules/game/state/round-store';
 import { advancePlayerTransform } from '@/modules/game/utils/advance-player-transform';
 import { applyCameraMode } from '@/modules/game/utils/apply-camera-mode';
 import { axesFromPressedCodes } from '@/modules/game/utils/axes-from-pressed-codes';
-import { MOVE_CODES } from '@/modules/game/utils/move-codes';
+import { MOVE_CODES } from '@/modules/game/constants/game-bindings';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 
 interface UsePlayerMovementFrameOptions {
@@ -31,6 +31,7 @@ interface UsePlayerMovementFrameOptions {
   npcBlockers: CircleBlocker[];
   pressedCodesRef: RefObject<Set<string>>;
   eliminatedRef: RefObject<boolean>;
+  isPausedRef: RefObject<boolean>;
   externalControlsRef: RefObject<unknown>;
 }
 
@@ -43,6 +44,7 @@ export function usePlayerMovementFrame({
   npcBlockers,
   pressedCodesRef,
   eliminatedRef,
+  isPausedRef,
   externalControlsRef,
 }: UsePlayerMovementFrameOptions): void {
   const wasEliminatedRef = useRef(false);
@@ -73,7 +75,7 @@ export function usePlayerMovementFrame({
     const phase = matchConnected
       ? useMultiplayerStore.getState().phase
       : useRoundStore.getState().phase;
-    if (phase === 'loading' || phase === 'countdown' || phase === 'round-end') {
+    if (phase === 'loading' || phase === 'countdown' || phase === 'round-end' || isPausedRef.current) {
       setPlayerLocomotion('idle');
       applyCameraMode(camera, getCameraMode(), getPlayerTransform(), getBodyAnchorY());
       return;

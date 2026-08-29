@@ -1,7 +1,9 @@
 import type { RefObject } from 'react';
+import type { RoundPhase } from '@/modules/game/types';
 import { useEffect } from 'react';
+import { useGamePauseStore } from '@/modules/game/state/game-pause-store';
 import { cycleCameraMode } from '@/modules/game/state/player-state';
-import { MOVE_CODES, MOVE_KEY_CODES } from '@/modules/game/utils/move-codes';
+import { GAME_BINDINGS, MOVE_CODES, MOVE_KEY_CODES } from '@/modules/game/constants/game-bindings';
 import {
   cancelReload,
   requestJump,
@@ -12,13 +14,17 @@ import {
 interface UsePlayerKeyboardOptions {
   pressedCodesRef: RefObject<Set<string>>;
   eliminatedRef: RefObject<boolean>;
+  isPausedRef: RefObject<boolean>;
+  phaseRef: RefObject<RoundPhase | null>;
   externalControlsRef: RefObject<unknown>;
 }
 
-/** Discrete player actions (jump / kneel / reload / camera cycle). Tracking is shared. */
+/** Discrete player actions (jump / kneel / reload / camera cycle) + pause toggle. */
 export function usePlayerKeyboard({
   pressedCodesRef,
   eliminatedRef,
+  isPausedRef,
+  phaseRef,
   externalControlsRef,
 }: UsePlayerKeyboardOptions): void {
   useEffect(() => {
@@ -32,7 +38,15 @@ export function usePlayerKeyboard({
         return;
       }
 
-      if (eliminatedRef.current) {
+      // Esc toggles pause while live only (US-9.3).
+      if (event.code === GAME_BINDINGS.pause.code) {
+        if (!eliminatedRef.current && phaseRef.current === 'live') {
+          useGamePauseStore.getState().togglePause();
+        }
+        return;
+      }
+
+      if (eliminatedRef.current || isPausedRef.current) {
         return;
       }
 
@@ -60,5 +74,5 @@ export function usePlayerKeyboard({
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [pressedCodesRef, eliminatedRef, externalControlsRef]);
+  }, [pressedCodesRef, eliminatedRef, isPausedRef, phaseRef, externalControlsRef]);
 }

@@ -4,8 +4,11 @@ import { useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import { useHealthStore } from '@/modules/combat';
 import { LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
+import { useGamePauseStore } from '@/modules/game/state/game-pause-store';
 import { resetPlayerTransform } from '@/modules/game/state/player-state';
+import { useRoundStore } from '@/modules/game/state/round-store';
 import { npcBlockersFromScenario } from '@/modules/game/utils/npc-blockers-from-scenario';
+import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { useLocomotionSounds } from '../use-locomotion-sounds';
 import { usePressedKeyCodes } from '../use-pressed-key-codes';
 import { usePlayerKeyboard } from './use-player-keyboard';
@@ -38,6 +41,11 @@ export function usePlayerControls({
   const eliminated = useHealthStore(
     (s) => s.healthById[LOCAL_PLAYER_ENTITY_ID]?.isEliminated ?? false,
   );
+  const paused = useGamePauseStore((s) => s.isPaused);
+  const connected = useMultiplayerStore((s) => s.connected);
+  const mpPhase = useMultiplayerStore((s) => s.phase);
+  const roundPhase = useRoundStore((s) => s.phase);
+  const phase = connected ? mpPhase : roundPhase;
   const npcBlockers = useMemo(
     () => npcBlockersFromScenario(scenario, spawn.key),
     [scenario, spawn.key],
@@ -46,6 +54,10 @@ export function usePlayerControls({
   const pressedCodesRef = usePressedKeyCodes();
   const eliminatedRef = useRef(eliminated);
   eliminatedRef.current = eliminated;
+  const isPausedRef = useRef(paused);
+  isPausedRef.current = paused;
+  const phaseRef = useRef(phase);
+  phaseRef.current = phase;
   const externalControlsRef = useRef(externalControls);
   externalControlsRef.current = externalControls;
 
@@ -58,6 +70,8 @@ export function usePlayerControls({
   usePlayerKeyboard({
     pressedCodesRef,
     eliminatedRef,
+    isPausedRef,
+    phaseRef,
     externalControlsRef,
   });
 
@@ -65,6 +79,10 @@ export function usePlayerControls({
     domElement,
     eliminated,
     eliminatedRef,
+    paused,
+    isPausedRef,
+    phase,
+    phaseRef,
     externalControlsRef,
   });
 
@@ -76,6 +94,7 @@ export function usePlayerControls({
     npcBlockers,
     pressedCodesRef,
     eliminatedRef,
+    isPausedRef,
     externalControlsRef,
   });
 

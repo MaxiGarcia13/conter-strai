@@ -105,7 +105,7 @@ Post-split leftovers from `use-player-controls` → folder + `game/utils`. Pick 
 
 - [x] **Share WASD axes in free-cam**
   1. In `dev-free-camera.tsx`, keep a local map only for free-cam extras (`up` / `down` / `boost` / `toggle`).
-  2. For horizontal axes, use `axesFromPressedCodes(pressed, MOVE_CODES)` from `game/utils/axes-from-pressed-codes.ts` + `game/utils/move-codes.ts`.
+  2. For horizontal axes, use `axesFromPressedCodes(pressed, MOVE_CODES)` from `game/utils/axes-from-pressed-codes.ts` + `game/constants/game-bindings.ts`.
   3. Leave vertical + boost math as-is.
 
 - [x] **Document or replace the look pitch floor**

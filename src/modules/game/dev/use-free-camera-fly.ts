@@ -8,7 +8,7 @@ import {
 } from '../constants/player';
 import { usePressedKeyCodes } from '../hooks/use-pressed-key-codes';
 import { axesFromPressedCodes } from '../utils/axes-from-pressed-codes';
-import { MOVE_CODES } from '../utils/move-codes';
+import { MOVE_CODES } from '../constants/game-bindings';
 
 const FREE_CAM_KEYS = {
   up: 'KeyE',

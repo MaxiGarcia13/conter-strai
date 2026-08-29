@@ -22,6 +22,7 @@ import { AimMarker } from './aim-marker';
 import { CameraHud } from './camera-hud';
 import { CrosshairHud } from './crosshair-hud';
 import { DeferredAfterLoad } from './deferred-after-load';
+import { GamePausePanel } from './game-pause-panel';
 import { LoadingReporter } from './loading-reporter';
 import { LocalPlayer } from './local-player';
 import { PlayerControls } from './player-controls';
@@ -104,6 +105,7 @@ export function GameCanvas({
       <LazyDevGameChrome />
       <HealthBar />
       <RoundEndBanner roomId={roomId} scenarioId={scenarioId} />
+      <GamePausePanel roomId={roomId} scenarioId={scenarioId} />
     </div>
   );
 }

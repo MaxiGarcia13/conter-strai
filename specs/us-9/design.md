@@ -108,7 +108,7 @@ Pass `isPausedRef` into player-control hooks (mirror `eliminatedRef`).
 - `role="dialog"`, `aria-modal="true"`, `z-20`
 - Visible when `isPaused && phase === 'live'`
 - Buttons: **Resume**, **Restart** (if `canRestart`), **Leave**, toggle **Commands**
-- Commands rows from [`game-commands.ts`](../../src/modules/game/constants/game-commands.ts)
+- Commands rows from [`game-bindings.ts`](../../src/modules/game/constants/game-bindings.ts)
 
 ### Actions
 
@@ -141,7 +141,7 @@ stateDiagram-v2
 
 ## Commands reference (single source)
 
-[`game-commands.ts`](../../src/modules/game/constants/game-commands.ts):
+[`game-bindings.ts`](../../src/modules/game/constants/game-bindings.ts):
 
 | Key     | Action                 |
 | ------- | ---------------------- |
@@ -159,7 +159,7 @@ stateDiagram-v2
 
 | Layer | Target                                                                                    |
 | ----- | ----------------------------------------------------------------------------------------- |
-| Unit  | `game-pause-store`, `game-commands`, ready gate helper on server                          |
+| Unit  | `game-pause-store`, `game-bindings`, ready gate helper on server                          |
 | Unit  | `MatchRoom`: `playerReady` → countdown only when all ready                                |
 | E2E   | `camera.spec.ts` — no pre-click if auto-lock works in Playwright                          |
 | E2E   | `pause-menu.spec.ts` — Escape panel, Commands, Resume, Leave → `/`                        |

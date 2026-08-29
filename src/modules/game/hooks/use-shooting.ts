@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react';
 import { Raycaster, Vector2 } from 'three';
 import { useHealthStore } from '@/modules/combat';
 import { DEFAULT_LOCAL_TEAM, LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
+import { useGamePauseStore } from '@/modules/game/state/game-pause-store';
 import { useRoundStore } from '@/modules/game/state/round-store';
 import {
   getActiveMatch,
@@ -26,6 +27,9 @@ export function useShooting(domElement: HTMLElement | null) {
   const scene = useThree((s) => s.scene);
   const raycasterRef = useRef(new Raycaster());
   const lastFireRef = useRef(0);
+  const isPaused = useGamePauseStore((s) => s.isPaused);
+  const isPausedRef = useRef(isPaused);
+  isPausedRef.current = isPaused;
 
   useEffect(() => {
     if (!domElement) {
@@ -36,7 +40,7 @@ export function useShooting(domElement: HTMLElement | null) {
       if (event.button !== 0) {
         return;
       }
-      if (!isLookEnabled()) {
+      if (isPausedRef.current || !isLookEnabled()) {
         return;
       }
       const match = getActiveMatch();

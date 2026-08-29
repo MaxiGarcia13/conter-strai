@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { CsButton } from '@/components/cs-button';
 import { clearRoomSession, readRoomSession } from '@/modules/lobby/utils/room-session';
 import { leaveMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
-import { restartRound } from '@/modules/multiplayer/adapters/colyseus-adapter/match-session';
 import { deleteRoom } from '@/modules/multiplayer/services/delete-room';
 import { LobbyRestError } from '@/modules/multiplayer/services/lobby-rest';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 import { useRoundStore } from '../state/round-store';
+import { restartRound } from '../utils/restart-round';
 
 interface RoundEndBannerProps {
   roomId?: string;
@@ -16,7 +16,7 @@ interface RoundEndBannerProps {
 }
 
 /** Full-screen overlay shown when a round ends. Server-driven in a match. */
-export function RoundEndBanner({ roomId }: RoundEndBannerProps) {
+export function RoundEndBanner({ roomId, scenarioId }: RoundEndBannerProps) {
   const connected = useMultiplayerStore((state) => state.connected);
   const mpPhase = useMultiplayerStore((state) => state.phase);
   const mpWinner = useMultiplayerStore((state) => state.winner);
@@ -40,9 +40,7 @@ export function RoundEndBanner({ roomId }: RoundEndBannerProps) {
     if (!canRestart || closing) {
       return;
     }
-    if (connected) {
-      restartRound();
-    }
+    restartRound(connected, scenarioId);
   }
 
   async function handleHome() {

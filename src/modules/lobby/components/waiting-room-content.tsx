@@ -47,11 +47,11 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
   useEffect(() => {
     // Countdown UI lives on `/play` — leave the waiting room when deploy starts.
     // REST snapshot covers guests whose Colyseus phase lags (e.g. background tab).
-    const matchStarted =
-      phase === 'loading'
-      || phase === 'countdown'
-      || phase === 'live'
-      || snapshotPhase === 'in_progress';
+    const matchStarted
+      = phase === 'loading'
+        || phase === 'countdown'
+        || phase === 'live'
+        || snapshotPhase === 'in_progress';
     if (matchStarted) {
       navigateToPlay(roomId);
     }

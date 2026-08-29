@@ -3,4 +3,5 @@ export interface PropDefinition {
   modelUrl: string;
   scale?: number;
   collidable?: boolean;
+  collisionRadius?: number;
 }

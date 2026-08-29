@@ -5,6 +5,7 @@ import type {
   ScenarioMeta,
   SpawnerConfig,
 } from '@/modules/scenarios/types';
+import { arena01Greenery } from './greenery';
 import { arena01Collisions, arena01Floors, arena01Holes, arena01Walls } from './layout';
 
 const arena01Meta: ScenarioMeta = {
@@ -31,7 +32,7 @@ const arena01Layout: ArenaLayout = {
     height: 8,
   },
   wallSegments: arena01Walls,
-  props: [],
+  props: arena01Greenery,
   collisionSegments: arena01Collisions,
   collisionHoles: arena01Holes,
 };

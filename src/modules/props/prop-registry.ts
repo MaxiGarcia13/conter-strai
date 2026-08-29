@@ -1,4 +1,11 @@
 import type { PropDefinition } from './types';
 
-// Deferred until a map needs props; PropInstance wiring stays ready.
-export const props: Record<string, PropDefinition> = {};
+export const props: Record<string, PropDefinition> = {
+  jacaranda: {
+    id: 'jacaranda',
+    modelUrl: '/assets/greenery/jacaranda.glb',
+    scale: 0.4,
+    collidable: true,
+    collisionRadius: 0.9,
+  },
+};

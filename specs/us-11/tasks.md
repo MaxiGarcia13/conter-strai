@@ -6,20 +6,21 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## Assets (US-11.1)
 
-- [ ] Run `npm run assets:compress` for `celandine.glb` and `jacaranda.glb`
-- [ ] Extend `scripts/compress-assets.mjs` with geometry simplify/decimate for `jacaranda.glb`
+- [x] Run `npm run assets:compress` for `jacaranda.glb` (strip extra LODs + simplify + WebP)
+- [x] Extend `scripts/compress-assets.mjs` with a jacaranda LOD-strip + simplify pipeline
+- [x] Delete `public/assets/greenery/celandine.glb` (not used in v1)
 - [ ] Verify jacaranda file size and in-game scale (`~0.35–0.45`) + `collisionRadius` via DEV free-cam
 
 ## Props registry and placement (US-11.2)
 
-- [ ] Add `collisionRadius` to `PropDefinition` in `src/modules/props/types.ts`
-- [ ] Register `celandine` and `jacaranda` in `src/modules/props/prop-registry.ts`
-- [ ] Add `src/modules/scenarios/maps/arena-01/greenery.ts` — celandine scatter + collidable jacaranda (6–10 inside bounds)
+- [x] Add `collisionRadius` to `PropDefinition` in `src/modules/props/types.ts`
+- [x] Register `jacaranda` in `src/modules/props/prop-registry.ts`
+- [x] Add `src/modules/scenarios/maps/arena-01/greenery.ts` — collidable jacaranda only (6–10 inside bounds)
 - [ ] Optional: `src/modules/scenarios/pieces/greenery-helpers.ts` (`scatter-in-rect`, `perimeterVistaProps`)
 
 ## Prop movement collision (US-11.3)
 
-- [ ] Add `src/modules/game/utils/prop-blockers-from-scenario.ts`
+- [x] Add `src/modules/game/utils/prop-blockers-from-scenario.ts`
 - [ ] Merge prop blockers in `src/modules/game/hooks/use-player-controls/use-player-controls.ts`
 - [ ] Unit: `tests/units/game/prop-blockers-from-scenario.test.ts`
 

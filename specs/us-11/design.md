@@ -106,10 +106,11 @@ Presets in [`house-presets.ts`](../../src/modules/scenarios/pieces/house-presets
 
 ## Greenery
 
-| Prop        | Registry                                             | Placement                                      | Collision                                    |
-| ----------- | ---------------------------------------------------- | ---------------------------------------------- | -------------------------------------------- |
-| `celandine` | `/assets/greenery/celandine.glb`                     | Scatter perimeter, building edges, vista skirt | `collidable: false`                          |
-| `jacaranda` | `/assets/greenery/jacaranda.glb`, `scale` ~0.35–0.45 | Cover at block corners, inside bounds          | `collidable: true`, `collisionRadius` ~0.9 m |
+| Prop        | Registry                                             | Placement                             | Collision                                    |
+| ----------- | ---------------------------------------------------- | ------------------------------------- | -------------------------------------------- |
+| `jacaranda` | `/assets/greenery/jacaranda.glb`, `scale` ~0.35–0.45 | Cover at block corners, inside bounds | `collidable: true`, `collisionRadius` ~0.9 m |
+
+Source GLB is a stacked LOD pack (~327 MB / ~6M verts with LOD0+LOD1+trunk/leaf extras all in one scene). Ship **only** `jacaranda_tree_LOD1`, then weld + simplify + 1K WebP textures. Do not keep `celandine.glb`.
 
 [`prop-blockers-from-scenario.ts`](../../src/modules/game/utils/prop-blockers-from-scenario.ts) → merged in [`use-player-controls.ts`](../../src/modules/game/hooks/use-player-controls/use-player-controls.ts) with `npcBlockersFromScenario`.
 
@@ -127,14 +128,14 @@ When `perimeter.mode === 'open'`:
 
 - [`ScenarioWalls`](../../src/modules/scenarios/components/scenario-walls.tsx) skips `outerWalls()`; interior `wallSegments` unchanged
 - [`ScenarioFloor`](../../src/modules/scenarios/components/scenario-floor.tsx) (or `ScenarioVista`) renders extended `forrest_ground` plane: `bounds + 2 * vistaExtension`
-- Skirt greenery: non-collidable celandine / distant jacaranda via optional `perimeterVistaProps` helper
+- Skirt greenery: distant non-collidable jacaranda via optional `perimeterVistaProps` helper
 - Fog hides skirt edge before ground cutoff
 
 `arena-01`: `perimeter: { mode: 'open', vistaExtension: 30 }`; remove reliance on `cliff_side` for outer box.
 
 ## Assets
 
-[`scripts/compress-assets.mjs`](../../scripts/compress-assets.mjs) already lists greenery GLBs. Extend with **geometry simplify** for `jacaranda.glb` (gltf-transform `simplify` / weld) — texture resize alone is insufficient for ~327 MB / ~6M verts.
+[`scripts/compress-assets.mjs`](../../scripts/compress-assets.mjs) runs a jacaranda-specific pipeline (keep `jacaranda_tree_LOD1`, weld, `simplify`, WebP 1K). Texture resize alone is insufficient for the source LOD pack.
 
 Run `npm run assets:compress` before shipping.
 

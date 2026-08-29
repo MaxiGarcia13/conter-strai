@@ -1,8 +1,10 @@
 /**
  * Downscales embedded GLB textures to 1K and writes optimized copies in place.
  * Jacaranda: keep a single LOD, simplify geometry, WebP 1K textures.
+ * Barrier: keep LOD1, strip other LODs, WebP 1K textures.
  * Run: node scripts/compress-assets.mjs
  *      node scripts/compress-assets.mjs public/assets/greenery/jacaranda.glb
+ *      node scripts/compress-assets.mjs public/assets/Infrastructure/concrete_road_barrier.glb
  */
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -27,6 +29,8 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TEXTURE_SIZE = 1024;
 const JACARANDA_REL = 'public/assets/greenery/jacaranda.glb';
 const JACARANDA_KEEP_NODE = 'jacaranda_tree_LOD1';
+const BARRIER_REL = 'public/assets/Infrastructure/concrete_road_barrier.glb';
+const BARRIER_KEEP_NODE = 'concrete_road_barrier_LOD1';
 /** Skip geometry work when the packed LODs are already stripped. */
 const JACARANDA_SIMPLIFY_MIN_VERTS = 200_000;
 /** Unconstrained error so the ratio is actually reached on dense foliage. */
@@ -68,15 +72,15 @@ async function createIo() {
   return io;
 }
 
-function keepJacarandaLod(document) {
+function keepSingleSceneLod(document, keepNodeName, assetLabel) {
   const scene = document.getRoot().listScenes()[0];
   if (!scene) {
-    throw new Error('jacaranda.glb has no scene');
+    throw new Error(`${assetLabel} has no scene`);
   }
 
-  const keep = scene.listChildren().find((node) => node.getName() === JACARANDA_KEEP_NODE);
+  const keep = scene.listChildren().find((node) => node.getName() === keepNodeName);
   if (!keep) {
-    throw new Error(`missing node ${JACARANDA_KEEP_NODE}`);
+    throw new Error(`missing node ${keepNodeName}`);
   }
 
   for (const node of [...scene.listChildren()]) {
@@ -84,6 +88,10 @@ function keepJacarandaLod(document) {
       node.dispose();
     }
   }
+}
+
+function keepJacarandaLod(document) {
+  keepSingleSceneLod(document, JACARANDA_KEEP_NODE, JACARANDA_REL);
 }
 
 function resizeTextureGlb(relativePath) {
@@ -175,13 +183,69 @@ async function optimizeJacaranda() {
   );
 }
 
+async function optimizeBarrier() {
+  const input = path.join(ROOT, BARRIER_REL);
+  if (!fs.existsSync(input)) {
+    console.warn(`skip (missing): ${BARRIER_REL}`);
+    return;
+  }
+
+  const before = fs.statSync(input).size;
+  const io = await createIo();
+  const document = await io.read(input);
+  const keepNode = document
+    .getRoot()
+    .listNodes()
+    .find((node) => node.getName() === BARRIER_KEEP_NODE);
+  const keepVerts = keepNode?.getMesh() ? meshVertexCount(keepNode.getMesh()) : 0;
+  const packedLods = document
+    .getRoot()
+    .listNodes()
+    .some((node) => node.getName() === 'concrete_road_barrier_LOD0');
+
+  if (packedLods) {
+    keepSingleSceneLod(document, BARRIER_KEEP_NODE, BARRIER_REL);
+  } else if (keepVerts > 0) {
+    console.log(`${BARRIER_REL}: already stripped (${keepVerts} verts), skip LOD strip`);
+    return;
+  } else {
+    throw new Error(`missing node ${BARRIER_KEEP_NODE}`);
+  }
+
+  await document.transform(
+    prune(),
+    dedup(),
+    weld(),
+    textureCompress({
+      encoder: sharp,
+      targetFormat: 'webp',
+      resize: [TEXTURE_SIZE, TEXTURE_SIZE],
+      quality: 80,
+    }),
+    quantize(),
+    prune(),
+  );
+
+  const temp = `${input}.tmp.glb`;
+  await io.write(temp, document);
+  fs.renameSync(temp, input);
+
+  const afterMesh = document.getRoot().listMeshes()[0];
+  const afterVerts = afterMesh ? meshVertexCount(afterMesh) : 0;
+  const after = fs.statSync(input).size;
+  console.log(
+    `${BARRIER_REL}: ${formatMb(before)} → ${formatMb(after)} (${keepVerts} → ${afterVerts} verts)`,
+  );
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const runAll = args.length === 0;
   const runJacaranda = runAll || args.some((arg) => arg.includes('jacaranda'));
+  const runBarrier = runAll || args.some((arg) => arg.includes('concrete_road_barrier'));
   const resizeTargets = runAll
     ? RESIZE_TARGETS
-    : args.filter((arg) => !arg.includes('jacaranda'));
+    : args.filter((arg) => !arg.includes('jacaranda') && !arg.includes('concrete_road_barrier'));
 
   for (const relativePath of resizeTargets) {
     resizeTextureGlb(relativePath);
@@ -189,6 +253,10 @@ async function main() {
 
   if (runJacaranda) {
     await optimizeJacaranda();
+  }
+
+  if (runBarrier) {
+    await optimizeBarrier();
   }
 }
 

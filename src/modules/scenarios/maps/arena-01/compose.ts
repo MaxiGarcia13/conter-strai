@@ -4,6 +4,7 @@ import { arena01Environment } from './environment';
 import { arena01Greenery } from './greenery';
 import { arena01GroundFloors } from './ground';
 import { arena01Collisions, arena01Holes, arena01HouseFloors, arena01Walls } from './houses';
+import { arena01Infrastructure } from './infrastructure';
 import { arena01Spawns } from './spawns';
 
 const arena01Meta: ScenarioMeta = {
@@ -34,7 +35,7 @@ const arena01Layout: ArenaLayout = {
     height: 8,
   },
   wallSegments: arena01Walls,
-  props: arena01Greenery,
+  props: [...arena01Greenery, ...arena01Infrastructure],
   collisionSegments: arena01Collisions,
   collisionHoles: arena01Holes,
 };

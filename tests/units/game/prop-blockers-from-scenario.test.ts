@@ -17,6 +17,19 @@ describe('propBlockersFromScenario', () => {
     }
   });
 
+  it('produces eight collidable concrete road barrier blockers inside playable bounds', () => {
+    const blockers = propBlockersFromScenario(arena01);
+
+    const barriers = blockers.filter((b) => b.entityId?.startsWith('concreteRoadBarrier'));
+    expect(barriers).toHaveLength(8);
+
+    for (const blocker of barriers) {
+      expect(blocker.radius).toBe(0.6);
+      expect(Math.abs(blocker.x)).toBeLessThanOrEqual(50);
+      expect(Math.abs(blocker.z)).toBeLessThanOrEqual(25);
+    }
+  });
+
   it('does not create blockers for non-collidable skirt jacaranda', () => {
     const blockers = propBlockersFromScenario(arena01);
     const outsideBounds = blockers.filter(

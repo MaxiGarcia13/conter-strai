@@ -9,6 +9,13 @@ export const props: Record<string, PropDefinition> = {
     collidable: true,
     collisionRadius: 0.9,
   },
+  concreteRoadBarrier: {
+    id: 'concreteRoadBarrier',
+    modelUrl: '/assets/Infrastructure/concrete_road_barrier.glb',
+    scale: 1,
+    collidable: true,
+    collisionRadius: 0.6,
+  },
 };
 
 // Preload before ScenarioScene mounts so useGLTF does not re-trigger drei's

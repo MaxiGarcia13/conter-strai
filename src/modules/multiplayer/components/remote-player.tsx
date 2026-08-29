@@ -2,16 +2,12 @@ import type { Group } from 'three';
 import type { RemoteMotionSample } from '../utils/resolve-remote-locomotion';
 import type { RemoteRenderTransform } from '../utils/step-remote-render-transform';
 import type { SyncableRemotePose } from '../utils/syncable-remote-pose';
-import type { EntityId, LocomotionState, SoldierSkinId } from '@/modules/soldiers';
+import type { EntityId, SoldierSkinId } from '@/modules/soldiers';
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
-import {
-  MODEL_FORWARD_YAW_OFFSET,
-  RUN_BACKWARD_SPEED,
-  RUN_SPEED,
-  WALK_BACKWARD_SPEED,
-  WALK_SPEED,
-} from '@/modules/game/constants/player';
+import { MODEL_FORWARD_YAW_OFFSET } from '@/modules/game/constants/player';
+import { expectedLocomotionSpeed } from '@/modules/game/utils/expected-locomotion-speed';
+import { resolveLocomotionTimeScale } from '@/modules/game/utils/resolve-locomotion-time-scale';
 import { SoldierMeshBody } from '@/modules/soldiers/components/soldier-mesh-body';
 import { useSoldierLocomotion } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { REMOTE_LOCOMOTION_CROSSFADE_SECONDS } from '@/modules/soldiers/hooks/use-soldier-locomotion/apply-clip-transition';
@@ -28,22 +24,6 @@ interface RemotePlayerProps {
   /** Colyseus session id — also the hitbox entity id on the server. */
   sessionId: EntityId;
   skinId: SoldierSkinId;
-}
-
-function expectedLocomotionSpeed(locomotion: LocomotionState): number | null {
-  switch (locomotion) {
-    case 'walk':
-    case 'crouchWalking':
-      return WALK_SPEED;
-    case 'run':
-      return RUN_SPEED;
-    case 'walkBackward':
-      return WALK_BACKWARD_SPEED;
-    case 'runBackward':
-      return RUN_BACKWARD_SPEED;
-    default:
-      return null;
-  }
 }
 
 /**
@@ -144,11 +124,13 @@ export function RemotePlayer({ sessionId, skinId }: RemotePlayerProps) {
       if (pose) {
         return 1;
       }
+      const baseScale = resolveLocomotionTimeScale(locomotion);
       const expected = expectedLocomotionSpeed(locomotion);
       if (!expected) {
         return 1;
       }
-      return Math.min(1.35, Math.max(0.2, renderedSpeedRef.current / expected));
+      const velocityRatio = renderedSpeedRef.current / expected;
+      return baseScale * Math.min(1.15, Math.max(0.85, velocityRatio));
     },
     onJumpFinished: consumeHeldOneShot,
     onReloadingFinished: consumeHeldOneShot,

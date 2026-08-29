@@ -1,12 +1,12 @@
 import type { CircleBlocker } from './resolve-player-collision';
 import type { CollisionSegment } from '@/modules/scenarios/types';
 import {
-  PLAYER_RADIUS,
   RUN_BACKWARD_SPEED,
   RUN_SPEED,
   WALK_BACKWARD_SPEED,
   WALK_SPEED,
-} from '@/modules/game/constants/player';
+} from '@/modules/game/constants/locomotion';
+import { PLAYER_RADIUS } from '@/modules/game/constants/player';
 import { resolveLocomotionState } from '@/modules/soldiers/utils/resolve-locomotion-state';
 import { clamp } from '@/utils/clamp';
 import { resolveCircleBlockers, resolvePlayerCollision } from './resolve-player-collision';

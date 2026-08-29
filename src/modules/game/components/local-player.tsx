@@ -18,6 +18,7 @@ import {
 } from '../constants/player';
 import { clearPlayerPoseIf, getCameraMode, getPlayerLocomotion, getPlayerPose, getPlayerPoseEpoch, getPlayerTransform, setBodyAnchorY, setPlayerPose } from '../state/player-state';
 import { placeCameraAtHead } from '../utils/fps-head-camera';
+import { resolveLocomotionTimeScale } from '../utils/resolve-locomotion-time-scale';
 
 interface LocalPlayerProps {
   skinId?: SoldierSkinId;
@@ -82,6 +83,13 @@ export function LocalPlayer({ skinId = DEFAULT_PLAY_SKIN_ID }: LocalPlayerProps)
       onReloadingFinished: clearReloadingPose,
       onShootingFinished: clearShootingPose,
       onHitReactionStarted: clearInterruptedPoses,
+      getLocomotionTimeScale: () => {
+        const pose = getPlayerPose();
+        if (pose && pose !== 'kneel') {
+          return 1;
+        }
+        return resolveLocomotionTimeScale(getPlayerLocomotion());
+      },
     },
   );
 

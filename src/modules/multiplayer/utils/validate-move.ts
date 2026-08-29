@@ -1,5 +1,5 @@
 import type { MoveMessage } from '../adapters/colyseus-adapter/types';
-import { RUN_SPEED } from '@/modules/game/constants/player';
+import { RUN_SPEED } from '@/modules/game/constants/locomotion';
 import { TRANSFORM_SYNC_INTERVAL_MS } from '../adapters/colyseus-adapter/types';
 
 /** Hard per-message horizontal teleport cap (meters). */

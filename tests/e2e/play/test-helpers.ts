@@ -75,28 +75,41 @@ export async function navigateToPlayFromWaitingRoom(page: Page, roomId: string):
 
 /** Hard-nav to `/play` with the lobby handoff flag (host or guest). */
 export async function navigateToPlayWithHandoff(page: Page, roomId: string): Promise<void> {
-  await page.evaluate((id) => {
-    sessionStorage.setItem(`cs:room:${id}:handoff`, '1');
-  }, roomId);
+  await markPlayHandoff(page, roomId);
   await page.goto(`/room/${roomId}/play`);
 }
 
+/** Set the play handoff flag while the waiting-room page is stable (before any nav). */
+export async function markPlayHandoff(page: Page, roomId: string): Promise<void> {
+  await page.evaluate((id) => {
+    sessionStorage.setItem(`cs:room:${id}:handoff`, '1');
+  }, roomId);
+}
+
 /**
- * Guest waiting rooms auto-nav when deploy starts; on CI the guest tab can lag.
- * Prefer app-driven navigation, then nudge with a handoff nav when still waiting.
+ * Move a guest from the waiting room to `/play` after the host starts the match.
+ * Call `markPlayHandoff` on the guest before the host clicks Start Match so a
+ * fallback `goto` never needs `evaluate` during an in-flight navigation (CI flake).
  */
-export async function ensureGuestReachedPlay(page: Page, roomId: string): Promise<void> {
+export async function ensureGuestReachedPlay(
+  page: Page,
+  roomId: string,
+  options: { handoffPreMarked?: boolean } = {},
+): Promise<void> {
   const playUrl = new RegExp(`/room/${roomId}/play$`);
-  const waitingUrl = new RegExp(`/room/${roomId}$`);
+
+  if (!options.handoffPreMarked) {
+    await markPlayHandoff(page, roomId);
+  }
 
   await page.bringToFront();
 
   try {
-    await expect(page).toHaveURL(playUrl, { timeout: 15_000 });
-    return;
+    await expect(page).toHaveURL(playUrl, { timeout: 5_000 });
   } catch {
-    if (waitingUrl.test(page.url())) {
-      await navigateToPlayWithHandoff(page, roomId);
+    if (!playUrl.test(page.url())) {
+      // Handoff already set — hard-nav without evaluate (avoids destroyed-context races).
+      await page.goto(`/room/${roomId}/play`);
     }
     await expect(page).toHaveURL(playUrl, { timeout: 30_000 });
   }
@@ -130,6 +143,14 @@ export function deployingLoader(page: Page) {
 
 export function countdownBanner(page: Page) {
   return page.getByRole('status', { name: /Starting in/i });
+}
+
+/** Wait for the 3–2–1 overlay to clear so the server round is `in_progress`. */
+export async function waitForCountdownToFinish(page: Page): Promise<void> {
+  const countdown = countdownBanner(page);
+  if (await countdown.isVisible()) {
+    await expect(countdown).toBeHidden({ timeout: 15_000 });
+  }
 }
 
 /** Playwright hook — assets may finish before the test observes the loader. */

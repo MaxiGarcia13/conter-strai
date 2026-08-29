@@ -5,7 +5,13 @@ import {
   seedHostSession,
   waitForMatchSession,
 } from './lobby-helpers';
-import { ensureGuestReachedPlay, forceRoundEnd, waitForPlayTest } from './play/test-helpers';
+import {
+  ensureGuestReachedPlay,
+  forceRoundEnd,
+  markPlayHandoff,
+  waitForCountdownToFinish,
+  waitForPlayTest,
+} from './play/test-helpers';
 
 async function startTwoPlayerRound(
   hostPage: import('@playwright/test').Page,
@@ -23,13 +29,18 @@ async function startTwoPlayerRound(
   await waitForMatchSession(guestPage, roomId);
   await expect(hostPage.getByRole('button', { name: 'Start Match' })).toBeEnabled();
 
+  // Mark handoff while the guest waiting page is stable — fallback goto must not evaluate mid-nav.
+  await markPlayHandoff(guestPage, roomId);
+
   await hostPage.getByRole('button', { name: 'Start Match' }).click();
-  await Promise.all([
-    expect(hostPage).toHaveURL(new RegExp(`/room/${roomId}/play$`)),
-    ensureGuestReachedPlay(guestPage, roomId),
-  ]);
+  await expect(hostPage).toHaveURL(new RegExp(`/room/${roomId}/play$`), { timeout: 30_000 });
+  await ensureGuestReachedPlay(guestPage, roomId, { handoffPreMarked: true });
 
   await Promise.all([waitForPlayTest(hostPage), waitForPlayTest(guestPage)]);
+  await Promise.all([
+    waitForCountdownToFinish(hostPage),
+    waitForCountdownToFinish(guestPage),
+  ]);
   await forceRoundEnd(hostPage);
 
   await expect(hostPage.getByRole('alert', { name: /win the round/i })).toBeVisible();

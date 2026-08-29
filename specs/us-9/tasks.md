@@ -25,12 +25,17 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 - [x] Unit: `MatchRoom` ready gate — 1 player, 2 players, disconnect mid-deploy
 - [x] E2e: countdown does not appear until deploy loader clears
 
-## Auto pointer lock (US-9.1 / US-9.2)
+## Look capture (US-9.1 / US-9.2)
 
-- [ ] In `use-player-pointer-lock.ts`: request lock on transition to **`live`** when `!eliminated && !paused`
-- [ ] Keep canvas click as fallback via existing `requestPointerLock`
-- [ ] Re-request lock on pause resume
-- [ ] E2e: update `camera.spec.ts` — remove pre-click when auto-lock succeeds in CI
+Browsers reject `requestPointerLock()` without a user gesture, so look is **document-level mousemove on mount** (no pre-click). Pointer lock is attempted on re-engage click when allowed; swallow rejections in `request-pointer-lock.ts`.
+
+- [x] `player-state.ts`: `isLookEnabled` / `setLookEnabled`; reset on `resetPlayerTransform`
+- [x] `use-player-pointer-lock.ts`: document `mousemove` look on mount; `cursor-none` on `#game-canvas` while captured
+- [x] **Esc** releases look (cursor returns); canvas **click** re-engages and calls `requestPointerLock` as a best-effort upgrade
+- [x] Release on **`round-end`**, elimination, and `pointerlockchange`; re-engage when phase leaves **`round-end`** and player is alive
+- [x] `use-shooting.ts`: gate fire on `isLookEnabled()`
+- [ ] Re-engage look on pause **Resume** (blocked on pause menu — US-9.3; Esc today releases look, not pause)
+- [x] E2e: `camera.spec.ts` — no pre-click for camera cycle
 
 ## Pause menu (US-9.3–US-9.7)
 

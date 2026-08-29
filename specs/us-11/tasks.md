@@ -28,8 +28,8 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 - [x] Extend `HouseFootprint` — per-side/house height, `'open'` sides, optional `floorAssetId`, inset interior floor
 - [x] Update `wall-segment-helpers.ts` for variable height and open sides
-- [ ] Add `src/modules/scenarios/pieces/house-presets.ts` (`ruinedCottage`, `cornerRuin`, `fortifiedBlock`, `streetShack`, …)
-- [ ] Unit: extend `tests/units/scenarios/collision-hole-math.test.ts`
+- [x] Add `src/modules/scenarios/pieces/house-presets.ts` (`ruinedCottage`, `cornerRuin`, `fortifiedBlock`, `streetShack`, …)
+- [x] Unit: extend `tests/units/scenarios/collision-hole-math.test.ts`
 
 ## Modular map layout (US-11.5)
 

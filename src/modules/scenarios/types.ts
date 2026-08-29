@@ -106,8 +106,24 @@ export interface ScenarioLighting {
   toneMappingExposure?: number;
 }
 
+export interface ScenarioSky {
+  /** `'gradient'` renders a three.js `<Sky>`; `'color'` falls back to a flat horizon. */
+  type: 'gradient' | 'color';
+  /** Overrides `lighting.sunPosition` when the sky needs its own sun placement. */
+  sunPosition?: Vec3;
+  horizonColor?: string;
+}
+
+export interface ScenarioFog {
+  color: string;
+  near: number;
+  far: number;
+}
+
 export interface ArenaEnvironment {
   lighting?: ScenarioLighting;
+  sky?: ScenarioSky;
+  fog?: ScenarioFog;
 }
 
 // ---------------------------------------------------------------------------

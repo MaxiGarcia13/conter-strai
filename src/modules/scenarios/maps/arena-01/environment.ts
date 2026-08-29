@@ -13,4 +13,12 @@ export const arena01Environment: ArenaEnvironment = {
     toneMapping: true,
     toneMappingExposure: 1.1,
   },
+  sky: {
+    type: 'gradient',
+  },
+  fog: {
+    color: '#c3d5e8',
+    near: 50,
+    far: 150,
+  },
 };

@@ -14,6 +14,8 @@ import {
   ScenarioSoldiers,
 } from '@/modules/scenarios';
 import { ScenarioLighting } from '@/modules/scenarios/components/scenario-lighting';
+import { ScenarioSky } from '@/modules/scenarios/components/scenario-sky';
+import { DEFAULT_SUN_POSITION } from '@/modules/scenarios/constants/scenario-lighting';
 import { DEFAULT_PLAY_SKIN_ID, DEFAULT_SCENARIO_ID } from '../constants/play-defaults';
 import { LazyDevGameChrome, LazyDevSceneTools } from '../dev';
 import { useRoundStore } from '../state/round-store';
@@ -74,6 +76,11 @@ export function GameCanvas({
       >
         {trackLoading && onLoaderChange && <LoadingReporter onLoaderChange={handleLoaderChange} />}
         <ScenarioLighting lighting={scenario.lighting} shadows />
+        <ScenarioSky
+          sky={scenario.sky}
+          fog={scenario.fog}
+          sunPosition={scenario.lighting?.sunPosition ?? DEFAULT_SUN_POSITION}
+        />
 
         <PlayerControls scenario={scenario} spawn={localSpawn} />
 

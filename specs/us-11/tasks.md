@@ -47,10 +47,10 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## Sky and fog (US-11.7)
 
-- [ ] Extend `ArenaEnvironment` in `src/modules/scenarios/types.ts` (`sky`, `fog`)
-- [ ] Add `src/modules/scenarios/components/scenario-sky.tsx` (drei `<Sky>` + scene fog)
-- [ ] Mount in `src/modules/game/components/game-canvas.tsx`
-- [ ] Configure sky + fog in `maps/arena-01/environment.ts`
+- [x] Extend `ArenaEnvironment` in `src/modules/scenarios/types.ts` (`sky`, `fog`)
+- [x] Add `src/modules/scenarios/components/scenario-sky.tsx` (drei `<Sky>` + scene fog)
+- [x] Mount in `src/modules/game/components/game-canvas.tsx`
+- [x] Configure sky + fog in `maps/arena-01/environment.ts`
 
 ## Open foggy perimeter (US-11.8)
 

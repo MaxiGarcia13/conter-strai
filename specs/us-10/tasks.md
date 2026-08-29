@@ -13,7 +13,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## Client sync (US-10.6)
 
-- [ ] In `bind-match.ts`: sync local `team` / `skin` from server snapshot into `writeRoomSession` when changed
+- [x] In `bind-match.ts`: sync local `team` / `skin` from server snapshot into `writeRoomSession` when changed
 
 ## Spec (on ship)
 

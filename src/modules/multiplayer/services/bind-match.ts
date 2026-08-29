@@ -1,4 +1,4 @@
-import type { MatchHandle } from '../adapters/colyseus-adapter';
+import type { MatchHandle, PlayersUpdatePayload } from '../adapters/colyseus-adapter';
 import type { MatchRoundPhase } from '../schema';
 import type { EntityId } from '@/modules/soldiers';
 import { useHealthStore } from '@/modules/combat';
@@ -9,7 +9,7 @@ import {
   setPlayerLocomotion,
   setPlayerPose,
 } from '@/modules/game/state/player-state';
-import { clearRoomSession } from '@/modules/lobby/utils/room-session';
+import { clearRoomSession, readRoomSession, writeRoomSession } from '@/modules/lobby/utils/room-session';
 import { requestHitReaction } from '@/modules/soldiers/state/hit-reaction-state';
 import { useMultiplayerStore } from '../stores/multiplayer-store';
 import { resolveServerHealthEffects } from './resolve-server-health-effects';
@@ -33,6 +33,19 @@ function applyLocalRoundRespawn(handle: MatchHandle): void {
 }
 
 /**
+ * Mirror authoritative team/skin into the room session so `/play` locals match
+ * the server (e.g. after a waiting-room shuffle moved this player).
+ */
+function syncLocalTeamAndSkin(roomId: string, payload: PlayersUpdatePayload): void {
+  const local = payload.players.find((player) => player.sessionId === payload.localSessionId);
+  const session = readRoomSession(roomId);
+  if (!local || !session || (local.team === session.team && local.skin === session.skin)) {
+    return;
+  }
+  writeRoomSession(roomId, { ...session, team: local.team, skin: local.skin });
+}
+
+/**
  * Feeds an active match into the stores: player/round snapshots populate the
  * multiplayer store, the local player's HP mirrors into the health store (so
  * HealthBar / movement freeze / dying pose stay server-driven), and HP drops
@@ -43,6 +56,8 @@ export function bindMatch(handle: MatchHandle, roomId: string): () => void {
   let prevRoundPhase: MatchRoundPhase | null = null;
 
   const offPlayerUpdate = handle.onPlayerUpdate((payload) => {
+    syncLocalTeamAndSkin(roomId, payload);
+
     const { localHealth, hitReactions, nextById } = resolveServerHealthEffects(payload, prevById);
     prevById = nextById;
 

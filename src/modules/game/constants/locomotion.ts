@@ -16,7 +16,7 @@ export const RUN_BACKWARD_SPEED = RUN_SPEED * 0.6;
 export const LOCOMOTION_CLIP_REFERENCE_SPEED: Partial<Record<LocomotionState, number>> = {
   walk: 7,
   run: 7,
-  crouchWalking: 1.5,
-  walkBackward: 1.92,
-  runBackward: 3.72,
+  crouchWalking: 5,
+  walkBackward: 5,
+  runBackward: 5,
 };

@@ -1,5 +1,6 @@
 import type { CollisionHole, ScenarioFloorZone, ScenarioWallSegment } from '../types';
-import type { WallMaterialId } from './constants';
+import type { WALL_HEIGHT, WallMaterialId } from './constants';
+import type { TextureId } from '@/modules/textures';
 import { FLOOR_MATERIAL } from './constants';
 import { floorZone } from './floor-helpers';
 import { collisionHole, wallSegmentsAlongX, wallSegmentsAlongZ } from './wall-segment-helpers';
@@ -7,8 +8,26 @@ import { collisionHole, wallSegmentsAlongX, wallSegmentsAlongZ } from './wall-se
 /** Default doorway / blast-hole width (meters). */
 export const WALL_HOLE_WIDTH = 2.2;
 
-/** Full wall or a centered gap small enough to slip through but not shoot across easily. */
-export type HouseSide = 'full' | { hole: number };
+/** Interior floor inset from each wall (meters) so tiles don't bleed into the street. */
+export const HOUSE_FLOOR_INSET = 0.45;
+
+export type HouseWallHeight = keyof typeof WALL_HEIGHT;
+
+/**
+ * A wall edge: `'full'` solid, `'open'` no wall/collision, or a spec with an
+ * optional centered `hole` and per-side `height`.
+ */
+export type HouseSide
+  = | 'full'
+    | 'open'
+    | { hole?: number; height?: HouseWallHeight };
+
+export interface HouseWalls {
+  north?: HouseSide;
+  south?: HouseSide;
+  east?: HouseSide;
+  west?: HouseSide;
+}
 
 export interface HouseFootprint {
   id: string;
@@ -17,13 +36,22 @@ export interface HouseFootprint {
   width: number;
   depth: number;
   material: WallMaterialId;
-  /** Sides default to full walls; add `{ hole }` for a small opening only. */
-  walls?: {
-    north?: HouseSide;
-    south?: HouseSide;
-    east?: HouseSide;
-    west?: HouseSide;
-  };
+  /** House-level wall height; sides fall back to this, then `WALL_HEIGHT.full`. */
+  height?: HouseWallHeight;
+  /** Floor material override; defaults to `FLOOR_MATERIAL.tile`. */
+  floorAssetId?: TextureId;
+  /** Interior floor inset from each wall; defaults to `HOUSE_FLOOR_INSET`. */
+  floorInset?: number;
+  /** Sides default to full walls; add `{ hole }` for a small opening or `'open'` to remove the edge. */
+  walls?: HouseWalls;
+}
+
+/** Height for a side, falling back to the house default then `full`. */
+function sideHeight(house: HouseFootprint, side: HouseSide | undefined): HouseWallHeight {
+  if (side && side !== 'full' && side !== 'open' && side.height) {
+    return side.height;
+  }
+  return house.height ?? 'full';
 }
 
 /** Floor zone + perimeter walls with optional small holes per side. */
@@ -47,14 +75,25 @@ function houseFootprint(house: HouseFootprint): {
   ];
 
   const segments: ScenarioWallSegment[] = [
-    ...wallSegmentsAlongX(northZ, centerX, width, walls.north ?? 'full', material, `${id}-north`),
-    ...wallSegmentsAlongX(southZ, centerX, width, walls.south ?? 'full', material, `${id}-south`),
-    ...wallSegmentsAlongZ(westX, centerZ, depth, walls.west ?? 'full', material, `${id}-west`),
-    ...wallSegmentsAlongZ(eastX, centerZ, depth, walls.east ?? 'full', material, `${id}-east`),
+    ...wallSegmentsAlongX(northZ, centerX, width, walls.north ?? 'full', material, `${id}-north`, sideHeight(house, walls.north)),
+    ...wallSegmentsAlongX(southZ, centerX, width, walls.south ?? 'full', material, `${id}-south`, sideHeight(house, walls.south)),
+    ...wallSegmentsAlongZ(westX, centerZ, depth, walls.west ?? 'full', material, `${id}-west`, sideHeight(house, walls.west)),
+    ...wallSegmentsAlongZ(eastX, centerZ, depth, walls.east ?? 'full', material, `${id}-east`, sideHeight(house, walls.east)),
   ];
 
+  const inset = house.floorInset ?? HOUSE_FLOOR_INSET;
+  const floorWidth = Math.max(width - inset * 2, 0);
+  const floorDepth = Math.max(depth - inset * 2, 0);
+
   return {
-    floor: floorZone(`${id}-floor`, FLOOR_MATERIAL.tile, centerX, centerZ, width, depth),
+    floor: floorZone(
+      `${id}-floor`,
+      house.floorAssetId ?? FLOOR_MATERIAL.tile,
+      centerX,
+      centerZ,
+      floorWidth,
+      floorDepth,
+    ),
     walls: segments,
     holes,
   };

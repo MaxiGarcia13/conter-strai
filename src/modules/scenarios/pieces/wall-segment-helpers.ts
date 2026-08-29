@@ -1,16 +1,26 @@
 import type { CollisionAxis, CollisionHole, ScenarioWallSegment } from '../types';
 import type { WallMaterialId } from './constants';
-import type { HouseSide } from './house-helpers';
+import type { HouseSide, HouseWallHeight } from './house-helpers';
 import { WALL_HEIGHT } from './constants';
 import { wallAlongX, wallAlongZ } from './wall-helpers';
 
-const H = WALL_HEIGHT.full;
+function sideHeight(side: HouseSide | undefined, fallback: HouseWallHeight): number {
+  const height = defaultHeight(side, fallback);
+  return WALL_HEIGHT[height];
+}
+
+function defaultHeight(side: HouseSide | undefined, fallback: HouseWallHeight): HouseWallHeight {
+  if (side && side !== 'full' && side !== 'open' && side.height) {
+    return side.height;
+  }
+  return fallback;
+}
 
 export function holeWidth(side: HouseSide | undefined): number | null {
-  if (!side || side === 'full') {
+  if (!side || side === 'full' || side === 'open') {
     return null;
   }
-  return side.hole;
+  return side.hole ?? null;
 }
 
 export function collisionHole(
@@ -19,6 +29,9 @@ export function collisionHole(
   center: [number, number, number],
   totalLength: number,
 ): CollisionHole[] {
+  if (side === 'open') {
+    return [];
+  }
   const width = holeWidth(side);
   if (width === null || width >= totalLength - 0.6) {
     return [];
@@ -33,16 +46,21 @@ export function wallSegmentsAlongX(
   side: HouseSide | undefined,
   material: WallMaterialId,
   idPrefix: string,
+  fallbackHeight: HouseWallHeight = 'full',
 ): ScenarioWallSegment[] {
+  if (side === 'open') {
+    return [];
+  }
+  const height = sideHeight(side, fallbackHeight);
   const gap = holeWidth(side);
   if (gap === null || gap >= totalLength - 0.6) {
-    return [wallAlongX(centerX, z, totalLength, H, material, idPrefix)];
+    return [wallAlongX(centerX, z, totalLength, height, material, idPrefix)];
   }
   const segmentLength = (totalLength - gap) / 2;
   const offset = segmentLength / 2 + gap / 2;
   return [
-    wallAlongX(centerX - offset, z, segmentLength, H, material, `${idPrefix}-a`),
-    wallAlongX(centerX + offset, z, segmentLength, H, material, `${idPrefix}-b`),
+    wallAlongX(centerX - offset, z, segmentLength, height, material, `${idPrefix}-a`),
+    wallAlongX(centerX + offset, z, segmentLength, height, material, `${idPrefix}-b`),
   ];
 }
 
@@ -53,15 +71,20 @@ export function wallSegmentsAlongZ(
   side: HouseSide | undefined,
   material: WallMaterialId,
   idPrefix: string,
+  fallbackHeight: HouseWallHeight = 'full',
 ): ScenarioWallSegment[] {
+  if (side === 'open') {
+    return [];
+  }
+  const height = sideHeight(side, fallbackHeight);
   const gap = holeWidth(side);
   if (gap === null || gap >= totalLength - 0.6) {
-    return [wallAlongZ(x, centerZ, totalLength, H, material, idPrefix)];
+    return [wallAlongZ(x, centerZ, totalLength, height, material, idPrefix)];
   }
   const segmentLength = (totalLength - gap) / 2;
   const offset = segmentLength / 2 + gap / 2;
   return [
-    wallAlongZ(x, centerZ - offset, segmentLength, H, material, `${idPrefix}-a`),
-    wallAlongZ(x, centerZ + offset, segmentLength, H, material, `${idPrefix}-b`),
+    wallAlongZ(x, centerZ - offset, segmentLength, height, material, `${idPrefix}-a`),
+    wallAlongZ(x, centerZ + offset, segmentLength, height, material, `${idPrefix}-b`),
   ];
 }

@@ -6,6 +6,7 @@ import { useFrame } from '@react-three/fiber';
 
 import { useRef } from 'react';
 import { useHealthStore } from '@/modules/combat';
+import { MOVE_CODES } from '@/modules/game/constants/game-bindings';
 import {
   MAX_FRAME_DELTA_SECONDS,
 } from '@/modules/game/constants/player';
@@ -20,7 +21,6 @@ import { useRoundStore } from '@/modules/game/state/round-store';
 import { advancePlayerTransform } from '@/modules/game/utils/advance-player-transform';
 import { applyCameraMode } from '@/modules/game/utils/apply-camera-mode';
 import { axesFromPressedCodes } from '@/modules/game/utils/axes-from-pressed-codes';
-import { MOVE_CODES } from '@/modules/game/constants/game-bindings';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 
 interface UsePlayerMovementFrameOptions {

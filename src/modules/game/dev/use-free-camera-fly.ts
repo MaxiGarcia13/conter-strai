@@ -2,13 +2,13 @@ import type { Camera } from 'three';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
+import { MOVE_CODES } from '../constants/game-bindings';
 import {
   MAX_FRAME_DELTA_SECONDS,
   RUN_SPEED,
 } from '../constants/player';
 import { usePressedKeyCodes } from '../hooks/use-pressed-key-codes';
 import { axesFromPressedCodes } from '../utils/axes-from-pressed-codes';
-import { MOVE_CODES } from '../constants/game-bindings';
 
 const FREE_CAM_KEYS = {
   up: 'KeyE',

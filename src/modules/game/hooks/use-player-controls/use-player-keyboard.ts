@@ -1,9 +1,9 @@
 import type { RefObject } from 'react';
 import type { RoundPhase } from '@/modules/game/types';
 import { useEffect } from 'react';
+import { GAME_BINDINGS, MOVE_CODES, MOVE_KEY_CODES } from '@/modules/game/constants/game-bindings';
 import { useGamePauseStore } from '@/modules/game/state/game-pause-store';
 import { cycleCameraMode } from '@/modules/game/state/player-state';
-import { GAME_BINDINGS, MOVE_CODES, MOVE_KEY_CODES } from '@/modules/game/constants/game-bindings';
 import {
   cancelReload,
   requestJump,

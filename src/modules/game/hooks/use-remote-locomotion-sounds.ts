@@ -89,7 +89,7 @@ export function useRemoteLocomotionSounds(): void {
   const listener = useThree((s) => s.camera);
   const connected = useMultiplayerStore((s) => s.connected);
   const sceneRef = useRef<Scene>(scene);
-  const positionScratch = useRef(new Vector3());
+  const positionScratchRef = useRef(new Vector3());
   sceneRef.current = scene;
 
   const loopsBySessionRef = useRef(new Map<string, RemotePlayerLoops>());
@@ -159,8 +159,8 @@ export function useRemoteLocomotionSounds(): void {
         continue;
       }
 
-      const worldPos = findEntityWorldPosition(sceneRef.current, sessionId, positionScratch.current)
-        ?? positionScratch.current.set(x, y, z);
+      const worldPos = findEntityWorldPosition(sceneRef.current, sessionId, positionScratchRef.current)
+        ?? positionScratchRef.current.set(x, y, z);
       const spatialVolume = computeSpatialVolume(
         worldPos,
         listenerPos,

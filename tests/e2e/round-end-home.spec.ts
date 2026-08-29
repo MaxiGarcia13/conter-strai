@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 import {
   createHostRoom,
@@ -14,8 +15,8 @@ import {
 } from './play/test-helpers';
 
 async function startTwoPlayerRound(
-  hostPage: import('@playwright/test').Page,
-  guestPage: import('@playwright/test').Page,
+  hostPage: Page,
+  guestPage: Page,
   hostRoom: Awaited<ReturnType<typeof createHostRoom>>,
 ): Promise<void> {
   const { roomId } = hostRoom;

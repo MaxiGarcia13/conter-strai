@@ -149,3 +149,37 @@ Join → waiting → browser **back** to `/room/{id}/join` → second **Join Roo
 - [x] **Guest round-end Home** — two-browser or single guest: after round end, guest **Home** leaves without `DELETE` (no `401`); host **Home** still disposes room
 - [ ] **Two-browser match smoke** — US-8 acceptance: create + join, start round, friendly-fire does not apply damage (or host-only wipe); optional full round to banner
 - [ ] **TTL renew on Restart** — after `startRound`, `GET` snapshot shows `expiresAt` slid forward (~40 min); API or UI assertion
+
+## Game UI & session duplication
+
+Small DRY wins from a codebase audit (Aug 2026). Pick up when touching round-end, pause, or lobby close flows.
+
+- [ ] **Unify offline vs multiplayer phase resolution** — `src/modules/game/hooks/use-effective-round-phase.ts` (or similar)
+  1. Grep `connected ? mpPhase : roundPhase` and `roomId ? mpPhase : roundPhase` (expect `countdown-banner`, `game-pause-panel`, `use-player-controls`, `round-end-banner`).
+  2. Add `useEffectiveRoundPhase()` returning `{ phase, countdown?, winner? }` with one authoritative rule (prefer `connected` for live play; document why if `roomId` differs for round-end).
+  3. Replace duplicated store subscriptions in callers; add a small unit test for the resolution rule if any logic is non-trivial.
+
+- [ ] **Extract host / restart capabilities** — `src/modules/game/hooks/use-room-host-capabilities.ts` (or `lobby/` if reused outside play)
+  1. Grep `readRoomSession` + `isHost` + `canRestart` (expect `round-end-banner`, `game-pause-panel`).
+  2. Hook returns `{ isHost, canRestart }` from `roomId?: string` (`canRestart = roomId ? isHost : true`).
+  3. Callers keep UI-only state (`closing`, pause toggles); no behavior change.
+
+- [ ] **Shared dispose-room helper (404-tolerant)** — `src/modules/multiplayer/services/dispose-room-tolerant.ts` (or extend `delete-room.ts`)
+  1. Grep `deleteRoom` + `LobbyRestError` + `status !== 404` (expect `round-end-banner`, `waiting-room-content`).
+  2. Export `disposeRoomTolerant(roomId, hostToken?)` — calls `deleteRoom`, swallows `404`, rethrows other `LobbyRestError` / network failures.
+  3. Unit test: mock fetch → `204`, `404`, `401` paths.
+
+- [ ] **Consolidate round-end Home navigation** — `src/modules/game/utils/leave-match-to-home.ts` (+ optional sibling)
+  1. `round-end-banner` inlines host `deleteRoom` + guest `leaveMatch` + hard nav; pause panel already uses `leaveMatchToHome`.
+  2. Add `leaveMatchToHomeAsHost(roomId, hostToken)` (or options on `leaveMatchToHome`) using `disposeRoomTolerant`; keep `closing` / `aria-busy` in the banner.
+  3. Preserve comments: hard-nav tears page down; peers may navigate via `roomClosed`; do not await Colyseus reconnect grace on guest path.
+
+- [ ] **Extract game overlay shell** — `src/modules/game/components/game-overlay-panel.tsx` (optional / cosmetic)
+  1. Grep `fixed inset-0 z-20 flex items-center justify-center bg-background-deep/50` and inner `border border-surface-border bg-background-deep/90` (expect `round-end-banner`, `game-pause-panel`; `countdown-banner` is similar but `z-50` / larger type).
+  2. Presentational wrapper: `role`, `aria-*`, children; callers pass title + actions.
+  3. Skip if the three overlays diverge further (countdown vs dialog vs alert semantics).
+
+- [ ] **Split `MatchRoom` message handlers** — `src/modules/multiplayer/rooms/match-room.ts`
+  1. Only when adding message types or editing teardown — file is ~300 lines but cohesive today.
+  2. Move `onMessage('move'|'shot'|…)`, countdown tick, and expiry scheduling into private modules in the same folder (mirror `use-soldier-locomotion/` layout).
+  3. Keep `MatchRoom` as the Colyseus `Room` class wiring handlers + state transitions; no public API change.

@@ -33,7 +33,7 @@ stateDiagram-v2
 
 Team IDs are `civilian` \| `soldier` everywhere in code. Display names: **Civilians** / **Soldiers** (`TEAM_DISPLAY_NAME`).
 
-Team assignment: random or balanced split in MVP; **server assigns teams** in Colyseus `MatchRoom`.
+Join-time: `assignTeam` honors seat preference + overflow fallback (max 4 per side). On host `startRound`, if ≥ 2 players and one team is empty, `shuffleTeamsIfNoOpponents` re-splits as evenly as possible (`match-teams.ts`); mixed lobbies (e.g. 3v1, 5v2) stay as chosen. Invalid skins remap to `TEAM_SKINS[team][0]`. Spawn slots are recalculated after a shuffle. Client `bindMatch` writes authoritative `team` / `skin` into `sessionStorage`.
 
 ## Weapons (loadout)
 
@@ -471,7 +471,7 @@ onPlayerUpdate / onRoundUpdate / onLeave
 
 ### Round sync (server-authoritative)
 
-- Host sends `startRound` from `waiting` or `ended` → resets HP / eliminated, spawn placement, `roundPhase: 'deploying'`, clears `ready` flags, locks joins; **renews `expiresAt`** (+40 min TTL, same `hostToken`).
+- Host sends `startRound` from `waiting` or `ended` → if ≥ 2 players and one team is empty, `shuffleTeamsIfNoOpponents` then `recalculateSpawnIndices`; then resets HP / eliminated, spawn placement, `roundPhase: 'deploying'`, clears `ready` flags, locks joins; **renews `expiresAt`** (+40 min TTL, same `hostToken`). Mixed / rematch lobbies with both teams occupied skip shuffle.
 - Each connected client sends `playerReady` after deploy loader clears; when all connected players are ready → `countdown: 3` → `in_progress`.
 - Disconnect during **`deploying`**: re-evaluate ready gate; countdown starts when remaining connected players are all ready.
 - `startRound` locks joins: REST `PUT` returns `409` outside `waiting`; reserved seats still connect after lock.
@@ -485,7 +485,7 @@ onPlayerUpdate / onRoundUpdate / onLeave
 - Waiting room joins early: `useMatchJoin` + `bindMatch`; `/play` reconnects via `room.reconnectionToken` after hard navigation.
 - `LocalTransformSync` forwards player transform via adapter (~20 Hz coalesced).
 - `useShooting` → `sendShot`; hit detection client-side; damage/elimination server-authoritative.
-- `bindMatch(handle)` feeds multiplayer store; local HP mirrors into `useHealthStore`; remote HP drives spatial injury SFX.
+- `bindMatch(handle, roomId)` feeds multiplayer store; local HP mirrors into `useHealthStore`; remote HP drives spatial injury SFX; local `team` / `skin` sync into `sessionStorage` when the server snapshot differs (post-shuffle).
 - Bots disabled while match connected; `RoundEndBanner` reads multiplayer store in match mode.
 - `RemotePlayer` reads store roster; transforms via `getState()` in `useFrame`.
 

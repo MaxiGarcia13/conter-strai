@@ -1,6 +1,6 @@
 # US-11 — Tasks
 
-Ship after **US-10** (or in parallel if US-10 spec ship is pending). Tick only when the matching requirement passes.
+**US-10** is shipped. Tick only when the matching requirement passes.
 
 See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 

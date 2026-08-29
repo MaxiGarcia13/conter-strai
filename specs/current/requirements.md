@@ -69,6 +69,8 @@ Conter Strai is a **round-based team tactical shooter** inspired by Counter-Stri
 | FR-46 | Room codes carry `expiresAt` (ISO) in metadata and `RoomSnapshot`; default TTL `ROOM_CODE_TTL_MS` (**40 min**); host `startRound` slides expiry forward (`hostToken` unchanged); auto-dispose at expiry; expired REST returns **`410 Gone`**; expired WS join rejected                                                                                                                                                                |
 | FR-47 | **Escape** toggles pause panel during **`live`** only — releases look; **Resume** / Escape closes; **Restart** (host in multiplayer, always offline) reuses round-end restart path; **Leave** disconnects, clears room session, navigates to **`/`** without `DELETE`; **Commands** lists bindings from `game-bindings.ts`; while paused: no move, look, shoot, or pose actions                                                       |
 | FR-48 | Deploy-ready gate: host **Start Match** / **Restart** → server **`deploying`** (respawn, lock joins); each client sends **`playerReady`** when deploy loader clears; server starts **`countdown`** only when all connected players are ready (min 1); solo offline waits for same loader signal before local countdown; disconnect during **`deploying`** re-evaluates gate; no pause during **`loading`** / **`countdown`** overlays |
+| FR-49 | On host `startRound` from `waiting` or `ended`, if ≥ 2 connected players and **one team has zero players**, server shuffles into an even split (max 4 per team) and recalculates spawn indices before respawn; skip when mixed (opponents exist) or solo; rematch skips when both teams already have players. Client `bindMatch` writes authoritative `team` / `skin` into `sessionStorage` when they differ                                                                                          |
+| FR-50 | Shuffled players keep their skin when valid for the new team; otherwise assign `TEAM_SKINS[team][0]`                                                                                                                                                                                                                                                                                                                              |
 
 ## Non-functional
 
@@ -81,7 +83,7 @@ Conter Strai is a **round-based team tactical shooter** inspired by Counter-Stri
 | NFR-5 | Works in latest Chrome/Firefox/Safari desktop                                                                        |
 | NFR-6 | Astro pages + R3F island split — no Three.js on the landing route                                                    |
 | NFR-7 | Unit tests for pure domain logic; skip testing Three.js render internals                                             |
-| NFR-8 | Multiplayer via **Colyseus** + Astro **`@astrojs/node`** (server output) — REST lobby + WebSocket play (FR-25–FR-46) |
+| NFR-8 | Multiplayer via **Colyseus** + Astro **`@astrojs/node`** (server output) — REST lobby + WebSocket play (FR-25–FR-50) |
 
 ## Out of scope (MVP)
 

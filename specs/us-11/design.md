@@ -151,6 +151,6 @@ Run `npm run assets:compress` before shipping.
 
 Fold into [`specs/current/`](../current/):
 
-- Extend **FR-2** (or add **FR-49+**) — props, sky, fog, open perimeter on `arena-01`
+- Extend **FR-2** (or add **FR-51+**) — props, sky, fog, open perimeter on `arena-01`
 - Update [`design.md`](../current/design.md) § arena-01 (layout modules, greenery, sky, perimeter, floor rules)
 - CHANGELOG row; delete `specs/us-11/`

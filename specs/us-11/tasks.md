@@ -8,8 +8,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 - [x] Run `npm run assets:compress` for `jacaranda.glb` (strip extra LODs + simplify + WebP)
 - [x] Extend `scripts/compress-assets.mjs` with a jacaranda LOD-strip + simplify pipeline
-- [x] Delete `public/assets/greenery/celandine.glb` (not used in v1)
-- [ ] Verify jacaranda file size and in-game scale (`~0.35–0.45`) + `collisionRadius` via DEV free-cam
+- [x] Verify jacaranda file size and in-game scale (`~0.35–0.45`) + `collisionRadius` via DEV free-cam
 
 ## Props registry and placement (US-11.2)
 
@@ -54,11 +53,11 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## Open foggy perimeter (US-11.8)
 
-- [ ] Extend `ArenaLayout` with `perimeter` in `src/modules/scenarios/types.ts`
-- [ ] `ScenarioWalls` — skip `outerWalls()` when `perimeter.mode === 'open'`
-- [ ] `ScenarioFloor` — extended vista skirt (`vistaExtension`, default ~30 m)
-- [ ] Skirt greenery in `greenery.ts` (non-collidable outside bounds)
-- [ ] Set `perimeter: { mode: 'open', vistaExtension: 30 }` on arena-01
+- [x] Extend `ArenaLayout` with `perimeter` in `src/modules/scenarios/types.ts`
+- [x] `ScenarioWalls` — skip `outerWalls()` when `perimeter.mode === 'open'`
+- [x] `ScenarioFloor` — extended vista skirt (`vistaExtension`, default ~30 m)
+- [x] Skirt greenery in `greenery.ts` (non-collidable outside bounds)
+- [x] Set `perimeter: { mode: 'open', vistaExtension: 30 }` on arena-01
 
 ## Layout pass (US-11.9)
 

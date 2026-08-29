@@ -14,9 +14,12 @@ export function ScenarioWalls({ scenario, materials }: ScenarioWallsProps) {
   const { width, depth, wallHeight } = scenario.bounds;
   const thickness = scenario.walls.thickness ?? DEFAULT_WALL_THICKNESS;
   const outerHeight = scenario.walls.height ?? wallHeight;
+  const openPerimeter = scenario.perimeter?.mode === 'open';
 
   const walls = useMemo(() => {
-    const boxes = outerWalls(width, depth, outerHeight, thickness, scenario.walls.assetId, materials);
+    const boxes = openPerimeter
+      ? []
+      : outerWalls(width, depth, outerHeight, thickness, scenario.walls.assetId, materials);
     (scenario.wallSegments ?? []).forEach((segment, index) => {
       const wall = segmentWall(segment, index, wallHeight, scenario.walls.assetId, thickness, materials);
       if (wall) {
@@ -27,6 +30,7 @@ export function ScenarioWalls({ scenario, materials }: ScenarioWallsProps) {
   }, [
     depth,
     materials,
+    openPerimeter,
     outerHeight,
     scenario.wallSegments,
     scenario.walls.assetId,

@@ -70,6 +70,12 @@ export interface ArenaLayout {
   props?: ScenarioProp[];
   collisionSegments?: CollisionSegment[];
   collisionHoles?: CollisionHole[];
+  /** Perimeter treatment: `'walls'` closes the outer box, `'open'` uses a vista skirt. */
+  perimeter?: {
+    mode: 'walls' | 'open';
+    /** Meters of extended ground beyond the playable bounds on each side. */
+    vistaExtension?: number;
+  };
 }
 
 // ---------------------------------------------------------------------------

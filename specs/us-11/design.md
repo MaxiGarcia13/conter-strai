@@ -110,7 +110,7 @@ Presets in [`house-presets.ts`](../../src/modules/scenarios/pieces/house-presets
 | ----------- | ---------------------------------------------------- | ------------------------------------- | -------------------------------------------- |
 | `jacaranda` | `/assets/greenery/jacaranda.glb`, `scale` ~0.35–0.45 | Cover at block corners, inside bounds | `collidable: true`, `collisionRadius` ~0.9 m |
 
-Source GLB is a stacked LOD pack (~327 MB / ~6M verts with LOD0+LOD1+trunk/leaf extras all in one scene). Ship **only** `jacaranda_tree_LOD1`, then weld + simplify + 1K WebP textures. Do not keep `celandine.glb`.
+Source GLB is a stacked LOD pack (~327 MB / ~6M verts with LOD0+LOD1+trunk/leaf extras all in one scene). Ship **only** `jacaranda_tree_LOD1`, then weld + simplify + 1K WebP textures.
 
 [`prop-blockers-from-scenario.ts`](../../src/modules/game/utils/prop-blockers-from-scenario.ts) → merged in [`use-player-controls.ts`](../../src/modules/game/hooks/use-player-controls/use-player-controls.ts) with `npcBlockersFromScenario`.
 

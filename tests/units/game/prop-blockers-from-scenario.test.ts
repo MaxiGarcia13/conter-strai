@@ -17,11 +17,12 @@ describe('propBlockersFromScenario', () => {
     }
   });
 
-  it('does not create blockers for non-collidable props', () => {
-    const celandine = propBlockersFromScenario(arena01).filter(
-      (b) => b.entityId?.startsWith('celandine'),
+  it('does not create blockers for non-collidable skirt jacaranda', () => {
+    const blockers = propBlockersFromScenario(arena01);
+    const outsideBounds = blockers.filter(
+      (b) => Math.abs(b.x) > 50 || Math.abs(b.z) > 25,
     );
-    expect(celandine).toHaveLength(0);
+    expect(outsideBounds).toHaveLength(0);
   });
 
   it('yields no blockers for an empty scenario', () => {

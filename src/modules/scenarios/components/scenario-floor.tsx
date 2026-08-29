@@ -9,6 +9,9 @@ import {
 const BASE_FLOOR_OFFSET = -0.02;
 const ZONE_FLOOR_OFFSET = 0.02;
 
+/** Extra ground beyond the playable bounds on each side of an open perimeter. */
+const DEFAULT_VISTA_EXTENSION = 30;
+
 interface ScenarioFloorProps {
   scenario: ScenarioConfig;
   materials: ScenarioMaterials;
@@ -16,15 +19,21 @@ interface ScenarioFloorProps {
 
 export function ScenarioFloor({ scenario, materials }: ScenarioFloorProps) {
   const { width, depth } = scenario.bounds;
+  const openPerimeter = scenario.perimeter?.mode === 'open';
+  const vista = openPerimeter
+    ? (scenario.perimeter?.vistaExtension ?? DEFAULT_VISTA_EXTENSION)
+    : 0;
+  const floorWidth = width + vista * 2;
+  const floorDepth = depth + vista * 2;
 
   const baseGeometry = useMemo(
     () =>
       createTiledPlaneGeometry(
-        width,
-        depth,
-        scenario.floor.repeat ?? [width / 4, depth / 4],
+        floorWidth,
+        floorDepth,
+        scenario.floor.repeat ?? [floorWidth / 4, floorDepth / 4],
       ),
-    [depth, scenario.floor.repeat, width],
+    [depth, floorDepth, floorWidth, scenario.floor.repeat, width],
   );
 
   const baseMaterial = useMemo(

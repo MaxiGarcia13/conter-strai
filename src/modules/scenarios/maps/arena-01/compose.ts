@@ -24,6 +24,10 @@ const arena01Layout: ArenaLayout = {
     repeat: [25, 12.5],
   },
   floorZones: [...arena01GroundFloors, ...arena01HouseFloors],
+  perimeter: {
+    mode: 'open',
+    vistaExtension: 100,
+  },
   walls: {
     assetId: 'cliff_side',
     thickness: 1.2,

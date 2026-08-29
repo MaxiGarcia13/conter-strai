@@ -30,7 +30,7 @@ Depends on **US-2** (shipped), **US-7** (shipped).
 - Second scenario / map registry entry
 - Mesh-derived prop colliders (fixed `collisionRadius` discs for v1)
 - Infinite procedural terrain
-- Ground-cover / flower GLBs (e.g. celandine) — jacaranda only in v1
+- Ground-cover / flower GLBs — jacaranda only in v1
 - `InstancedMesh` for repeated trees (follow-up if FPS needs it)
 - HDR sky / distant hill meshes / arena preview screenshot update
 - Multiplayer prop sync (props are static scenario data — identical on all clients)

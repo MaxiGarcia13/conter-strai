@@ -81,12 +81,12 @@ src/modules/
 └── game/types.ts               GameMode, RoundPhase
 ```
 
-| Domain       | Key types                                                          | Notes                                                         |
-| ------------ | ------------------------------------------------------------------ | ------------------------------------------------------------- |
-| **Scenario** | `ScenarioConfig`, `ArenaLayout`, `SpawnerConfig`                   | Flat access (`scenario.bounds`); maps under `scenarios/maps/` |
-| **Soldier**  | `SoldierSkin`, `CharacterMeshData`, `Soldier`, `SoldierController` | Visual preset decoupled from hitbox via `hitboxPresetId`      |
-| **Combat**   | `HitboxPreset`, `HitZone`, `DamageData`, `HealthSystem`            | Owns collider presets and raycast zones                       |
-| **Weapons**  | `PistolWeaponConfig` / `WeaponConfig`, `Loadout`                   | Per-weapon `damageByZone`; combat applies × difficulty        |
+| Domain       | Key types                                                          | Notes                                                                     |
+| ------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| **Scenario** | `ScenarioConfig`, `ArenaLayout`, `SpawnerConfig`                   | Flat access (`scenario.bounds`); maps under `scenarios/maps/`             |
+| **Soldier**  | `SoldierSkin`, `CharacterMeshData`, `Soldier`, `SoldierController` | Visual preset decoupled from hitbox via `hitboxPresetId`                  |
+| **Combat**   | `HitboxPreset`, `HitZone`, `DamageData`, `HealthSystem`            | Owns collider presets and raycast zones                                   |
+| **Weapons**  | `PistolWeaponConfig` / `WeaponConfig`, `Loadout`                   | Per-weapon `damageByZone`; combat applies × difficulty                    |
 | **Game**     | `GameMode`, `RoundPhase`                                           | `'team-elimination'`; `'live' \| 'loading' \| 'countdown' \| 'round-end'` |
 
 Shipped 2026-08-23 — see [CHANGELOG](../CHANGELOG.md#shipped--other).
@@ -189,7 +189,7 @@ Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-stat
 | **F** (walk/run)   | `jump`                   | Forward one-shot; clears kneel first                                                |
 | **R**              | `reloading`              | One-shot; stand+idle or `reloading-kneel`; WASD cancels                             |
 | **LMB**            | —                        | Hitscan pistol (no `shooting` pose until a shippable clip)                          |
-| **Esc** (live)     | —                        | Toggle pause menu; releases look; no pause during **`loading`** / **`countdown`**     |
+| **Esc** (live)     | —                        | Toggle pause menu; releases look; no pause during **`loading`** / **`countdown`**   |
 
 Priority: blocking one-shots (`reloading` / `reloading-kneel` > `jump` / `jump-idle`) → kneel + run → run → kneel + walk → crouch-walk → kneel + idle → locomotion run-backward / walk-backward → walk / run → idle → **`dying`** on elimination. Optional `shooting` is mixer-ready but not triggered.
 
@@ -209,10 +209,10 @@ Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`
 
 ### Testing
 
-| Layer          | Scope                                                                                                                           |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| **Vitest**     | Registries; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide |
-| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook          |
+| Layer          | Scope                                                                                                                                                                                       |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vitest**     | Registries; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide                                                             |
+| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook |
 
 ## Characters — shipped US-6
 

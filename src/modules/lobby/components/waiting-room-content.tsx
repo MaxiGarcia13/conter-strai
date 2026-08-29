@@ -30,6 +30,7 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
   const { joining, error: joinError } = useMatchJoin(roomId);
   const joined = !joining && !joinError;
   const phase = useMultiplayerStore((s) => s.phase);
+  const snapshotPhase = snapshotQuery.data?.phase;
   const [starting, setStarting] = useState(false);
 
   useLobbyPresence(roomId, Boolean(session));
@@ -45,10 +46,16 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
 
   useEffect(() => {
     // Countdown UI lives on `/play` — leave the waiting room when deploy starts.
-    if (phase === 'loading' || phase === 'countdown' || phase === 'live') {
+    // REST snapshot covers guests whose Colyseus phase lags (e.g. background tab).
+    const matchStarted =
+      phase === 'loading'
+      || phase === 'countdown'
+      || phase === 'live'
+      || snapshotPhase === 'in_progress';
+    if (matchStarted) {
       navigateToPlay(roomId);
     }
-  }, [phase, roomId]);
+  }, [phase, snapshotPhase, roomId]);
 
   if (!session) {
     return null;

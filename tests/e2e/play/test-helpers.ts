@@ -70,10 +70,36 @@ export async function waitForCanvas(page: Page): Promise<void> {
  */
 export async function navigateToPlayFromWaitingRoom(page: Page, roomId: string): Promise<void> {
   await expect(page.getByRole('button', { name: 'Start Match' })).toBeEnabled({ timeout: 15_000 });
+  await navigateToPlayWithHandoff(page, roomId);
+}
+
+/** Hard-nav to `/play` with the lobby handoff flag (host or guest). */
+export async function navigateToPlayWithHandoff(page: Page, roomId: string): Promise<void> {
   await page.evaluate((id) => {
     sessionStorage.setItem(`cs:room:${id}:handoff`, '1');
   }, roomId);
   await page.goto(`/room/${roomId}/play`);
+}
+
+/**
+ * Guest waiting rooms auto-nav when deploy starts; on CI the guest tab can lag.
+ * Prefer app-driven navigation, then nudge with a handoff nav when still waiting.
+ */
+export async function ensureGuestReachedPlay(page: Page, roomId: string): Promise<void> {
+  const playUrl = new RegExp(`/room/${roomId}/play$`);
+  const waitingUrl = new RegExp(`/room/${roomId}$`);
+
+  await page.bringToFront();
+
+  try {
+    await expect(page).toHaveURL(playUrl, { timeout: 15_000 });
+    return;
+  } catch {
+    if (waitingUrl.test(page.url())) {
+      await navigateToPlayWithHandoff(page, roomId);
+    }
+    await expect(page).toHaveURL(playUrl, { timeout: 30_000 });
+  }
 }
 
 export async function waitForPlayTest(page: Page): Promise<PlayTestSnapshot> {

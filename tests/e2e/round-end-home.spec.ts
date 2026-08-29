@@ -5,7 +5,7 @@ import {
   seedHostSession,
   waitForMatchSession,
 } from './lobby-helpers';
-import { forceRoundEnd, waitForPlayTest } from './play/test-helpers';
+import { ensureGuestReachedPlay, forceRoundEnd, waitForPlayTest } from './play/test-helpers';
 
 async function startTwoPlayerRound(
   hostPage: import('@playwright/test').Page,
@@ -24,9 +24,10 @@ async function startTwoPlayerRound(
   await expect(hostPage.getByRole('button', { name: 'Start Match' })).toBeEnabled();
 
   await hostPage.getByRole('button', { name: 'Start Match' }).click();
-  await expect(hostPage).toHaveURL(new RegExp(`/room/${roomId}/play$`));
-  // Guest auto-navigates when deploy starts — do not manual-nav (races page.evaluate).
-  await expect(guestPage).toHaveURL(new RegExp(`/room/${roomId}/play$`), { timeout: 30_000 });
+  await Promise.all([
+    expect(hostPage).toHaveURL(new RegExp(`/room/${roomId}/play$`)),
+    ensureGuestReachedPlay(guestPage, roomId),
+  ]);
 
   await Promise.all([waitForPlayTest(hostPage), waitForPlayTest(guestPage)]);
   await forceRoundEnd(hostPage);

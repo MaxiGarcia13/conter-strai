@@ -30,6 +30,20 @@ describe('propBlockersFromScenario', () => {
     }
   });
 
+  it('produces two collidable covered car blockers on the main street', () => {
+    const blockers = propBlockersFromScenario(arena01);
+
+    const cars = blockers.filter((b) => b.entityId?.startsWith('coveredCar'));
+    expect(cars).toHaveLength(2);
+
+    for (const blocker of cars) {
+      expect(blocker.radius).toBe(1.2);
+      expect(Math.abs(blocker.x)).toBeLessThanOrEqual(50);
+      expect(blocker.z).toBeGreaterThanOrEqual(-12);
+      expect(blocker.z).toBeLessThanOrEqual(-6);
+    }
+  });
+
   it('does not create blockers for non-collidable skirt jacaranda', () => {
     const blockers = propBlockersFromScenario(arena01);
     const outsideBounds = blockers.filter(

@@ -11,7 +11,7 @@ import { floorZone } from '@/modules/scenarios/pieces/floor-helpers';
  */
 export const arena01GroundFloors: ScenarioFloorZone[] = [
   floorZone('street-main', 'asphalt', 0, -9, 300, 6),
-  floorZone('street-v-left', 'asphalt', -22, 59.5, 6, 131),
+  floorZone('street-v-left', 'asphalt', -20, 59.5, 6, 131),
   floorZone('street-v-right', 'asphalt', 25, 59.5, 6, 131),
-  floorZone('street-bl', 'asphalt', -37, 17, 24, 6),
+  floorZone('street-bl', 'asphalt', -35, 20, 24, 6),
 ];

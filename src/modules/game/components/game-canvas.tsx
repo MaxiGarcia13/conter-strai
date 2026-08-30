@@ -13,7 +13,6 @@ import {
   ScenarioGround,
   ScenarioHouses,
   ScenarioProps,
-  ScenarioSoldiers,
 } from '@/modules/scenarios';
 import { ScenarioLighting } from '@/modules/scenarios/components/scenario-lighting';
 import { ScenarioSky } from '@/modules/scenarios/components/scenario-sky';
@@ -26,7 +25,7 @@ import { AimMarker } from './aim-marker';
 import { CameraHud } from './camera-hud';
 import { CrosshairHud } from './crosshair-hud';
 import { DeferredAfterLoad } from './deferred-after-load';
-import { GamePausePanel } from './game-pause-panel';
+import { LazyGamePausePanel } from './game-pause-panel';
 import { LoadingReporter } from './loading-reporter';
 import { LazyLocalPlayer } from './local-player';
 import { PlayerControls } from './player-controls';
@@ -98,13 +97,6 @@ export function GameCanvas({
           <DeferredAfterLoad>
             <PlayerControls scenario={scenario} spawn={localSpawn} />
 
-            {!matchConnected && (
-              <ScenarioSoldiers
-                scenario={scenario}
-                skipKey={localSpawn.key}
-              />
-            )}
-
             {matchConnected && <LazyRemotePlayers />}
 
             <LazyLocalPlayer skinId={skinId} />
@@ -119,8 +111,9 @@ export function GameCanvas({
         <LazyDevSceneTools skinId={skinId} />
       </Canvas>
 
+      <CameraHud />
+
       <DeferredAfterLoad>
-        <CameraHud />
         <CrosshairHud />
         <HealthBar />
       </DeferredAfterLoad>
@@ -128,7 +121,7 @@ export function GameCanvas({
       <LazyDevGameChrome />
 
       <RoundEndBanner roomId={roomId} scenarioId={scenarioId} />
-      <GamePausePanel roomId={roomId} scenarioId={scenarioId} />
+      <LazyGamePausePanel roomId={roomId} scenarioId={scenarioId} />
     </div>
   );
 }

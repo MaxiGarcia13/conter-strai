@@ -1,13 +1,13 @@
 import type { ScenarioId } from '@/modules/scenarios';
 import { useEffect } from 'react';
 import { CsButton } from '@/components/cs-button';
+import { GAME_COMMANDS } from '@/modules/game/constants/game-bindings';
+import { useGamePauseStore } from '@/modules/game/state/game-pause-store';
+import { useRoundStore } from '@/modules/game/state/round-store';
+import { leaveMatchToHome } from '@/modules/game/utils/leave-match-to-home';
+import { restartRound } from '@/modules/game/utils/restart-round';
 import { readRoomSession } from '@/modules/lobby/utils/room-session';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
-import { GAME_COMMANDS } from '../constants/game-bindings';
-import { useGamePauseStore } from '../state/game-pause-store';
-import { useRoundStore } from '../state/round-store';
-import { leaveMatchToHome } from '../utils/leave-match-to-home';
-import { restartRound } from '../utils/restart-round';
 
 interface GamePausePanelProps {
   roomId?: string;

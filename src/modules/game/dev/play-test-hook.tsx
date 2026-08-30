@@ -19,7 +19,6 @@ import {
   setPlayerLocomotion,
   setPlayerPose,
 } from '../state/player-state';
-import { releaseE2eDeployCompleteHold } from './e2e-deploy-hold';
 import { angleFromIdentity, findLocalNode } from './play-test-helpers';
 
 const POLL_INTERVAL_MS = 60;
@@ -56,8 +55,6 @@ declare global {
       cycleMode: () => string;
       /** Host-only E2E hook — ends the live round via Colyseus `e2eEndRound`. */
       forceRoundEnd: (winner?: Team) => void;
-      /** Clears the deploy loader when `__E2E_HOLD_DEPLOY_COMPLETE__` is set. */
-      releaseDeployHold: () => void;
     };
   }
 }
@@ -122,9 +119,6 @@ export function PlayTestHook({ skinId }: PlayTestHookProps) {
       cycleMode: () => cycleCameraMode(),
       forceRoundEnd: (winner = 'civilian') => {
         getActiveMatch()?.room.send('e2eEndRound', { winner });
-      },
-      releaseDeployHold: () => {
-        releaseE2eDeployCompleteHold();
       },
     };
     const timer = window.setInterval(update, POLL_INTERVAL_MS);

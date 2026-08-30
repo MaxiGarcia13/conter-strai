@@ -1,7 +1,5 @@
 import type { PlayLoaderState } from './play-loader';
-import { useCallback, useEffect, useRef } from 'react';
-import { canClearDeployLoader } from '../dev/e2e-deploy-hold';
-import { useE2eDeployHoldRelease } from '../dev/use-e2e-deploy-hold-release';
+import { useEffect, useRef } from 'react';
 import { useDeferredDreiProgress } from '../hooks/use-deferred-drei-progress';
 
 interface LoadingReporterProps {
@@ -18,14 +16,6 @@ export function LoadingReporter({ onLoaderChange }: LoadingReporterProps) {
   activeRef.current = active;
   progressRef.current = progress;
 
-  const tryClearLoader = useCallback(() => {
-    if (canClearDeployLoader(hasStartedRef.current, activeRef.current, progressRef.current)) {
-      onLoaderChange(null);
-    }
-  }, [onLoaderChange]);
-
-  useE2eDeployHoldRelease(tryClearLoader);
-
   useEffect(() => {
     onLoaderChange({ label: 'Deploying', progress: 0 });
   }, [onLoaderChange]);
@@ -33,11 +23,6 @@ export function LoadingReporter({ onLoaderChange }: LoadingReporterProps) {
   useEffect(() => {
     if (active) {
       hasStartedRef.current = true;
-    }
-
-    if (canClearDeployLoader(hasStartedRef.current, active, progress)) {
-      onLoaderChange(null);
-      return;
     }
 
     onLoaderChange({

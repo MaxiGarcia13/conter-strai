@@ -82,9 +82,15 @@ function MatchPlayCanvas({
 }) {
   const { joining, error: joinError } = useMatchJoin(roomId);
 
+  const readyAfterDelay = (delay: number) => {
+    setTimeout(() => {
+      playerReady();
+    }, delay);
+  };
+
   useEffect(() => {
     if (!joining && !joinError && visible) {
-      playerReady();
+      readyAfterDelay(2000);
     }
   }, [visible, joining, joinError]);
 

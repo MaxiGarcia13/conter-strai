@@ -156,20 +156,6 @@ export async function waitForCountdownToFinish(page: Page): Promise<void> {
   }
 }
 
-/** Playwright hook — assets may finish before the test observes the loader. */
-export async function holdDeployComplete(page: Page): Promise<void> {
-  await page.addInitScript(() => {
-    window.__E2E_HOLD_DEPLOY_COMPLETE__ = true;
-  });
-}
-
-export async function releaseDeployHold(page: Page): Promise<void> {
-  await page.evaluate(() => {
-    window.__E2E_HOLD_DEPLOY_COMPLETE__ = false;
-    window.dispatchEvent(new Event('e2e-deploy-hold-release'));
-  });
-}
-
 /** Host-only E2E hook — ends the live round and waits for the round-end banner. */
 export async function forceRoundEnd(page: Page): Promise<void> {
   await expect

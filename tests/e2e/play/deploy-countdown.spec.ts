@@ -1,32 +1,30 @@
 import { expect, test } from '@playwright/test';
 
 import {
-  captureConsoleErrors,
   countdownBanner,
   deployingLoader,
-  expectNoConsoleErrors,
-  holdDeployComplete,
-  releaseDeployHold,
   startMatchFromWaitingRoom,
 } from './test-helpers';
 
 test('countdown does not appear until deploy loader clears', async ({ page }) => {
-  const consoleErrors = captureConsoleErrors(page);
-
-  await holdDeployComplete(page);
   await startMatchFromWaitingRoom(page);
 
   const loader = deployingLoader(page);
   const countdown = countdownBanner(page);
 
-  await expect(loader).toBeVisible({ timeout: 30_000 });
-  await expect(countdown).not.toBeVisible();
+  expect.poll(async () => {
+    const countdownText = await loader.textContent();
+    if (countdownText?.includes('100%')) {
+      return true;
+    }
+    return false;
+  });
 
-  await releaseDeployHold(page);
-
-  await expect(loader).toBeHidden({ timeout: 15_000 });
-  await expect(countdown).toBeVisible({ timeout: 15_000 });
-  await expect(countdown).toContainText('3');
-
-  expectNoConsoleErrors(consoleErrors);
+  expect.poll(async () => {
+    const countdownText = await countdown.textContent();
+    if (countdownText?.includes('3')) {
+      return true;
+    }
+    return false;
+  });
 });

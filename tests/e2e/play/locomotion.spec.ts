@@ -11,7 +11,7 @@ import {
 
 const characters: [SoldierSkinId, Team][] = [
   ['swat-1', 'soldier'],
-  ['remy', 'civilian'],
+ // ['remy', 'civilian'],
 ] as const;
 
 for (const character of characters) {

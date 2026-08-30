@@ -272,9 +272,9 @@ async function main() {
     ? RESIZE_TARGETS
     : args.filter(
         (arg) =>
-          !arg.includes('jacaranda') &&
-          !arg.includes('concrete_road_barrier') &&
-          !arg.includes('covered_car'),
+          !arg.includes('jacaranda')
+          && !arg.includes('concrete_road_barrier')
+          && !arg.includes('covered_car'),
       );
 
   for (const relativePath of resizeTargets) {

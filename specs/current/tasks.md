@@ -8,7 +8,11 @@ US numbers are not execution order. Ship in this sequence:
 
 1. **US-11** — Arena modularization (Ruined Village polish)
 
-US-4 (local PvP loop), **US-5** (Colyseus multiplayer), **US-7** (match lobby), **US-8** (server security), **US-10** (no-opponent team shuffle), and the [improvements backlog](../improvements.md) polish pass are **shipped**. Fire **pose clip** on LMB is deferred — see [tech-debt.md](../tech-debt.md).
+US-4 (local PvP loop), **US-5** (Colyseus multiplayer), **US-7** (match lobby), **US-8** (server security), **US-10** (no-opponent team shuffle), and the [improvements backlog](../improvements.md) §1–§5 polish pass are **shipped**. Fire **pose clip** on LMB is deferred — see [tech-debt.md](../tech-debt.md).
+
+## Improvements (open)
+
+- [specs/improvements.md](../improvements.md) §6 — Staged arena deploy + deferred gameplay chrome
 
 ## Tech debt
 

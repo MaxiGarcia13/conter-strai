@@ -116,14 +116,13 @@ export function GameCanvas({
         <LazyDevSceneTools skinId={skinId} />
       </Canvas>
 
-      <CameraHud />
-
       <DeferredAfterLoad>
+        <CameraHud />
         <CrosshairHud />
+        <HealthBar />
       </DeferredAfterLoad>
 
       <LazyDevGameChrome />
-      <HealthBar />
 
       <RoundEndBanner roomId={roomId} scenarioId={scenarioId} />
       <GamePausePanel roomId={roomId} scenarioId={scenarioId} />

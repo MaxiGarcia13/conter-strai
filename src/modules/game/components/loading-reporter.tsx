@@ -1,8 +1,8 @@
 import type { PlayLoaderState } from './play-loader';
-import { useProgress } from '@react-three/drei';
 import { useCallback, useEffect, useRef } from 'react';
 import { canClearDeployLoader } from '../dev/e2e-deploy-hold';
 import { useE2eDeployHoldRelease } from '../dev/use-e2e-deploy-hold-release';
+import { useDeferredDreiProgress } from '../hooks/use-deferred-drei-progress';
 
 interface LoadingReporterProps {
   onLoaderChange: (state: PlayLoaderState | null) => void;
@@ -10,7 +10,7 @@ interface LoadingReporterProps {
 
 /** Bridges drei loading manager progress to a DOM overlay outside the canvas. */
 export function LoadingReporter({ onLoaderChange }: LoadingReporterProps) {
-  const { progress, active } = useProgress();
+  const { progress, active } = useDeferredDreiProgress();
   const hasStartedRef = useRef(false);
   const activeRef = useRef(active);
   const progressRef = useRef(progress);

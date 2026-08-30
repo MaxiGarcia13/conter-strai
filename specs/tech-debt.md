@@ -11,6 +11,26 @@ Remove or stop exporting symbols with no callers (grep `src/` before deleting).
 - [x] `getTeamSpawn` (+ `TeamSpawn` if unused) — `src/modules/scenarios/utils/spawn-helpers.ts`
 - [x] `applyUvRepeat` — un-export (only used inside `use-scenario-material.ts`)
 
+Aug 2026 audit (knip + grep — grep `src/` before deleting):
+
+- [ ] `isMovePressed` — `src/modules/game/constants/game-bindings.ts` (movement uses `axesFromPressedCodes` instead)
+- [ ] `VIEWMODEL_OFFSET`, `VIEWMODEL_ROTATION_Y` — `src/modules/game/constants/player.ts` (viewmodel tuning lives on skin registry `viewModelScale`)
+- [ ] `GameMode` — `src/modules/game/types.ts` (type defined, never referenced)
+- [ ] `cloneSoldierRoot` — `src/modules/soldiers/utils/clone-soldier-root.ts` (superseded by `useSoldierMesh` + drei `<Clone>`; keep `getSoldierArmature`, `soldierScaleVector`, `disableSkinnedMeshCulling`)
+- [ ] `DEV_CONTROLS` — un-export from `src/modules/game/dev/use-free-camera-look.ts` if only used in-folder
+- [ ] `NPC_BODY_RADIUS` — un-export from `src/modules/game/utils/npc-blockers-from-scenario.ts` if module-private
+- [ ] Scenario utils — un-export if only used in-file: `holeWidth` (`wall-segment-helpers.ts`), `faceCenterYaw` (`spawn-helpers.ts`), `configureTexture` (`texture-library-utils.ts`), `segmentWall` (`wall-mesh-builders.ts`); keep `preloadScenarioTextures()` side effect, drop the export if unused
+- [ ] Soldier / weapons tuning — un-export if grep confirms no callers: `CROSSFADE_SECONDS` (`apply-clip-transition.ts`), `WEAPON_ATTACH_SCALE` (`weapon-attach.tsx`), `RIGHT_HAND_BONE_NAMES` (`find-right-hand-bone.ts`), `PISTOL_GRIP_DOWN_AXIS` (`pistol-grip-alignment.ts`)
+- [ ] Multiplayer tuning constants — un-export if only used in-file: `REMOTE_*` in `resolve-remote-locomotion.ts`, `REMOTE_FOLLOW_RATE` in `step-remote-render-transform.ts`, `MOVE_MAX_DELTA_METERS` / `MOVE_SPEED_TOLERANCE` in `validate-move.ts`, `TRANSFORM_SYNC_INTERVAL_MS` in colyseus adapter barrel
+- [ ] Multiplayer adapter barrel — trim unused re-exports (`onLeave`, `PlayerStateSchema`, listener/payload types in `colyseus-adapter/index.ts` and `schema/index.ts`) or document as intentional public API
+- [ ] E2E helpers — un-export `waitForCanvas`, `navigateToPlayWithHandoff`, `waitForCountdownToFinish` from `tests/e2e/test-helpers.ts` if only used in-file
+
+## Package & dependency hygiene
+
+Aug 2026 audit (knip):
+
+- [x] **Remove `@colyseus/react`** — no imports; matchmaking uses `@colyseus/sdk` directly. Drop from `package.json` and re-run build + e2e.
+
 ## Scenario piece catalog (unused scaffolding)
 
 Built for future maps; only `floorZone`, `wallAlongX` / `wallAlongZ`, and `buildHouses` are used by `arena-01/layout.ts`. Either wire into a second map or trim until needed.
@@ -20,6 +40,7 @@ Built for future maps; only `floorZone`, `wallAlongX` / `wallAlongZ`, and `build
 - [x] `WALL_LENGTH`, `STREET_WIDTH` — `src/modules/scenarios/pieces/constants.ts`
 - [x] Unused material aliases: `WALL_MATERIAL.cliff`, `FLOOR_MATERIAL.forest`, `FLOOR_MATERIAL.street` (arena-01 uses texture ids directly)
 - [x] Layout-only exports: make `arena01Streets`, `arena01Houses`, `houseFootprint` module-private if still only used in `layout.ts` / `house-helpers.ts`
+- [ ] **Unused house presets** — `fortifiedBlock`, `streetShack` in `src/modules/scenarios/pieces/house-presets.ts` (never imported; `ruinedCottage`, `cornerRuin`, `bombedHouse` are used in tests / map authoring). Wire into a second map or remove until needed.
 
 ## Inactive but wired infrastructure
 
@@ -28,6 +49,7 @@ Keep if the next US needs it; document or implement so it is not misleading dead
 - [x] **Props module** — `prop-registry.ts` is `{}`; `arena-01` has `props: []` but `PropInstance` is wired in `ScenarioScene`. Add at least one prop or add a one-line comment in registry that props are deferred.
 - [x] **`game/index.ts` barrel** — nothing imports `@/modules/game`; either use the barrel from `play.astro` / islands or delete the re-export file.
 - [x] **`scenarios/index.ts` re-exports `./pieces`** — broad public API unused outside map authoring; narrow exports or document as map-authoring surface only.
+- [ ] **`game/components/index.ts` barrel** — re-exports only `game-canvas-island`; nothing imports `@/modules/game/components`. Delete the barrel or wire `play.astro` / islands to use it.
 
 ## Complexity hotspots (index)
 

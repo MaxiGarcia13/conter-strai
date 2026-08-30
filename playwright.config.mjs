@@ -3,13 +3,9 @@ import { defineConfig } from '@playwright/test';
 
 const isCI = Boolean(process.env.CI);
 const port = Number(process.env.PORT ?? 4326);
+
 // Dedicated Colyseus port for E2E so a dev server on :2567 does not steal the socket.
 const colyseusPort = process.env.E2E_COLYSEUS_PORT ?? '2568';
-
-/** Stable software WebGL on Linux CI runners (ANGLE + SwiftShader). */
-const chromiumLaunchArgs = isCI
-  ? ['--enable-unsafe-swiftshader', '--use-angle=swiftshader', '--use-gl=angle']
-  : [];
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -24,7 +20,10 @@ export default defineConfig({
     baseURL: `http://localhost:${port}`,
     headless: true,
     launchOptions: {
-      args: chromiumLaunchArgs,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+      ],
     },
   },
   projects: [

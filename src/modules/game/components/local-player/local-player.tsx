@@ -4,21 +4,30 @@ import type { SoldierAimRig } from '@/modules/soldiers/utils/aim-body-rig';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import { Vector3 } from 'three';
+import {
+  DEFAULT_PLAY_SKIN_ID,
+  LOCAL_PLAYER_ENTITY_ID,
+  LOCAL_PLAYER_ROOT_NAME,
+  MODEL_FORWARD_YAW_OFFSET,
+} from '@/modules/game/constants/player';
+import {
+  clearPlayerPoseIf,
+  getCameraMode,
+  getPlayerLocomotion,
+  getPlayerPose,
+  getPlayerPoseEpoch,
+  getPlayerTransform,
+  setBodyAnchorY,
+  setPlayerPose,
+} from '@/modules/game/state/player-state';
+import { placeCameraAtHead } from '@/modules/game/utils/fps-head-camera';
+import { resolveLocomotionTimeScale } from '@/modules/game/utils/resolve-locomotion-time-scale';
 import { flushLocalClipSync } from '@/modules/multiplayer/utils/sync-local-clip';
 import { SoldierMeshBody } from '@/modules/soldiers/components/soldier-mesh-body';
 import { useSoldierLocomotion } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { useSoldierMesh } from '@/modules/soldiers/hooks/use-soldier-mesh';
 import { applySoldierAimPose, resolveSoldierAimRig } from '@/modules/soldiers/utils/aim-body-rig';
 import { resolveLocalPlayerPose } from '@/modules/soldiers/utils/resolve-soldier-pose';
-import {
-  DEFAULT_PLAY_SKIN_ID,
-  LOCAL_PLAYER_ENTITY_ID,
-  LOCAL_PLAYER_ROOT_NAME,
-  MODEL_FORWARD_YAW_OFFSET,
-} from '../constants/player';
-import { clearPlayerPoseIf, getCameraMode, getPlayerLocomotion, getPlayerPose, getPlayerPoseEpoch, getPlayerTransform, setBodyAnchorY, setPlayerPose } from '../state/player-state';
-import { placeCameraAtHead } from '../utils/fps-head-camera';
-import { resolveLocomotionTimeScale } from '../utils/resolve-locomotion-time-scale';
 
 interface LocalPlayerProps {
   skinId?: SoldierSkinId;

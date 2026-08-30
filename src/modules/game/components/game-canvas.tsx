@@ -28,7 +28,7 @@ import { CrosshairHud } from './crosshair-hud';
 import { DeferredAfterLoad } from './deferred-after-load';
 import { GamePausePanel } from './game-pause-panel';
 import { LoadingReporter } from './loading-reporter';
-import { LocalPlayer } from './local-player';
+import { LazyLocalPlayer } from './local-player';
 import { PlayerControls } from './player-controls';
 import { RoundEndBanner } from './round-end-banner';
 import { ShootingController } from './shooting-controller';
@@ -104,7 +104,8 @@ export function GameCanvas({
               />
             )}
             {matchConnected && <RemotePlayers />}
-            <LocalPlayer skinId={skinId} />
+
+            <LazyLocalPlayer skinId={skinId} />
 
             <AimMarker />
             <ShootingController />

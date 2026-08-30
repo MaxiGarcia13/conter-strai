@@ -4,5 +4,6 @@ export function isE2e(): boolean {
     return true;
   }
 
+  // eslint-disable-next-line node/prefer-global/process
   return typeof process !== 'undefined' && process.env.PUBLIC_E2E === 'true';
 }

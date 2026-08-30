@@ -6,7 +6,7 @@ import { Canvas } from '@react-three/fiber';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { HealthBar } from '@/modules/combat';
 import { LocalTransformSync } from '@/modules/multiplayer/components/local-transform-sync';
-import { RemotePlayers } from '@/modules/multiplayer/components/remote-players';
+import { LazyRemotePlayers } from '@/modules/multiplayer/components/remote-players';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import {
   getScenarioById,
@@ -97,13 +97,15 @@ export function GameCanvas({
         <Suspense fallback={null}>
           <DeferredAfterLoad>
             <PlayerControls scenario={scenario} spawn={localSpawn} />
+
             {!matchConnected && (
               <ScenarioSoldiers
                 scenario={scenario}
                 skipKey={localSpawn.key}
               />
             )}
-            {matchConnected && <RemotePlayers />}
+
+            {matchConnected && <LazyRemotePlayers />}
 
             <LazyLocalPlayer skinId={skinId} />
 

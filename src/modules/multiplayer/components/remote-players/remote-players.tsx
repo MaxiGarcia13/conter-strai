@@ -1,5 +1,5 @@
 import type { SoldierSkinId } from '@/modules/soldiers';
-import { RemotePlayer } from '@/modules/multiplayer/components/remote-player';
+import { LazyRemotePlayer } from '@/modules/multiplayer/components/remote-player';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 
 interface RemotePlayersProps {}
@@ -23,7 +23,7 @@ export function RemotePlayers(_props: RemotePlayersProps) {
         .map((entry) => {
           const [sessionId, skinId] = entry.split(':') as [string, SoldierSkinId];
           return (
-            <RemotePlayer
+            <LazyRemotePlayer
               key={sessionId}
               sessionId={sessionId}
               skinId={skinId}

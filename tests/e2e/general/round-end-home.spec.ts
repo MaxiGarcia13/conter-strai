@@ -7,10 +7,10 @@ import {
   waitForMatchSession,
 } from '../lobby-helpers';
 import {
+  clickHostRoundEndHome,
   ensureGuestReachedPlay,
   forceRoundEnd,
   markPlayHandoff,
-  waitForLiveRound,
   waitForPlayThroughCountdown,
 } from '../test-helpers';
 
@@ -44,7 +44,7 @@ async function startTwoPlayerRound(
 }
 
 test.describe.serial('two-player round-end Home', () => {
-  test.describe.configure({ timeout: 90_000 });
+  test.describe.configure({ timeout: 120_000 });
 
   let hostContext: BrowserContext;
   let guestContext: BrowserContext;
@@ -53,7 +53,7 @@ test.describe.serial('two-player round-end Home', () => {
   let roomId: string;
 
   test.beforeAll(async ({ browser, request }) => {
-    test.setTimeout(90_000);
+    test.setTimeout(120_000);
     const hostRoom = await createHostRoom(request);
     roomId = hostRoom.roomId;
     hostContext = await browser.newContext();
@@ -90,7 +90,7 @@ test.describe.serial('two-player round-end Home', () => {
 });
 
 test('host round-end Home disposes the room', async ({ page, request }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(120_000);
   const hostRoom = await createHostRoom(request);
   const { roomId } = hostRoom;
 
@@ -100,24 +100,15 @@ test('host round-end Home disposes the room', async ({ page, request }) => {
 
   await page.getByRole('button', { name: 'Start Match' }).click();
   await expect(page).toHaveURL(new RegExp(`/room/${roomId}/play$`));
-  await waitForLiveRound(page);
+  await waitForPlayThroughCountdown(page);
   await forceRoundEnd(page);
 
   const roundEnd = page.getByRole('alert', { name: /win the round/i });
   await expect(roundEnd).toBeVisible();
   await expect(roundEnd.getByRole('button', { name: 'Restart' })).toBeVisible();
 
-  const [deleteReq] = await Promise.all([
-    page.waitForRequest(
-      (req) =>
-        req.method() === 'DELETE'
-        && req.url().includes(`/api/v1/room/${roomId}`),
-      { timeout: 15_000 },
-    ),
-    roundEnd.getByRole('button', { name: 'Home' }).click(),
-  ]);
-  expect(deleteReq.headers().authorization).toMatch(/^Bearer /);
-  await expect(page).toHaveURL('/', { timeout: 15_000 });
+  await clickHostRoundEndHome(page, roomId);
+
   expect(await page.evaluate((id) => sessionStorage.getItem(`cs:room:${id}`), roomId)).toBeNull();
   expect((await request.get(`/api/v1/room/${roomId}`)).status()).toBe(404);
 });

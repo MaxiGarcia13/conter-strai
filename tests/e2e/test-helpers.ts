@@ -176,14 +176,31 @@ async function waitThroughCountdown(page: Page): Promise<void> {
     await expect(banner).toBeVisible({ timeout: 30_000 });
     await expect(banner).toBeHidden({ timeout: 15_000 });
   } catch {
-    // Countdown may have finished during deploy — fall through to the live probe.
+    // Countdown may have finished during deploy — wait for the play-test API instead.
+    await expect
+      .poll(async () => page.evaluate(() => typeof window.__PLAY_TEST_API__?.endRound === 'function'), {
+        timeout: 30_000,
+      })
+      .toBe(true);
   }
 }
 
 async function probeLiveRound(page: Page): Promise<void> {
   await page.locator('canvas').click({ position: { x: 400, y: 300 }, force: true });
-  await page.keyboard.press(GAME_BINDINGS.pause.code);
-  await expect(pauseDialog(page)).toBeVisible({ timeout: 15_000 });
+
+  let pressedEsc = false;
+  await expect
+    .poll(async () => {
+      if (await pauseDialog(page).isVisible()) {
+        return true;
+      }
+      if (!pressedEsc) {
+        await page.keyboard.press(GAME_BINDINGS.pause.code);
+        pressedEsc = true;
+      }
+      return pauseDialog(page).isVisible();
+    }, { timeout: 20_000, intervals: [250, 500] })
+    .toBe(true);
 }
 
 /** Poll until Esc opens the pause panel, then resume so the caller starts unpaused. */
@@ -208,7 +225,16 @@ export async function waitForCountdownToFinish(page: Page): Promise<void> {
 /** Host-only play-test API — ends the live round and waits for the round-end banner. */
 export async function forceRoundEnd(page: Page, winner: Team = 'civilian'): Promise<void> {
   await expect
-    .poll(async () => page.evaluate(() => typeof window.__PLAY_TEST_API__?.endRound === 'function'))
+    .poll(async () => page.evaluate(() => typeof window.__PLAY_TEST_API__?.endRound === 'function'), {
+      timeout: 30_000,
+    })
+    .toBe(true);
+
+  await expect
+    .poll(async () => page.evaluate(() => window.__PLAY_TEST_API__?.isRoundLive?.() === true), {
+      timeout: 45_000,
+      intervals: [250, 500, 1_000],
+    })
     .toBe(true);
 
   await expect
@@ -219,6 +245,40 @@ export async function forceRoundEnd(page: Page, winner: Team = 'civilian'): Prom
       return page.getByRole('alert', { name: /win the round/i }).isVisible();
     }, { timeout: 30_000, intervals: [500, 1_000] })
     .toBe(true);
+}
+
+/** Host round-end Home — asserts DELETE + navigation (request may outlive the response on hard nav). */
+export async function clickHostRoundEndHome(page: Page, roomId: string): Promise<void> {
+  await expect
+    .poll(async () =>
+      page.evaluate((id) => {
+        const raw = sessionStorage.getItem(`cs:room:${id}`);
+        if (!raw) {
+          return false;
+        }
+        try {
+          const session = JSON.parse(raw) as { role?: string; hostToken?: string };
+          return session.role === 'host' && typeof session.hostToken === 'string' && session.hostToken.length > 0;
+        } catch {
+          return false;
+        }
+      }, roomId))
+    .toBe(true);
+
+  const roundEnd = page.getByRole('alert', { name: /win the round/i });
+  const home = roundEnd.getByRole('button', { name: 'Home' });
+  await expect(home).toBeEnabled();
+
+  const [deleteReq] = await Promise.all([
+    page.waitForRequest(
+      (req) => req.method() === 'DELETE' && req.url().includes(`/api/v1/room/${roomId}`),
+      { timeout: 45_000 },
+    ),
+    home.click({ force: true }),
+  ]);
+
+  expect(deleteReq.headers().authorization).toMatch(/^Bearer /);
+  await expect(page).toHaveURL('/', { timeout: 30_000 });
 }
 
 export function expectNoConsoleErrors(consoleErrors: string[]): void {

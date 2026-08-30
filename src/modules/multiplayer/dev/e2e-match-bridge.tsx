@@ -8,6 +8,8 @@ declare global {
     /** Playwright write API — available when `PUBLIC_E2E=true`. */
     __PLAY_TEST_API__?: {
       endRound: (winner?: Team) => void;
+      /** True once the server round is `in_progress` (countdown finished). */
+      isRoundLive: () => boolean;
     };
   }
 }
@@ -19,10 +21,14 @@ export function E2eMatchBridge() {
       return;
     }
 
+    void import('@/modules/game/components/game-pause-panel/game-pause-panel');
+    void import('@/modules/game/components/round-end-banner/round-end-banner');
+
     window.__PLAY_TEST_API__ = {
       endRound: (winner = 'civilian') => {
         getActiveMatch()?.room.send('e2eEndRound', { winner });
       },
+      isRoundLive: () => getActiveMatch()?.room.state?.roundPhase === 'in_progress',
     };
 
     return () => {

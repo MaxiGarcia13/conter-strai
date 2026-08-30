@@ -1,8 +1,11 @@
-/* Self-hosted faces from public/fonts — no external font requests. */
+/* Self-hosted faces from public/fonts — no external font requests.
+   Local fallbacks use size-adjust so font-display: swap does not shift layout. */
 
 @font-face {
   font-family: 'Barlow Condensed';
-  src: url('/fonts/Barlow_Condensed/BarlowCondensed-Regular.ttf') format('truetype');
+  src:
+    url('/fonts/Barlow_Condensed/BarlowCondensed-Regular.woff2') format('woff2'),
+    url('/fonts/Barlow_Condensed/BarlowCondensed-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -10,7 +13,9 @@
 
 @font-face {
   font-family: 'Barlow Condensed';
-  src: url('/fonts/Barlow_Condensed/BarlowCondensed-Medium.ttf') format('truetype');
+  src:
+    url('/fonts/Barlow_Condensed/BarlowCondensed-Medium.woff2') format('woff2'),
+    url('/fonts/Barlow_Condensed/BarlowCondensed-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -18,7 +23,9 @@
 
 @font-face {
   font-family: 'Barlow Condensed';
-  src: url('/fonts/Barlow_Condensed/BarlowCondensed-Bold.ttf') format('truetype');
+  src:
+    url('/fonts/Barlow_Condensed/BarlowCondensed-Bold.woff2') format('woff2'),
+    url('/fonts/Barlow_Condensed/BarlowCondensed-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -26,7 +33,9 @@
 
 @font-face {
   font-family: 'Barlow Condensed';
-  src: url('/fonts/Barlow_Condensed/BarlowCondensed-ExtraBold.ttf') format('truetype');
+  src:
+    url('/fonts/Barlow_Condensed/BarlowCondensed-ExtraBold.woff2') format('woff2'),
+    url('/fonts/Barlow_Condensed/BarlowCondensed-ExtraBold.ttf') format('truetype');
   font-weight: 800;
   font-style: normal;
   font-display: swap;
@@ -34,8 +43,65 @@
 
 @font-face {
   font-family: 'Share Tech Mono';
-  src: url('/fonts/Share_Tech_Mono/ShareTechMono-Regular.ttf') format('truetype');
+  src:
+    url('/fonts/Share_Tech_Mono/ShareTechMono-Regular.woff2') format('woff2'),
+    url('/fonts/Share_Tech_Mono/ShareTechMono-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+}
+
+@font-face {
+  font-family: 'Barlow Condensed Fallback';
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans');
+  font-weight: 400;
+  font-style: normal;
+  size-adjust: 71.95%;
+  ascent-override: 100%;
+  descent-override: 20%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Barlow Condensed Fallback';
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans');
+  font-weight: 500;
+  font-style: normal;
+  size-adjust: 73.83%;
+  ascent-override: 100%;
+  descent-override: 20%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Barlow Condensed Fallback';
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans');
+  font-weight: 700;
+  font-style: normal;
+  size-adjust: 77.27%;
+  ascent-override: 100%;
+  descent-override: 20%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Barlow Condensed Fallback';
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans');
+  font-weight: 800;
+  font-style: normal;
+  size-adjust: 79.18%;
+  ascent-override: 100%;
+  descent-override: 20%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Share Tech Mono Fallback';
+  src: local('Courier New'), local('Courier'), local('Liberation Mono');
+  font-weight: 400;
+  font-style: normal;
+  size-adjust: 89.99%;
+  ascent-override: 88.5%;
+  descent-override: 24.2%;
+  line-gap-override: 0%;
 }

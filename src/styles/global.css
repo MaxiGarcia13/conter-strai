@@ -22,9 +22,9 @@
   /* Shadows */
   --shadow-soft: hsl(0 0% 0% / 0.65);
 
-  --font-display-family: 'Barlow Condensed', 'Arial Narrow', ui-sans-serif, sans-serif;
-  --font-body-family: 'Barlow Condensed', ui-sans-serif, system-ui, sans-serif;
-  --font-mono-family: 'Share Tech Mono', ui-monospace, monospace;
+  --font-display-family: 'Barlow Condensed', 'Barlow Condensed Fallback', sans-serif;
+  --font-body-family: 'Barlow Condensed', 'Barlow Condensed Fallback', ui-sans-serif, system-ui, sans-serif;
+  --font-mono-family: 'Share Tech Mono', 'Share Tech Mono Fallback', ui-monospace, monospace;
 
   --space-page-x: clamp(1.25rem, 4vw, 3rem);
   --space-page-y: clamp(1.5rem, 5vh, 3.5rem);

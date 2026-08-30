@@ -1,3 +1,6 @@
+export * from './components/scenario-ground';
+export * from './components/scenario-houses';
+export * from './components/scenario-props';
 export * from './components/scenario-scene';
 export * from './get-scenario-by-id';
 export * from './get-scenario-texture-ids';

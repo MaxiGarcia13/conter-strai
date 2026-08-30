@@ -10,9 +10,7 @@ import { LazyRemotePlayers } from '@/modules/multiplayer/components/remote-playe
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import {
   getScenarioById,
-  ScenarioGround,
-  ScenarioHouses,
-  ScenarioProps,
+  LazyScenarioScene,
 } from '@/modules/scenarios';
 import { ScenarioLighting } from '@/modules/scenarios/components/scenario-lighting';
 import { ScenarioSky } from '@/modules/scenarios/components/scenario-sky';
@@ -31,6 +29,9 @@ import { LazyLocalPlayer } from './local-player';
 import { PlayerControls } from './player-controls';
 import { LazyRoundEndBanner } from './round-end-banner';
 import { ShootingController } from './shooting-controller';
+
+import '@/modules/scenarios/utils/preload-scenario-textures';
+import '@/modules/soldiers/soldier-skin-registry';
 
 interface GameCanvasProps {
   roomId?: string;
@@ -75,7 +76,8 @@ export function GameCanvas({
         className="h-full w-full"
         camera={{ fov: 75, near: 0.1, far: 300 }}
       >
-        {trackLoading && onLoaderChange && <LoadingReporter onLoaderChange={handleLoaderChange} />}
+        {trackLoading && onLoaderChange
+          && <LoadingReporter onLoaderChange={handleLoaderChange} />}
 
         <ScenarioLighting lighting={scenario.lighting} shadows />
 
@@ -85,28 +87,18 @@ export function GameCanvas({
           sunPosition={scenario.lighting?.sunPosition ?? DEFAULT_SUN_POSITION}
         />
 
-        <Suspense fallback={null}>
-          <ScenarioGround scenario={scenario} />
-        </Suspense>
-        <Suspense fallback={null}>
-          <ScenarioHouses scenario={scenario} />
-        </Suspense>
-        <Suspense fallback={null}>
-          <ScenarioProps scenario={scenario} />
-        </Suspense>
+        <LazyScenarioScene scenario={scenario} />
 
-        <Suspense fallback={null}>
-          <DeferredAfterLoad>
-            <PlayerControls scenario={scenario} spawn={localSpawn} />
+        <DeferredAfterLoad>
+          <PlayerControls scenario={scenario} spawn={localSpawn} />
 
-            {matchConnected && <LazyRemotePlayers />}
+          {matchConnected && <LazyRemotePlayers />}
 
-            <LazyLocalPlayer skinId={skinId} />
+          <LazyLocalPlayer skinId={skinId} />
 
-            <AimMarker />
-            <ShootingController />
-          </DeferredAfterLoad>
-        </Suspense>
+          <AimMarker />
+          <ShootingController />
+        </DeferredAfterLoad>
 
         <LocalTransformSync />
 

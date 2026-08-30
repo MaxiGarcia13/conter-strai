@@ -89,7 +89,8 @@ export const soldierSkins: Record<SoldierSkinId, SoldierSkin> = {
   },
 };
 
-// Start loading before DeferredAfterLoad mounts so useGLTF does not re-trigger
+// Preload when this module is imported (GameCanvas side-effect) so useGLTF is
+// warm before DeferredAfterLoad / LazyLocalPlayer mount and does not re-trigger
 // drei's loading manager (which would update LoadingReporter during render).
 for (const { meshData } of Object.values(soldierSkins)) {
   useGLTF.preload(meshData.modelUrl);

@@ -36,15 +36,18 @@ export function GameCanvasIsland({ roomId, scenarioId, team, skinId }: GameCanva
   const [loader, setLoader] = useState<PlayLoaderState>(BOOT_LOADER);
 
   const handleLoaderChange = useCallback((state: PlayLoaderState | null) => {
+    if (!visible)
+      return;
+
     if (state === null) {
       setVisible(false);
       // Guarantee the static boot shell cannot linger if the lazy React
       // PlayLoader never mounted (e.g. deploy finished before its chunk ready).
       document.getElementById('play-boot')?.remove();
-      return;
+    } else {
+      setVisible(true);
+      setLoader(state);
     }
-    setLoader(state);
-    setVisible(true);
   }, []);
 
   return (
@@ -80,11 +83,9 @@ function MatchPlayCanvas({
   const { joining, error: joinError } = useMatchJoin(roomId);
 
   useEffect(() => {
-    if (joining || joinError || visible) {
-      return;
+    if (!joining && !joinError && visible) {
+      playerReady();
     }
-
-    playerReady();
   }, [visible, joining, joinError]);
 
   if (joinError) {
@@ -108,6 +109,7 @@ function MatchPlayCanvas({
           onLoaderChange={onLoaderChange}
         />
       </Suspense>
+
       <CountdownBanner />
     </>
   );

@@ -2,6 +2,7 @@ import type { ScenarioId } from '@/modules/scenarios/types';
 import type { SoldierSkinId } from '@/modules/soldiers/types';
 import type { Team } from '@/modules/teams/types';
 import { lazy, Suspense, useEffect } from 'react';
+import { resolveRoomSession } from '@/modules/lobby';
 import { playerReady } from '@/modules/multiplayer/adapters/colyseus-adapter/match-session';
 import { MatchJoinError } from '@/modules/multiplayer/components/match-join-error';
 import { useMatchJoin } from '@/modules/multiplayer/hooks/use-match-join';
@@ -23,6 +24,11 @@ const GameCanvas = lazy(async () => {
 
 export function GameCanvasWrapper({ roomId, scenarioId, team, skinId }: GameCanvasWrapperProps) {
   const { joining, error: joinError } = useMatchJoin(roomId);
+
+  const roomSession = roomId ? resolveRoomSession(roomId) : null;
+  const resolvedScenarioId = roomSession?.scenario ?? scenarioId;
+  const resolvedTeam = roomSession?.team ?? team;
+  const resolvedSkinId = roomSession?.skin ?? skinId;
 
   const readyAfterDelay = (delay: number) => {
     setTimeout(() => {
@@ -55,9 +61,9 @@ export function GameCanvasWrapper({ roomId, scenarioId, team, skinId }: GameCanv
       <Suspense fallback={null}>
         <GameCanvas
           roomId={roomId}
-          scenarioId={scenarioId}
-          team={team}
-          skinId={skinId}
+          scenarioId={resolvedScenarioId}
+          team={resolvedTeam}
+          skinId={resolvedSkinId}
         />
       </Suspense>
 

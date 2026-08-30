@@ -61,11 +61,11 @@ Props and soldier GLBs are preloaded at module init (`prop-registry.ts`, `soldie
 
 **Current state:**
 
-| Bucket | Count | Notes |
-| ------ | ----- | ----- |
-| In-bounds jacaranda | 10 | Collidable cover (`collidable` defaults true from registry) |
-| Vista skirt jacaranda | 14 | `collidable: false` at ±30–74 m (`greenery.ts` lines 22–39) |
-| Infrastructure | 11 | Barriers + cars — low count, varied rotation; defer instancing |
+| Bucket                | Count | Notes                                                          |
+| --------------------- | ----- | -------------------------------------------------------------- |
+| In-bounds jacaranda   | 10    | Collidable cover (`collidable` defaults true from registry)    |
+| Vista skirt jacaranda | 14    | `collidable: false` at ±30–74 m (`greenery.ts` lines 22–39)    |
+| Infrastructure        | 11    | Barriers + cars — low count, varied rotation; defer instancing |
 
 `ScenarioProps` maps every prop to `<PropInstance>` (`scenario-scene.tsx`). Registry default scale for jacaranda is **0.4** (`prop-registry.ts`). Fog `far: 150` and open perimeter (`vistaExtension: 100`) hide distant skirt edge.
 

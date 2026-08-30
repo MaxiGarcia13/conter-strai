@@ -8,7 +8,7 @@ import { playerReady } from '@/modules/multiplayer/adapters/colyseus-adapter/mat
 import { MatchJoinError } from '@/modules/multiplayer/components/match-join-error';
 import { useMatchJoin } from '@/modules/multiplayer/hooks/use-match-join';
 import { CountdownBanner } from './countdown-banner';
-import { PlayLoader } from './play-loader';
+import { LazyPlayLoader } from './play-loader';
 
 const GameCanvas = lazy(async () => {
   const module = await import('./game-canvas');
@@ -35,13 +35,12 @@ export function GameCanvasIsland({ roomId, scenarioId, team, skinId }: GameCanva
   const [visible, setVisible] = useState(true);
   const [loader, setLoader] = useState<PlayLoaderState>(BOOT_LOADER);
 
-  useEffect(() => {
-    document.getElementById('play-boot')?.remove();
-  }, []);
-
   const handleLoaderChange = useCallback((state: PlayLoaderState | null) => {
     if (state === null) {
       setVisible(false);
+      // Guarantee the static boot shell cannot linger if the lazy React
+      // PlayLoader never mounted (e.g. deploy finished before its chunk ready).
+      document.getElementById('play-boot')?.remove();
       return;
     }
     setLoader(state);
@@ -93,16 +92,12 @@ function MatchPlayCanvas({
   }
 
   if (joining) {
-    return (
-      <>
-        <PlayLoader label="Connecting to match" progress={null} />
-      </>
-    );
+    return <LazyPlayLoader label="Connecting to match" progress={null} />;
   }
 
   return (
     <>
-      {visible && <PlayLoader {...loader} />}
+      {visible && <LazyPlayLoader {...loader} />}
 
       <Suspense fallback={null}>
         <GameCanvas

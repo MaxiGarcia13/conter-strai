@@ -1,15 +1,16 @@
-export interface PlayLoaderState {
-  label: string;
-  /** `null` = indeterminate pulse bar (engine boot). */
-  progress: number | null;
-}
+import type { PlayLoaderState } from './types';
+import { useEffect } from 'react';
 
 interface PlayLoaderProps extends PlayLoaderState {
   className?: string;
 }
-
 /** Full-screen DOM overlay — works before WebGL mounts (unlike drei Html). */
 export function PlayLoader({ label, progress, className = '' }: PlayLoaderProps) {
+  useEffect(() => {
+    // Take over from the static Astro boot shell once this lazy chunk is mounted.
+    document.getElementById('play-boot')?.remove();
+  }, []);
+
   return (
     <div
       className={`play-loader ${className}`.trim()}

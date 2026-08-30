@@ -12,16 +12,15 @@ permissions:
   contents: write
 
 jobs:
-  lint:
+  ci:
     if: ${{ !startsWith(github.event.head_commit.message, 'chore(release):') }}
-    uses: ./.github/workflows/lint.yml
-
-  test:
-    if: ${{ !startsWith(github.event.head_commit.message, 'chore(release):') }}
-    uses: ./.github/workflows/test.yml
+    name: CI
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
 
   bump:
-    needs: [lint, test]
+    needs: ci
+    name: Bump Version
     uses: MaxiGarcia13/gh-actions/.github/workflows/bump-version.yml@main
     secrets: inherit
     with:
@@ -32,10 +31,12 @@ jobs:
 
   deploy:
     needs: bump
+    name: Deploy
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
 
   release-notes:
+    name: Create Release Notes
     if: ${{ needs.bump.outputs.tag != '' }}
     needs: bump
     uses: MaxiGarcia13/gh-actions/.github/workflows/create-release-notes.yml@main

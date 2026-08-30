@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createMatchRoomViaApi } from './lobby-helpers';
+import { createMatchRoomViaApi } from '../lobby-helpers';
 
 test('join page rejects an unknown room id', async ({ page }) => {
   await page.goto('/room/join');

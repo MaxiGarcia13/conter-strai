@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+// eslint-disable-next-line no-restricted-imports
 import {
   captureConsoleErrors,
   expectNoConsoleErrors,
@@ -7,7 +8,7 @@ import {
   readPlayTest,
   waitForCanvas,
   waitForPlayTest,
-} from './test-helpers';
+} from '../../test-helpers';
 
 test('room play cycles camera modes without duplicating the local soldier', async ({ page }) => {
   const consoleErrors = captureConsoleErrors(page);

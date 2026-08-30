@@ -3,7 +3,7 @@ import {
   navigateToPlayFromWaitingRoom,
   readPlayTest,
   waitForPlayTest,
-} from './play/test-helpers';
+} from '../test-helpers';
 
 test('create room plays as the default civilian remy', async ({ page }) => {
   await page.goto('/room');

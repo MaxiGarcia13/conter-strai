@@ -4,6 +4,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
+  workflow_call:
+
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -12,8 +14,63 @@ permissions:
   contents: read
 
 jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
   lint:
+    name: Lint
+    needs: build
     uses: ./.github/workflows/lint.yml
 
-  test:
-    uses: ./.github/workflows/test.yml
+  test-unit:
+    name: Unit Tests
+    needs: build
+    uses: ./.github/workflows/test-unit.yml
+
+  test-e2e-room:
+    name: E2E Tests - Room
+    needs: [lint, test-unit]
+    uses: ./.github/workflows/test-e2e.yml
+    with:
+      folder: e2e/room
+
+  test-e2e-general:
+    name: E2E Tests - General
+    needs: [test-e2e-room]
+    uses: ./.github/workflows/test-e2e.yml
+    with:
+      folder: e2e/general
+
+  test-e2e-play-locomotion:
+    name: E2E Tests - Play locomotion
+    needs: [test-e2e-general]
+    uses: ./.github/workflows/test-e2e.yml
+    with:
+      folder: e2e/play/locomotion.spec.ts
+
+  test-e2e-play-modals:
+    name: E2E Tests - Play modals
+    needs: [test-e2e-play-locomotion]
+    uses: ./.github/workflows/test-e2e.yml
+    with:
+      folder: |
+        e2e/play/modals
+        e2e/play/general

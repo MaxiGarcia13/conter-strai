@@ -7,11 +7,11 @@ import {
   readPlayTest,
   waitForCanvas,
   waitForPlayTest,
-} from './test-helpers';
+} from '../test-helpers';
 
 const characters: [SoldierSkinId, Team][] = [
   ['swat-1', 'soldier'],
-  // ['remy', 'civilian'],
+  ['remy', 'civilian'],
 ] as const;
 
 for (const character of characters) {

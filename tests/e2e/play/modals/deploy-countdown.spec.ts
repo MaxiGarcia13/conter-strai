@@ -1,10 +1,11 @@
 import { expect, test } from '@playwright/test';
 
+// eslint-disable-next-line no-restricted-imports
 import {
   countdownBanner,
   deployingLoader,
   startMatchFromWaitingRoom,
-} from './test-helpers';
+} from '../../test-helpers';
 
 test('countdown does not appear until deploy loader clears', async ({ page }) => {
   await startMatchFromWaitingRoom(page);

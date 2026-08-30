@@ -5,14 +5,14 @@ import {
   seedGuestSession,
   seedHostSession,
   waitForMatchSession,
-} from './lobby-helpers';
+} from '../lobby-helpers';
 import {
   ensureGuestReachedPlay,
   forceRoundEnd,
   markPlayHandoff,
   waitForCountdownToFinish,
   waitForPlayTest,
-} from './play/test-helpers';
+} from '../test-helpers';
 
 async function startTwoPlayerRound(
   hostPage: Page,

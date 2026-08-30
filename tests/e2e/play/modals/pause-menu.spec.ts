@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+// eslint-disable-next-line no-restricted-imports
 import {
   captureConsoleErrors,
   countdownBanner,
@@ -10,7 +11,7 @@ import {
   startMatchFromWaitingRoom,
   waitForCanvas,
   waitForPlayTest,
-} from './test-helpers';
+} from '../../test-helpers';
 
 /** Wait until the round goes live: countdown appears (3-2-1) then clears. */
 async function waitForLiveRound(page: import('@playwright/test').Page): Promise<void> {

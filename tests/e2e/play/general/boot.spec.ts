@@ -1,12 +1,13 @@
 import { expect, test } from '@playwright/test';
 
+// eslint-disable-next-line no-restricted-imports
 import {
   captureConsoleErrors,
   expectNoConsoleErrors,
   navigateToRoomPlay,
   waitForCanvas,
   waitForPlayTest,
-} from './test-helpers';
+} from '../../test-helpers';
 
 test('room play loads the scene and settles its assets', async ({ page }) => {
   const consoleErrors = captureConsoleErrors(page);

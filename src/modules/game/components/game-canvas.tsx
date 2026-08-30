@@ -3,7 +3,7 @@ import type { ScenarioId } from '@/modules/scenarios';
 import type { SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { HealthBar } from '@/modules/combat';
 import { LocalTransformSync } from '@/modules/multiplayer/components/local-transform-sync';
 import { LazyRemotePlayers } from '@/modules/multiplayer/components/remote-players';

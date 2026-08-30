@@ -7,7 +7,7 @@ on:
         type: string
         description: The folder to test
         required: false
-        default: 'e2e'
+        default: e2e
 
 jobs:
   test-e2e:

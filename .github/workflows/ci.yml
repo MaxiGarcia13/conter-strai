@@ -59,18 +59,9 @@ jobs:
     with:
       folder: e2e/general
 
-  test-e2e-play-locomotion:
-    name: E2E Tests - Play locomotion
+  test-e2e-play:
+    name: E2E Tests - Play
     needs: [test-e2e-general]
     uses: ./.github/workflows/test-e2e.yml
     with:
-      folder: e2e/play/locomotion.spec.ts
-
-  test-e2e-play-modals:
-    name: E2E Tests - Play modals
-    needs: [test-e2e-play-locomotion]
-    uses: ./.github/workflows/test-e2e.yml
-    with:
-      folder: |
-        e2e/play/modals
-        e2e/play/general
+      folder: e2e/play

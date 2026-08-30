@@ -149,10 +149,24 @@ Units: **1 world unit = 1 meter**.
 
 `ScenarioScene` reads config only — new arena / prop = registry + placements, not a new React scene.
 
+### Staged arena deploy
+
+The play canvas mounts the arena in phases, each in its own Suspense boundary with a phase-scoped texture library (`useScenarioPhaseTextureLibrary(scenario, phase)`):
+
+| Phase | Component           | Contents                                                 |
+| ----- | ------------------- | -------------------------------------------------------- |
+| 0     | — (immediate)       | Sky + lighting                                           |
+| 1     | `ScenarioGround`    | Base floor + `groundFloorZones` (street patches)         |
+| 2     | `ScenarioHouses`    | `ScenarioWalls` + `houseFloorZones`                      |
+| 3     | `ScenarioProps`     | `scenario.props` decorations (GLBs preloaded at init)    |
+| 4     | `DeferredAfterLoad` | `PlayerControls`, `LocalPlayer` / remotes, shooting, HUD |
+
+`ScenarioGround` and `ScenarioHouses` resolve their own `useLoader` subsets, so ground textures appear before houses and props. `ScenarioScene` (all layers in one boundary) remains as a non-staged fallback.
+
 ### Key components
 
 - `GameCanvas` — R3F Canvas, lights, camera
-- `ScenarioScene` — floor + outer walls + `wallSegments` + generic `props`
+- `ScenarioGround` / `ScenarioHouses` / `ScenarioProps` — staged arena layers (see above)
 - `SoldierModel` — NPC spawns; `LocalPlayer` — one clone + mixer
 - `useFpsControls` — WASD, mouse, locomotion intent, collision
 - `useShooting` — camera-center pistol hitscan, cooldown, no friendly fire

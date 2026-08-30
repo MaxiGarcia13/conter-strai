@@ -18,7 +18,7 @@ import {
   getPlayerTransform,
   setPlayerLocomotion,
   setPlayerPose,
-} from '../state/player-state';
+} from '../stores/player-state';
 import { angleFromIdentity, findLocalNode } from './play-test-helpers';
 
 const POLL_INTERVAL_MS = 60;

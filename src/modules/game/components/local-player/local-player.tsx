@@ -19,7 +19,7 @@ import {
   getPlayerTransform,
   setBodyAnchorY,
   setPlayerPose,
-} from '@/modules/game/state/player-state';
+} from '@/modules/game/stores/player-state';
 import { placeCameraAtHead } from '@/modules/game/utils/fps-head-camera';
 import { resolveLocomotionTimeScale } from '@/modules/game/utils/resolve-locomotion-time-scale';
 import { flushLocalClipSync } from '@/modules/multiplayer/utils/sync-local-clip';

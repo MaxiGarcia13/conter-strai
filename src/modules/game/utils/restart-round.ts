@@ -1,6 +1,6 @@
 import type { ScenarioId } from '@/modules/scenarios';
 import { restartRound as restartMatchRound } from '@/modules/multiplayer/adapters/colyseus-adapter/match-session';
-import { useRoundStore } from '../state/round-store';
+import { useRoundStore } from '../stores/round-store';
 
 /**
  * Restart the current round. Multiplayer: host-only server restart re-enters

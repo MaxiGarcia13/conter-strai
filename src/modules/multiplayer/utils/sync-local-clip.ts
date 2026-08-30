@@ -1,5 +1,5 @@
 import type { RemotePoseMessage } from './syncable-remote-pose';
-import { getPlayerLocomotion, getPlayerPose } from '@/modules/game/state/player-state';
+import { getPlayerLocomotion, getPlayerPose } from '@/modules/game/stores/player-state';
 import { getActiveMatch, sendPose } from '@/modules/multiplayer/adapters/colyseus-adapter';
 import { TRANSFORM_SYNC_INTERVAL_MS } from '@/modules/multiplayer/adapters/colyseus-adapter/types';
 import { isStickyRemoteOneShot, toRemoteClipMessage } from './syncable-remote-pose';

@@ -5,8 +5,8 @@ import { useEffect, useRef } from 'react';
 import { Raycaster, Vector2 } from 'three';
 import { useHealthStore } from '@/modules/combat';
 import { DEFAULT_LOCAL_TEAM, LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
-import { useGamePauseStore } from '@/modules/game/state/game-pause-store';
-import { useRoundStore } from '@/modules/game/state/round-store';
+import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
+import { useRoundStore } from '@/modules/game/stores/round-store';
 import {
   getActiveMatch,
   sendFire,
@@ -16,7 +16,7 @@ import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-st
 import { PISTOL_MAX_RANGE_METERS } from '@/modules/weapons/constants/pistol';
 import { DEFAULT_WEAPON_ID, weapons } from '@/modules/weapons/weapon-registry';
 import { resolveHitDamage } from '../services/resolve-hit-damage';
-import { getPlayerPose } from '../state/player-state';
+import { getPlayerPose } from '../stores/player-state';
 import { pickBulletHit } from '../utils/pick-bullet-hit';
 import { playGameSound } from '../utils/play-game-sound';
 

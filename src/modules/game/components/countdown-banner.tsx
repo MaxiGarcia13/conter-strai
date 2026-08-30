@@ -1,5 +1,5 @@
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
-import { useRoundStore } from '../state/round-store';
+import { useRoundStore } from '../stores/round-store';
 
 /** Full-screen 3–2–1 overlay before combat — visible above loaders and HUD. */
 export function CountdownBanner() {

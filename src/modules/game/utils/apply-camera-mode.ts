@@ -1,5 +1,5 @@
 import type { Camera } from 'three';
-import type { PlayerTransform } from '../state/player-state';
+import type { PlayerTransform } from '../stores/player-state';
 import type { CameraMode } from '../types';
 import { DEFAULT_BODY_ANCHOR_Y, PLAYER_EYE_HEIGHT } from '../constants/player';
 

@@ -8,7 +8,7 @@ import {
   resetPlayerTransform,
   setPlayerLocomotion,
   setPlayerPose,
-} from '@/modules/game/state/player-state';
+} from '@/modules/game/stores/player-state';
 import { clearRoomSession, readRoomSession, writeRoomSession } from '@/modules/lobby/utils/room-session';
 import { requestHitReaction } from '@/modules/soldiers/state/hit-reaction-state';
 import { useMultiplayerStore } from '../stores/multiplayer-store';

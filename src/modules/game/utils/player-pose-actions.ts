@@ -3,7 +3,7 @@ import {
   getPlayerLocomotion,
   getPlayerPose,
   setPlayerPose,
-} from '@/modules/game/state/player-state';
+} from '@/modules/game/stores/player-state';
 import { flushLocalClipSync } from '@/modules/multiplayer/utils/sync-local-clip';
 
 function applyPoseAndSync(

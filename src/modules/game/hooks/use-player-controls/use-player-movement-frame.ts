@@ -16,8 +16,8 @@ import {
   getPlayerTransform,
   setPlayerLocomotion,
   setPlayerPose,
-} from '@/modules/game/state/player-state';
-import { useRoundStore } from '@/modules/game/state/round-store';
+} from '@/modules/game/stores/player-state';
+import { useRoundStore } from '@/modules/game/stores/round-store';
 import { advancePlayerTransform } from '@/modules/game/utils/advance-player-transform';
 import { applyCameraMode } from '@/modules/game/utils/apply-camera-mode';
 import { axesFromPressedCodes } from '@/modules/game/utils/axes-from-pressed-codes';

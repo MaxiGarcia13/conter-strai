@@ -1,5 +1,5 @@
 import type { Camera, Object3D } from 'three';
-import type { PlayerTransform } from '../state/player-state';
+import type { PlayerTransform } from '../stores/player-state';
 
 import { Vector3 } from 'three';
 

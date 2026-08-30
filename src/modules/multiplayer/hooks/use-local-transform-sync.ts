@@ -1,5 +1,5 @@
 import { useFrame } from '@react-three/fiber';
-import { getPlayerTransform } from '@/modules/game/state/player-state';
+import { getPlayerTransform } from '@/modules/game/stores/player-state';
 import { getActiveMatch, syncTransform } from '@/modules/multiplayer/adapters/colyseus-adapter';
 import { flushLocalClipSync } from '@/modules/multiplayer/utils/sync-local-clip';
 

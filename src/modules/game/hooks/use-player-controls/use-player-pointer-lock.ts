@@ -2,8 +2,8 @@ import type { RefObject } from 'react';
 import type { RoundPhase } from '@/modules/game/types';
 import { useEffect, useRef } from 'react';
 import { LOOK_PITCH_FLOOR, MOUSE_SENSITIVITY, PITCH_LIMIT } from '@/modules/game/constants/player';
-import { useGamePauseStore } from '@/modules/game/state/game-pause-store';
-import { getPlayerTransform } from '@/modules/game/state/player-state';
+import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
+import { getPlayerTransform } from '@/modules/game/stores/player-state';
 import { requestPointerLock } from '@/modules/game/utils/request-pointer-lock';
 import { clamp } from '@/utils/clamp';
 

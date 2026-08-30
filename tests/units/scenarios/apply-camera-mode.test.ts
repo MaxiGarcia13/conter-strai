@@ -1,4 +1,4 @@
-import type { PlayerTransform } from '@/modules/game/state/player-state';
+import type { PlayerTransform } from '@/modules/game/stores/player-state';
 import { PerspectiveCamera } from 'three';
 
 import { describe, expect, it } from 'vitest';

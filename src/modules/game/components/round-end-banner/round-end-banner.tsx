@@ -1,7 +1,7 @@
 import type { ScenarioId } from '@/modules/scenarios';
 import { useState } from 'react';
 import { CsButton } from '@/components/cs-button';
-import { useRoundStore } from '@/modules/game/state/round-store';
+import { useRoundStore } from '@/modules/game/stores/round-store';
 import { restartRound } from '@/modules/game/utils/restart-round';
 import { clearRoomSession, readRoomSession } from '@/modules/lobby/utils/room-session';
 import { leaveMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';

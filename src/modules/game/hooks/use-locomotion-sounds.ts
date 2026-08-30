@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useHealthStore } from '@/modules/combat';
 import { LOCOMOTION_SOUND_GAIN, LOCOMOTION_SOUND_URLS } from '../constants/locomotion-sounds';
 import { LOCAL_PLAYER_ENTITY_ID } from '../constants/player';
-import { getPlayerLocomotion, getPlayerPose } from '../state/player-state';
+import { getPlayerLocomotion, getPlayerPose } from '../stores/player-state';
 import { resolveLocomotionSound } from '../utils/resolve-locomotion-sound';
 
 function createLoop(url: string): HTMLAudioElement {

@@ -4,7 +4,7 @@ import {
   resetPlayerPoseEpoch,
   setPlayerLocomotion,
   setPlayerPose,
-} from '@/modules/game/state/player-state';
+} from '@/modules/game/stores/player-state';
 import {
   cancelReload,
   requestJump,

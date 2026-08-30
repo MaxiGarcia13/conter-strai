@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { GAME_BINDINGS, GAME_COMMANDS, MOVE_CODES, MOVE_KEY_CODES } from '@/modules/game/constants/game-bindings';
-import { useGamePauseStore } from '@/modules/game/state/game-pause-store';
+import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 
 describe('game-bindings', () => {
   it('derives GAME_COMMANDS from the registry', () => {

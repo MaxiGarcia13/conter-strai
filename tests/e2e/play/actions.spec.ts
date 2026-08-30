@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 
 import {
@@ -11,13 +12,22 @@ import {
   waitForPlayTest,
 } from './test-helpers';
 
-test(`room play: jump on ${GAME_BINDINGS.jump.label}; kneel + WASD crouch-walks; kneel + ${GAME_BINDINGS.sprint.label} runs then resumes kneel`, async ({ page }) => {
+async function bootCivilianPlay(page: Page): Promise<string[]> {
   const consoleErrors = captureConsoleErrors(page);
   await navigateToRoomPlay(page);
   await waitForCanvas(page);
   await waitForPlayTest(page);
-
   expect((await readPlayTest(page))?.skinId).toBe('remy');
+  return consoleErrors;
+}
+
+async function enterKneel(page: Page): Promise<void> {
+  await page.keyboard.press(MOVE_CODES.kneelToggle);
+  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('kneel');
+}
+
+test(`room play: jump on ${GAME_BINDINGS.jump.label} from a walk returns to walk`, async ({ page }) => {
+  const consoleErrors = await bootCivilianPlay(page);
 
   await page.keyboard.down(MOVE_CODES.forward);
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('walk');
@@ -29,29 +39,53 @@ test(`room play: jump on ${GAME_BINDINGS.jump.label}; kneel + WASD crouch-walks;
     .poll(async () => (await readPlayTest(page))?.activeClip, { timeout: 10_000 })
     .toBe('walk');
 
-  // Kneel directly from a walk enters crouch-walk; toggle again stands up while moving.
+  expectNoConsoleErrors(consoleErrors);
+});
+
+test('room play: kneel from a walk enters crouch-walk; toggle stands up while moving', async ({ page }) => {
+  const consoleErrors = await bootCivilianPlay(page);
+
+  await page.keyboard.down(MOVE_CODES.forward);
+  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('walk');
+
   await page.keyboard.press(MOVE_CODES.kneelToggle);
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('crouchWalking');
   await page.keyboard.press(MOVE_CODES.kneelToggle);
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('walk');
 
-  await page.keyboard.up(MOVE_CODES.forward);
-  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('idle');
+  expectNoConsoleErrors(consoleErrors);
+});
 
-  await page.keyboard.press(MOVE_CODES.kneelToggle);
-  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('kneel');
+test('room play: kneel pose holds after the clip ends', async ({ page }) => {
+  const consoleErrors = await bootCivilianPlay(page);
+
+  await enterKneel(page);
 
   // LoopOnce + clamp: the pose holds after the clip ends.
   await page.waitForTimeout(600);
   expect((await readPlayTest(page))?.activeClip).toBe('kneel');
 
-  // WASD keeps kneel stance and plays crouch-walking (does not stand up).
+  expectNoConsoleErrors(consoleErrors);
+});
+
+test('room play: kneel + WASD crouch-walks then resumes kneel', async ({ page }) => {
+  const consoleErrors = await bootCivilianPlay(page);
+
+  await enterKneel(page);
+
   await page.keyboard.down(MOVE_CODES.forward);
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('crouchWalking');
   await page.keyboard.up(MOVE_CODES.forward);
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('kneel');
 
-  // WASD+sprint runs while kneel pose is kept; stop resumes kneel.
+  expectNoConsoleErrors(consoleErrors);
+});
+
+test(`room play: kneel + ${GAME_BINDINGS.sprint.label} runs then resumes kneel`, async ({ page }) => {
+  const consoleErrors = await bootCivilianPlay(page);
+
+  await enterKneel(page);
+
   await page.keyboard.down(MOVE_CODES.forward);
   await page.keyboard.down(MOVE_CODES.runModifier);
   await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('run');

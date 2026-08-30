@@ -1,6 +1,7 @@
 import type { ScenarioId } from '@/modules/scenarios';
 import { useEffect } from 'react';
 import { CsButton } from '@/components/cs-button';
+import { APP_VERSION } from '@/constants/app-version';
 import { GAME_COMMANDS } from '@/modules/game/constants/game-bindings';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 import { useRoundStore } from '@/modules/game/stores/round-store';
@@ -99,6 +100,14 @@ export function GamePausePanel({ roomId, scenarioId }: GamePausePanelProps) {
                 </CsButton>
               </div>
             )}
+
+        <p
+          className="mt-6 text-xs tracking-widest text-foreground/40 normal-case"
+          aria-label={`Version ${APP_VERSION}`}
+        >
+          v
+          {APP_VERSION}
+        </p>
       </div>
     </div>
   );

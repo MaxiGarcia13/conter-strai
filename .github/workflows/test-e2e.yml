@@ -38,6 +38,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-${{ inputs.folder }}
-          path: playwright-report-${{ inputs.folder }}/
+          name: playwright-report
+          path: playwright-report/
           retention-days: 7

@@ -1,6 +1,6 @@
 # Improvements backlog
 
-**Open:** §6 (staged arena deploy). **Shipped:** §1–§5 (closed 2026-08-28 with US-5 polish). New feel items go here as unchecked entries; for hygiene / dead code see [tech-debt.md](./tech-debt.md).
+**Open:** §6 (staged arena deploy), §7 (greenery prop performance). **Shipped:** §1–§5 (closed 2026-08-28 with US-5 polish). New feel items go here as unchecked entries; for hygiene / dead code see [tech-debt.md](./tech-debt.md).
 
 ---
 
@@ -50,6 +50,77 @@ Props and soldier GLBs are preloaded at module init (`prop-registry.ts`, `soldie
 **Out of scope:** Changing collision data timing (movement already uses scenario segments, not meshes); schema or multiplayer protocol changes; splitting prop preload across network priorities.
 
 **Spec touch:** Note staged deploy order in `specs/current/design.md` (play canvas lifecycle) when implemented.
+
+---
+
+## 7. Greenery prop performance (jacaranda instancing + vista tier)
+
+**Symptom:** Arena-01 mounts **24 jacaranda** props via `PropInstance`, each cloning the full GLB scene (~113k verts, ~3.9 MB). That yields **24 draw calls** and duplicated object hierarchies for mostly decorative skirt trees the player never reaches. Scale alone does not reduce triangle count or draw calls.
+
+**Scope:** Prop rendering (`prop-instance.tsx`, new instanced batch), map authoring (`greenery.ts`), prop registry, optional vista asset pipeline (`compress-assets.mjs`). Collision stays config-driven (`prop-blockers-from-scenario.ts`) — no mesh coupling.
+
+**Current state:**
+
+| Bucket | Count | Notes |
+| ------ | ----- | ----- |
+| In-bounds jacaranda | 10 | Collidable cover (`collidable` defaults true from registry) |
+| Vista skirt jacaranda | 14 | `collidable: false` at ±30–74 m (`greenery.ts` lines 22–39) |
+| Infrastructure | 11 | Barriers + cars — low count, varied rotation; defer instancing |
+
+`ScenarioProps` maps every prop to `<PropInstance>` (`scenario-scene.tsx`). Registry default scale for jacaranda is **0.4** (`prop-registry.ts`). Fog `far: 150` and open perimeter (`vistaExtension: 100`) hide distant skirt edge.
+
+**Target architecture:**
+
+```mermaid
+flowchart LR
+  subgraph today [Today]
+    P24[24 × PropInstance clone]
+  end
+  subgraph phase1 [Phase 1]
+    I1[1–3 InstancedMesh jacaranda]
+    P11[11 × PropInstance infra]
+  end
+  subgraph phase2 [Phase 2 optional]
+    Iplay[Instanced jacaranda ×10]
+    Ivista[Instanced jacarandaVista ×6–8]
+    Pinfra[PropInstance infra]
+  end
+  today --> phase1 --> phase2
+```
+
+**Tasks:**
+
+### Phase 0 — Quick wins (data + guardrails)
+
+- [ ] **Trim vista skirt count** — Reduce perimeter jacaranda from 14 → 6–8 (corners + cardinal ring); keep fog + horizon readable without mid-edge duplicates.
+- [ ] **Lower vista scale in data** — Set `scale: ~0.2–0.25` on skirt-only props in `greenery.ts`; keep in-bounds trees at registry default (~0.35–0.45).
+- [ ] **Disable prop shadows** — When extracting shared prop geometry, traverse meshes and force `castShadow = false` / `receiveShadow = false` so GLTF defaults cannot opt in to shadow-map cost.
+
+### Phase 1 — Instanced jacaranda (highest ROI)
+
+- [ ] **`group-props-by-id` helper** — Pure function in `scenarios/utils/`; unit test grouping by `prop.id`.
+- [ ] **`InstancedPropBatch` component** — Load GLTF once, build per-instance matrices (position + `rotationY` + scale). Handle multi-material jacaranda (up to ~3 instanced draw calls vs 24 clones). Use `@react-three/drei` `<Instances>` / `<Instance>` or raw `InstancedMesh`.
+- [ ] **Route `ScenarioProps`** — Batch props with `count >= 2` through `InstancedPropBatch`; singletons (cars, etc.) stay on `PropInstance`. Start with **jacaranda only**; barriers (8×) optional follow-up.
+- [ ] **Optional registry flag** — `PropDefinition.instancing?: 'auto' | 'never'` (default `'auto'` when batched).
+
+### Phase 2 — Vista prop tier (profile-driven)
+
+- [ ] **`jacarandaVista` registry entry** — Separate prop id for skirt-only placement; `collidable: false`, lower default scale.
+- [ ] **Vista asset** — Either aggressive simplify in `compress-assets.mjs` (~2–5k verts) or cross-plane alpha billboard (~4 tris); ship under `public/assets/greenery/`.
+- [ ] **`perimeterVistaProps` helper** — Optional `scenarios/pieces/greenery-helpers.ts` to generate skirt ring from `perimeter.vistaExtension` + bounds instead of hardcoded coordinate arrays.
+- [ ] **Split `greenery.ts`** — In-bounds manual placements use `jacaranda`; skirt uses `jacarandaVista` via helper.
+
+**Acceptance:**
+
+1. In-bounds jacaranda trunks still block movement (`prop-blockers-from-scenario` unchanged; existing unit tests pass).
+2. Skirt reads as a forest line from spawn; no obvious holes at gameplay distance.
+3. DEV free-cam / Three.js stats: jacaranda draw calls drop from ~24 to ~1–3; no per-tree scene clones in memory.
+4. No regression in `npm run test:unit` or play e2e (`PropertyBinding`, deploy, pause).
+5. Phase 2 only if Phase 0 + 1 still miss FPS target after manual profile.
+
+**Out of scope:** Instancing infrastructure props in the same PR as jacaranda; impostor/HDR vista; changing playable bounds or fog distances; networking/schema changes.
+
+**Spec touch:** Fold instancing + vista tier into `specs/current/design.md` (props / scenario rendering); close US-11 InstancedMesh follow-up in `specs/us-11/requirements.md` when Phase 1 ships.
 
 ---
 

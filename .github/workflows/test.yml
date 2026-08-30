@@ -26,6 +26,7 @@ jobs:
       - name: Run Unit Tests
         run: npm run test:unit
 
+      # TODO: check why are failing with npm run test:e2e but not with npm run test:e2e:ui
       # - name: Install Playwright
       #   run: npx playwright install --with-deps chromium
 

@@ -11,9 +11,9 @@ export default defineConfig({
   testDir: 'tests/e2e',
   retries: 1,
   workers: 1,
-  timeout: isCI ? 240_000 : 90_000,
+  timeout: isCI ? 90_000 : 60_000,
   expect: {
-    timeout: isCI ? 15_000 : 5_000,
+    timeout: isCI ? 15_000 : 8_000,
   },
   reporter: isCI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
@@ -38,7 +38,7 @@ export default defineConfig({
     port,
     env: {
       ...process.env,
-      E2E: 'true',
+      PUBLIC_E2E: 'true',
       PORT: String(port),
       COLYSEUS_PORT: colyseusPort,
       PUBLIC_COLYSEUS_URL: `ws://localhost:${colyseusPort}`,

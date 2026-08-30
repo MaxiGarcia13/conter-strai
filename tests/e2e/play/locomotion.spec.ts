@@ -1,11 +1,12 @@
+import type { Page } from '@playwright/test';
 import type { SoldierSkinId } from '@/modules/soldiers/types';
 import type { Team } from '@/modules/teams/types';
 import { expect, test } from '@playwright/test';
 import {
+  expectLocomotionClip,
   MOVE_CODES,
   navigateToRoomPlay,
   readPlayTest,
-  waitForCanvas,
   waitForPlayTest,
 } from '../test-helpers';
 
@@ -17,80 +18,84 @@ const characters: [SoldierSkinId, Team][] = [
 for (const character of characters) {
   const [skin, team] = character;
 
-  test.describe(`room play as ${skin} ${team}`, () => {
-    test.beforeEach(async ({ page }) => {
+  test.describe.serial(`room play as ${skin} ${team}`, () => {
+    let page: Page;
+
+    test.beforeAll(async ({ browser }) => {
+      page = await browser.newPage();
       await navigateToRoomPlay(page, { team, skin });
-      await waitForCanvas(page);
       await waitForPlayTest(page);
     });
 
-    test('idle', async ({ page }) => {
-      expect((await readPlayTest(page))?.skinId).toBe(skin);
-      expect((await readPlayTest(page))?.activeClip).toBe('idle');
+    test.afterAll(async () => {
+      await page?.close();
     });
 
-    test('walk', async ({ page }) => {
+    test('idle', async () => {
+      expect((await readPlayTest(page))?.skinId).toBe(skin);
+      await expectLocomotionClip(page, 'idle');
+    });
+
+    test('walk', async () => {
       const moveCodes = [MOVE_CODES.forward, MOVE_CODES.left, MOVE_CODES.right];
       for (const moveCode of moveCodes) {
         await page.keyboard.down(moveCode);
-        expect((await readPlayTest(page))?.activeClip).toBe('walk');
+        await expectLocomotionClip(page, 'walk');
 
         await page.keyboard.up(moveCode);
-        expect((await readPlayTest(page))?.activeClip).toBe('idle');
+        await expectLocomotionClip(page, 'idle');
       }
     });
 
-    test('walkBackward', async ({ page }) => {
+    test('walkBackward', async () => {
       await page.keyboard.down(MOVE_CODES.back);
-      expect((await readPlayTest(page))?.activeClip).toBe('walkBackward');
+      await expectLocomotionClip(page, 'walkBackward');
       await page.keyboard.up(MOVE_CODES.back);
-      expect((await readPlayTest(page))?.activeClip).toBe('idle');
+      await expectLocomotionClip(page, 'idle');
     });
 
-    test('kneel', async ({ page }) => {
+    test('kneel', async () => {
       await page.keyboard.press(MOVE_CODES.kneelToggle);
-      expect((await readPlayTest(page))?.activeClip).toBe('kneel');
+      await expectLocomotionClip(page, 'kneel');
+      await page.keyboard.press(MOVE_CODES.kneelToggle);
+      await expectLocomotionClip(page, 'idle');
     });
 
-    test('crouchWalking', async ({ page }) => {
+    test('crouchWalking', async () => {
       await page.keyboard.press(MOVE_CODES.kneelToggle);
-      expect((await readPlayTest(page))?.activeClip).toBe('kneel');
+      await expectLocomotionClip(page, 'kneel');
 
       await page.keyboard.down(MOVE_CODES.forward);
-      expect((await readPlayTest(page))?.activeClip).toBe('crouchWalking');
+      await expectLocomotionClip(page, 'crouchWalking');
       await page.keyboard.up(MOVE_CODES.forward);
-      await page.waitForTimeout(1000);
-      expect((await readPlayTest(page))?.activeClip).toBe('kneel');
+      await expectLocomotionClip(page, 'kneel');
+
+      await page.keyboard.press(MOVE_CODES.kneelToggle);
+      await expectLocomotionClip(page, 'idle');
     });
 
-    // TODO: Fix jump clip issue in the e2e tests
-    test.skip('jumpIdle', async ({ page }) => {
+    test.skip('jumpIdle', async () => {
       await page.keyboard.press(MOVE_CODES.jump);
-      expect((await readPlayTest(page))?.activeClip).toBe('jumpIdle');
+      await expectLocomotionClip(page, 'jumpIdle');
       await page.keyboard.up(MOVE_CODES.jump);
-
-      await page.waitForTimeout(2000);
-      expect((await readPlayTest(page))?.activeClip).toBe('idle');
+      await expectLocomotionClip(page, 'idle');
     });
 
-    // TODO: Fix jump clip issue in the e2e tests
-    test.skip('jump', async ({ page }) => {
+    test.skip('jump', async () => {
       await page.keyboard.down(MOVE_CODES.forward);
       await page.keyboard.press(MOVE_CODES.jump);
-      await page.waitForTimeout(500);
-      expect((await readPlayTest(page))?.activeClip).toBe('jump');
+      await expectLocomotionClip(page, 'jump');
       await page.keyboard.up(MOVE_CODES.forward);
-      await page.waitForTimeout(2000);
-      expect((await readPlayTest(page))?.activeClip).toBe('idle');
+      await expectLocomotionClip(page, 'idle');
     });
 
-    test('run', async ({ page }) => {
+    test('run', async () => {
       await page.keyboard.down(MOVE_CODES.forward);
       await page.keyboard.down(MOVE_CODES.runModifier);
-      expect((await readPlayTest(page))?.activeClip).toBe('run');
+      await expectLocomotionClip(page, 'run');
       await page.keyboard.up(MOVE_CODES.runModifier);
       await page.keyboard.up(MOVE_CODES.forward);
-      expect((await readPlayTest(page))?.activeClip).toBe('idle');
+      await expectLocomotionClip(page, 'idle');
     });
   });
 }

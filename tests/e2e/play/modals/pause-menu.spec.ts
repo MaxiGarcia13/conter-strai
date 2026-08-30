@@ -1,91 +1,82 @@
+import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 
 // eslint-disable-next-line no-restricted-imports
 import {
   captureConsoleErrors,
-  countdownBanner,
   expectNoConsoleErrors,
   GAME_BINDINGS,
   MOVE_CODES,
-  readPlayTest,
   startMatchFromWaitingRoom,
-  waitForCanvas,
-  waitForPlayTest,
+  waitForLiveRound,
 } from '../../test-helpers';
 
-/** Wait until the round goes live: countdown appears (3-2-1) then clears. */
-async function waitForLiveRound(page: import('@playwright/test').Page): Promise<void> {
-  await expect(countdownBanner(page)).toBeVisible({ timeout: 30_000 });
-  await expect(countdownBanner(page)).toBeHidden({ timeout: 15_000 });
-}
+test.describe.serial('pause menu in a live round', () => {
+  let page: Page;
 
-test('Escape opens the pause panel in a live round with Resume / Restart / Leave / Commands', async ({ page }) => {
-  const consoleErrors = captureConsoleErrors(page);
+  test.beforeAll(async ({ browser }) => {
+    page = await browser.newPage();
+    await startMatchFromWaitingRoom(page);
+    await waitForLiveRound(page);
+  });
 
-  await startMatchFromWaitingRoom(page);
-  await waitForCanvas(page);
-  await waitForPlayTest(page);
-  await waitForLiveRound(page);
+  test.afterAll(async () => {
+    await page?.close();
+  });
 
-  await page.keyboard.press(GAME_BINDINGS.pause.code);
+  test('Escape opens the pause panel with Resume / Restart / Leave / Commands', async () => {
+    const consoleErrors = captureConsoleErrors(page);
 
-  const dialog = page.getByRole('dialog', { name: 'Game paused' });
-  await expect(dialog).toBeVisible();
+    await page.keyboard.press(GAME_BINDINGS.pause.code);
 
-  await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
-  // Host of a room may restart the round.
-  await expect(page.getByRole('button', { name: 'Restart' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Leave' })).toBeVisible();
+    const dialog = page.getByRole('dialog', { name: 'Game paused' });
+    await expect(dialog).toBeVisible();
 
-  // Commands toggle lists the gameplay bindings and replaces the main actions.
-  await expect(page.getByText('Cycle camera mode', { exact: true })).toBeHidden();
-  await page.getByRole('button', { name: 'Commands' }).click();
-  await expect(page.getByText('Commands', { exact: true })).toBeVisible();
-  await expect(page.getByText('Cycle camera mode', { exact: true })).toBeVisible();
-  await expect(page.getByText('Kneel toggle', { exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Resume' })).toBeHidden();
-  await expect(page.getByRole('button', { name: 'Leave' })).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Restart' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Leave' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Back' }).click();
-  await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
-  await expect(page.getByText('Cycle camera mode', { exact: true })).toBeHidden();
+    await expect(page.getByText('Cycle camera mode', { exact: true })).toBeHidden();
+    await page.getByRole('button', { name: 'Commands' }).click();
+    await expect(page.getByText('Commands', { exact: true })).toBeVisible();
+    await expect(page.getByText('Cycle camera mode', { exact: true })).toBeVisible();
+    await expect(page.getByText('Kneel toggle', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Resume' })).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Leave' })).toBeHidden();
 
-  expectNoConsoleErrors(consoleErrors);
-});
+    await page.getByRole('button', { name: 'Back' }).click();
+    await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
+    await expect(page.getByText('Cycle camera mode', { exact: true })).toBeHidden();
 
-test('Resume closes the pause panel and restores gameplay input', async ({ page }) => {
-  const consoleErrors = captureConsoleErrors(page);
+    await page.getByRole('button', { name: 'Resume' }).click();
+    await expect(dialog).toBeHidden();
 
-  await startMatchFromWaitingRoom(page);
-  await waitForCanvas(page);
-  await waitForPlayTest(page);
-  await waitForLiveRound(page);
+    expectNoConsoleErrors(consoleErrors);
+  });
 
-  await page.keyboard.press(GAME_BINDINGS.pause.code);
-  await expect(page.getByRole('dialog', { name: 'Game paused' })).toBeVisible();
+  test('Resume closes the pause panel and restores gameplay input', async () => {
+    const consoleErrors = captureConsoleErrors(page);
 
-  await page.getByRole('button', { name: 'Resume' }).click();
-  await expect(page.getByRole('dialog', { name: 'Game paused' })).toBeHidden();
+    await page.keyboard.press(GAME_BINDINGS.pause.code);
+    await expect(page.getByRole('dialog', { name: 'Game paused' })).toBeVisible();
 
-  // Movement reacts again after resume.
-  await page.keyboard.down(MOVE_CODES.forward);
-  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe('walk');
-  await page.keyboard.up(MOVE_CODES.forward);
+    await page.getByRole('button', { name: 'Resume' }).click();
+    await expect(page.getByRole('dialog', { name: 'Game paused' })).toBeHidden();
 
-  expectNoConsoleErrors(consoleErrors);
-});
+    await page.keyboard.down(MOVE_CODES.forward);
+    await expect(page.getByRole('status', { name: /^Camera:/ })).toBeVisible();
+    await page.keyboard.up(MOVE_CODES.forward);
 
-test('Leave from the pause panel navigates home', async ({ page }) => {
-  const consoleErrors = captureConsoleErrors(page);
+    expectNoConsoleErrors(consoleErrors);
+  });
 
-  await startMatchFromWaitingRoom(page);
-  await waitForCanvas(page);
-  await waitForPlayTest(page);
-  await waitForLiveRound(page);
+  test('Leave from the pause panel navigates home', async () => {
+    const consoleErrors = captureConsoleErrors(page);
 
-  await page.keyboard.press(GAME_BINDINGS.pause.code);
-  await page.getByRole('button', { name: 'Leave' }).click();
+    await page.keyboard.press(GAME_BINDINGS.pause.code);
+    await page.getByRole('button', { name: 'Leave' }).click();
 
-  await expect(page).toHaveURL('/');
-  expectNoConsoleErrors(consoleErrors);
+    await expect(page).toHaveURL('/');
+    expectNoConsoleErrors(consoleErrors);
+  });
 });

@@ -5,7 +5,6 @@ import {
   captureConsoleErrors,
   expectNoConsoleErrors,
   navigateToRoomPlay,
-  waitForCanvas,
   waitForPlayTest,
 } from '../../test-helpers';
 
@@ -14,7 +13,6 @@ test('room play loads the scene and settles its assets', async ({ page }) => {
 
   await navigateToRoomPlay(page);
   await expect(page.locator('[data-testid="play-loader"]')).toBeVisible();
-  await waitForCanvas(page);
 
   const atSpawn = await waitForPlayTest(page);
 

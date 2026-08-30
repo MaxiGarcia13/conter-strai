@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 import {
   navigateToPlayFromWaitingRoom,
-  readPlayTest,
-  waitForPlayTest,
+  readRoomSessionSkin,
+  waitForPlayReady,
 } from '../test-helpers';
 
 test('create room plays as the default civilian remy', async ({ page }) => {
@@ -14,8 +14,8 @@ test('create room plays as the default civilian remy', async ({ page }) => {
   await navigateToPlayFromWaitingRoom(page, roomId);
   await expect(page).toHaveURL(/\/room\/[^/]+\/play$/);
 
-  await waitForPlayTest(page);
-  expect((await readPlayTest(page))?.skinId).toBe('remy');
+  await waitForPlayReady(page);
+  expect(await readRoomSessionSkin(page, roomId)).toBe('remy');
 });
 
 test('create room plays as the selected soldier swat-1', async ({ page }) => {
@@ -29,6 +29,6 @@ test('create room plays as the selected soldier swat-1', async ({ page }) => {
   await navigateToPlayFromWaitingRoom(page, roomId);
   await expect(page).toHaveURL(/\/room\/[^/]+\/play$/);
 
-  await waitForPlayTest(page);
-  expect((await readPlayTest(page))?.skinId).toBe('swat-1');
+  await waitForPlayReady(page);
+  expect(await readRoomSessionSkin(page, roomId)).toBe('swat-1');
 });

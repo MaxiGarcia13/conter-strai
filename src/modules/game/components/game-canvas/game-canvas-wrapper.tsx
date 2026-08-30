@@ -5,6 +5,7 @@ import { lazy, Suspense, useEffect } from 'react';
 import { resolveRoomSession } from '@/modules/lobby';
 import { playerReady } from '@/modules/multiplayer/adapters/colyseus-adapter/match-session';
 import { MatchJoinError } from '@/modules/multiplayer/components/match-join-error';
+import { E2eMatchBridge } from '@/modules/multiplayer/dev/e2e-match-bridge';
 import { useMatchJoin } from '@/modules/multiplayer/hooks/use-match-join';
 import { CountdownBanner } from '../countdown-banner';
 import { PlayLoader } from '../play-loader';
@@ -56,6 +57,7 @@ export function GameCanvasWrapper({ roomId, scenarioId, team, skinId }: GameCanv
 
   return (
     <>
+      <E2eMatchBridge />
       <GameCanvasLoader />
 
       <Suspense fallback={null}>

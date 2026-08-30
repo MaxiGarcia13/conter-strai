@@ -13,19 +13,12 @@ test('countdown does not appear until deploy loader clears', async ({ page }) =>
   const loader = deployingLoader(page);
   const countdown = countdownBanner(page);
 
-  expect.poll(async () => {
-    const countdownText = await loader.textContent();
-    if (countdownText?.includes('100%')) {
-      return true;
-    }
-    return false;
-  });
+  if (await loader.isVisible()) {
+    await expect(countdown).toBeHidden();
+  }
 
-  expect.poll(async () => {
-    const countdownText = await countdown.textContent();
-    if (countdownText?.includes('3')) {
-      return true;
-    }
-    return false;
-  });
+  await expect(page.locator('[data-testid="play-loader"]')).toBeHidden({ timeout: 30_000 });
+  await expect(countdown).toBeHidden();
+
+  await expect(countdown).toBeVisible({ timeout: 30_000 });
 });

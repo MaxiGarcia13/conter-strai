@@ -1,6 +1,8 @@
-import process from 'node:process';
-
-/** True when Playwright (or another harness) sets `E2E=true` on the server process. */
+/** True when Playwright (or another harness) sets `PUBLIC_E2E=true`. */
 export function isE2e(): boolean {
-  return process.env.E2E === 'true';
+  if (import.meta.env.PUBLIC_E2E === 'true') {
+    return true;
+  }
+
+  return typeof process !== 'undefined' && process.env.PUBLIC_E2E === 'true';
 }

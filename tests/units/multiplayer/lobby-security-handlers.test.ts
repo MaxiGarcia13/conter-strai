@@ -320,9 +320,9 @@ describe('createRoom (origin + host token)', () => {
     expect(metadata.expiresAt).toBe(body.expiresAt);
   });
 
-  it('ignores ttlMs in production unless E2E is set', async () => {
+  it('ignores ttlMs in production unless PUBLIC_E2E is set', async () => {
     vi.stubEnv('NODE_ENV', 'production');
-    vi.stubEnv('E2E', 'false');
+    vi.stubEnv('PUBLIC_E2E', 'false');
     matchMakerMock.createRoom.mockResolvedValue({});
     const before = Date.now();
     const response = await createRoom({

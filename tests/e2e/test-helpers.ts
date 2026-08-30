@@ -18,6 +18,17 @@ export async function readPlayTest(page: Page): Promise<PlayTestSnapshot | undef
   return page.evaluate(() => window.__PLAY_TEST__);
 }
 
+export async function readRoomSessionSkin(page: Page, roomId: string): Promise<SoldierSkinId | undefined> {
+  return page.evaluate((id) => {
+    const raw = sessionStorage.getItem(`cs:room:${id}`);
+    if (!raw) {
+      return undefined;
+    }
+    const session = JSON.parse(raw) as { skin?: SoldierSkinId };
+    return session.skin;
+  }, roomId);
+}
+
 export function captureConsoleErrors(page: Page): string[] {
   const consoleErrors: string[] = [];
   page.on('console', (message) => {
@@ -64,6 +75,12 @@ export async function navigateToRoomPlay(
 
 export async function waitForCanvas(page: Page): Promise<void> {
   await expect(page.locator('canvas')).toBeVisible();
+}
+
+/** Canvas up and deploy loader cleared — no R3F probe required. */
+export async function waitForPlayReady(page: Page): Promise<void> {
+  await waitForCanvas(page);
+  await expect(page.locator('[data-testid="play-loader"]')).toBeHidden({ timeout: 30_000 });
 }
 
 /**
@@ -118,6 +135,7 @@ export async function ensureGuestReachedPlay(
   }
 }
 
+/** Locomotion / mixer smoke — requires the DEV play-test probe. */
 export async function waitForPlayTest(page: Page): Promise<PlayTestSnapshot> {
   await expect
     .poll(async () => (await readPlayTest(page))?.mixerReady, { timeout: 30_000 })
@@ -148,31 +166,66 @@ export function countdownBanner(page: Page) {
   return page.getByRole('status', { name: /Starting in/i });
 }
 
-/** Wait for the 3–2–1 overlay to clear so the server round is `in_progress`. */
-export async function waitForCountdownToFinish(page: Page): Promise<void> {
-  const countdown = countdownBanner(page);
-  if (await countdown.isVisible()) {
-    await expect(countdown).toBeHidden({ timeout: 15_000 });
+const pauseDialog = (page: Page) => page.getByRole('dialog', { name: 'Game paused' });
+
+async function waitThroughCountdown(page: Page): Promise<void> {
+  await waitForPlayReady(page);
+
+  const banner = countdownBanner(page);
+  try {
+    await expect(banner).toBeVisible({ timeout: 30_000 });
+    await expect(banner).toBeHidden({ timeout: 15_000 });
+  } catch {
+    // Countdown may have finished during deploy — fall through to the live probe.
   }
 }
 
-/** Host-only E2E hook — ends the live round and waits for the round-end banner. */
-export async function forceRoundEnd(page: Page): Promise<void> {
+async function probeLiveRound(page: Page): Promise<void> {
+  await page.locator('canvas').click({ position: { x: 400, y: 300 }, force: true });
+  await page.keyboard.press(GAME_BINDINGS.pause.code);
+  await expect(pauseDialog(page)).toBeVisible({ timeout: 15_000 });
+}
+
+/** Poll until Esc opens the pause panel, then resume so the caller starts unpaused. */
+export async function waitForLiveRound(page: Page): Promise<void> {
+  await waitThroughCountdown(page);
+  await probeLiveRound(page);
+
+  await page.getByRole('button', { name: 'Resume' }).click();
+  await expect(pauseDialog(page)).toBeHidden();
+}
+
+/** `/play` through deploy + countdown — no pause probe (for round-end flows). */
+export async function waitForPlayThroughCountdown(page: Page): Promise<void> {
+  await waitThroughCountdown(page);
+}
+
+/** Wait for the 3–2–1 overlay to clear so the server round is `in_progress`. */
+export async function waitForCountdownToFinish(page: Page): Promise<void> {
+  await waitThroughCountdown(page);
+}
+
+/** Host-only play-test API — ends the live round and waits for the round-end banner. */
+export async function forceRoundEnd(page: Page, winner: Team = 'civilian'): Promise<void> {
+  await expect
+    .poll(async () => page.evaluate(() => typeof window.__PLAY_TEST_API__?.endRound === 'function'))
+    .toBe(true);
+
   await expect
     .poll(async () => {
-      const ready = await page.evaluate(() => typeof window.__PLAY_TEST_API__?.forceRoundEnd === 'function');
-      if (!ready) {
-        return false;
-      }
-      await page.evaluate(() => {
-        window.__PLAY_TEST_API__?.forceRoundEnd?.('civilian');
-      });
+      await page.evaluate((w) => {
+        window.__PLAY_TEST_API__?.endRound?.(w);
+      }, winner);
       return page.getByRole('alert', { name: /win the round/i }).isVisible();
-    }, { timeout: 45_000, intervals: [500, 1_000] })
+    }, { timeout: 30_000, intervals: [500, 1_000] })
     .toBe(true);
 }
 
 export function expectNoConsoleErrors(consoleErrors: string[]): void {
   expect(consoleErrors.filter((error) => /PropertyBinding/i.test(error))).toEqual([]);
   expect(consoleErrors).toEqual([]);
+}
+
+export async function expectLocomotionClip(page: Page, clip: string): Promise<void> {
+  await expect.poll(async () => (await readPlayTest(page))?.activeClip).toBe(clip);
 }

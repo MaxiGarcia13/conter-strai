@@ -10,8 +10,8 @@ import {
   ensureGuestReachedPlay,
   forceRoundEnd,
   markPlayHandoff,
-  waitForCountdownToFinish,
-  waitForPlayTest,
+  waitForLiveRound,
+  waitForPlayThroughCountdown,
 } from '../test-helpers';
 
 async function startTwoPlayerRound(
@@ -30,18 +30,13 @@ async function startTwoPlayerRound(
   await waitForMatchSession(guestPage, roomId);
   await expect(hostPage.getByRole('button', { name: 'Start Match' })).toBeEnabled();
 
-  // Mark handoff while the guest waiting page is stable — fallback goto must not evaluate mid-nav.
   await markPlayHandoff(guestPage, roomId);
 
   await hostPage.getByRole('button', { name: 'Start Match' }).click();
   await expect(hostPage).toHaveURL(new RegExp(`/room/${roomId}/play$`), { timeout: 30_000 });
   await ensureGuestReachedPlay(guestPage, roomId, { handoffPreMarked: true });
 
-  await Promise.all([waitForPlayTest(hostPage), waitForPlayTest(guestPage)]);
-  await Promise.all([
-    waitForCountdownToFinish(hostPage),
-    waitForCountdownToFinish(guestPage),
-  ]);
+  await Promise.all([waitForPlayThroughCountdown(hostPage), waitForPlayThroughCountdown(guestPage)]);
   await forceRoundEnd(hostPage);
 
   await expect(hostPage.getByRole('alert', { name: /win the round/i })).toBeVisible();
@@ -49,7 +44,7 @@ async function startTwoPlayerRound(
 }
 
 test.describe.serial('two-player round-end Home', () => {
-  test.describe.configure({ timeout: 120_000 });
+  test.describe.configure({ timeout: 90_000 });
 
   let hostContext: BrowserContext;
   let guestContext: BrowserContext;
@@ -58,6 +53,7 @@ test.describe.serial('two-player round-end Home', () => {
   let roomId: string;
 
   test.beforeAll(async ({ browser, request }) => {
+    test.setTimeout(90_000);
     const hostRoom = await createHostRoom(request);
     roomId = hostRoom.roomId;
     hostContext = await browser.newContext();
@@ -94,7 +90,7 @@ test.describe.serial('two-player round-end Home', () => {
 });
 
 test('host round-end Home disposes the room', async ({ page, request }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(90_000);
   const hostRoom = await createHostRoom(request);
   const { roomId } = hostRoom;
 
@@ -104,14 +100,13 @@ test('host round-end Home disposes the room', async ({ page, request }) => {
 
   await page.getByRole('button', { name: 'Start Match' }).click();
   await expect(page).toHaveURL(new RegExp(`/room/${roomId}/play$`));
-  await waitForPlayTest(page);
+  await waitForLiveRound(page);
   await forceRoundEnd(page);
 
   const roundEnd = page.getByRole('alert', { name: /win the round/i });
   await expect(roundEnd).toBeVisible();
   await expect(roundEnd.getByRole('button', { name: 'Restart' })).toBeVisible();
 
-  // Hard nav (roomClosed / Home) can abort the DELETE response — assert the request was sent.
   const [deleteReq] = await Promise.all([
     page.waitForRequest(
       (req) =>

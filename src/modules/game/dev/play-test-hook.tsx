@@ -1,30 +1,25 @@
 import type { SoldierSkinId } from '@/modules/soldiers';
-import type { Team } from '@/modules/teams';
 
 import { useThree } from '@react-three/fiber';
 
 import { useEffect } from 'react';
-import { getActiveMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
 import { countActiveSoldierMixers as countLocomotionMixers } from '@/modules/soldiers/hooks/use-soldier-locomotion';
 import { SOLDIER_ROOT_NAME } from '@/modules/soldiers/utils/clone-soldier-root';
 import { resolveAnimationClipKey } from '@/modules/soldiers/utils/resolve-animation-clip-key';
 import { resolveLocalPlayerPose } from '@/modules/soldiers/utils/resolve-soldier-pose';
 import { LOCAL_PLAYER_ENTITY_ID } from '../constants/player';
 import {
-  cycleCameraMode,
   getCameraMode,
   getPlayerLocomotion,
   getPlayerPose,
   getPlayerTransform,
-  setPlayerLocomotion,
-  setPlayerPose,
 } from '../stores/player-state';
 import { angleFromIdentity, findLocalNode } from './play-test-helpers';
 
 const POLL_INTERVAL_MS = 60;
-const HOOK_VERSION = 'v5-crouch-walk';
+const HOOK_VERSION = 'v6-read-only';
 
-/** Diagnostic snapshot polled by Playwright when the build runs with E2E=true. */
+/** Diagnostic snapshot polled by Playwright when locomotion E2E needs clip reads. */
 export interface PlayTestSnapshot {
   version?: string;
   /** Soldier armature roots in the scene graph (includes hidden FPS body). */
@@ -47,15 +42,6 @@ export interface PlayTestSnapshot {
 declare global {
   interface Window {
     __PLAY_TEST__?: PlayTestSnapshot;
-    /** Headless probes cannot pointer-lock; they drive state through these instead. */
-    __PLAY_TEST_API__?: {
-      setPitch: (radians: number) => void;
-      setPose: (pose: 'kneel' | null) => void;
-      setLocomotion: (locomotion: 'idle' | 'walk' | 'run') => void;
-      cycleMode: () => string;
-      /** Host-only E2E hook — ends the live round via Colyseus `e2eEndRound`. */
-      forceRoundEnd: (winner?: Team) => void;
-    };
   }
 }
 
@@ -78,7 +64,6 @@ export function PlayTestHook({ skinId }: PlayTestHookProps) {
           localRoot = object;
       });
 
-      // Live clones carry sanitized colon-less bone names; try both spellings anyway.
       const head = findLocalNode(localRoot, 'mixamorig:Head');
       const spine = findLocalNode(localRoot, 'mixamorig:Spine');
 
@@ -110,22 +95,10 @@ export function PlayTestHook({ skinId }: PlayTestHookProps) {
     };
 
     update();
-    window.__PLAY_TEST_API__ = {
-      setPitch: (radians) => {
-        getPlayerTransform().pitch = radians;
-      },
-      setPose: (pose) => setPlayerPose(pose),
-      setLocomotion: (next) => setPlayerLocomotion(next),
-      cycleMode: () => cycleCameraMode(),
-      forceRoundEnd: (winner = 'civilian') => {
-        getActiveMatch()?.room.send('e2eEndRound', { winner });
-      },
-    };
     const timer = window.setInterval(update, POLL_INTERVAL_MS);
     return () => {
       window.clearInterval(timer);
       delete window.__PLAY_TEST__;
-      delete window.__PLAY_TEST_API__;
     };
   }, [scene, camera, skinId]);
 

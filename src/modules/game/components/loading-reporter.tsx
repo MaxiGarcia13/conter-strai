@@ -1,35 +1,36 @@
-import type { PlayLoaderState } from './play-loader';
 import { useEffect, useRef } from 'react';
 import { useDeferredDreiProgress } from '../hooks/use-deferred-drei-progress';
+import { useLoaderStore } from '../stores/loader.store';
 
 interface LoadingReporterProps {
-  onLoaderChange: (state: PlayLoaderState | null) => void;
+
 }
 
 /** Bridges drei loading manager progress to a DOM overlay outside the canvas. */
-export function LoadingReporter({ onLoaderChange }: LoadingReporterProps) {
+export function LoadingReporter(_props: LoadingReporterProps) {
   const { progress, active } = useDeferredDreiProgress();
   const hasStartedRef = useRef(false);
   const activeRef = useRef(active);
   const progressRef = useRef(progress);
+  const { setLoader } = useLoaderStore();
 
   activeRef.current = active;
   progressRef.current = progress;
 
   useEffect(() => {
-    onLoaderChange({ label: 'Deploying', progress: 0 });
-  }, [onLoaderChange]);
+    setLoader({ label: 'Deploying', progress: 0 });
+  }, []);
 
   useEffect(() => {
     if (active) {
       hasStartedRef.current = true;
     }
 
-    onLoaderChange({
+    setLoader({
       label: 'Deploying',
       progress: Math.min(100, Math.round(progress)),
     });
-  }, [active, onLoaderChange, progress]);
+  }, [active, progress]);
 
   return null;
 }

@@ -1,10 +1,13 @@
-import type { PlayLoaderState } from './types';
+import type { LoaderStoreState } from '@/modules/game/stores/loader.store';
 
-interface PlayLoaderProps extends PlayLoaderState {
+interface PlayLoaderProps extends LoaderStoreState {
   className?: string;
 }
 /** Full-screen DOM overlay — works before WebGL mounts (unlike drei Html). */
-export function PlayLoader({ label, progress, className = '' }: PlayLoaderProps) {
+export function PlayLoader({ className = '', ...props }: PlayLoaderProps) {
+  const label = props.label;
+  const progress = props.progress;
+
   return (
     <div
       className={`play-loader ${className}`.trim()}

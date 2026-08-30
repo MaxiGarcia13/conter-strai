@@ -1,7 +1,7 @@
 ---
 import PlayLoader from '@/components/play-loader.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
-import { GameCanvasIsland } from '@/modules/game/components/game-canvas-island';
+import { GameCanvasWrapper } from '@/modules/game/components/game-canvas';
 import { MatchJoinError } from '@/modules/multiplayer/components/match-join-error';
 
 const { roomId } = Astro.params;
@@ -12,14 +12,12 @@ const { roomId } = Astro.params;
   description="Deploy into the arena. Move fast, hold angles, win the round."
 >
   <main class="fixed inset-0 z-10 bg-black">
-    <PlayLoader />
+    <PlayLoader id="play-boot" />
 
     {
-      roomId
-? (
-        <GameCanvasIsland client:only="react" roomId={roomId} />
-      )
-: (
+      roomId ? (
+        <GameCanvasWrapper client:only="react" roomId={roomId} />
+      ) : (
         <MatchJoinError client:only="react" message="Room not found" />
       )
     }

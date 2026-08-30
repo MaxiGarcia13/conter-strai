@@ -1,10 +1,13 @@
-import type { PlayLoaderState } from './play-loader';
 import type { ScenarioId } from '@/modules/scenarios';
 import type { SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
 import { Canvas } from '@react-three/fiber';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { HealthBar } from '@/modules/combat';
+import { DEFAULT_PLAY_SKIN_ID, DEFAULT_SCENARIO_ID } from '@/modules/game/constants/play-defaults';
+import { LazyDevGameChrome, LazyDevSceneTools } from '@/modules/game/dev';
+import { useRoundStore } from '@/modules/game/stores/round-store';
+import { resolveLocalSpawn } from '@/modules/game/utils/local-spawn';
 import { LocalTransformSync } from '@/modules/multiplayer/components/local-transform-sync';
 import { LazyRemotePlayers } from '@/modules/multiplayer/components/remote-players';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
@@ -15,20 +18,16 @@ import {
 import { ScenarioLighting } from '@/modules/scenarios/components/scenario-lighting';
 import { ScenarioSky } from '@/modules/scenarios/components/scenario-sky';
 import { DEFAULT_SUN_POSITION } from '@/modules/scenarios/constants/scenario-lighting';
-import { DEFAULT_PLAY_SKIN_ID, DEFAULT_SCENARIO_ID } from '../constants/play-defaults';
-import { LazyDevGameChrome, LazyDevSceneTools } from '../dev';
-import { useRoundStore } from '../state/round-store';
-import { resolveLocalSpawn } from '../utils/local-spawn';
-import { AimMarker } from './aim-marker';
-import { CameraHud } from './camera-hud';
-import { CrosshairHud } from './crosshair-hud';
-import { DeferredAfterLoad } from './deferred-after-load';
-import { LazyGamePausePanel } from './game-pause-panel';
-import { LoadingReporter } from './loading-reporter';
-import { LazyLocalPlayer } from './local-player';
-import { PlayerControls } from './player-controls';
-import { LazyRoundEndBanner } from './round-end-banner';
-import { ShootingController } from './shooting-controller';
+import { AimMarker } from '../aim-marker';
+import { CameraHud } from '../camera-hud';
+import { CrosshairHud } from '../crosshair-hud';
+import { DeferredAfterLoad } from '../deferred-after-load';
+import { LazyGamePausePanel } from '../game-pause-panel';
+import { LoadingReporter } from '../loading-reporter';
+import { LazyLocalPlayer } from '../local-player';
+import { PlayerControls } from '../player-controls';
+import { LazyRoundEndBanner } from '../round-end-banner';
+import { ShootingController } from '../shooting-controller';
 
 import '@/modules/scenarios/utils/preload-scenario-textures';
 import '@/modules/soldiers/soldier-skin-registry';
@@ -38,7 +37,6 @@ interface GameCanvasProps {
   scenarioId?: ScenarioId;
   team?: Team;
   skinId?: SoldierSkinId;
-  onLoaderChange?: (state: PlayLoaderState | null) => void;
 }
 
 export function GameCanvas({
@@ -46,11 +44,10 @@ export function GameCanvas({
   scenarioId = DEFAULT_SCENARIO_ID,
   team,
   skinId = DEFAULT_PLAY_SKIN_ID,
-  onLoaderChange,
 }: GameCanvasProps) {
   const scenario = useMemo(() => getScenarioById(scenarioId), [scenarioId]);
   const localSpawn = useMemo(() => resolveLocalSpawn(scenario, team), [scenario, team]);
-  const [trackLoading, setTrackLoading] = useState(Boolean(onLoaderChange));
+
   const matchConnected = useMultiplayerStore((state) => state.connected);
 
   const startRound = useRoundStore((state) => state.startRound);
@@ -59,16 +56,6 @@ export function GameCanvas({
     startRound(scenarioId);
   }, [scenarioId, startRound]);
 
-  const handleLoaderChange = useCallback(
-    (state: PlayLoaderState | null) => {
-      onLoaderChange?.(state);
-      if (state === null) {
-        setTrackLoading(false);
-      }
-    },
-    [onLoaderChange],
-  );
-
   return (
     <div className="fixed inset-0" id="game-canvas">
       <Canvas
@@ -76,8 +63,7 @@ export function GameCanvas({
         className="h-full w-full"
         camera={{ fov: 75, near: 0.1, far: 300 }}
       >
-        {trackLoading && onLoaderChange
-          && <LoadingReporter onLoaderChange={handleLoaderChange} />}
+        <LoadingReporter />
 
         <ScenarioLighting lighting={scenario.lighting} shadows />
 

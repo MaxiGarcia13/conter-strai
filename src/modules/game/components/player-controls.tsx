@@ -10,7 +10,7 @@ interface PlayerControlsProps {
   spawn: LocalSpawn;
 }
 
-/** WASD + pointer-lock + camera modes — mounts immediately, no asset loading. */
+/** WASD + pointer-lock + camera modes — deferred to the character phase. */
 export function PlayerControls({ scenario, spawn }: PlayerControlsProps) {
   usePlayerControls({
     bounds: scenario.bounds,

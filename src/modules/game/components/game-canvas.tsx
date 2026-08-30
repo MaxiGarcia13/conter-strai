@@ -29,7 +29,7 @@ import { LazyGamePausePanel } from './game-pause-panel';
 import { LoadingReporter } from './loading-reporter';
 import { LazyLocalPlayer } from './local-player';
 import { PlayerControls } from './player-controls';
-import { RoundEndBanner } from './round-end-banner';
+import { LazyRoundEndBanner } from './round-end-banner';
 import { ShootingController } from './shooting-controller';
 
 interface GameCanvasProps {
@@ -76,7 +76,9 @@ export function GameCanvas({
         camera={{ fov: 75, near: 0.1, far: 300 }}
       >
         {trackLoading && onLoaderChange && <LoadingReporter onLoaderChange={handleLoaderChange} />}
+
         <ScenarioLighting lighting={scenario.lighting} shadows />
+
         <ScenarioSky
           sky={scenario.sky}
           fog={scenario.fog}
@@ -120,7 +122,7 @@ export function GameCanvas({
 
       <LazyDevGameChrome />
 
-      <RoundEndBanner roomId={roomId} scenarioId={scenarioId} />
+      <LazyRoundEndBanner roomId={roomId} scenarioId={scenarioId} />
       <LazyGamePausePanel roomId={roomId} scenarioId={scenarioId} />
     </div>
   );

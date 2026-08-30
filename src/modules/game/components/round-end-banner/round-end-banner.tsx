@@ -1,14 +1,14 @@
 import type { ScenarioId } from '@/modules/scenarios';
 import { useState } from 'react';
 import { CsButton } from '@/components/cs-button';
+import { useRoundStore } from '@/modules/game/state/round-store';
+import { restartRound } from '@/modules/game/utils/restart-round';
 import { clearRoomSession, readRoomSession } from '@/modules/lobby/utils/room-session';
 import { leaveMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
 import { deleteRoom } from '@/modules/multiplayer/services/delete-room';
 import { LobbyRestError } from '@/modules/multiplayer/services/lobby-rest';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
-import { useRoundStore } from '../state/round-store';
-import { restartRound } from '../utils/restart-round';
 
 interface RoundEndBannerProps {
   roomId?: string;

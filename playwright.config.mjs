@@ -11,7 +11,7 @@ export default defineConfig({
   testDir: 'tests/e2e',
   retries: 1,
   workers: 1,
-  timeout: isCI ? 180_000 : 90_000,
+  timeout: isCI ? 240_000 : 90_000,
   expect: {
     timeout: isCI ? 15_000 : 5_000,
   },

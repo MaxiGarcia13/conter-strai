@@ -10,7 +10,9 @@ import { RemotePlayers } from '@/modules/multiplayer/components/remote-players';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import {
   getScenarioById,
-  ScenarioScene,
+  ScenarioGround,
+  ScenarioHouses,
+  ScenarioProps,
   ScenarioSoldiers,
 } from '@/modules/scenarios';
 import { ScenarioLighting } from '@/modules/scenarios/components/scenario-lighting';
@@ -82,14 +84,19 @@ export function GameCanvas({
           sunPosition={scenario.lighting?.sunPosition ?? DEFAULT_SUN_POSITION}
         />
 
-        <PlayerControls scenario={scenario} spawn={localSpawn} />
-
         <Suspense fallback={null}>
-          <ScenarioScene scenario={scenario} />
+          <ScenarioGround scenario={scenario} />
+        </Suspense>
+        <Suspense fallback={null}>
+          <ScenarioHouses scenario={scenario} />
+        </Suspense>
+        <Suspense fallback={null}>
+          <ScenarioProps scenario={scenario} />
         </Suspense>
 
         <Suspense fallback={null}>
           <DeferredAfterLoad>
+            <PlayerControls scenario={scenario} spawn={localSpawn} />
             {!matchConnected && (
               <ScenarioSoldiers
                 scenario={scenario}
@@ -98,19 +105,26 @@ export function GameCanvas({
             )}
             {matchConnected && <RemotePlayers />}
             <LocalPlayer skinId={skinId} />
+
+            <AimMarker />
+            <ShootingController />
           </DeferredAfterLoad>
         </Suspense>
 
-        <AimMarker />
-        <ShootingController />
         <LocalTransformSync />
 
         <LazyDevSceneTools skinId={skinId} />
       </Canvas>
+
       <CameraHud />
-      <CrosshairHud />
+
+      <DeferredAfterLoad>
+        <CrosshairHud />
+      </DeferredAfterLoad>
+
       <LazyDevGameChrome />
       <HealthBar />
+
       <RoundEndBanner roomId={roomId} scenarioId={scenarioId} />
       <GamePausePanel roomId={roomId} scenarioId={scenarioId} />
     </div>

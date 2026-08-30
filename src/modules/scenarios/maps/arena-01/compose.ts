@@ -24,7 +24,8 @@ const arena01Layout: ArenaLayout = {
     assetId: 'forrest_ground',
     repeat: [25, 12.5],
   },
-  floorZones: [...arena01GroundFloors, ...arena01HouseFloors],
+  groundFloorZones: arena01GroundFloors,
+  houseFloorZones: arena01HouseFloors,
   perimeter: {
     mode: 'open',
     vistaExtension: 100,
@@ -50,5 +51,5 @@ export const arena01: ScenarioConfig = {
 
 // Fail fast on z-fighting floor zones during authoring; stripped from production.
 if (import.meta.env.DEV) {
-  assertNoFloorOverlaps(arena01.floorZones ?? []);
+  assertNoFloorOverlaps([...(arena01.groundFloorZones ?? []), ...(arena01.houseFloorZones ?? [])]);
 }

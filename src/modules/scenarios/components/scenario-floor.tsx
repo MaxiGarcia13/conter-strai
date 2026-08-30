@@ -1,5 +1,5 @@
 import type { ScenarioMaterials } from '../hooks/use-scenario-material';
-import type { ScenarioConfig } from '../types';
+import type { ScenarioConfig, ScenarioFloorZone } from '../types';
 import { useMemo } from 'react';
 import {
   createTiledPlaneGeometry,
@@ -15,9 +15,18 @@ const DEFAULT_VISTA_EXTENSION = 30;
 interface ScenarioFloorProps {
   scenario: ScenarioConfig;
   materials: ScenarioMaterials;
+  /** Zones to render on top of the base floor; empty renders the base only. */
+  zones?: ScenarioFloorZone[];
+  /** Base plane is owned by the ground phase; secondary phases skip it. */
+  renderBase?: boolean;
 }
 
-export function ScenarioFloor({ scenario, materials }: ScenarioFloorProps) {
+export function ScenarioFloor({
+  scenario,
+  materials,
+  zones = [],
+  renderBase = true,
+}: ScenarioFloorProps) {
   const { width, depth } = scenario.bounds;
   const openPerimeter = scenario.perimeter?.mode === 'open';
   const vista = openPerimeter
@@ -28,21 +37,25 @@ export function ScenarioFloor({ scenario, materials }: ScenarioFloorProps) {
 
   const baseGeometry = useMemo(
     () =>
-      createTiledPlaneGeometry(
-        floorWidth,
-        floorDepth,
-        scenario.floor.repeat ?? [floorWidth / 4, floorDepth / 4],
-      ),
-    [depth, floorDepth, floorWidth, scenario.floor.repeat, width],
+      renderBase
+        ? createTiledPlaneGeometry(
+            floorWidth,
+            floorDepth,
+            scenario.floor.repeat ?? [floorWidth / 4, floorDepth / 4],
+          )
+        : null,
+    [depth, floorDepth, floorWidth, renderBase, scenario.floor.repeat, width],
   );
 
   const baseMaterial = useMemo(
-    () => getScenarioMaterial(materials, scenario.floor.assetId),
-    [materials, scenario.floor.assetId],
+    () =>
+      renderBase
+        ? getScenarioMaterial(materials, scenario.floor.assetId)
+        : null,
+    [materials, renderBase, scenario.floor.assetId],
   );
 
   const zoneMeshes = useMemo(() => {
-    const zones = scenario.floorZones ?? [];
     return zones.map((zone) => ({
       zone,
       geometry: createTiledPlaneGeometry(
@@ -52,17 +65,24 @@ export function ScenarioFloor({ scenario, materials }: ScenarioFloorProps) {
       ),
       material: getScenarioMaterial(materials, zone.assetId),
     }));
-  }, [materials, scenario.floorZones]);
+  }, [materials, zones]);
+
+  const baseMesh
+    = baseGeometry != null && baseMaterial != null
+      ? (
+          <mesh
+            geometry={baseGeometry}
+            material={baseMaterial}
+            position={[0, BASE_FLOOR_OFFSET, 0]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            receiveShadow
+          />
+        )
+      : null;
 
   return (
     <group>
-      <mesh
-        geometry={baseGeometry}
-        material={baseMaterial}
-        position={[0, BASE_FLOOR_OFFSET, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        receiveShadow
-      />
+      {baseMesh}
       {zoneMeshes.map(({ zone, geometry, material }) => (
         <mesh
           key={zone.id}

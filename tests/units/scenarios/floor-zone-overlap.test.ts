@@ -58,7 +58,7 @@ describe('findFloorOverlaps / assertNoFloorOverlaps', () => {
   });
 
   it('has zero overlaps for the composed arena-01 floors', () => {
-    const floors = arena01.floorZones ?? [];
+    const floors = [...(arena01.groundFloorZones ?? []), ...(arena01.houseFloorZones ?? [])];
     expect(findFloorOverlaps(floors)).toEqual([]);
     expect(() => assertNoFloorOverlaps(floors)).not.toThrow();
   });

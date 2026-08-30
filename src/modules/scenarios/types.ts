@@ -59,7 +59,10 @@ export interface ArenaLayout {
     assetId: TextureId;
     repeat?: [number, number];
   };
-  floorZones?: ScenarioFloorZone[];
+  /** Street-level patches rendered in the ground phase, before houses. */
+  groundFloorZones?: ScenarioFloorZone[];
+  /** Patches under / around buildings rendered with the house phase. */
+  houseFloorZones?: ScenarioFloorZone[];
   walls: {
     assetId: TextureId;
     thickness?: number;

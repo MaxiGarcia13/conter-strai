@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
+import { getScenarioPhaseTextureIds } from '@/modules/scenarios/get-scenario-texture-ids';
 import { getTextureById } from '@/modules/textures';
 
 describe('scenario-registry', () => {
@@ -24,7 +25,7 @@ describe('scenario-registry', () => {
   it('resolves every texture id in the registry', () => {
     expect(() => getTextureById(scenario.floor.assetId)).not.toThrow();
     expect(() => getTextureById(scenario.walls.assetId)).not.toThrow();
-    for (const zone of scenario.floorZones ?? []) {
+    for (const zone of [...(scenario.groundFloorZones ?? []), ...(scenario.houseFloorZones ?? [])]) {
       expect(() => getTextureById(zone.assetId)).not.toThrow();
     }
     for (const segment of scenario.wallSegments ?? []) {
@@ -34,6 +35,11 @@ describe('scenario-registry', () => {
       }
       expect(() => getTextureById(assetId)).not.toThrow();
     }
+  });
+
+  it('keeps the base floor texture in the ground phase only', () => {
+    expect(getScenarioPhaseTextureIds(scenario, 'ground')).toContain(scenario.floor.assetId);
+    expect(getScenarioPhaseTextureIds(scenario, 'houses')).not.toContain(scenario.floor.assetId);
   });
 
   it('publishes axis-aligned collision spans and doorway holes', () => {

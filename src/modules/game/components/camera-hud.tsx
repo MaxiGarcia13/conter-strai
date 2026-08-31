@@ -1,11 +1,5 @@
-import type { CameraMode } from '../types';
+import { CAMERA_MODE_LABELS } from '../constants/camera-mode-labels';
 import { useCameraMode } from '../hooks/use-camera-mode';
-
-const CAMERA_MODE_LABELS: Record<CameraMode, string> = {
-  fps: 'First-person',
-  ots: 'Over-the-shoulder',
-  tps: 'Third-person',
-};
 
 /** DOM overlay showing the active camera mode; C cycles it. */
 export function CameraHud() {

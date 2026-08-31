@@ -238,10 +238,10 @@ Instanced jacaranda / vista-tier props are follow-up polish — [improvements.md
 
 ### Testing
 
-| Layer          | Scope                                                                                                                                                                                          |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layer          | Scope                                                                                                                                                                                                                                                                    |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Vitest**     | Registries; floor-zone overlap; prop blockers; house open-sides / presets; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide; look-delta / joystick mapping / touch-primary gate / `fireWeapon` gating |
-| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook    |
+| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook                                                                              |
 
 ## Characters — shipped US-6
 
@@ -337,12 +337,12 @@ Browsers may reject `requestPointerLock()` without a user gesture. On **desktop*
 
 [`game-pause-store.ts`](../../src/modules/game/stores/game-pause-store.ts) (Zustand) + [`game-pause-panel.tsx`](../../src/modules/game/components/game-pause-panel/game-pause-panel.tsx) — visible when `isPaused && phase === 'live'`. **Escape** toggles pause in [`use-player-keyboard.ts`](../../src/modules/game/hooks/use-player-controls/use-player-keyboard.ts); on touch-primary the top-left pause button calls `setPaused(true)`. While paused: movement, look, shoot, and pose actions early-out via `isPausedRef` in control hooks.
 
-| Action         | Behavior                                                                                                                                                      |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Restart        | [`restart-round.ts`](../../src/modules/game/utils/restart-round.ts) — host `startMatch()` / offline `startRound`; triggers deploy gate again                  |
-| Leave          | [`leave-match-to-home.ts`](../../src/modules/game/utils/leave-match-to-home.ts) — `leaveMatch`, clear session, `location.href = '/'` **without** `deleteRoom` |
-| Resume         | `setPaused(false)` + re-engage look / pointer lock (desktop)                                                                                                   |
-| Cycle camera   | `cycleCameraMode()` — same fps → ots → tps order as **C**; live label via `CAMERA_MODE_LABELS`                                                               |
+| Action       | Behavior                                                                                                                                                      |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Restart      | [`restart-round.ts`](../../src/modules/game/utils/restart-round.ts) — host `startMatch()` / offline `startRound`; triggers deploy gate again                  |
+| Leave        | [`leave-match-to-home.ts`](../../src/modules/game/utils/leave-match-to-home.ts) — `leaveMatch`, clear session, `location.href = '/'` **without** `deleteRoom` |
+| Resume       | `setPaused(false)` + re-engage look / pointer lock (desktop)                                                                                                  |
+| Cycle camera | `cycleCameraMode()` — same fps → ots → tps order as **C**; live label via `CAMERA_MODE_LABELS`                                                                |
 
 Bindings listed in **Commands** come from [`game-bindings.ts`](../../src/modules/game/constants/game-bindings.ts) (`GAME_COMMANDS` desktop, `MOBILE_COMMANDS` on touch-primary). Pause store resets on round end / navigate away.
 
@@ -454,13 +454,13 @@ src/modules/game/input/
 └─────────────────────────────────────────┘
 ```
 
-| Zone               | Component                  | Action                                                        |
-| ------------------ | -------------------------- | ------------------------------------------------------------- |
-| Top-left           | `PauseButton` (`IconMenu`) | `setPaused(true)` → `GamePausePanel`                         |
-| Top-right          | `HealthBar` (relocated)     | existing combat HUD                                            |
-| Bottom-left        | `VirtualJoystick`          | move axes                                                     |
-| Bottom-right stack | `ActionButton` × 3        | `IconButtonB` kneel (tap), `IconButtonA` run (hold), `IconFire` fire |
-| Right ~50%         | `LookZone`                 | touch-drag look                                               |
+| Zone               | Component                  | Action                                                               |
+| ------------------ | -------------------------- | -------------------------------------------------------------------- |
+| Top-left           | `PauseButton` (`IconMenu`) | `setPaused(true)` → `GamePausePanel`                                 |
+| Top-right          | `HealthBar` (relocated)    | existing combat HUD                                                  |
+| Bottom-left        | `VirtualJoystick`          | move axes                                                            |
+| Bottom-right stack | `ActionButton` × 3         | `IconButtonB` kneel (tap), `IconButtonA` run (hold), `IconFire` fire |
+| Right ~50%         | `LookZone`                 | touch-drag look                                                      |
 
 `#game-canvas` uses `touch-action: none` while the overlay is active. Coupling: `mobile-controls` may import `input/*`, `player-pose-actions`, `fire-weapon`, and `game-pause-store` — never `usePlayerControls` internals or R3F hooks. No touch listeners inside `combat/`, `soldiers/`, or pure movement utils.
 

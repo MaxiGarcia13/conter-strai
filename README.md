@@ -85,7 +85,7 @@ On a **touch-primary** device (phone or tablet), `/play` shows on-screen control
 | Control                           | Action                                          |
 | --------------------------------- | ----------------------------------------------- |
 | Left joystick                     | Move                                            |
-| Drag the right half of the screen  | Look                                            |
+| Drag the right half of the screen | Look                                            |
 | Fire button                       | Shoot                                           |
 | **A** (hold)                      | Sprint                                          |
 | **B** (tap)                       | Kneel                                           |

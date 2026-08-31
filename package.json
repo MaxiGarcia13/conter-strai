@@ -48,23 +48,22 @@
     "phoenix": "npm run clean && npm i"
   },
   "dependencies": {
-    "@astrojs/node": "^11.1.5",
     "@colyseus/schema": "^5.0.20",
     "@colyseus/sdk": "^0.18.2",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
-    "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-query": "^5.102.6",
     "astro": "^7.2.10",
     "colyseus": "^0.18.3",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-qr-code": "^2.2.0",
-    "tailwindcss": "^4.3.3",
     "three": "^0.185.1",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@astrojs/markdown-satteri": "^0.4.0",
+    "@astrojs/node": "^11.1.5",
     "@astrojs/react": "^6.0.5",
     "@astrojs/sitemap": "^3.7.4",
     "@eslint-react/eslint-plugin": "^3.0.0",
@@ -73,6 +72,7 @@
     "@gltf-transform/functions": "^4.4.2",
     "@maxigarcia/eslint-config": "^1.8.0",
     "@playwright/test": "^1.62.1",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@types/three": "^0.185.4",
@@ -82,6 +82,7 @@
     "husky": "^9.1.7",
     "meshoptimizer": "^1.2.0",
     "sharp": "^0.35.4",
+    "tailwindcss": "^4.3.3",
     "vitest": "^4.1.10"
   }
 }

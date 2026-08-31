@@ -36,7 +36,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 - [x] Add `src/modules/game/input/components/mobile-controls/virtual-joystick.tsx`
 - [x] Add `src/modules/game/input/components/mobile-controls/action-button.tsx`
-- [ ] Add `src/modules/game/input/components/mobile-controls/look-zone.tsx`
+- [x] Add `src/modules/game/input/components/mobile-controls/look-zone.tsx`
 - [ ] Add `src/modules/game/input/components/mobile-controls/pause-button.tsx`
 - [ ] Add `src/modules/game/input/components/mobile-controls/mobile-controls.tsx` — orchestrator
 - [ ] Add `src/modules/game/input/components/mobile-controls/index.ts` — public barrel

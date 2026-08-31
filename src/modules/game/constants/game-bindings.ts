@@ -50,6 +50,15 @@ export function isMovePressed(pressed: Set<string>): boolean {
   return MOVE_KEY_CODES.some((code) => pressed.has(code));
 }
 
+/** Mobile touch control labels — mirrors {@link GAME_BINDINGS} for pause-panel Commands on touch-primary. */
+export const MOBILE_BINDINGS = {
+  move: { label: 'Joystick', action: 'Move' },
+  sprint: { label: 'Hold run button', action: 'Sprint' },
+  kneelToggle: { label: 'Tap kneel button', action: 'Kneel toggle' },
+  shoot: { label: 'Fire button', action: 'Shoot' },
+  pause: { label: 'Pause button', action: 'Pause menu' },
+} as const;
+
 /** Pause panel Commands list — derived from {@link GAME_BINDINGS}. */
 export const GAME_COMMANDS: GameCommand[] = [
   { key: GAME_BINDINGS.move.label, action: GAME_BINDINGS.move.action },
@@ -74,4 +83,13 @@ export const GAME_COMMANDS: GameCommand[] = [
     action: GAME_BINDINGS.freeCamera.action,
     devOnly: GAME_BINDINGS.freeCamera.devOnly,
   },
+];
+
+/** Pause panel Commands list for touch-primary devices. */
+export const MOBILE_COMMANDS: GameCommand[] = [
+  { key: MOBILE_BINDINGS.move.label, action: MOBILE_BINDINGS.move.action },
+  { key: MOBILE_BINDINGS.sprint.label, action: MOBILE_BINDINGS.sprint.action },
+  { key: MOBILE_BINDINGS.kneelToggle.label, action: MOBILE_BINDINGS.kneelToggle.action },
+  { key: MOBILE_BINDINGS.shoot.label, action: MOBILE_BINDINGS.shoot.action },
+  { key: MOBILE_BINDINGS.pause.label, action: MOBILE_BINDINGS.pause.action },
 ];

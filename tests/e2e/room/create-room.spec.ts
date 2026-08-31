@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
 
 test('create room posts to the API and writes a host session', async ({ page }) => {
   const created = page.waitForResponse(
@@ -16,7 +17,7 @@ test('create room posts to the API and writes a host session', async ({ page }) 
   const roomId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
   expect(roomId).toMatch(/^[A-Z0-9]{6}$/);
   await expect(page.getByText(roomId, { exact: true })).toBeVisible();
-  await expect(page.getByText('0 / 4')).toHaveCount(2);
+  await expect(page.getByText(`0 / ${DEFAULT_MAX_PER_TEAM}`)).toHaveCount(2);
   await expect(page.getByText('Open', { exact: true })).toBeVisible();
 
   const session = await page.evaluate(

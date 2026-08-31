@@ -1,3 +1,4 @@
+import type { MaxPerTeam } from '@/modules/game/constants/play-defaults';
 import type { ScenarioId } from '@/modules/scenarios';
 import type { SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
@@ -5,7 +6,7 @@ import type { Team } from '@/modules/teams';
 /** Seat / room caps mirror `DEFAULT_MAX_PER_TEAM` in play-defaults. */
 export interface TeamSeatSummary {
   count: number;
-  max: 4;
+  max: MaxPerTeam;
   open: boolean;
 }
 
@@ -13,7 +14,7 @@ export interface RoomSnapshot {
   id: string;
   phase: 'waiting' | 'in_progress' | 'ended';
   canJoin: boolean;
-  maxPerTeam: 4;
+  maxPerTeam: MaxPerTeam;
   playerCount: number;
   /** ISO timestamp the room code expires at. */
   expiresAt: string;

@@ -1,4 +1,5 @@
 import type { RoomSnapshot, TeamSeatSummary } from '../types';
+import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
 import { ROOM_ID_LENGTH } from '@/modules/lobby/constants/room-id';
 import { isValidScenario } from '@/modules/scenarios/utils/is-valid-scenario';
 import { TEAMS } from '@/modules/teams';
@@ -10,7 +11,7 @@ function isTeamSeatSummary(value: unknown): value is TeamSeatSummary {
     return false;
   }
   const seat = value as Partial<TeamSeatSummary>;
-  return typeof seat.count === 'number' && seat.max === 4 && typeof seat.open === 'boolean';
+  return typeof seat.count === 'number' && seat.max === DEFAULT_MAX_PER_TEAM && typeof seat.open === 'boolean';
 }
 
 /** Decode lobby REST `RoomSnapshot` JSON, or `null` if invalid. */
@@ -26,7 +27,7 @@ export function decodeRoomSnapshot(value: unknown): RoomSnapshot | null {
   if (typeof body.phase !== 'string' || !PHASES.has(body.phase as RoomSnapshot['phase'])) {
     return null;
   }
-  if (typeof body.canJoin !== 'boolean' || body.maxPerTeam !== 4 || typeof body.playerCount !== 'number') {
+  if (typeof body.canJoin !== 'boolean' || body.maxPerTeam !== DEFAULT_MAX_PER_TEAM || typeof body.playerCount !== 'number') {
     return null;
   }
   if (typeof body.expiresAt !== 'string' || Number.isNaN(Date.parse(body.expiresAt))) {
@@ -45,7 +46,7 @@ export function decodeRoomSnapshot(value: unknown): RoomSnapshot | null {
     id: body.id,
     phase: body.phase as RoomSnapshot['phase'],
     canJoin: body.canJoin,
-    maxPerTeam: 4,
+    maxPerTeam: DEFAULT_MAX_PER_TEAM,
     playerCount: body.playerCount,
     expiresAt: body.expiresAt,
     teams: {

@@ -33,7 +33,7 @@ stateDiagram-v2
 
 Team IDs are `civilian` \| `soldier` everywhere in code. Display names: **Civilians** / **Soldiers** (`TEAM_DISPLAY_NAME`).
 
-Join-time: `assignTeam` honors seat preference + overflow fallback (max 4 per side). On host `startRound`, if ≥ 2 players and one team is empty, `shuffleTeamsIfNoOpponents` re-splits as evenly as possible (`match-teams.ts`); mixed lobbies (e.g. 3v1, 5v2) stay as chosen. Invalid skins remap to `TEAM_SKINS[team][0]`. Spawn slots are recalculated after a shuffle. Client `bindMatch` writes authoritative `team` / `skin` into `sessionStorage`.
+Join-time: `assignTeam` honors seat preference + overflow fallback (max 3 per side). On host `startRound`, if ≥ 2 players and one team is empty, `shuffleTeamsIfNoOpponents` re-splits as evenly as possible (`match-teams.ts`); mixed lobbies (e.g. 3v1, 3v2) stay as chosen. Invalid skins remap to `TEAM_SKINS[team][0]`. Spawn slots are recalculated after a shuffle. Client `bindMatch` writes authoritative `team` / `skin` into `sessionStorage`.
 
 ## Weapons (loadout)
 
@@ -506,20 +506,20 @@ Astro `APIRoute` handlers must run only after Colyseus/`matchMaker` is initializ
 
 ### Lobby HTTP API
 
-Public **`ROOM_ID`** is the 6-char code from `generate-room-id.ts`, stored in Colyseus room **metadata** as `roomCode`. Cap: `maxClients: 8`, `maxPerTeam: 4`.
+Public **`ROOM_ID`** is the 6-char code from `generate-room-id.ts`, stored in Colyseus room **metadata** as `roomCode`. Cap: `maxClients: 6`, `maxPerTeam: 3`.
 
 ```typescript
 interface RoomSnapshot {
   id: string; // public roomCode
   phase: 'waiting' | 'in_progress' | 'ended';
   canJoin: boolean;
-  maxPerTeam: 4;
+  maxPerTeam: 3;
   playerCount: number;
   expiresAt: string; // ISO — room code TTL (see Security US-8)
   scenario?: string;
   teams: {
-    civilian: { count: number; max: 4; open: boolean };
-    soldier: { count: number; max: 4; open: boolean };
+    civilian: { count: number; max: 3; open: boolean };
+    soldier: { count: number; max: 3; open: boolean };
   };
 }
 ```
@@ -553,10 +553,10 @@ src/modules/multiplayer/
 { x, y, z, rotY, hp, eliminated, team, skin, ready }
 
 // MatchState
-{ players: MapSchema<PlayerState>, roundPhase, winner, countdown, scenario, maxPerTeam: 4 }
+{ players: MapSchema<PlayerState>, roundPhase, winner, countdown, scenario, maxPerTeam: 3 }
 ```
 
-- `onJoin`: reject if `players.size >= 8` or team count `>= 4`; reject if `expiresAt` is past (`assertRoomJoinable`).
+- `onJoin`: reject if `players.size >= 6` or team count `>= 3`; reject if `expiresAt` is past (`assertRoomJoinable`).
 - REST PUT enforces the same caps before reservation.
 
 ### Client adapter

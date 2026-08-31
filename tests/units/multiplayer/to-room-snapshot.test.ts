@@ -1,6 +1,7 @@
 import type { MatchState } from '@/modules/multiplayer/schema';
 import type { Team } from '@/modules/teams';
 import { describe, expect, it } from 'vitest';
+import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
 import { createEmptyRoomSnapshot, toRoomSnapshot } from '@/modules/multiplayer/adapters/to-room-snapshot';
 import { createMatchState, createPlayerState } from '@/modules/multiplayer/schema';
 
@@ -18,7 +19,7 @@ function fillTeam(state: MatchState, team: Team, count: number): void {
 }
 
 describe('toRoomSnapshot', () => {
-  it('maps waiting state to joinable seats with max 4 per team', () => {
+  it('maps waiting state to joinable seats with max per team', () => {
     const state = createMatchState({ scenario: 'arena-01' });
     addPlayer(state, 'c1', 'civilian');
     addPlayer(state, 's1', 'soldier');
@@ -27,13 +28,13 @@ describe('toRoomSnapshot', () => {
       id: ROOM_CODE,
       phase: 'waiting',
       canJoin: true,
-      maxPerTeam: 4,
+      maxPerTeam: DEFAULT_MAX_PER_TEAM,
       playerCount: 2,
       expiresAt: EXPIRES_AT,
       scenario: 'arena-01',
       teams: {
-        civilian: { count: 1, max: 4, open: true },
-        soldier: { count: 1, max: 4, open: true },
+        civilian: { count: 1, max: DEFAULT_MAX_PER_TEAM, open: true },
+        soldier: { count: 1, max: DEFAULT_MAX_PER_TEAM, open: true },
       },
     });
   });
@@ -70,20 +71,28 @@ describe('toRoomSnapshot', () => {
     expect(snapshot.canJoin).toBe(false);
   });
 
-  it('closes a team at 4 and canJoin when both teams are full', () => {
+  it('closes a team at capacity and canJoin when both teams are full', () => {
     const state = createMatchState();
-    fillTeam(state, 'civilian', 4);
-    fillTeam(state, 'soldier', 3);
+    fillTeam(state, 'civilian', DEFAULT_MAX_PER_TEAM);
+    fillTeam(state, 'soldier', DEFAULT_MAX_PER_TEAM - 1);
 
     const almostFull = toRoomSnapshot(ROOM_CODE, state, EXPIRES_AT);
     expect(almostFull.canJoin).toBe(true);
-    expect(almostFull.teams.civilian).toEqual({ count: 4, max: 4, open: false });
-    expect(almostFull.teams.soldier).toEqual({ count: 3, max: 4, open: true });
+    expect(almostFull.teams.civilian).toEqual({
+      count: DEFAULT_MAX_PER_TEAM,
+      max: DEFAULT_MAX_PER_TEAM,
+      open: false,
+    });
+    expect(almostFull.teams.soldier).toEqual({
+      count: DEFAULT_MAX_PER_TEAM - 1,
+      max: DEFAULT_MAX_PER_TEAM,
+      open: true,
+    });
 
-    addPlayer(state, 'soldier-3', 'soldier');
+    addPlayer(state, `soldier-${DEFAULT_MAX_PER_TEAM - 1}`, 'soldier');
     const full = toRoomSnapshot(ROOM_CODE, state, EXPIRES_AT);
     expect(full.canJoin).toBe(false);
-    expect(full.playerCount).toBe(8);
+    expect(full.playerCount).toBe(DEFAULT_MAX_PER_TEAM * 2);
     expect(full.teams.soldier.open).toBe(false);
   });
 });
@@ -94,13 +103,13 @@ describe('createEmptyRoomSnapshot', () => {
       id: ROOM_CODE,
       phase: 'waiting',
       canJoin: true,
-      maxPerTeam: 4,
+      maxPerTeam: DEFAULT_MAX_PER_TEAM,
       playerCount: 0,
       expiresAt: EXPIRES_AT,
       scenario: 'arena-01',
       teams: {
-        civilian: { count: 0, max: 4, open: true },
-        soldier: { count: 0, max: 4, open: true },
+        civilian: { count: 0, max: DEFAULT_MAX_PER_TEAM, open: true },
+        soldier: { count: 0, max: DEFAULT_MAX_PER_TEAM, open: true },
       },
     });
   });

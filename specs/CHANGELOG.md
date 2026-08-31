@@ -37,3 +37,4 @@ None.
 | 2026-08-31 | Staged arena deploy | Phased Suspense mount (ground → houses → props → character); deferred controls + HUD; lazy deploy loader. See [improvements.md §6](./improvements.md#6-staged-arena-deploy--deferred-gameplay-chrome-shipped) and [design.md § Staged arena deploy](./current/design.md#staged-arena-deploy). |
 | 2026-08-31 | Landing & shell polish | Self-hosted fonts (Barlow Condensed + Share Tech Mono); shared `SiteTopbar` / `CsButton` on landing + lobby; `APP_VERSION` in footer + pause panel; arena preview image on create room; README landing screenshot (`docs/landing.webp`). |
 | 2026-08-31 | Dependency hygiene | Remove unused `@colyseus/react` — matchmaking uses `@colyseus/sdk` directly. See [tech-debt.md](./tech-debt.md). |
+| 2026-08-31 | Match size 3v3 | Cap rooms at 3 per side (6 players); `DEFAULT_MAX_PER_TEAM` is the single source of truth. |

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
 import { createMatchRoomViaApi } from '../lobby-helpers';
 
 test('join page rejects an unknown room id', async ({ page }) => {
@@ -64,8 +65,8 @@ test('invite join reaches waiting with invite URL, copy, and QR', async ({ page,
   await page.getByRole('button', { name: 'Join Room' }).click();
   await expect(page).toHaveURL(new RegExp(`/room/${roomId}$`));
   // Guest claim consumes one civilian seat once the lobby snapshot catches up.
-  await expect.poll(async () => page.getByText('1 / 4').count()).toBe(1);
-  await expect(page.getByText('0 / 4')).toHaveCount(1);
+  await expect.poll(async () => page.getByText(`1 / ${DEFAULT_MAX_PER_TEAM}`).count()).toBe(1);
+  await expect(page.getByText(`0 / ${DEFAULT_MAX_PER_TEAM}`)).toHaveCount(1);
   await expect(page.getByText('Open', { exact: true })).toBeVisible();
 
   const inviteUrl = `${new URL(page.url()).origin}/room/${roomId}/join`;
@@ -86,7 +87,7 @@ test('rejoin after browser back claims a fresh seat', async ({ page, request }) 
   await page.goto(`/room/${roomId}/join`);
   await page.getByRole('button', { name: 'Join Room' }).click();
   await expect(page).toHaveURL(new RegExp(`/room/${roomId}$`));
-  await expect.poll(async () => page.getByText('1 / 4').count()).toBe(1);
+  await expect.poll(async () => page.getByText(`1 / ${DEFAULT_MAX_PER_TEAM}`).count()).toBe(1);
   await expect(page.getByRole('button', { name: 'Join Room' })).toHaveCount(0);
 
   await page.goBack();

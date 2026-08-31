@@ -12,7 +12,7 @@ Open it in a modern browser (Chrome, Firefox, Safari, or Edge). Play on a comput
 
 You pick a side, enter a room, and try to wipe the other team before they wipe you.
 
-- **Teams:** Civilians vs Soldiers (up to 4 per side, 8 players total)
+- **Teams:** Civilians vs Soldiers (up to 3 per side, 6 players total)
 - **Mode:** Team elimination — no respawn until the next round
 - **Loadout:** Pistol only
 - **Map:** One arena for now (`arena-01`)

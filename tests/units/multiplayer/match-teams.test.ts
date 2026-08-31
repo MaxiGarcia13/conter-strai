@@ -1,6 +1,7 @@
 import type { MatchState } from '@/modules/multiplayer/schema';
 import type { Team } from '@/modules/teams/types';
 import { describe, expect, it } from 'vitest';
+import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
 import {
   assignTeam,
   checkTeamWipe,
@@ -55,7 +56,7 @@ describe('assignTeam', () => {
 
   it('falls back when the preferred team is full', () => {
     const state = createMatchState();
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < DEFAULT_MAX_PER_TEAM; i++) {
       state.players.set(`s${i}`, createPlayerState({ team: 'soldier' }));
     }
     expect(assignTeam(state, 'soldier')).toBe('civilian');
@@ -63,7 +64,7 @@ describe('assignTeam', () => {
 
   it('returns null when both teams are full', () => {
     const state = createMatchState();
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < DEFAULT_MAX_PER_TEAM; i++) {
       state.players.set(`c${i}`, createPlayerState({ team: 'civilian' }));
       state.players.set(`s${i}`, createPlayerState({ team: 'soldier' }));
     }
@@ -168,13 +169,13 @@ describe('shuffleTeamsIfNoOpponents', () => {
 
   it('does not coerce teams when the shuffle is skipped on an uneven mixed lobby', () => {
     const state = createMatchState();
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < DEFAULT_MAX_PER_TEAM; i++) {
       state.players.set(`c${i}`, createPlayerState({ team: 'civilian' }));
     }
     state.players.set('s1', createPlayerState({ team: 'soldier' }));
 
     expect(shuffleTeamsIfNoOpponents(state, () => 0)).toBe(false);
-    expect(teamCountsOf(state)).toEqual({ civilian: 5, soldier: 1 });
+    expect(teamCountsOf(state)).toEqual({ civilian: DEFAULT_MAX_PER_TEAM, soldier: 1 });
   });
 });
 

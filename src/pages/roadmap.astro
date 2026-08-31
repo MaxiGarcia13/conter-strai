@@ -10,8 +10,8 @@ import { specDocUrl } from '@/utils/spec-doc-links';
 import '@/styles/roadmap-prose.css';
 
 const title = 'Roadmap — Conter Strai';
-const description =
-  'What is next for Conter Strai — open work from specs/current/tasks.md and recently shipped user stories.';
+const description
+  = 'What is next for Conter Strai — open work from specs/current/tasks.md and recently shipped user stories.';
 
 const tasksEntry = await getEntry('specs', 'current/tasks');
 if (!tasksEntry) {
@@ -93,11 +93,13 @@ const contributorDocs = [
                 href={specDocUrl('CHANGELOG.md')}
                 class="text-accent hover:underline"
                 target="_blank"
-                rel="noopener noreferrer">CHANGELOG.md</a
+                rel="noopener noreferrer"
+              >CHANGELOG.md</a
               >.
             </p>
             {
-              recentlyShipped.length > 0 ? (
+              recentlyShipped.length > 0
+? (
                 <div class="mt-4 overflow-x-auto">
                   <table class="roadmap-shipped-table">
                     <thead>
@@ -116,7 +118,8 @@ const contributorDocs = [
                     </tbody>
                   </table>
                 </div>
-              ) : (
+              )
+: (
                 <p class="text-foreground-muted mt-4 text-sm">
                   No shipped entries found.
                 </p>

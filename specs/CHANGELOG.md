@@ -9,7 +9,9 @@
 
 ## Open
 
-_None._
+| US | Summary |
+|----|---------|
+| **US-12** | Mobile touch controls — modular input layer, virtual joystick, look zone, fire/kneel/sprint buttons, top-bar pause + health HUD |
 
 ## Shipped
 

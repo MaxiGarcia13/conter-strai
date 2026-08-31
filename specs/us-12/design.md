@@ -113,6 +113,27 @@ Intent ref API (imperative, per-frame):
 | Bottom-right stack | `ActionButton` × 3      | kneel (tap), run (hold), fire (tap/hold) |
 | Right ~50%         | `LookZone`              | touch-drag look                          |
 
+### Pause menu — camera cycle (US-12.11)
+
+On the **main** pause view (alongside Resume / Restart / Leave / Commands):
+
+```
+┌──────────────────────────────┐
+│           Paused             │
+│  [ Resume ]                  │
+│  [ Restart ]                 │
+│  Camera: Over-the-shoulder   │  ← live label via useCameraMode()
+│  [ Cycle camera ]            │  ← cycleCameraMode()
+│  [ Commands ]                │
+│  [ Leave ]                   │
+└──────────────────────────────┘
+```
+
+- Reuse `cycleCameraMode()` from [`player-state.ts`](../../src/modules/game/stores/player-state.ts) — same cycle order as **C** (`fps` → `ots` → `tps`).
+- Extract `CAMERA_MODE_LABELS` to a shared constant (e.g. `game/constants/camera-mode-labels.ts`) used by `CameraHud` and `GamePausePanel`.
+- Add `MOBILE_BINDINGS.cameraCycle` → `"Pause menu → Cycle camera"` for Commands list on touch-primary.
+- Camera applies on resume via existing `applyCameraMode` in the movement frame — no R3F hook coupling in the panel.
+
 ## Integration points
 
 | File                                                                                                            | Change                                                            |
@@ -122,7 +143,8 @@ Intent ref API (imperative, per-frame):
 | [`use-shooting.ts`](../../src/modules/game/hooks/use-shooting.ts)                                               | Delegate to `fireWeapon()`; no pointer-lock gate on touch-primary |
 | [`game-canvas.tsx`](../../src/modules/game/components/game-canvas/game-canvas.tsx)                              | Mount `<MobileControls />`                                        |
 | [`health-bar.tsx`](../../src/modules/combat/components/health-bar.tsx)                                          | `top-4 right-4` + safe-area                                       |
-| [`camera-hud.tsx`](../../src/modules/game/components/camera-hud.tsx)                                            | Hide when touch-primary                                           |
+| [`camera-hud.tsx`](../../src/modules/game/components/camera-hud.tsx)                                            | Hide when touch-primary; share mode labels with pause panel       |
+| [`game-pause-panel.tsx`](../../src/modules/game/components/game-pause-panel/game-pause-panel.tsx)               | Camera label + Cycle camera button (`cycleCameraMode`)            |
 | [`game-bindings.ts`](../../src/modules/game/constants/game-bindings.ts)                                         | Add `MOBILE_BINDINGS` (optional Commands labels)                  |
 
 ## Coupling rules

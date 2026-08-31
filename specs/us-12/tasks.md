@@ -49,9 +49,15 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 - [ ] Mount `<MobileControls />` in `game-canvas.tsx`
 - [ ] Apply `touch-action: none` on `#game-canvas` when mobile controls active
 
+## Pause panel — camera cycle (US-12.11)
+
+- [ ] Extract shared `CAMERA_MODE_LABELS` (e.g. `game/constants/camera-mode-labels.ts`) — used by `camera-hud.tsx` and `game-pause-panel.tsx`
+- [ ] Add `MOBILE_BINDINGS.cameraCycle` — `"Pause menu → Cycle camera"`; include in `MOBILE_COMMANDS`
+- [ ] `game-pause-panel.tsx` — show active camera mode label + **Cycle camera** button on main pause view; calls `cycleCameraMode()`
+
 ## Acceptance & ship
 
-- [ ] Manual QA on touch-primary device: move, look, fire, kneel, sprint, pause panel
+- [ ] Manual QA on touch-primary device: move, look, fire, kneel, sprint, pause panel, **cycle camera from pause menu**
 - [ ] Manual QA on desktop: no overlay; keyboard/mouse unchanged
 - [ ] `npm run test:unit` green
 - [ ] Update `README.md` — document mobile play on touch devices (on-screen move/look/shoot controls); adjust the “keyboard and mouse” line so desktop and mobile are both covered

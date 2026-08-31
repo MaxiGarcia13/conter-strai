@@ -40,7 +40,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 - [x] Add `src/modules/game/input/components/mobile-controls/pause-button.tsx`
 - [x] Add `src/modules/game/input/components/mobile-controls/mobile-controls.tsx` — orchestrator
 - [x] Add `src/modules/game/input/components/mobile-controls/index.ts` — public barrel
-- [ ] Add `src/modules/game/input/hooks/use-touch-look/` — drag → `applyLookDelta`
+- [x] Add `src/modules/game/input/hooks/use-touch-look/` — drag → `applyLookDelta`
 
 ## HUD & canvas integration (US-12.6–US-12.9)
 

@@ -1,7 +1,7 @@
 import type { ScenarioId } from '@/modules/scenarios';
+import { version } from '@root/package.json';
 import { useEffect } from 'react';
 import { CsButton } from '@/components/cs-button';
-import { APP_VERSION } from '@/constants/app-version';
 import { CAMERA_MODE_LABELS } from '@/modules/game/constants/camera-mode-labels';
 import { GAME_COMMANDS, MOBILE_COMMANDS } from '@/modules/game/constants/game-bindings';
 import { useCameraMode } from '@/modules/game/hooks/use-camera-mode';
@@ -132,10 +132,10 @@ export function GamePausePanel({ roomId, scenarioId }: GamePausePanelProps) {
 
         <p
           className="mt-6 text-xs tracking-widest text-foreground/40 normal-case"
-          aria-label={`Version ${APP_VERSION}`}
+          aria-label={`Version ${version}`}
         >
           v
-          {APP_VERSION}
+          {version}
         </p>
       </div>
     </div>

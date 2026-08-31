@@ -4,6 +4,7 @@ import {
   keywords,
   description as packageDescription,
 } from '@root/package.json';
+import SiteFooter from '@/components/site-footer.astro';
 import '@/styles/global.css';
 
 interface Props {
@@ -13,6 +14,8 @@ interface Props {
   imageAlt?: string;
   type?: 'website' | 'article';
   noindex?: boolean;
+  /** Hide the shared site footer (e.g. fullscreen play). */
+  showSiteFooter?: boolean;
 }
 
 const {
@@ -22,6 +25,7 @@ const {
   imageAlt = 'Conter Strai — browser tactical shooter',
   type = 'website',
   noindex = false,
+  showSiteFooter = true,
 } = Astro.props;
 
 const metaKeywords = keywords.join(', ');
@@ -90,6 +94,9 @@ const themeColor = '#0d0f14';
   </head>
   <body>
     <div class="game-atmosphere" aria-hidden="true"></div>
-    <slot />
+    <div class="relative z-10 flex min-h-dvh flex-col">
+      <slot />
+      {showSiteFooter && <SiteFooter />}
+    </div>
   </body>
 </html>

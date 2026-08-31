@@ -1,8 +1,8 @@
 import type { HealthState, HealthSystem } from '@/modules/combat';
-import type { RosterEntry } from '@/modules/game/services/check-round-end';
+import type { RosterEntry } from '@/modules/game/utils/check-round-end';
 import type { EntityId } from '@/modules/soldiers';
 import { describe, expect, it } from 'vitest';
-import { checkRoundEnd } from '@/modules/game/services/check-round-end';
+import { checkRoundEnd } from '@/modules/game/utils/check-round-end';
 
 function stubHealthSystem(healthMap: Record<EntityId, HealthState>): HealthSystem {
   return {

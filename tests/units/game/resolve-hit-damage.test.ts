@@ -1,7 +1,7 @@
-import type { ResolveHitDamageInput } from '@/modules/game/services/resolve-hit-damage';
+import type { ResolveHitDamageInput } from '@/modules/game/utils/resolve-hit-damage';
 import type { BulletHitResult } from '@/modules/weapons/types';
 import { describe, expect, it } from 'vitest';
-import { resolveHitDamage } from '@/modules/game/services/resolve-hit-damage';
+import { resolveHitDamage } from '@/modules/game/utils/resolve-hit-damage';
 
 function baseHit(overrides: Partial<BulletHitResult> = {}): BulletHitResult {
   return {

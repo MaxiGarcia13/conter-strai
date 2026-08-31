@@ -1,5 +1,5 @@
-import type { RosterEntry } from '../services/check-round-end';
 import type { RoundPhase } from '../types';
+import type { RosterEntry } from '../utils/check-round-end';
 import type { ScenarioId } from '@/modules/scenarios';
 import type { Team } from '@/modules/teams';
 import { create } from 'zustand';
@@ -12,7 +12,7 @@ import {
   DEFAULT_LOCAL_TEAM,
   LOCAL_PLAYER_ENTITY_ID,
 } from '../constants/player';
-import { checkRoundEnd } from '../services/check-round-end';
+import { checkRoundEnd } from '../utils/check-round-end';
 import { resetPlayerTransform, setPlayerPose } from './player-state';
 
 const COUNTDOWN_START = 3;

@@ -1,14 +1,14 @@
 # Improvements backlog
 
-**Open:** §6 (staged arena deploy), §7 (greenery prop performance). **Shipped:** §1–§5 (closed 2026-08-28 with US-5 polish). New feel items go here as unchecked entries; for hygiene / dead code see [tech-debt.md](./tech-debt.md).
+**Open:** §7 (greenery prop performance). **Shipped:** §1–§6 (§1–§5 closed 2026-08-28 with US-5 polish; §6 closed 2026-08-31). New feel items go here as unchecked entries; for hygiene / dead code see [tech-debt.md](./tech-debt.md).
 
 ---
 
-## 6. Staged arena deploy + deferred gameplay chrome
+## 6. Staged arena deploy + deferred gameplay chrome (shipped)
 
 **Symptom:** The play scene mounts the full arena (floor, houses, props) in one Suspense commit once all scenario textures finish loading. Sky renders immediately and the character layer is already deferred via `DeferredAfterLoad`, but everything between those two extremes appears at once. `PlayerControls` mounts before the arena is visible, so input is live during deploy.
 
-**Scope:** Play boot (`game-canvas-island`, `game-canvas`), scenario rendering (`scenario-scene`, texture library), deploy loader (`play-loader`, `loading-reporter`), gameplay chrome (`player-controls`, `game-pause-panel`, optional HUD bundle).
+**Scope:** Play boot (`game-canvas-wrapper`, `game-canvas`), scenario rendering (`scenario-scene`, texture library), deploy loader (`play-loader.astro`, `game-canvas-loader`), gameplay chrome (`player-controls`, `game-pause-panel`, optional HUD bundle).
 
 **Current mount order** (`src/modules/game/components/game-canvas.tsx`):
 
@@ -34,7 +34,7 @@ Props and soldier GLBs are preloaded at module init (`prop-registry.ts`, `soldie
 - [x] **Staged `ScenarioScene`** — Split `scenario-scene.tsx` into phased sub-scenes (`ScenarioGround` / `ScenarioHouses` / `ScenarioProps`) each in its own Suspense boundary inside `game-canvas.tsx`. Props keep preload for cache warmth but mount only in the decorations phase.
 - [x] **Defer `PlayerControls` with character layer** — Move `PlayerControls` into `DeferredAfterLoad` alongside `LocalPlayer`. Spawn reset and pointer-lock should activate when the soldier appears, not while the arena is still building.
 - [x] **Bundle gameplay chrome with character phase** — Group `ShootingController` and gameplay HUD (`CrosshairHud`, `CameraHud`, `HealthBar`) into the same deferred bucket; they are unused until the player can act.
-- [x] **Lazy-load deploy loader UI** — Code-split React `PlayLoader` in `game-canvas-island.tsx`. Keep Astro boot loader (`play-loader.astro` / `#play-boot`) or a tiny inline fallback until the chunk is ready — boot loader is removed on island mount today, so naive lazy import would flash empty.
+- [x] **Lazy-load deploy loader UI** — Code-split React `PlayLoader` in `game-canvas-wrapper.tsx` (`GameCanvasLoader`). Keep Astro boot loader (`play-loader.astro` / `#play-boot`) or a tiny inline fallback until the chunk is ready — boot loader is removed on island mount today, so naive lazy import would flash empty.
 - [x] **Lazy-load `GamePausePanel`** — `React.lazy` + Suspense; mount after character layer is ready (not only on first Esc), so `togglePause` in `usePlayerKeyboard` always has a dialog to render. Pause input stays in deferred `PlayerControls`.
 
 **Acceptance:**
@@ -47,7 +47,7 @@ Props and soldier GLBs are preloaded at module init (`prop-registry.ts`, `soldie
 
 **Out of scope:** Changing collision data timing (movement already uses scenario segments, not meshes); schema or multiplayer protocol changes; splitting prop preload across network priorities.
 
-**Spec touch:** Note staged deploy order in `specs/current/design.md` (play canvas lifecycle) when implemented.
+**Spec touch:** Staged deploy order documented in [current/design.md](./current/design.md#staged-arena-deploy) (play canvas lifecycle).
 
 ---
 

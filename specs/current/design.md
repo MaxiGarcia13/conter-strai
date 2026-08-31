@@ -52,7 +52,7 @@ Weapon registry lives in `src/modules/weapons/` (`weapon-registry.ts`, `PistolWe
 src/
 ├── pages/index.astro     Landing (hero, CTA, GitHub footer) — Astro-only
 ├── pages/room/           Create / join / wait / play (US-7)
-├── components/           Shared Astro UI (GithubIcon, …)
+├── components/           Shared shell UI (site-topbar, cs-button, github-icon, play-loader)
 ├── modules/
 │   ├── lobby/            Room session, create/join/wait islands, invite share + QR
 │   ├── game/             Session shell, GameCanvas, FPS controls, HUD, round state
@@ -93,15 +93,17 @@ Shipped 2026-08-23 — see [CHANGELOG](../CHANGELOG.md#shipped--other).
 
 ## Landing (`/`)
 
-| Piece  | Detail                                                                                                                             |
-| ------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Files  | `src/pages/index.astro`, `src/layouts/base-layout.astro`, `src/components/GithubIcon.astro`, `src/styles/global.css`               |
-| Layout | Full-viewport: status strip → hero (copy + CTA left, `cs.png` right) → footer; stack on mobile                                     |
-| Theme  | Near-black surfaces; CS amber accent (`--accent`); `.game-atmosphere` vignette/glow; Barlow Condensed + Rajdhani + Share Tech Mono |
-| CTA    | **Create Room** → `/room`; **Join Room** → `/room/join`                                                                            |
-| Footer | **Contribute on GitHub** → repo from `package.json` `homepage` (opens in new tab; `GithubIcon`)                                    |
-| SEO    | Title, description, OG/Twitter image (`/cs.png`), dark `theme-color`, favicon `/conter-strai.png`                                  |
-| Bundle | Astro-only — no Three.js / R3F on this route                                                                                       |
+| Piece  | Detail                                                                                                                                                                                                         |
+| ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Files  | `src/pages/index.astro`, `src/layouts/base-layout.astro`, `src/components/site-topbar.astro`, `cs-button.astro`, `github-icon.astro`, `src/styles/global.css`, `src/styles/fonts.css`                          |
+| Layout | Full-viewport: `SiteTopbar` (Live badge + Civilians vs Soldiers) → hero (tagline, numbered bullets, CTA left; `cs.png` right) → footer; stack on mobile                                                        |
+| Theme  | Near-black surfaces; CS amber accent (`--accent`); `.game-atmosphere` vignette/glow; **Barlow Condensed** (display) + **Share Tech Mono** (labels) — self-hosted in `public/fonts/`, no external font requests |
+| Shell  | `SiteTopbar` + `CsButton` reused on lobby routes (`/room`, `/room/join`, waiting room). `APP_VERSION` from `package.json` (`src/constants/app-version.ts`) in landing footer and pause panel                   |
+| CTA    | **Create Room** → `/room`; **Join Room** → `/room/join`                                                                                                                                                        |
+| Footer | **Contribute on GitHub** → repo from `package.json` `homepage` (opens in new tab; `github-icon`); version label `v{APP_VERSION}`                                                                               |
+| SEO    | Title, description, OG/Twitter image (`/cs.png`), dark `theme-color`, favicon `/conter-strai.png`                                                                                                              |
+| Bundle | Astro-only — no Three.js / R3F on this route                                                                                                                                                                   |
+| Docs   | README screenshot: `docs/landing.webp`                                                                                                                                                                         |
 
 ## Routes
 
@@ -132,7 +134,7 @@ sessionStorage[`cs:room:${roomId}`] = {
 | civilian → `remy` / `james` / `liza`     | `remy`   |
 | soldier → `swat-1` / `swat-2` / `swat-3` | `swat-1` |
 
-Missing/invalid play session → `civilian` + `remy` + `arena-01` with team↔skin consistency. Invite URL is path-only: `{origin}/room/{roomId}/join`. `ScenarioConfig.previewImageUrl` optional (`arena-01` null until art). Civilian east spawn required for civilian pick.
+Missing/invalid play session → `civilian` + `remy` + `arena-01` with team↔skin consistency. Invite URL is path-only: `{origin}/room/{roomId}/join`. `ScenarioConfig.previewImageUrl` optional — `arena-01` uses `/assets/scenarios/arena-01.png` in create-room `ArenaPicker`. Civilian east spawn required for civilian pick.
 
 ## Play island (`/room/.../play`) — shipped US-2 + US-7 boot
 

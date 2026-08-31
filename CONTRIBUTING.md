@@ -21,8 +21,6 @@ Read these before making changes:
 
 1. [README.md](./README.md) — what the game is and how to run a playable server
 
-
-
 2. [specs/current/design.md](./specs/current/design.md) — module types and conventions
 3. [specs/current/tasks.md](./specs/current/tasks.md) and the relevant open spec under [specs/](./specs/)
 

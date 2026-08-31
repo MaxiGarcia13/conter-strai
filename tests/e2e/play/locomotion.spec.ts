@@ -1,7 +1,8 @@
-import type { Page } from '@playwright/test';
+import type { BrowserContext, Page } from '@playwright/test';
 import type { SoldierSkinId } from '@/modules/soldiers/types';
 import type { Team } from '@/modules/teams/types';
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../fixtures';
+import { createE2eContext } from '../mock-glb-cdn';
 import {
   expectLocomotionClip,
   MOVE_CODES,
@@ -19,16 +20,18 @@ for (const character of characters) {
   const [skin, team] = character;
 
   test.describe.serial(`room play as ${skin} ${team}`, () => {
+    let context: BrowserContext;
     let page: Page;
 
     test.beforeAll(async ({ browser }) => {
-      page = await browser.newPage();
+      context = await createE2eContext(browser);
+      page = await context.newPage();
       await navigateToRoomPlay(page, { team, skin });
       await waitForPlayTest(page);
     });
 
     test.afterAll(async () => {
-      await page?.close();
+      await context?.close();
     });
 
     test('idle', async () => {

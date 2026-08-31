@@ -1,5 +1,6 @@
 import type { BrowserContext, Page } from '@playwright/test';
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../fixtures';
+import { createE2eContext } from '../mock-glb-cdn';
 import {
   createHostRoom,
   seedGuestSession,
@@ -56,8 +57,8 @@ test.describe.serial('two-player round-end Home', () => {
     test.setTimeout(120_000);
     const hostRoom = await createHostRoom(request);
     roomId = hostRoom.roomId;
-    hostContext = await browser.newContext();
-    guestContext = await browser.newContext();
+    hostContext = await createE2eContext(browser);
+    guestContext = await createE2eContext(browser);
     hostPage = await hostContext.newPage();
     guestPage = await guestContext.newPage();
     await startTwoPlayerRound(hostPage, guestPage, hostRoom);

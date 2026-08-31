@@ -1,5 +1,6 @@
-import type { Page } from '@playwright/test';
-import { expect, test } from '@playwright/test';
+import type { BrowserContext, Page } from '@playwright/test';
+import { expect, test } from '../../fixtures';
+import { createE2eContext } from '../../mock-glb-cdn';
 
 // eslint-disable-next-line no-restricted-imports
 import {
@@ -12,16 +13,18 @@ import {
 } from '../../test-helpers';
 
 test.describe.serial('pause menu in a live round', () => {
+  let context: BrowserContext;
   let page: Page;
 
   test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
+    context = await createE2eContext(browser);
+    page = await context.newPage();
     await startMatchFromWaitingRoom(page);
     await waitForLiveRound(page);
   });
 
   test.afterAll(async () => {
-    await page?.close();
+    await context?.close();
   });
 
   test('Escape opens the pause panel with Resume / Restart / Leave / Commands', async () => {

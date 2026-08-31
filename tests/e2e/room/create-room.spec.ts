@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../fixtures';
 import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
 
 test('create room posts to the API and writes a host session', async ({ page }) => {

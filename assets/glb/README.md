@@ -52,3 +52,7 @@ The worker must return `Access-Control-Allow-Origin` for browser `useGLTF` fetch
 - Scenario preview images
 
 Texture source GLBs in `assets/glb/textures/` are build-time inputs for `npm run assets:extract-maps` only; runtime uses the extracted maps in `public/`.
+
+## E2E tests
+
+Playwright intercepts `workers.dev` GLB requests and serves files from `assets/glb/` (`tests/e2e/mock-glb-cdn.ts`) so CI does not depend on R2 reachability or CORS.

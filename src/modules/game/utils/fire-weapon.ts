@@ -5,6 +5,7 @@ import type { BulletHitResult } from '@/modules/weapons/types';
 import { Raycaster, Vector2 } from 'three';
 import { useHealthStore } from '@/modules/combat';
 import { DEFAULT_LOCAL_TEAM, LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
+import { resolveHitDamage } from '@/modules/game/services/resolve-hit-damage';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 import { useRoundStore } from '@/modules/game/stores/round-store';
 import {
@@ -16,9 +17,8 @@ import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-st
 import { PISTOL_MAX_RANGE_METERS } from '@/modules/weapons/constants/pistol';
 import { DEFAULT_WEAPON_ID, weapons } from '@/modules/weapons/weapon-registry';
 import { getPlayerPose } from '../stores/player-state';
-import { pickBulletHit } from '../utils/pick-bullet-hit';
-import { playGameSound } from '../utils/play-game-sound';
-import { resolveHitDamage } from './resolve-hit-damage';
+import { pickBulletHit } from './pick-bullet-hit';
+import { playGameSound } from './play-game-sound';
 
 const SCREEN_CENTER = new Vector2(0, 0);
 const raycaster = new Raycaster();

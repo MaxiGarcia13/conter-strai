@@ -1,9 +1,9 @@
 import { PerspectiveCamera, Scene } from 'three';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireWeapon, resetFireWeaponCooldown, setFireWeaponView } from '@/modules/game/services/fire-weapon';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 import { setPlayerPose } from '@/modules/game/stores/player-state';
 import { useRoundStore } from '@/modules/game/stores/round-store';
+import { fireWeapon, resetFireWeaponCooldown, setFireWeaponView } from '@/modules/game/utils/fire-weapon';
 import { playGameSound } from '@/modules/game/utils/play-game-sound';
 import { PISTOL_FIRE_COOLDOWN_MS } from '@/modules/weapons/constants/pistol';
 

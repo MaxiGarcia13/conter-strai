@@ -1,7 +1,7 @@
 import { useThree } from '@react-three/fiber';
 import { useEffect } from 'react';
 import { isTouchPrimaryDevice } from '@/modules/game/input/utils/is-touch-primary-device';
-import { fireWeapon, setFireWeaponView } from '../services/fire-weapon';
+import { fireWeapon, setFireWeaponView } from '../utils/fire-weapon';
 
 export function useShooting(domElement: HTMLElement | null) {
   const camera = useThree((s) => s.camera);

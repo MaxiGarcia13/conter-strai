@@ -22,7 +22,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## Fire service extract (US-12.4)
 
-- [x] Add `src/modules/game/services/fire-weapon.ts` — extract body from `use-shooting.ts`
+- [x] Add `src/modules/game/utils/fire-weapon.ts` — extract body from `use-shooting.ts`
 - [x] Refactor `use-shooting.ts` to call `fireWeapon()`; skip pointer-lock gate on touch-primary
 - [x] Unit: `tests/units/game/fire-weapon.test.ts` (gating: pause, phase, pose, cooldown)
 

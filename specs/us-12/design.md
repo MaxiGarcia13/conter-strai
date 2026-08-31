@@ -23,26 +23,29 @@ flowchart LR
   subgraph intent [game/input/]
     Ref[player-input-intent ref]
     LookUtil[applyLookDelta]
-    FireSvc[fireWeapon service]
+  end
+
+  subgraph helpers [game/utils/]
+    FireUtil[fireWeapon]
+    Pose[player-pose-actions]
   end
 
   subgraph consumers [Existing consumers]
     MF[usePlayerMovementFrame]
     PL[usePlayerPointerLock]
     Shoot[useShooting]
-    Pose[player-pose-actions]
     Pause[game-pause-store]
   end
 
   KB --> Ref
   Touch --> Ref
   Touch --> LookUtil
-  Touch --> FireSvc
+  Touch --> FireUtil
   Touch --> Pose
   Touch --> Pause
   Ref --> MF
   LookUtil --> PL
-  FireSvc --> Shoot
+  FireUtil --> Shoot
 ```
 
 ## Module layout
@@ -66,7 +69,7 @@ src/modules/game/input/
       pause-button.tsx
       index.ts                      # public export only
 
-src/modules/game/services/
+src/modules/game/utils/
   fire-weapon.ts                    # extracted from use-shooting.ts
 ```
 

@@ -9,6 +9,6 @@ export default defineConfig({
   },
   test: {
     exclude: [...configDefaults.exclude, 'tests/e2e/**'],
-    setupFiles: ['./tests/setup/vitest-drei-mock.ts'],
+    setupFiles: ['./tests/units/vitest-drei-mock.ts'],
   },
 });

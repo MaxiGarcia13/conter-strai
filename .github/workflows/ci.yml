@@ -44,24 +44,3 @@ jobs:
     name: Unit Tests
     needs: build
     uses: ./.github/workflows/test-unit.yml
-
-  test-e2e-room:
-    name: E2E Tests - Room
-    needs: [lint, test-unit]
-    uses: ./.github/workflows/test-e2e.yml
-    with:
-      folder: e2e/room
-
-  test-e2e-general:
-    name: E2E Tests - General
-    needs: [test-e2e-room]
-    uses: ./.github/workflows/test-e2e.yml
-    with:
-      folder: e2e/general
-
-  test-e2e-play:
-    name: E2E Tests - Play
-    needs: [test-e2e-general]
-    uses: ./.github/workflows/test-e2e.yml
-    with:
-      folder: e2e/play

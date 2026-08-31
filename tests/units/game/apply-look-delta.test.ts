@@ -20,12 +20,12 @@ describe('applyLookDelta', () => {
 
   it('clamps pitch to the upper limit', () => {
     applyLookDelta(0, -1_000_000);
-    expect(getPlayerTransform().pitch).toBeCloseTo(-PITCH_LIMIT);
+    expect(getPlayerTransform().pitch).toBeCloseTo(PITCH_LIMIT);
   });
 
   it('does not pitch below the look floor (camera would clip the body)', () => {
     // Reaching the exact floor is allowed...
-    applyLookDelta(0, LOOK_PITCH_FLOOR / MOUSE_SENSITIVITY);
+    applyLookDelta(0, -LOOK_PITCH_FLOOR / MOUSE_SENSITIVITY);
     expect(getPlayerTransform().pitch).toBeCloseTo(LOOK_PITCH_FLOOR);
 
     // ...but a further downward delta stays pinned at the floor.

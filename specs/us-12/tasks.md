@@ -15,7 +15,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 - [ ] Add `src/modules/game/input/player-input-intent.ts` — imperative ref + merge keyboard/touch
 - [x] Add `src/modules/game/input/utils/is-touch-primary-device.ts` — `(pointer: coarse)` gate
 - [x] Add `src/modules/game/input/utils/apply-look-delta.ts` — extract from `use-player-pointer-lock.ts`
-- [ ] Add `src/modules/game/input/utils/joystick-to-axes.ts` — vector → `{ strafe, forward }` + dead zone
+- [x] Add `src/modules/game/input/utils/joystick-to-axes.ts` — vector → `{ strafe, forward }` + dead zone
 - [ ] Unit: `tests/units/game/apply-look-delta.test.ts`
 - [ ] Unit: `tests/units/game/joystick-to-axes.test.ts`
 - [ ] Unit: `tests/units/game/is-touch-primary-device.test.ts` (mock matchMedia)

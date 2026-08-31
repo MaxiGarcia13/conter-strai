@@ -35,7 +35,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 ## Mobile UI components (US-12.1–US-12.6)
 
 - [x] Add `src/modules/game/input/components/mobile-controls/virtual-joystick.tsx`
-- [ ] Add `src/modules/game/input/components/mobile-controls/action-button.tsx`
+- [x] Add `src/modules/game/input/components/mobile-controls/action-button.tsx`
 - [ ] Add `src/modules/game/input/components/mobile-controls/look-zone.tsx`
 - [ ] Add `src/modules/game/input/components/mobile-controls/pause-button.tsx`
 - [ ] Add `src/modules/game/input/components/mobile-controls/mobile-controls.tsx` — orchestrator

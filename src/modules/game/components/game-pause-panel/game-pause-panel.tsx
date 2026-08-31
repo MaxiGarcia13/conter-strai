@@ -10,6 +10,7 @@ import { leaveMatchToHome } from '@/modules/game/utils/leave-match-to-home';
 import { restartRound } from '@/modules/game/utils/restart-round';
 import { readRoomSession } from '@/modules/lobby/utils/room-session';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
+import { CommandIcon } from './command-icon';
 
 interface GamePausePanelProps {
   roomId?: string;
@@ -74,9 +75,15 @@ export function GamePausePanel({ roomId, scenarioId }: GamePausePanelProps) {
                       return null;
 
                     return (
-                      <div key={command.key} className="flex items-center justify-between gap-6 py-1">
+                      <div
+                        key={`${command.action}-${command.key}`}
+                        className="flex items-center justify-between gap-6 py-1"
+                      >
                         <dt className="text-foreground/60">{command.action}</dt>
-                        <dd className="font-bold text-foreground">{command.key}</dd>
+                        <dd className="flex items-center gap-2 font-bold text-foreground">
+                          {command.iconId && <CommandIcon iconId={command.iconId} />}
+                          {command.key}
+                        </dd>
                       </div>
                     );
                   })}

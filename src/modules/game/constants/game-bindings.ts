@@ -1,7 +1,10 @@
+export type GameCommandIconId = 'menu' | 'fire' | 'button-a' | 'button-b';
+
 export interface GameCommand {
   key: string;
   action: string;
   devOnly?: boolean;
+  iconId?: GameCommandIconId;
 }
 
 /** Single source for gameplay input bindings and pause-menu command labels (US-9.6). */
@@ -53,10 +56,26 @@ export function isMovePressed(pressed: Set<string>): boolean {
 /** Mobile touch control labels — mirrors {@link GAME_BINDINGS} for pause-panel Commands on touch-primary. */
 export const MOBILE_BINDINGS = {
   move: { label: 'Joystick', action: 'Move' },
-  sprint: { label: 'Hold run button', action: 'Sprint' },
-  kneelToggle: { label: 'Tap kneel button', action: 'Kneel toggle' },
-  shoot: { label: 'Fire button', action: 'Shoot' },
-  pause: { label: 'Pause button', action: 'Pause menu' },
+  sprint: {
+    label: 'Hold',
+    action: 'Sprint',
+    iconId: 'button-a',
+  },
+  kneelToggle: {
+    label: 'Tap',
+    action: 'Kneel toggle',
+    iconId: 'button-b',
+  },
+  shoot: {
+    label: 'Tap',
+    action: 'Shoot',
+    iconId: 'fire',
+  },
+  pause: {
+    label: 'Tap',
+    action: 'Pause menu',
+    iconId: 'menu',
+  },
 } as const;
 
 /** Pause panel Commands list — derived from {@link GAME_BINDINGS}. */
@@ -88,8 +107,24 @@ export const GAME_COMMANDS: GameCommand[] = [
 /** Pause panel Commands list for touch-primary devices. */
 export const MOBILE_COMMANDS: GameCommand[] = [
   { key: MOBILE_BINDINGS.move.label, action: MOBILE_BINDINGS.move.action },
-  { key: MOBILE_BINDINGS.sprint.label, action: MOBILE_BINDINGS.sprint.action },
-  { key: MOBILE_BINDINGS.kneelToggle.label, action: MOBILE_BINDINGS.kneelToggle.action },
-  { key: MOBILE_BINDINGS.shoot.label, action: MOBILE_BINDINGS.shoot.action },
-  { key: MOBILE_BINDINGS.pause.label, action: MOBILE_BINDINGS.pause.action },
+  {
+    key: MOBILE_BINDINGS.sprint.label,
+    action: MOBILE_BINDINGS.sprint.action,
+    iconId: MOBILE_BINDINGS.sprint.iconId,
+  },
+  {
+    key: MOBILE_BINDINGS.kneelToggle.label,
+    action: MOBILE_BINDINGS.kneelToggle.action,
+    iconId: MOBILE_BINDINGS.kneelToggle.iconId,
+  },
+  {
+    key: MOBILE_BINDINGS.shoot.label,
+    action: MOBILE_BINDINGS.shoot.action,
+    iconId: MOBILE_BINDINGS.shoot.iconId,
+  },
+  {
+    key: MOBILE_BINDINGS.pause.label,
+    action: MOBILE_BINDINGS.pause.action,
+    iconId: MOBILE_BINDINGS.pause.iconId,
+  },
 ];

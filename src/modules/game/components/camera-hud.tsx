@@ -1,6 +1,5 @@
 import type { CameraMode } from '../types';
 import { useCameraMode } from '../hooks/use-camera-mode';
-import { isTouchPrimaryDevice } from '../input/utils/is-touch-primary-device';
 
 const CAMERA_MODE_LABELS: Record<CameraMode, string> = {
   fps: 'First-person',
@@ -11,9 +10,7 @@ const CAMERA_MODE_LABELS: Record<CameraMode, string> = {
 /** DOM overlay showing the active camera mode; C cycles it. */
 export function CameraHud() {
   const mode = useCameraMode();
-  if (isTouchPrimaryDevice()) {
-    return null;
-  }
+
   return (
     <div
       role="status"

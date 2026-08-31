@@ -1,4 +1,5 @@
 import { useCallback, useRef } from 'react';
+import { IconMenu } from '@/components/icons';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 
 export function PauseButton() {
@@ -26,12 +27,14 @@ export function PauseButton() {
 
   return (
     <div
-      className="pointer-events-auto fixed top-4 left-4 z-10 flex size-12 touch-none items-center justify-center rounded-full border border-surface-border bg-background-deep/50 font-mono text-xs tracking-widest text-foreground uppercase select-none"
+      role="button"
+      aria-label="Pause menu"
+      className="pointer-events-auto fixed top-4 left-4 z-10 flex size-12 touch-none items-center justify-center rounded-full border border-surface-border bg-background-deep/50 text-foreground select-none"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
       onTouchCancel={onTouchEnd}
     >
-      ⏸
+      <IconMenu className="size-6" />
     </div>
   );
 }

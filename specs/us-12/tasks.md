@@ -8,6 +8,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 - [x] Add `MOBILE_BINDINGS` to `src/modules/game/constants/game-bindings.ts` (labels for pause panel Commands)
 - [x] Optional: `game-pause-panel.tsx` — show mobile labels in Commands when touch-primary
+- [x] Face-button icons (`IconMenu` / `IconFire` / `IconButtonA` / `IconButtonB`) on mobile controls; Commands list shows the same icons (A hold = sprint, B tap = kneel)
 
 ## Input intent layer (US-12.8)
 
@@ -46,8 +47,8 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 - [x] Relocate `health-bar.tsx` to top-right + safe-area insets
 - [x] Hide `camera-hud.tsx` on touch-primary
-- [ ] Mount `<MobileControls />` in `game-canvas.tsx`
-- [ ] Apply `touch-action: none` on `#game-canvas` when mobile controls active
+- [x] Mount `<MobileControls />` in `game-canvas.tsx`
+- [x] Apply `touch-action: none` on `#game-canvas` when mobile controls active
 
 ## Pause panel — camera cycle (US-12.11)
 

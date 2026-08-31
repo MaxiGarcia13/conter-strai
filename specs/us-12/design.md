@@ -96,21 +96,23 @@ Intent ref API (imperative, per-frame):
 
 ```
 ┌─────────────────────────────────────────┐
-│  [⏸ Pause]                    [HP ████] │  ← safe-area top
+│  [☰ Pause]                    [HP ████] │  ← safe-area top
 │                                         │
 │              (look drag zone)           │
 │                                         │
-│  [joystick]              [kneel][run]   │
-│                               [ FIRE ]  │
+│  [joystick]                  [B] [A]    │
+│                                 [fire]  │
 └─────────────────────────────────────────┘
 ```
 
+Face-button icons live in `src/components/icons/` (`IconMenu`, `IconFire`, `IconButtonA`, `IconButtonB`). Pause-panel **Commands** shows the same icons so players can map A → sprint (hold), B → kneel (tap), fire → shoot, menu → pause.
+
 | Zone               | Component               | Action                                   |
 | ------------------ | ----------------------- | ---------------------------------------- |
-| Top-left           | `PauseButton`           | `setPaused(true)` → `GamePausePanel`     |
+| Top-left           | `PauseButton` (`IconMenu`) | `setPaused(true)` → `GamePausePanel`  |
 | Top-right          | `HealthBar` (relocated) | existing combat HUD                      |
 | Bottom-left        | `VirtualJoystick`       | move axes                                |
-| Bottom-right stack | `ActionButton` × 3      | kneel (tap), run (hold), fire (tap/hold) |
+| Bottom-right stack | `ActionButton` × 3      | `IconButtonB` kneel (tap), `IconButtonA` run (hold), `IconFire` fire |
 | Right ~50%         | `LookZone`              | touch-drag look                          |
 
 ### Pause menu — camera cycle (US-12.11)

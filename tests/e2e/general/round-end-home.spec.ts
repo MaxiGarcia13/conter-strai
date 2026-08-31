@@ -1,19 +1,19 @@
 import type { BrowserContext, Page } from '@playwright/test';
-import { expect, test } from '../fixtures';
-import { createE2eContext } from '../mock-glb-cdn';
+import { expect, test } from '../fixtures/fixtures';
 import {
   createHostRoom,
   seedGuestSession,
   seedHostSession,
   waitForMatchSession,
-} from '../lobby-helpers';
+} from '../utils/lobby-helpers';
+import { createE2eContext } from '../utils/mock-glb-cdn';
 import {
   clickHostRoundEndHome,
   ensureGuestReachedPlay,
   forceRoundEnd,
   markPlayHandoff,
   waitForPlayThroughCountdown,
-} from '../test-helpers';
+} from '../utils/test-helpers';
 
 async function startTwoPlayerRound(
   hostPage: Page,

@@ -1,12 +1,10 @@
-import { expect, test } from '../../fixtures';
-
-// eslint-disable-next-line no-restricted-imports
+import { expect, test } from '@tests/e2e/fixtures';
 import {
   captureConsoleErrors,
   expectNoConsoleErrors,
   navigateToRoomPlay,
   waitForPlayReady,
-} from '../../test-helpers';
+} from '@tests/e2e/test-helpers';
 
 test('room play cycles camera modes without duplicating the local soldier', async ({ page }) => {
   const consoleErrors = captureConsoleErrors(page);

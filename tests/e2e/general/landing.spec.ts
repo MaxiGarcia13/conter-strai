@@ -1,4 +1,4 @@
-import { expect, test } from '../fixtures';
+import { expect, test } from '../fixtures/fixtures';
 
 test('landing renders and CTAs navigate to /room and /room/join', async ({ page }) => {
   await page.goto('/');

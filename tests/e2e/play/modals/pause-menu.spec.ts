@@ -1,8 +1,6 @@
 import type { BrowserContext, Page } from '@playwright/test';
-import { expect, test } from '../../fixtures';
-import { createE2eContext } from '../../mock-glb-cdn';
-
-// eslint-disable-next-line no-restricted-imports
+import { expect, test } from '@tests/e2e/fixtures';
+import { createE2eContext } from '@tests/e2e/mock-glb-cdn';
 import {
   captureConsoleErrors,
   expectNoConsoleErrors,
@@ -10,7 +8,7 @@ import {
   MOVE_CODES,
   startMatchFromWaitingRoom,
   waitForLiveRound,
-} from '../../test-helpers';
+} from '@tests/e2e/test-helpers';
 
 test.describe.serial('pause menu in a live round', () => {
   let context: BrowserContext;

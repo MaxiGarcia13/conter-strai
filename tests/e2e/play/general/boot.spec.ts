@@ -1,12 +1,10 @@
-import { expect, test } from '../../fixtures';
-
-// eslint-disable-next-line no-restricted-imports
+import { expect, test } from '@tests/e2e/fixtures';
 import {
   captureConsoleErrors,
   expectNoConsoleErrors,
   navigateToRoomPlay,
   waitForPlayTest,
-} from '../../test-helpers';
+} from '@tests/e2e/test-helpers';
 
 test('room play loads the scene and settles its assets', async ({ page }) => {
   const consoleErrors = captureConsoleErrors(page);

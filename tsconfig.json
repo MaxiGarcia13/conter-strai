@@ -9,6 +9,10 @@
       ],
       "@root/*": [
         "./package.json"
+      ],
+      "@tests/e2e/*": [
+        "./tests/e2e/utils/*",
+        "./tests/e2e/fixtures/*"
       ]
     }
   },

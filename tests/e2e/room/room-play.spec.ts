@@ -1,9 +1,9 @@
-import { expect, test } from '../fixtures';
+import { expect, test } from '../fixtures/fixtures';
 import {
   navigateToPlayFromWaitingRoom,
   readRoomSessionSkin,
   waitForPlayReady,
-} from '../test-helpers';
+} from '../utils/test-helpers';
 
 test('create room plays as the default civilian remy', async ({ page }) => {
   await page.goto('/room');

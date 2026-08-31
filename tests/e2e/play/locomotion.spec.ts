@@ -1,15 +1,15 @@
 import type { BrowserContext, Page } from '@playwright/test';
 import type { SoldierSkinId } from '@/modules/soldiers/types';
 import type { Team } from '@/modules/teams/types';
-import { expect, test } from '../fixtures';
-import { createE2eContext } from '../mock-glb-cdn';
+import { expect, test } from '../fixtures/fixtures';
+import { createE2eContext } from '../utils/mock-glb-cdn';
 import {
   expectLocomotionClip,
   MOVE_CODES,
   navigateToRoomPlay,
   readPlayTest,
   waitForPlayTest,
-} from '../test-helpers';
+} from '../utils/test-helpers';
 
 const characters: [SoldierSkinId, Team][] = [
   ['swat-1', 'soldier'],

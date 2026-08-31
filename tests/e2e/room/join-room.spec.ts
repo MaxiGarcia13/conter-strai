@@ -1,6 +1,6 @@
-import { expect, test } from '../fixtures';
 import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
-import { createMatchRoomViaApi } from '../lobby-helpers';
+import { expect, test } from '../fixtures/fixtures';
+import { createMatchRoomViaApi } from '../utils/lobby-helpers';
 
 test('join page rejects an unknown room id', async ({ page }) => {
   await page.goto('/room/join');

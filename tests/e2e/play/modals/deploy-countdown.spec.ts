@@ -1,11 +1,9 @@
-import { expect, test } from '../../fixtures';
-
-// eslint-disable-next-line no-restricted-imports
+import { expect, test } from '@tests/e2e/fixtures';
 import {
   countdownBanner,
   deployingLoader,
   startMatchFromWaitingRoom,
-} from '../../test-helpers';
+} from '@tests/e2e/test-helpers';
 
 test('countdown does not appear until deploy loader clears', async ({ page }) => {
   await startMatchFromWaitingRoom(page);

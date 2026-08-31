@@ -1,5 +1,5 @@
 import { test as base, expect } from '@playwright/test';
-import { mockGlbCdnToLocal } from './mock-glb-cdn';
+import { mockGlbCdnToLocal } from '../utils/mock-glb-cdn';
 
 const test = base.extend({
   context: async ({ context }, runFixture) => {

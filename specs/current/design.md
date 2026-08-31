@@ -234,8 +234,6 @@ Authored as composable modules under `src/modules/scenarios/maps/arena-01/` (`co
 
 Floor zone-on-zone overlap at the same Y causes z-fighting; streets split at junctions and house floors are inset. Named house presets (`ruinedCottage`, `cornerRuin`, `fortifiedBlock`, `streetShack`, `bombedHouse`) carry height / open-side variants for map authoring — unused presets are tracked in [tech-debt.md](../tech-debt.md).
 
-Instanced jacaranda / vista-tier props are follow-up polish — [improvements.md §7](../improvements.md#7-greenery-prop-performance-jacaranda-instancing--vista-tier).
-
 ### Testing
 
 | Layer          | Scope                                                                                                                                                                                                                                                                    |

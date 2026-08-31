@@ -1,6 +1,6 @@
 # Improvements backlog
 
-**Open:** §7 (greenery prop performance). **Shipped:** §1–§6 (§1–§5 closed 2026-08-28 with US-5 polish; §6 closed 2026-08-31). New feel items go here as unchecked entries; for hygiene / dead code see [tech-debt.md](./tech-debt.md).
+**Open:** none. **Shipped:** §1–§6 (§1–§5 closed 2026-08-28 with US-5 polish; §6 closed 2026-08-31). New feel items go here as unchecked entries; for hygiene / dead code see [tech-debt.md](./tech-debt.md).
 
 ---
 

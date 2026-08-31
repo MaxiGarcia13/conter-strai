@@ -4,13 +4,13 @@ Work queue points to open US deltas. Tick tasks in the delta folder; ship into `
 
 ## Suggested order
 
-No open user-story deltas. Next: [improvements backlog](../improvements.md) §7 (greenery prop performance) and [tech-debt.md](../tech-debt.md).
+No open user-story deltas. Next: [tech-debt.md](../tech-debt.md).
 
 US-4 (local PvP loop), **US-5** (Colyseus multiplayer), **US-7** (match lobby), **US-8** (server security), **US-9** (pause menu), **US-10** (no-opponent team shuffle), **US-11** (arena modularization), **US-12** (mobile touch controls), and the [improvements backlog](../improvements.md) §1–§6 polish pass are **shipped**. Fire **pose clip** on LMB is deferred — see [tech-debt.md](../tech-debt.md).
 
 ## Improvements (open)
 
-- [specs/improvements.md](../improvements.md) §7 — Greenery prop performance (jacaranda instancing + vista tier)
+None.
 
 ## Tech debt
 

@@ -2,9 +2,12 @@ import type { ScenarioId } from '@/modules/scenarios';
 import { useEffect } from 'react';
 import { CsButton } from '@/components/cs-button';
 import { APP_VERSION } from '@/constants/app-version';
+import { CAMERA_MODE_LABELS } from '@/modules/game/constants/camera-mode-labels';
 import { GAME_COMMANDS, MOBILE_COMMANDS } from '@/modules/game/constants/game-bindings';
+import { useCameraMode } from '@/modules/game/hooks/use-camera-mode';
 import { isTouchPrimaryDevice } from '@/modules/game/input/utils/is-touch-primary-device';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
+import { cycleCameraMode } from '@/modules/game/stores/player-state';
 import { useRoundStore } from '@/modules/game/stores/round-store';
 import { leaveMatchToHome } from '@/modules/game/utils/leave-match-to-home';
 import { restartRound } from '@/modules/game/utils/restart-round';
@@ -29,6 +32,8 @@ export function GamePausePanel({ roomId, scenarioId }: GamePausePanelProps) {
   const mpPhase = useMultiplayerStore((s) => s.phase);
   const roundPhase = useRoundStore((s) => s.phase);
   const phase = connected ? mpPhase : roundPhase;
+
+  const cameraMode = useCameraMode();
 
   const session = roomId ? readRoomSession(roomId) : null;
   const isHost = session?.role === 'host' || !roomId;
@@ -105,6 +110,15 @@ export function GamePausePanel({ roomId, scenarioId }: GamePausePanelProps) {
                     Restart
                   </CsButton>
                 )}
+
+                <CsButton type="button" variant="secondary" onClick={cycleCameraMode}>
+                  <span className="flex items-center justify-between gap-3">
+                    <span>Cycle camera</span>
+                    <span className="text-foreground/60">
+                      {CAMERA_MODE_LABELS[cameraMode]}
+                    </span>
+                  </span>
+                </CsButton>
 
                 <CsButton type="button" variant="secondary" onClick={() => setShowCommands(true)}>
                   Commands

@@ -1,4 +1,5 @@
 ---
+import csImg from '@assets/images/cs.png';
 import { homepage } from '@root/package.json';
 import { getImage, Image } from 'astro:assets';
 import CsButton from '@/components/cs-button.astro';
@@ -6,7 +7,6 @@ import GithubIcon from '@/components/github-icon.astro';
 import SiteTopbar from '@/components/site-topbar.astro';
 import { APP_VERSION } from '@/constants/app-version';
 import BaseLayout from '@/layouts/base-layout.astro';
-import csImg from '../assets/cs.png';
 
 const ogImage = await getImage({
   src: csImg,

@@ -1,4 +1,6 @@
 ---
+import { CaretRightIcon } from '@/components/icons';
+
 interface Props {
   href?: string;
   variant?: 'primary' | 'secondary' | 'ghost';
@@ -23,16 +25,6 @@ const Tag = href ? 'a' : 'button';
   href={href}
   type={href ? undefined : type}
 >
-  {
-    showIcon && (
-      <svg
-        class="cs-button__icon"
-        viewBox="0 0 12 12"
-        aria-hidden="true"
-      >
-        <path d="M2 1.2v9.6L11 6 2 1.2z"></path>
-      </svg>
-    )
-  }
+  {showIcon && <CaretRightIcon className="cs-button__icon" aria-hidden="true" />}
   <span class="cs-button__label"><slot /></span>
 </Tag>

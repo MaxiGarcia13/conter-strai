@@ -454,13 +454,13 @@ src/modules/game/input/
 └─────────────────────────────────────────┘
 ```
 
-| Zone               | Component                  | Action                                                               |
-| ------------------ | -------------------------- | -------------------------------------------------------------------- |
-| Top-left           | `PauseButton` (`MenuIcon`) | `setPaused(true)` → `GamePausePanel`                                 |
-| Top-right          | `HealthBar` (relocated)    | existing combat HUD                                                  |
-| Bottom-left        | `VirtualJoystick`          | move axes                                                            |
+| Zone               | Component                  | Action                                                             |
+| ------------------ | -------------------------- | ------------------------------------------------------------------ |
+| Top-left           | `PauseButton` (`MenuIcon`) | `setPaused(true)` → `GamePausePanel`                               |
+| Top-right          | `HealthBar` (relocated)    | existing combat HUD                                                |
+| Bottom-left        | `VirtualJoystick`          | move axes                                                          |
 | Bottom-right stack | `ActionButton` × 3         | `ArrowDownIcon` kneel (tap), `RunIcon` run (hold), `FireIcon` fire |
-| Right ~50%         | `LookZone`                 | touch-drag look                                                      |
+| Right ~50%         | `LookZone`                 | touch-drag look                                                    |
 
 `#game-canvas` uses `touch-action: none` while the overlay is active. Coupling: `mobile-controls` may import `input/*`, `player-pose-actions`, `fire-weapon`, and `game-pause-store` — never `usePlayerControls` internals or R3F hooks. No touch listeners inside `combat/`, `soldiers/`, or pure movement utils.
 

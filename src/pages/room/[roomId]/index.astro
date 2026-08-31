@@ -1,4 +1,5 @@
 ---
+import BackHomeLink from '@/components/back-home-link.astro';
 import SiteTopbar from '@/components/site-topbar.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
 import { WaitingRoom } from '@/modules/lobby/components/waiting-room';
@@ -14,13 +15,7 @@ if (!roomId)
 >
   <section class="relative z-10 flex min-h-dvh flex-col">
     <SiteTopbar title="Waiting Room">
-      <a
-        slot="leading"
-        href="/"
-        class="hover:text-accent focus-visible:outline-accent motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
-      >
-        ← Home
-      </a>
+      <BackHomeLink slot="leading" />
     </SiteTopbar>
 
     <div class="flex flex-1 flex-col px-(--space-page-x) py-(--space-page-y)">

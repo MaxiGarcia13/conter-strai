@@ -64,8 +64,8 @@
   }
 
   .cs-button__icon {
-    width: 0.7rem;
-    height: 0.7rem;
+    width: 1.125rem;
+    height: 1.125rem;
     flex-shrink: 0;
     fill: currentColor;
   }

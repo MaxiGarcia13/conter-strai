@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { CaretRightIcon } from '@/components/icons';
 
 type CsButtonVariant = 'primary' | 'secondary' | 'ghost';
 
@@ -33,15 +34,7 @@ export function CsButton({
 
   const content = (
     <>
-      {showIcon && (
-        <svg
-          className="cs-button__icon"
-          viewBox="0 0 12 12"
-          aria-hidden="true"
-        >
-          <path d="M2 1.2v9.6L11 6 2 1.2z" />
-        </svg>
-      )}
+      {showIcon && <CaretRightIcon className="cs-button__icon" aria-hidden="true" />}
       <span className="cs-button__label">{children}</span>
     </>
   );

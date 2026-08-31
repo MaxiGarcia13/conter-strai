@@ -1,6 +1,6 @@
 # Contributing to Conter Strai
 
-Thanks for your interest in contributing. This guide covers workflow, pull requests, and community expectations — not project setup or architecture (those live elsewhere).
+Thanks for your interest in contributing. This guide covers local developer setup, project layout, pull requests, and community expectations. Player-facing “how to run and play” lives in [README.md](./README.md).
 
 ## Ways to contribute
 
@@ -19,7 +19,7 @@ Not every contribution needs to be a large code change. Clear bug reports, thoug
 
 Read these before making changes:
 
-1. [README.md](./README.md) — getting started, scripts, env vars, project layout
+1. [README.md](./README.md) — what the game is and how to run a playable server
 2. [specs/current/design.md](./specs/current/design.md) — module types and conventions
 3. [specs/current/tasks.md](./specs/current/tasks.md) and the relevant open spec under [specs/](./specs/)
 
@@ -38,7 +38,45 @@ Tick tasks in the spec only after acceptance passes.
 
 ## Local setup and commands
 
-See [README — Getting started](./README.md#getting-started) for install, dev server, env vars, and the full scripts table.
+**Requirements:** Node.js 20+ (developed on 24).
+
+```bash
+npm install
+PUBLIC_COLYSEUS_URL=ws://localhost:2567 npm run dev
+```
+
+Open [http://localhost:4321](http://localhost:4321). `PUBLIC_COLYSEUS_URL` is required for `npm run dev` (must match `COLYSEUS_PORT`, default `2567`).
+
+For a production-like server (or a LAN party), use `npm run build` then `npm run preview` — see [README — Host a LAN party](./README.md#host-a-lan-party).
+
+### Scripts
+
+| Command                             | Description                                                        |
+| ----------------------------------- | ------------------------------------------------------------------ |
+| `npm run dev`                       | Dev server                                                         |
+| `npm run build`                     | Production build (+ custom Astro/Colyseus entry)                   |
+| `npm run preview`                   | Run production entry (`dist/server/custom-entry.mjs`; build first) |
+| `npm run lint` / `npm run lint:fix` | ESLint                                                             |
+| `npm run test`                      | Unit + e2e                                                         |
+| `npm run test:unit`                 | Vitest                                                             |
+| `npm run test:e2e`                  | Playwright                                                         |
+| `npm run phoenix`                   | Clean install (`node_modules`, `dist`, `.astro`)                   |
+
+**Render:** Build Command `npm run build`, Start Command `npm run preview`. One Web Service — Astro + Colyseus share `$PORT`.
+
+Optional env:
+
+| Variable              | Default                        | Purpose                                                                      |
+| --------------------- | ------------------------------ | ---------------------------------------------------------------------------- |
+| `PORT`                | `4321`                         | HTTP listen port (`npm run preview` / Render `$PORT`)                        |
+| `SITE`                | `http://localhost:$PORT`       | Canonical site URL (sitemap, meta)                                           |
+| `PUBLIC_COLYSEUS_URL` | — (required for `npm run dev`) | Dev WebSocket URL, e.g. `ws://localhost:2567`. Prod client uses same-origin. |
+| `COLYSEUS_PORT`       | `2567`                         | Dev-only Colyseus listen port (`npm run dev`)                                |
+
+`PUBLIC_COLYSEUS_URL` examples:
+
+- Dev (`npm run dev`): `ws://localhost:2567` (must match `COLYSEUS_PORT`) — **required**
+- Prod (`npm run preview` / Render): client uses **same-origin** `ws:` / `wss:` automatically (ignores a baked `localhost:2567`). Optional override is unused in the browser when `import.meta.env.PROD`.
 
 Before opening a PR, run:
 
@@ -50,9 +88,40 @@ npm run test:e2e
 
 Run the most relevant suite when your change is scoped to one area.
 
+## Project layout
+
+```
+src/
+  components/       # Shared Astro UI (e.g. GithubIcon)
+  layouts/          # Shared Astro shell (SEO, fonts, atmosphere)
+  modules/          # Feature modules — one types.ts per module, registries at root
+    combat/         # Hitbox presets, zone damage, apply-damage
+    game/           # GameCanvas, FPS controls, round types
+    lobby/          # Room create / join UI and session helpers
+    multiplayer/    # Colyseus adapter, match sync
+    props/          # Scenario prop registry (stub)
+    scenarios/      # Maps (arena-01), ScenarioConfig, spawn helpers
+    soldiers/       # SoldierSkin registry, model, locomotion
+    teams/          # Civilians / Soldiers
+    textures/       # PBR map assets
+    weapons/        # Pistol config & weapon registry
+  pages/            # Routes (`/` landing, `/room/...`, …)
+  styles/           # Global CSS / design tokens
+specs/
+  current/          # Living product contract (design, tasks)
+  us-*/             # Open user-story deltas
+  CHANGELOG.md      # Shipped US + cross-cutting refactors
+public/             # Static assets (brand art, GLB models, textures, …)
+tests/              # E2E specs
+```
+
+Landing lives in `src/pages/index.astro` (no Three.js). Game logic lives in `src/modules/` — domain services (e.g. `combat/apply-damage.ts`) stay free of Three.js where possible. Visual skins reference hitbox presets by id; combat owns collider layout.
+
+**Module types & conventions:** [`specs/current/design.md`](./specs/current/design.md#module-types) — `ScenarioConfig`, `SoldierSkin`, `HitboxPreset`, registries.
+
 ## Repository conventions
 
-Module layout and domain conventions are documented in [specs/current/design.md](./specs/current/design.md#module-types). The [README project layout](./README.md#project-layout) shows the current tree under `src/modules/`.
+Module layout and domain conventions are documented in [specs/current/design.md](./specs/current/design.md#module-types). The [project layout](#project-layout) above shows the current tree under `src/modules/`.
 
 High-level rules to keep in mind:
 
@@ -131,7 +200,7 @@ Good PR descriptions explain the intent behind the code, not just the code itsel
 
 ## Documentation
 
-If you notice unclear setup steps, stale commands, or confusing module boundaries, please fix or improve the docs. Prefer updating the canonical source ([README](./README.md) for setup, [design.md](./specs/current/design.md) for architecture) rather than duplicating content here.
+If you notice unclear setup steps, stale commands, or confusing module boundaries, please fix or improve the docs. Prefer updating the canonical source ([README](./README.md) for how to play and host, this file for contributor setup and layout, [design.md](./specs/current/design.md) for architecture) rather than duplicating content here.
 
 ## Bug reports
 

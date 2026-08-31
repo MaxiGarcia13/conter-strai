@@ -1,117 +1,82 @@
 # Conter Strai
 
-Browser-based tactical shooter inspired by Counter-Strike. **Civilians** vs **Soldiers**, round-based team elimination, no install.
+A browser tactical shooter. **Civilians** vs **Soldiers**, round-based team fights — no game client to install.
 
 > The revolution starts here — choose your side and fight.
 
+Open it in a modern browser (Chrome, Firefox, Safari, or Edge). Use a computer with a keyboard and mouse.
+
+## What it is
+
+You pick a side, enter a room, and try to wipe the other team before they wipe you.
+
+- **Teams:** Civilians vs Soldiers (up to 4 per side, 8 players total)
+- **Mode:** Team elimination — no respawn until the next round
+- **Loadout:** Pistol only
+- **Map:** One arena for now (`arena-01`)
+- **Host:** The person who creates the room starts and restarts rounds
+
+Friends join with a room code, an invite link, or a QR code from the waiting room.
+
 ## Status
 
-**Status:** US-1–US-10 shipped (including Colyseus multiplayer US-5 and server security US-8). Open: US-11 — see [CHANGELOG](./specs/CHANGELOG.md).
+**Playable.** Create a room, invite people, and fight. Next up is more arena polish — see the [changelog](./specs/CHANGELOG.md).
 
-| Feature                                                           | State              |
-| ----------------------------------------------------------------- | ------------------ |
-| Landing (`/`) — hero, theme, Create/Join Room CTAs, GitHub footer | Done (US-1 + US-7) |
-| 3D arena + FPS movement                                           | Done (US-2)        |
-| Zone damage & difficulty                                          | Done (US-3)        |
-| Shared skins + animation pack                                     | Done (US-6)        |
-| Round-based PvP (pistol, teams, reload)                           | Done (US-4)        |
-| Match lobby (`/room` create / join / wait / play)                 | Done (US-7)        |
-| Online sync via Colyseus (Astro Node)                             | Done (US-5)        |
+## Run it on your computer
 
-## Game rules (MVP)
-
-- **Teams:** Civilians vs Soldiers
-- **Mode:** Team deathmatch — eliminate the other side
-- **Rounds:** No mid-round respawn; full reset between rounds
-- **Loadout:** Pistol only at round start
-- **Damage:** Zone-based (head / body / limbs), scaled by difficulty
-- **Map:** One scenario (`arena-01`) for MVP
-
-## Stack
-
-- [Astro](https://astro.build) — pages & landing (no Three.js on `/`); Node adapter for multiplayer
-- [React](https://react.dev) + [React Three Fiber](https://docs.pmnd.rs/react-three-fiber) + [Three.js](https://threejs.org) — game island
-- [Tailwind CSS](https://tailwindcss.com) — styling
-- [Zustand](https://zustand-demo.pmnd.rs) — client state
-- [Colyseus](https://colyseus.io/framework/) — multiplayer rooms
-- [Vitest](https://vitest.dev) + [Playwright](https://playwright.dev) — unit & e2e tests
-
-## Getting started
-
-**Requirements:** Node.js 20+ (developed on 24).
+You need [Node.js 20 or newer](https://nodejs.org) (the project is developed on 24). Then in a terminal, from this folder:
 
 ```bash
 npm install
-npm run dev
+npm run build
+npm run preview
 ```
 
-Open [http://localhost:4321](http://localhost:4321).
+Open [http://localhost:4321](http://localhost:4321). **Create Room** to host, or **Join Room** if someone already has a code.
 
-### Scripts
+Leave the terminal window open while you play. Press `Ctrl+C` when you want to stop the server.
 
-| Command                             | Description                                                        |
-| ----------------------------------- | ------------------------------------------------------------------ |
-| `npm run dev`                       | Dev server                                                         |
-| `npm run build`                     | Production build (+ custom Astro/Colyseus entry)                   |
-| `npm run preview`                   | Run production entry (`dist/server/custom-entry.mjs`; build first) |
-| `npm run lint` / `npm run lint:fix` | ESLint                                                             |
-| `npm run test`                      | Unit + e2e                                                         |
-| `npm run test:unit`                 | Vitest                                                             |
-| `npm run test:e2e`                  | Playwright                                                         |
-| `npm run phoenix`                   | Clean install (`node_modules`, `dist`, `.astro`)                   |
+If you are changing the code, use the dev workflow in [CONTRIBUTING.md](./CONTRIBUTING.md) instead.
 
-**Render:** Build Command `npm run build`, Start Command `npm run preview`. One Web Service — Astro + Colyseus share `$PORT`.
+## Host a LAN party
 
-Optional env:
+One computer runs the game. Everyone else only needs a browser on the same Wi-Fi.
 
-| Variable              | Default                        | Purpose                                                                      |
-| --------------------- | ------------------------------ | ---------------------------------------------------------------------------- |
-| `PORT`                | `4321`                         | HTTP listen port (`npm run preview` / Render `$PORT`)                        |
-| `SITE`                | `http://localhost:$PORT`       | Canonical site URL (sitemap, meta)                                           |
-| `PUBLIC_COLYSEUS_URL` | — (required for `npm run dev`) | Dev WebSocket URL, e.g. `ws://localhost:2567`. Prod client uses same-origin. |
-| `COLYSEUS_PORT`       | `2567`                         | Dev-only Colyseus listen port (`npm run dev`)                                |
+1. On the **host** computer, start the server as above (`npm install`, then `npm run build`, then `npm run preview`).
+2. Find that computer’s local address (not `localhost`):
+   - **macOS:** System Settings → Wi-Fi → Details → TCP/IP
+   - **Windows:** `ipconfig` in Command Prompt — look for **IPv4 Address**
+   - **Linux:** `hostname -I`
+3. On the host, open the game with that address, for example `http://192.168.1.23:4321` — not `http://localhost:4321`. Invite links and the QR code copy whatever address you used.
+4. Create a room. Share the invite link, the QR code, or the 6-character room code.
+5. Friends open the same address (or the invite link) in their browser, pick a team, and join. When everyone is in, the host starts the match.
 
-`PUBLIC_COLYSEUS_URL` examples:
+If friends cannot connect:
 
-- Dev (`npm run dev`): `ws://localhost:2567` (must match `COLYSEUS_PORT`) — **required**
-- Prod (`npm run preview` / Render): client uses **same-origin** `ws:` / `wss:` automatically (ignores a baked `localhost:2567`). Optional override is unused in the browser when `import.meta.env.PROD`.
+- Stay on the same Wi-Fi (guest / “client isolation” networks often block this).
+- Allow incoming connections on port **4321** in the host firewall (macOS and Windows may prompt the first time).
+- Everyone must use the host’s LAN address, not `localhost`.
 
-## Project layout
+Rooms time out after 40 minutes if nobody starts or restarts a round.
 
-```
-src/
-  components/       # Shared Astro UI (e.g. GithubIcon)
-  layouts/          # Shared Astro shell (SEO, fonts, atmosphere)
-  modules/          # Feature modules — one types.ts per module, registries at root
-    combat/         # Hitbox presets, zone damage, apply-damage
-    game/           # GameCanvas, FPS controls, round types
-    lobby/          # Room create / join UI and session helpers
-    multiplayer/    # Colyseus adapter, match sync
-    props/          # Scenario prop registry (stub)
-    scenarios/      # Maps (arena-01), ScenarioConfig, spawn helpers
-    soldiers/       # SoldierSkin registry, model, locomotion
-    teams/          # Civilians / Soldiers
-    textures/       # PBR map assets
-    weapons/        # Pistol config & weapon registry
-  pages/            # Routes (`/` landing, `/room/...`, …)
-  styles/           # Global CSS / design tokens
-specs/
-  current/          # Living product contract (design, tasks)
-  us-*/             # Open user-story deltas
-  CHANGELOG.md      # Shipped US + cross-cutting refactors
-public/             # Static assets (brand art, GLB models, textures, …)
-tests/              # E2E specs
-```
+## Controls
 
-Landing lives in `src/pages/index.astro` (no Three.js). Game logic lives in `src/modules/` — domain services (e.g. `combat/apply-damage.ts`) stay free of Three.js where possible. Visual skins reference hitbox presets by id; combat owns collider layout.
-
-**Module types & conventions:** [`specs/current/design.md`](./specs/current/design.md#module-types) — `ScenarioConfig`, `SoldierSkin`, `HitboxPreset`, registries.
-
-**Agent / AI contributors:** start at [`AGENTS.md`](./AGENTS.md). Cursor rules live in [`.cursor/rules/`](./.cursor/rules/).
+| Key | Action |
+| --- | --- |
+| WASD | Move |
+| Space | Sprint |
+| Mouse | Look / shoot (left click) |
+| Q | Jump |
+| Shift | Kneel |
+| R | Reload |
+| C | Cycle camera (first person / over the shoulder / third person) |
+| Esc | Pause |
 
 ## Contributing
 
-Contributions are welcome. Read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request or submitting an issue — workflow, PR expectations, spec-first changes, and contributor etiquette. Setup and architecture live in this README and [`specs/current/design.md`](./specs/current/design.md).
+Want to help with code, design, or docs? Read [CONTRIBUTING.md](./CONTRIBUTING.md) first — workflow, layout, and commands for developers live there.
+
+**AI / agent contributors:** start at [`AGENTS.md`](./AGENTS.md).
 
 ## License
 

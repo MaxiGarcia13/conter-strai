@@ -6,7 +6,7 @@ A browser tactical shooter. **Civilians** vs **Soldiers**, round-based team figh
 
 > The revolution starts here — choose your side and fight.
 
-Open it in a modern browser (Chrome, Firefox, Safari, or Edge). Use a computer with a keyboard and mouse.
+Open it in a modern browser (Chrome, Firefox, Safari, or Edge). Play on a computer with a keyboard and mouse, or on a phone or tablet with on-screen controls.
 
 ## What it is
 
@@ -63,6 +63,8 @@ Rooms time out after 40 minutes if nobody starts or restarts a round.
 
 ## Controls
 
+### Desktop (keyboard and mouse)
+
 | Key   | Action                                                         |
 | ----- | -------------------------------------------------------------- |
 | WASD  | Move                                                           |
@@ -73,6 +75,24 @@ Rooms time out after 40 minutes if nobody starts or restarts a round.
 | R     | Reload                                                         |
 | C     | Cycle camera (first person / over the shoulder / third person) |
 | Esc   | Pause                                                          |
+
+Camera mode can also be cycled from the pause menu.
+
+### Touch (phones and tablets)
+
+On a **touch-primary** device (phone or tablet), `/play` shows on-screen controls. No keyboard, mouse, or pointer-lock prompt is required.
+
+| Control                         | Action                                                         |
+| ------------------------------- | -------------------------------------------------------------- |
+| Left joystick                   | Move                                                           |
+| Drag the right half of the screen | Look                                                         |
+| Fire button                     | Shoot                                                          |
+| **A** (hold)                    | Sprint                                                         |
+| **B** (tap)                     | Kneel                                                          |
+| Menu (top-left)                 | Pause                                                           |
+| Pause menu → Cycle camera       | First person / over the shoulder / third person                 |
+
+Jump, reload, and an in-game camera button are not on the overlay — camera changes from the pause menu.
 
 ## Contributing
 

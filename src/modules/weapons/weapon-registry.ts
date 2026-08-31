@@ -1,6 +1,6 @@
 import type { PistolWeaponConfig } from './types';
 import { useGLTF } from '@react-three/drei';
-import { glbCdnUrl } from '@/modules/assets/glb-cdn-url';
+import { glbCdnUrl } from '@/utils/glb-cdn-url';
 import {
   PISTOL_DAMAGE_BY_ZONE,
   PISTOL_FIRE_COOLDOWN_MS,

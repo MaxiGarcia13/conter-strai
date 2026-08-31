@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { glbCdnUrl } from '@/modules/assets/glb-cdn-url';
 import { hitboxPresets } from '@/modules/combat';
 import { getSoldierSkinById } from '@/modules/soldiers/get-soldier-skin-by-id';
 import { soldierSkins } from '@/modules/soldiers/soldier-skin-registry';
+import { glbCdnUrl } from '@/utils/glb-cdn-url';
 
 // Preload fires on import; hoisted above imports so the data test stays loader-free.
 vi.mock('@react-three/drei', () => ({

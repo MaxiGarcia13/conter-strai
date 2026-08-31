@@ -2,7 +2,7 @@ import type { Browser, BrowserContext, Page } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import { GLB_CDN_ORIGIN } from '@/modules/assets/glb-cdn-url';
+import { GLB_CDN_ORIGIN } from '@/utils/glb-cdn-url';
 
 const GLB_ROOT = path.join(process.cwd(), 'assets/glb');
 const CDN_HOST = new URL(GLB_CDN_ORIGIN).host;

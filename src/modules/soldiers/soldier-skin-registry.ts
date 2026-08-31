@@ -1,6 +1,6 @@
 import type { SoldierSkin, SoldierSkinId } from './types';
 import { useGLTF } from '@react-three/drei';
-import { glbCdnUrl } from '@/modules/assets/glb-cdn-url';
+import { glbCdnUrl } from '@/utils/glb-cdn-url';
 
 const SHARED_ANIMATIONS_URL = glbCdnUrl('/characters/shared/base-animations.glb');
 

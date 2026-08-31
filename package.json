@@ -30,7 +30,7 @@
     "open-source"
   ],
   "scripts": {
-    "prepare": "simple-git-hooks || true",
+    "prepare": "husky || true",
     "dev": "astro dev",
     "build": "astro build && node scripts/build-server-entry.mjs",
     "preview": "node dist/server/custom-entry.mjs",
@@ -79,16 +79,9 @@
     "draco3dgltf": "^1.5.7",
     "eslint-plugin-astro": "^1.7.0",
     "eslint-plugin-react-refresh": "^0.5.3",
-    "lint-staged": "^17.3.0",
+    "husky": "^9.1.7",
     "meshoptimizer": "^1.2.0",
     "sharp": "^0.35.4",
-    "simple-git-hooks": "^2.13.1",
     "vitest": "^4.1.10"
-  },
-  "simple-git-hooks": {
-    "pre-commit": "npx lint-staged"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,md,astro}": "eslint --fix"
   }
 }

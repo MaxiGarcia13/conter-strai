@@ -76,6 +76,10 @@ export const MOBILE_BINDINGS = {
     action: 'Pause menu',
     iconId: 'menu',
   },
+  cameraCycle: {
+    label: 'Pause menu → Cycle camera',
+    action: 'Cycle camera mode',
+  },
 } as const;
 
 /** Pause panel Commands list — derived from {@link GAME_BINDINGS}. */
@@ -126,5 +130,9 @@ export const MOBILE_COMMANDS: GameCommand[] = [
     key: MOBILE_BINDINGS.pause.label,
     action: MOBILE_BINDINGS.pause.action,
     iconId: MOBILE_BINDINGS.pause.iconId,
+  },
+  {
+    key: MOBILE_BINDINGS.cameraCycle.label,
+    action: MOBILE_BINDINGS.cameraCycle.action,
   },
 ];

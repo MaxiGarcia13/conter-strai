@@ -53,7 +53,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 ## Pause panel — camera cycle (US-12.11)
 
 - [x] Extract shared `CAMERA_MODE_LABELS` (e.g. `game/constants/camera-mode-labels.ts`) — used by `camera-hud.tsx` and `game-pause-panel.tsx`
-- [ ] Add `MOBILE_BINDINGS.cameraCycle` — `"Pause menu → Cycle camera"`; include in `MOBILE_COMMANDS`
+- [x] Add `MOBILE_BINDINGS.cameraCycle` — `"Pause menu → Cycle camera"`; include in `MOBILE_COMMANDS`
 - [ ] `game-pause-panel.tsx` — show active camera mode label + **Cycle camera** button on main pause view; calls `cycleCameraMode()`
 
 ## Acceptance & ship

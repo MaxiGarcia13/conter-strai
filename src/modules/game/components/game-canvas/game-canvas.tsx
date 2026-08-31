@@ -88,7 +88,7 @@ export function GameCanvas({
 
         <LocalTransformSync />
 
-        <LazyDevSceneTools skinId={skinId} />
+        {import.meta.env.DEV && <LazyDevSceneTools skinId={skinId} />}
       </Canvas>
 
       <CameraHud />
@@ -98,7 +98,7 @@ export function GameCanvas({
         <HealthBar />
       </DeferredAfterLoad>
 
-      <LazyDevGameChrome />
+      {import.meta.env.DEV && <LazyDevGameChrome />}
 
       <LazyRoundEndBanner roomId={roomId} scenarioId={scenarioId} />
       <LazyGamePausePanel roomId={roomId} scenarioId={scenarioId} />

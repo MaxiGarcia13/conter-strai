@@ -66,12 +66,17 @@ export function GamePausePanel({ roomId, scenarioId }: GamePausePanelProps) {
           ? (
               <div className="flex flex-col items-stretch gap-3 normal-case tracking-normal">
                 <dl className="border-t border-surface-border pt-4 text-left text-sm">
-                  {GAME_COMMANDS.map((command) => (
-                    <div key={command.key} className="flex items-center justify-between gap-6 py-1">
-                      <dt className="text-foreground/60">{command.action}</dt>
-                      <dd className="font-bold text-foreground">{command.key}</dd>
-                    </div>
-                  ))}
+                  {GAME_COMMANDS.map((command) => {
+                    if (command.devOnly && !import.meta.env.DEV)
+                      return null;
+
+                    return (
+                      <div key={command.key} className="flex items-center justify-between gap-6 py-1">
+                        <dt className="text-foreground/60">{command.action}</dt>
+                        <dd className="font-bold text-foreground">{command.key}</dd>
+                      </div>
+                    );
+                  })}
                 </dl>
 
                 <CsButton type="button" variant="secondary" onClick={() => setShowCommands(false)}>

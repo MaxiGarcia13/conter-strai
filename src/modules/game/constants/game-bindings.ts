@@ -1,6 +1,7 @@
 export interface GameCommand {
   key: string;
   action: string;
+  devOnly?: boolean;
 }
 
 /** Single source for gameplay input bindings and pause-menu command labels (US-9.6). */
@@ -56,8 +57,21 @@ export const GAME_COMMANDS: GameCommand[] = [
   { key: GAME_BINDINGS.cameraCycle.label, action: GAME_BINDINGS.cameraCycle.action },
   { key: GAME_BINDINGS.jump.label, action: GAME_BINDINGS.jump.action },
   { key: GAME_BINDINGS.kneelToggle.label, action: GAME_BINDINGS.kneelToggle.action },
-  { key: GAME_BINDINGS.reload.label, action: GAME_BINDINGS.reload.action },
-  { key: GAME_BINDINGS.shoot.label, action: GAME_BINDINGS.shoot.action },
-  { key: GAME_BINDINGS.pause.label, action: GAME_BINDINGS.pause.action },
-  { key: GAME_BINDINGS.freeCamera.label, action: GAME_BINDINGS.freeCamera.action },
+  {
+    key: GAME_BINDINGS.reload.label,
+    action: GAME_BINDINGS.reload.action,
+  },
+  {
+    key: GAME_BINDINGS.shoot.label,
+    action: GAME_BINDINGS.shoot.action,
+  },
+  {
+    key: GAME_BINDINGS.pause.label,
+    action: GAME_BINDINGS.pause.action,
+  },
+  {
+    key: GAME_BINDINGS.freeCamera.label,
+    action: GAME_BINDINGS.freeCamera.action,
+    devOnly: GAME_BINDINGS.freeCamera.devOnly,
+  },
 ];

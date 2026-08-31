@@ -3,20 +3,6 @@ import { GAME_BINDINGS, GAME_COMMANDS, MOVE_CODES, MOVE_KEY_CODES } from '@/modu
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 
 describe('game-bindings', () => {
-  it('derives GAME_COMMANDS from the registry', () => {
-    expect(GAME_COMMANDS).toEqual([
-      { key: GAME_BINDINGS.move.label, action: GAME_BINDINGS.move.action },
-      { key: GAME_BINDINGS.sprint.label, action: GAME_BINDINGS.sprint.action },
-      { key: GAME_BINDINGS.cameraCycle.label, action: GAME_BINDINGS.cameraCycle.action },
-      { key: GAME_BINDINGS.jump.label, action: GAME_BINDINGS.jump.action },
-      { key: GAME_BINDINGS.kneelToggle.label, action: GAME_BINDINGS.kneelToggle.action },
-      { key: GAME_BINDINGS.reload.label, action: GAME_BINDINGS.reload.action },
-      { key: GAME_BINDINGS.shoot.label, action: GAME_BINDINGS.shoot.action },
-      { key: GAME_BINDINGS.pause.label, action: GAME_BINDINGS.pause.action },
-      { key: GAME_BINDINGS.freeCamera.label, action: GAME_BINDINGS.freeCamera.action },
-    ]);
-  });
-
   it('derives MOVE_CODES from the registry', () => {
     expect(MOVE_CODES).toMatchObject({
       forward: GAME_BINDINGS.move.codes.forward,

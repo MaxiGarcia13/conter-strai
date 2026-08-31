@@ -1,4 +1,4 @@
-export type GameCommandIconId = 'menu' | 'fire' | 'button-a' | 'button-b';
+export type GameCommandIconId = 'menu' | 'fire' | 'run' | 'arrow-down';
 
 export interface GameCommand {
   key: string;
@@ -59,12 +59,12 @@ export const MOBILE_BINDINGS = {
   sprint: {
     label: 'Hold',
     action: 'Sprint',
-    iconId: 'button-a',
+    iconId: 'run',
   },
   kneelToggle: {
     label: 'Tap',
     action: 'Kneel toggle',
-    iconId: 'button-b',
+    iconId: 'arrow-down',
   },
   shoot: {
     label: 'Tap',

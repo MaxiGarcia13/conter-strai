@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react';
-import { IconMenu } from '@/components/icons';
+import { MenuIcon } from '@/components/icons';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 
 export function PauseButton() {
@@ -34,7 +34,7 @@ export function PauseButton() {
       onTouchEnd={onTouchEnd}
       onTouchCancel={onTouchEnd}
     >
-      <IconMenu className="size-6" />
+      <MenuIcon className="size-6" />
     </div>
   );
 }

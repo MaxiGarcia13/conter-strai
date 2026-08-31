@@ -1,4 +1,4 @@
-import { IconButtonA, IconButtonB, IconFire } from '@/components/icons';
+import { ArrowDownIcon, FireIcon, RunIcon } from '@/components/icons';
 import { setTouchRunning } from '@/modules/game/input/player-input-intent';
 import { fireWeapon } from '@/modules/game/utils/fire-weapon';
 import { toggleKneel } from '@/modules/game/utils/player-pose-actions';
@@ -18,7 +18,7 @@ export function MobileControls() {
         <ActionButton
           size="large"
           label="Fire"
-          icon={<IconFire className="size-12" />}
+          icon={<FireIcon className="size-12" />}
           mode="fire"
           onAction={fireWeapon}
         />
@@ -26,13 +26,13 @@ export function MobileControls() {
         <div className="flex gap-2">
           <ActionButton
             label="Kneel"
-            icon={<IconButtonB className="size-8" />}
+            icon={<ArrowDownIcon className="size-8" />}
             mode="kneel"
             onAction={toggleKneel}
           />
           <ActionButton
             label="Run"
-            icon={<IconButtonA className="size-8" />}
+            icon={<RunIcon className="size-8" />}
             mode="sprint"
             onAction={() => {}}
             onHoldStart={() => setTouchRunning(true)}

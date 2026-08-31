@@ -57,6 +57,7 @@ src/
 │   ├── lobby/            Room session, create/join/wait islands, invite share + QR
 │   ├── game/             Session shell, GameCanvas, FPS controls, HUD, round state
 │   ├── scenarios/        Config-driven maps (arena-01); team spawn points
+│   ├── props/            Prop registry (jacaranda, barriers, cars)
 │   ├── soldiers/         Skin registry, model, locomotion
 │   ├── combat/           Hitboxes, HP, zone damage, difficulty
 │   ├── weapons/          Loadout, pistol (MVP); knife/rifle later
@@ -78,15 +79,17 @@ src/modules/
 ├── combat/hitbox-preset-registry.ts
 ├── combat/apply-damage.ts
 ├── weapons/types.ts            PistolWeaponConfig, BulletHitResult, Loadout
+├── props/types.ts              PropDefinition (scale, collidable, collisionRadius)
 └── game/types.ts               GameMode, RoundPhase
 ```
 
 | Domain       | Key types                                                          | Notes                                                                     |
 | ------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| **Scenario** | `ScenarioConfig`, `ArenaLayout`, `SpawnerConfig`                   | Flat access (`scenario.bounds`); maps under `scenarios/maps/`             |
+| **Scenario** | `ScenarioConfig`, `ArenaLayout`, `SpawnerConfig`, `ArenaEnvironment` | Flat access (`scenario.bounds`); maps under `scenarios/maps/<id>/`      |
 | **Soldier**  | `SoldierSkin`, `CharacterMeshData`, `Soldier`, `SoldierController` | Visual preset decoupled from hitbox via `hitboxPresetId`                  |
 | **Combat**   | `HitboxPreset`, `HitZone`, `DamageData`, `HealthSystem`            | Owns collider presets and raycast zones                                   |
 | **Weapons**  | `PistolWeaponConfig` / `WeaponConfig`, `Loadout`                   | Per-weapon `damageByZone`; combat applies × difficulty                    |
+| **Props**    | `PropDefinition`                                                   | Registry + `collisionRadius` discs; placements live on the scenario       |
 | **Game**     | `GameMode`, `RoundPhase`                                           | `'team-elimination'`; `'live' \| 'loading' \| 'countdown' \| 'round-end'` |
 
 Shipped 2026-08-23 — see [CHANGELOG](../CHANGELOG.md#shipped--other).
@@ -136,7 +139,7 @@ sessionStorage[`cs:room:${roomId}`] = {
 
 Missing/invalid play session → `civilian` + `remy` + `arena-01` with team↔skin consistency. Invite URL is path-only: `{origin}/room/{roomId}/join`. `ScenarioConfig.previewImageUrl` optional — `arena-01` uses `/assets/scenarios/arena-01.png` in create-room `ArenaPicker`. Civilian east spawn required for civilian pick.
 
-## Play island (`/room/.../play`) — shipped US-2 + US-7 boot
+## Play island (`/room/.../play`) — shipped US-2 + US-7 boot + US-11 arena
 
 Units: **1 world unit = 1 meter**.
 
@@ -145,7 +148,7 @@ Units: **1 world unit = 1 meter**.
 | Registry         | Role                                                                                | Example ids                                                     |
 | ---------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | **Texture**      | Floor/wall GLB materials under `/assets/textures/`                                  | `forrest_ground`, `coral_fort_wall`                             |
-| **Prop**         | Placeable objects (trees, barrels, cover)                                           | deferred (`props: []` on arena-01)                              |
+| **Prop**         | Placeable objects (trees, cover); `collisionRadius` discs for movement              | `jacaranda`, `concreteRoadBarrier`, `coveredCar`                |
 | **Scenario**     | Map layout: bounds, materials, props, team spawns                                   | `arena-01`                                                      |
 | **Soldier skin** | Visual presets (`SoldierSkin`); hitbox via `hitboxPresetId`; clips from shared pack | `remy` (default), `james`, `liza`, `swat-1`, `swat-2`, `swat-3` |
 
@@ -168,6 +171,7 @@ The play canvas mounts the arena in phases, each in its own Suspense boundary wi
 ### Key components
 
 - `GameCanvas` — R3F Canvas, lights, camera
+- `ScenarioSky` — drei `<Sky>` + scene fog from `ArenaEnvironment`
 - `ScenarioGround` / `ScenarioHouses` / `ScenarioProps` — staged arena layers (see above)
 - `SoldierModel` — NPC spawns; `LocalPlayer` — one clone + mixer
 - `useFpsControls` — WASD, mouse, locomotion intent, collision
@@ -211,23 +215,32 @@ Priority: blocking one-shots (`reloading` / `reloading-kneel` > `jump` / `jump-i
 
 ### Interior collision
 
-Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`. Player circle (`PLAYER_RADIUS`) vs segments after intended move; outer bounds clamp last.
+Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`. Player circle (`PLAYER_RADIUS`) vs segments after intended move; outer bounds clamp last. Collidable props add XZ circle blockers (`propBlockersFromScenario`) merged with NPC discs in player controls. Playable clamp stays **100×50 m** even when the vista skirt extends past the edge.
 
 ### arena-01 — Ruined Village
 
-| Field      | Value                                                    |
-| ---------- | -------------------------------------------------------- |
-| **bounds** | 100 m × 50 m; wall height 3.5 m                          |
-| **floor**  | `forrest_ground`                                         |
-| **walls**  | `coral_fort_wall` perimeter + interior ruin segments     |
-| **spawns** | Soldiers west (−X), Civilians east (+X); face map center |
-| **props**  | `[]` — slots ready for trees / cover later               |
+Authored as composable modules under `src/modules/scenarios/maps/arena-01/` (`compose`, `ground`, `houses`, `greenery`, `infrastructure`, `spawns`, `environment`). Thin `index.ts` re-exports `ScenarioConfig`.
+
+| Field         | Value                                                                                          |
+| ------------- | ---------------------------------------------------------------------------------------------- |
+| **bounds**    | 100 m × 50 m playable; wall height 3.5 m                                                       |
+| **floor**     | `forrest_ground` base + non-overlapping asphalt street zones (`assertNoFloorOverlaps`)         |
+| **houses**    | Procedural footprints (`buildHouses`); street-facing doorways; presets in `house-presets.ts`   |
+| **walls**     | Interior ruin segments only                                                                    |
+| **perimeter** | `mode: 'open'`, `vistaExtension: 100` — no cliff outer box; forest skirt + non-collidable trees |
+| **sky / fog** | drei `<Sky>` (`sky.type: 'gradient'`); fog `#c3d5e8` near 50 / far 150                         |
+| **spawns**    | Soldiers west (−X), Civilians east (+X); unique coords per team; face map center               |
+| **props**     | Collidable jacaranda (6–10 in-bounds), 8× `concreteRoadBarrier`, covered cars; skirt trees off |
+
+Floor zone-on-zone overlap at the same Y causes z-fighting; streets split at junctions and house floors are inset. Named house presets (`ruinedCottage`, `cornerRuin`, `fortifiedBlock`, `streetShack`, `bombedHouse`) carry height / open-side variants for map authoring — unused presets are tracked in [tech-debt.md](../tech-debt.md).
+
+Instanced jacaranda / vista-tier props are follow-up polish — [improvements.md §7](../improvements.md#7-greenery-prop-performance-jacaranda-instancing--vista-tier).
 
 ### Testing
 
 | Layer          | Scope                                                                                                                                                                                       |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Vitest**     | Registries; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide                                                             |
+| **Vitest**     | Registries; floor-zone overlap; prop blockers; house open-sides / presets; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide |
 | **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook |
 
 ## Characters — shipped US-6

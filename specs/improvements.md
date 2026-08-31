@@ -118,7 +118,7 @@ flowchart LR
 
 **Out of scope:** Instancing infrastructure props in the same PR as jacaranda; impostor/HDR vista; changing playable bounds or fog distances; networking/schema changes.
 
-**Spec touch:** Fold instancing + vista tier into `specs/current/design.md` (props / scenario rendering); close US-11 InstancedMesh follow-up in `specs/us-11/requirements.md` when Phase 1 ships.
+**Spec touch:** Fold instancing + vista tier into `specs/current/design.md` (props / scenario rendering) when Phase 1 ships.
 
 ---
 

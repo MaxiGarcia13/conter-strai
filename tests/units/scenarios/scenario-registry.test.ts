@@ -22,6 +22,13 @@ describe('scenario-registry', () => {
     }
   });
 
+  it('uses unique spawn coordinates per team', () => {
+    for (const team of ['soldier', 'civilian'] as const) {
+      const keys = scenario.teamSpawns[team].map(([x, , z]) => `${x},${z}`);
+      expect(new Set(keys).size).toBe(keys.length);
+    }
+  });
+
   it('resolves every texture id in the registry', () => {
     expect(() => getTextureById(scenario.floor.assetId)).not.toThrow();
     expect(() => getTextureById(scenario.walls.assetId)).not.toThrow();

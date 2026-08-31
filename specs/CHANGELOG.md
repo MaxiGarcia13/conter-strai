@@ -9,14 +9,13 @@
 
 ## Open
 
-| US | Summary |
-|----|---------|
-| **US-11** | Arena modularization (Ruined Village polish) |
+_None._
 
 ## Shipped
 
 | US | Summary |
 |----|---------|
+| **US-11** | Arena modularization (Ruined Village polish) — composable `arena-01`, collidable props, house presets, sky/fog, open perimeter, non-overlapping floors |
 | **US-10** | Shuffle teams when lobby has no opponents — even split on `startRound` if one team is empty; skip mixed/solo; skin remap + spawn recalc; client session sync |
 | **US-9** | Pause menu (Esc), look without pre-click, deploy-ready countdown gate (`deploying` → all `playerReady` → 3‑2‑1) |
 | **US-8** | Server security — host token, origin guard, shot/move validation, room TTL (40 min, renew on restart) |

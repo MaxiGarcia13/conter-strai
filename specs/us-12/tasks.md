@@ -18,7 +18,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 - [x] Add `src/modules/game/input/utils/joystick-to-axes.ts` — vector → `{ strafe, forward }` + dead zone
 - [x] Unit: `tests/units/game/apply-look-delta.test.ts`
 - [x] Unit: `tests/units/game/joystick-to-axes.test.ts`
-- [ ] Unit: `tests/units/game/is-touch-primary-device.test.ts` (mock matchMedia)
+- [x] Unit: `tests/units/game/is-touch-primary-device.test.ts` (mock matchMedia)
 
 ## Fire service extract (US-12.4)
 

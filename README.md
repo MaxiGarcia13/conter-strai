@@ -2,6 +2,8 @@
 
 A browser tactical shooter. **Civilians** vs **Soldiers**, round-based team fights — no game client to install.
 
+![Conter Strai landing — Civilians vs Soldiers, Create Room and Join Room](./docs/landing.webp)
+
 > The revolution starts here — choose your side and fight.
 
 Open it in a modern browser (Chrome, Firefox, Safari, or Edge). Use a computer with a keyboard and mouse.

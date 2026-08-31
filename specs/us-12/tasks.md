@@ -7,7 +7,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 ## Spec & bindings (US-12.8)
 
 - [x] Add `MOBILE_BINDINGS` to `src/modules/game/constants/game-bindings.ts` (labels for pause panel Commands)
-- [ ] Optional: `game-pause-panel.tsx` — show mobile labels in Commands when touch-primary
+- [x] Optional: `game-pause-panel.tsx` — show mobile labels in Commands when touch-primary
 
 ## Input intent layer (US-12.8)
 

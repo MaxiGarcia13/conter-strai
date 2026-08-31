@@ -2,7 +2,8 @@ import type { ScenarioId } from '@/modules/scenarios';
 import { useEffect } from 'react';
 import { CsButton } from '@/components/cs-button';
 import { APP_VERSION } from '@/constants/app-version';
-import { GAME_COMMANDS } from '@/modules/game/constants/game-bindings';
+import { GAME_COMMANDS, MOBILE_COMMANDS } from '@/modules/game/constants/game-bindings';
+import { isTouchPrimaryDevice } from '@/modules/game/input/utils/is-touch-primary-device';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 import { useRoundStore } from '@/modules/game/stores/round-store';
 import { leaveMatchToHome } from '@/modules/game/utils/leave-match-to-home';
@@ -52,6 +53,8 @@ export function GamePausePanel({ roomId, scenarioId }: GamePausePanelProps) {
     leaveMatchToHome(roomId);
   }
 
+  const commands = isTouchPrimaryDevice() ? MOBILE_COMMANDS : GAME_COMMANDS;
+
   return (
     <div
       role="dialog"
@@ -66,7 +69,7 @@ export function GamePausePanel({ roomId, scenarioId }: GamePausePanelProps) {
           ? (
               <div className="flex flex-col items-stretch gap-3 normal-case tracking-normal">
                 <dl className="border-t border-surface-border pt-4 text-left text-sm">
-                  {GAME_COMMANDS.map((command) => {
+                  {commands.map((command) => {
                     if (command.devOnly && !import.meta.env.DEV)
                       return null;
 

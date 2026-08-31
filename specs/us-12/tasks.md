@@ -44,7 +44,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## HUD & canvas integration (US-12.6–US-12.9)
 
-- [ ] Relocate `health-bar.tsx` to top-right + safe-area insets
+- [x] Relocate `health-bar.tsx` to top-right + safe-area insets
 - [ ] Hide `camera-hud.tsx` on touch-primary
 - [ ] Mount `<MobileControls />` in `game-canvas.tsx`
 - [ ] Apply `touch-action: none` on `#game-canvas` when mobile controls active

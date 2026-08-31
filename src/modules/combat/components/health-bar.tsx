@@ -12,7 +12,7 @@ export function HealthBar() {
     <div
       role="status"
       aria-label={`Health ${pct}%`}
-      className="pointer-events-none fixed bottom-6 left-6 z-10 flex items-center gap-3 border border-surface-border bg-background-deep/80 px-3 py-2 font-mono text-xs tracking-widest text-foreground uppercase"
+      className="pointer-events-none fixed top-4 right-4 z-10 flex items-center gap-3 border border-surface-border bg-background-deep/80 px-3 py-2 font-mono text-xs tracking-widest text-foreground uppercase [margin-top:env(safe-area-inset-top)] [margin-right:env(safe-area-inset-right)]"
     >
       <span className="text-accent">HP</span>
       <div className="relative h-2 w-32 overflow-hidden rounded-sm bg-white/10">

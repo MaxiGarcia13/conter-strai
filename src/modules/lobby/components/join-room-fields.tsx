@@ -79,8 +79,9 @@ export function JoinRoomFields({ roomId: initialRoomId }: JoinRoomFieldsProps) {
   const error = join.error ?? snapshotQuery.error;
 
   return (
-    <div className="flex flex-1 flex-col gap-8 lg:flex-row">
-      <div className="flex flex-1 flex-col gap-6">
+    <div className="flex flex-1 flex-col gap-6">
+      <div className="flex flex-1 flex-col gap-8 lg:flex-row">
+        <div className="flex flex-1 flex-col gap-6">
         <div>
           <label
             htmlFor="room-id"
@@ -122,27 +123,30 @@ export function JoinRoomFields({ roomId: initialRoomId }: JoinRoomFieldsProps) {
             {error.message}
           </p>
         )}
+        </div>
 
+        <div className="flex flex-1 flex-col items-center gap-4">
+          <div className="hud-corners aspect-square w-full max-w-md overflow-hidden bg-surface">
+            <LazyCharacterPreview skinId={skinId} />
+          </div>
+          <p className="font-mono text-xs tracking-widest uppercase text-foreground-muted">
+            {skinId}
+            {' — '}
+            {TEAM_DISPLAY_NAME[team]}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-4">
         <CsButton
           type="button"
           onClick={handleJoin}
           disabled={!normalizeRoomId(roomId) || join.isPending}
           aria-busy={join.isPending}
-          className="mt-2 self-start"
+          className="min-w-50 justify-center"
         >
           {join.isPending ? 'Joining…' : 'Join Room'}
         </CsButton>
-      </div>
-
-      <div className="flex flex-1 flex-col items-center gap-4">
-        <div className="hud-corners aspect-square w-full max-w-md overflow-hidden bg-surface">
-          <LazyCharacterPreview skinId={skinId} />
-        </div>
-        <p className="font-mono text-xs tracking-widest uppercase text-foreground-muted">
-          {skinId}
-          {' — '}
-          {TEAM_DISPLAY_NAME[team]}
-        </p>
       </div>
     </div>
   );

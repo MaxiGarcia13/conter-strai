@@ -61,8 +61,9 @@ export function CreateRoomFields() {
   const error = createRoom.error;
 
   return (
-    <div className="flex flex-1 flex-col gap-8 lg:flex-row">
-      <div className="flex flex-1 flex-col gap-6">
+    <div className="flex flex-1 flex-col gap-6">
+      <div className="flex flex-1 flex-col gap-8 lg:flex-row">
+        <div className="flex flex-1 flex-col gap-6">
         <TeamToggle team={team} onChange={handleTeamChange} />
         <CharacterPicker
           skinIds={TEAM_SKINS[team]}
@@ -80,27 +81,30 @@ export function CreateRoomFields() {
             {error.message}
           </p>
         )}
+        </div>
 
+        <div className="flex flex-1 flex-col items-center gap-4">
+          <div className="hud-corners aspect-square w-full max-w-md overflow-hidden bg-surface">
+            <LazyCharacterPreview skinId={skinId} />
+          </div>
+          <p className="font-mono text-xs tracking-widest uppercase text-foreground-muted">
+            {skinId}
+            {' — '}
+            {TEAM_DISPLAY_NAME[team]}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-4">
         <CsButton
           type="button"
           onClick={handleCreate}
           disabled={createRoom.isPending}
           aria-busy={createRoom.isPending}
-          className="mt-2 self-start"
+          className="min-w-50 justify-center"
         >
           {createRoom.isPending ? 'Creating…' : 'Create Room'}
         </CsButton>
-      </div>
-
-      <div className="flex flex-1 flex-col items-center gap-4">
-        <div className="hud-corners aspect-square w-full max-w-md overflow-hidden bg-surface">
-          <LazyCharacterPreview skinId={skinId} />
-        </div>
-        <p className="font-mono text-xs tracking-widest uppercase text-foreground-muted">
-          {skinId}
-          {' — '}
-          {TEAM_DISPLAY_NAME[team]}
-        </p>
       </div>
     </div>
   );

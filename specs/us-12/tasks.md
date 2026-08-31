@@ -12,7 +12,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 ## Input intent layer (US-12.8)
 
 - [x] Add `src/modules/game/input/types.ts` — `PlayerFrameIntent`, `GameAction`
-- [ ] Add `src/modules/game/input/player-input-intent.ts` — imperative ref + merge keyboard/touch
+- [x] Add `src/modules/game/input/player-input-intent.ts` — imperative ref + merge keyboard/touch
 - [x] Add `src/modules/game/input/utils/is-touch-primary-device.ts` — `(pointer: coarse)` gate
 - [x] Add `src/modules/game/input/utils/apply-look-delta.ts` — extract from `use-player-pointer-lock.ts`
 - [x] Add `src/modules/game/input/utils/joystick-to-axes.ts` — vector → `{ strafe, forward }` + dead zone

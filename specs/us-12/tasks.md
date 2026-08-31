@@ -58,9 +58,9 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## Acceptance & ship
 
-- [ ] Manual QA on touch-primary device: move, look, fire, kneel, sprint, pause panel, **cycle camera from pause menu**
-- [ ] Manual QA on desktop: no overlay; keyboard/mouse unchanged
-- [ ] `npm run test:unit` green
+- [x] Manual QA on touch-primary device: move, look, fire, kneel, sprint, pause panel, **cycle camera from pause menu**
+- [x] Manual QA on desktop: no overlay; keyboard/mouse unchanged
+- [x] `npm run test:unit` green
 - [ ] Update `README.md` — document mobile play on touch devices (on-screen move/look/shoot controls); adjust the “keyboard and mouse” line so desktop and mobile are both covered
 - [ ] Fold FR-56+ into `specs/current/requirements.md`; remove mobile from out-of-scope
 - [ ] Merge design notes into `specs/current/design.md` (input module + mobile layout)

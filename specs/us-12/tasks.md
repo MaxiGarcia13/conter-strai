@@ -28,9 +28,9 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## Wire movement & look consumers (US-12.1–US-12.3)
 
-- [ ] Refactor `use-player-movement-frame.ts` — read merged `PlayerFrameIntent`
-- [ ] Refactor `use-player-pointer-lock.ts` — use `applyLookDelta`; no-op lock request on touch-primary
-- [ ] Verify desktop regression: WASD, Space sprint, pointer-lock look unchanged
+- [x] Refactor `use-player-movement-frame.ts` — read merged `PlayerFrameIntent`
+- [x] Refactor `use-player-pointer-lock.ts` — use `applyLookDelta`; no-op lock request on touch-primary
+- [x] Verify desktop regression: WASD, Space sprint, pointer-lock look unchanged
 
 ## Mobile UI components (US-12.1–US-12.6)
 

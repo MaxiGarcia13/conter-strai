@@ -1,11 +1,10 @@
 import type { RefObject } from 'react';
 import type { RoundPhase } from '@/modules/game/types';
 import { useEffect, useRef } from 'react';
-import { LOOK_PITCH_FLOOR, MOUSE_SENSITIVITY, PITCH_LIMIT } from '@/modules/game/constants/player';
+import { applyLookDelta } from '@/modules/game/input/utils/apply-look-delta';
+import { isTouchPrimaryDevice } from '@/modules/game/input/utils/is-touch-primary-device';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
-import { getPlayerTransform } from '@/modules/game/stores/player-state';
 import { requestPointerLock } from '@/modules/game/utils/request-pointer-lock';
-import { clamp } from '@/utils/clamp';
 
 interface UsePlayerPointerLockOptions {
   domElement: HTMLElement;
@@ -45,7 +44,7 @@ export function shouldOpenPauseOnPointerUnlock(options: {
   );
 }
 
-/** Click-to-lock pointer look; pause / round-end release lock (pre-US-10 mouse capture). */
+/** Click-to-lock pointer look on desktop; no lock request on touch-primary. Pause / round-end release lock. */
 export function usePlayerPointerLock({
   domElement,
   eliminated,
@@ -74,7 +73,8 @@ export function usePlayerPointerLock({
   useEffect(() => {
     const requestLock = () => {
       if (
-        eliminatedRef.current
+        isTouchPrimaryDevice()
+        || eliminatedRef.current
         || externalControlsRef.current
         || isPausedRef.current
         || phaseRef.current === 'round-end'
@@ -115,13 +115,7 @@ export function usePlayerPointerLock({
         return;
       }
 
-      const look = getPlayerTransform();
-      look.yaw -= event.movementX * MOUSE_SENSITIVITY;
-
-      const pitch = clamp(look.pitch - event.movementY * MOUSE_SENSITIVITY, -PITCH_LIMIT, PITCH_LIMIT);
-      if (pitch >= LOOK_PITCH_FLOOR) {
-        look.pitch = pitch;
-      }
+      applyLookDelta(event.movementX, event.movementY);
     };
 
     domElement.addEventListener('click', requestLock);

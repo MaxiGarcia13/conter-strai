@@ -38,7 +38,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 - [x] Add `src/modules/game/input/components/mobile-controls/action-button.tsx`
 - [x] Add `src/modules/game/input/components/mobile-controls/look-zone.tsx`
 - [x] Add `src/modules/game/input/components/mobile-controls/pause-button.tsx`
-- [ ] Add `src/modules/game/input/components/mobile-controls/mobile-controls.tsx` — orchestrator
+- [x] Add `src/modules/game/input/components/mobile-controls/mobile-controls.tsx` — orchestrator
 - [ ] Add `src/modules/game/input/components/mobile-controls/index.ts` — public barrel
 - [ ] Add `src/modules/game/input/hooks/use-touch-look/` — drag → `applyLookDelta`
 

@@ -1,24 +1,25 @@
 import type { PropDefinition } from './types';
 import { useGLTF } from '@react-three/drei';
+import { glbCdnUrl } from '@/modules/assets/glb-cdn-url';
 
 export const props: Record<string, PropDefinition> = {
   jacaranda: {
     id: 'jacaranda',
-    modelUrl: '/assets/greenery/jacaranda.glb',
+    modelUrl: glbCdnUrl('/greenery/jacaranda.glb'),
     scale: 0.4,
     collidable: true,
     collisionRadius: 0.9,
   },
   concreteRoadBarrier: {
     id: 'concreteRoadBarrier',
-    modelUrl: '/assets/Infrastructure/concrete_road_barrier.glb',
+    modelUrl: glbCdnUrl('/Infrastructure/concrete_road_barrier.glb'),
     scale: 1,
     collidable: true,
     collisionRadius: 0.6,
   },
   coveredCar: {
     id: 'coveredCar',
-    modelUrl: '/assets/Infrastructure/covered_car.glb',
+    modelUrl: glbCdnUrl('/Infrastructure/covered_car.glb'),
     scale: 1,
     collidable: true,
     collisionRadius: 1.2,

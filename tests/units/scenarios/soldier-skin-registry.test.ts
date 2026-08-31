@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { glbCdnUrl } from '@/modules/assets/glb-cdn-url';
 import { hitboxPresets } from '@/modules/combat';
 import { getSoldierSkinById } from '@/modules/soldiers/get-soldier-skin-by-id';
 import { soldierSkins } from '@/modules/soldiers/soldier-skin-registry';
@@ -10,12 +11,12 @@ vi.mock('@react-three/drei', () => ({
 }));
 
 const EXPECTED_URLS: Record<keyof typeof soldierSkins, string> = {
-  'remy': '/assets/characters/civilians/remy.glb',
-  'james': '/assets/characters/civilians/james.glb',
-  'liza': '/assets/characters/civilians/liza.glb',
-  'swat-1': '/assets/characters/soldiers/swat-1.glb',
-  'swat-2': '/assets/characters/soldiers/swat-2.glb',
-  'swat-3': '/assets/characters/soldiers/swat-3.glb',
+  'remy': glbCdnUrl('/characters/civilians/remy.glb'),
+  'james': glbCdnUrl('/characters/civilians/james.glb'),
+  'liza': glbCdnUrl('/characters/civilians/liza.glb'),
+  'swat-1': glbCdnUrl('/characters/soldiers/swat-1.glb'),
+  'swat-2': glbCdnUrl('/characters/soldiers/swat-2.glb'),
+  'swat-3': glbCdnUrl('/characters/soldiers/swat-3.glb'),
 };
 
 const SHARED_CLIP_MAP = {
@@ -44,7 +45,7 @@ describe('soldier-skin-registry', () => {
     it(`resolves ${id} GLB url and shared pack`, () => {
       const skin = getSoldierSkinById(id as keyof typeof soldierSkins);
       expect(skin.meshData.modelUrl).toBe(modelUrl);
-      expect(skin.meshData.sharedAnimationsUrl).toBe('/assets/characters/shared/base-animations.glb');
+      expect(skin.meshData.sharedAnimationsUrl).toBe(glbCdnUrl('/characters/shared/base-animations.glb'));
       expect(skin.meshData.animations).toEqual(SHARED_CLIP_MAP);
       expect(skin.hitboxPresetId).toBe('humanoid-standard');
       expect(hitboxPresets[skin.hitboxPresetId].parts.length).toBeGreaterThan(0);

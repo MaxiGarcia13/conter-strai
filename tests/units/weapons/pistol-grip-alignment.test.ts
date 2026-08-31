@@ -38,8 +38,8 @@ describe('pistol grip alignment', () => {
 
     const loader = new GLTFLoader();
     const [character, animations] = await Promise.all([
-      parseGltf(loader, 'public/assets/characters/soldiers/swat-1.glb'),
-      parseGltf(loader, 'public/assets/characters/shared/base-animations.glb'),
+      parseGltf(loader, 'assets/glb/characters/soldiers/swat-1.glb'),
+      parseGltf(loader, 'assets/glb/characters/shared/base-animations.glb'),
     ]);
 
     const source = character.scene.getObjectByName('Armature');

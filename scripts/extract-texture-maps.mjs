@@ -11,14 +11,15 @@ import { KHRDracoMeshCompression } from '@gltf-transform/extensions';
 import draco3d from 'draco3dgltf';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const GLB_ROOT = path.join(ROOT, 'assets/glb');
 
 const TEXTURES = [
-  { id: 'forrest_ground', glb: 'public/assets/textures/floor/forrest_ground.glb' },
-  { id: 'asphalt', glb: 'public/assets/textures/floor/asphalt.glb' },
-  { id: 'brown_floor_tiles', glb: 'public/assets/textures/floor/brown_floor_tiles.glb' },
-  { id: 'castle_brick_broken', glb: 'public/assets/textures/wall/castle_brick_broken.glb' },
-  { id: 'broken_brick', glb: 'public/assets/textures/wall/broken_brick.glb' },
-  { id: 'cliff_side', glb: 'public/assets/textures/wall/cliff_side.glb' },
+  { id: 'forrest_ground', glb: path.join(GLB_ROOT, 'textures/floor/forrest_ground.glb') },
+  { id: 'asphalt', glb: path.join(GLB_ROOT, 'textures/floor/asphalt.glb') },
+  { id: 'brown_floor_tiles', glb: path.join(GLB_ROOT, 'textures/floor/brown_floor_tiles.glb') },
+  { id: 'castle_brick_broken', glb: path.join(GLB_ROOT, 'textures/wall/castle_brick_broken.glb') },
+  { id: 'broken_brick', glb: path.join(GLB_ROOT, 'textures/wall/broken_brick.glb') },
+  { id: 'cliff_side', glb: path.join(GLB_ROOT, 'textures/wall/cliff_side.glb') },
 ];
 
 function mapSlot(name = '') {

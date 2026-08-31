@@ -1,7 +1,8 @@
 import type { SoldierSkin, SoldierSkinId } from './types';
 import { useGLTF } from '@react-three/drei';
+import { glbCdnUrl } from '@/modules/assets/glb-cdn-url';
 
-const SHARED_ANIMATIONS_URL = '/assets/characters/shared/base-animations.glb';
+const SHARED_ANIMATIONS_URL = glbCdnUrl('/characters/shared/base-animations.glb');
 
 const SHARED_CLIP_MAP = {
   idle: 'idle-shooting',
@@ -23,7 +24,7 @@ const SHARED_CLIP_MAP = {
 export const soldierSkins: Record<SoldierSkinId, SoldierSkin> = {
   'remy': {
     meshData: {
-      modelUrl: '/assets/characters/civilians/remy.glb',
+      modelUrl: glbCdnUrl('/characters/civilians/remy.glb'),
       scale: 1,
       viewModelScale: 1.15,
       sharedAnimationsUrl: SHARED_ANIMATIONS_URL,
@@ -35,7 +36,7 @@ export const soldierSkins: Record<SoldierSkinId, SoldierSkin> = {
   },
   'james': {
     meshData: {
-      modelUrl: '/assets/characters/civilians/james.glb',
+      modelUrl: glbCdnUrl('/characters/civilians/james.glb'),
       scale: 1,
       viewModelScale: 1.15,
       sharedAnimationsUrl: SHARED_ANIMATIONS_URL,
@@ -46,7 +47,7 @@ export const soldierSkins: Record<SoldierSkinId, SoldierSkin> = {
   },
   'liza': {
     meshData: {
-      modelUrl: '/assets/characters/civilians/liza.glb',
+      modelUrl: glbCdnUrl('/characters/civilians/liza.glb'),
       scale: 1,
       viewModelScale: 1.15,
       sharedAnimationsUrl: SHARED_ANIMATIONS_URL,
@@ -57,7 +58,7 @@ export const soldierSkins: Record<SoldierSkinId, SoldierSkin> = {
   },
   'swat-1': {
     meshData: {
-      modelUrl: '/assets/characters/soldiers/swat-1.glb',
+      modelUrl: glbCdnUrl('/characters/soldiers/swat-1.glb'),
       scale: 1,
       viewModelScale: 1.15,
       sharedAnimationsUrl: SHARED_ANIMATIONS_URL,
@@ -67,7 +68,7 @@ export const soldierSkins: Record<SoldierSkinId, SoldierSkin> = {
   },
   'swat-2': {
     meshData: {
-      modelUrl: '/assets/characters/soldiers/swat-2.glb',
+      modelUrl: glbCdnUrl('/characters/soldiers/swat-2.glb'),
       scale: 1,
       viewModelScale: 1.15,
       sharedAnimationsUrl: SHARED_ANIMATIONS_URL,
@@ -78,7 +79,7 @@ export const soldierSkins: Record<SoldierSkinId, SoldierSkin> = {
   },
   'swat-3': {
     meshData: {
-      modelUrl: '/assets/characters/soldiers/swat-3.glb',
+      modelUrl: glbCdnUrl('/characters/soldiers/swat-3.glb'),
       scale: 1,
       viewModelScale: 1.15,
       sharedAnimationsUrl: SHARED_ANIMATIONS_URL,

@@ -1,5 +1,6 @@
 import type { PistolWeaponConfig } from './types';
 import { useGLTF } from '@react-three/drei';
+import { glbCdnUrl } from '@/modules/assets/glb-cdn-url';
 import {
   PISTOL_DAMAGE_BY_ZONE,
   PISTOL_FIRE_COOLDOWN_MS,
@@ -20,7 +21,7 @@ export const weapons: Record<string, PistolWeaponConfig> = {
     name: 'Pistol',
     fireCooldownSeconds: PISTOL_FIRE_COOLDOWN_MS / 1000,
     damageByZone: PISTOL_DAMAGE_BY_ZONE,
-    modelUrl: '/assets/weapons/pistol_a.glb',
+    modelUrl: glbCdnUrl('/weapons/pistol_a.glb'),
     // Precomputed for swat idle + neutral aim — barrel +X → camera / crosshair forward.
     gripRotation: DEFAULT_PISTOL_GRIP_ROTATION,
     gripPosition: DEFAULT_PISTOL_GRIP_POSITION,

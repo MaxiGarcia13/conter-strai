@@ -3,9 +3,9 @@
  * Jacaranda: keep a single LOD, simplify geometry, WebP 1K textures.
  * Barrier: keep LOD1, strip other LODs, WebP 1K textures.
  * Run: node scripts/compress-assets.mjs
- *      node scripts/compress-assets.mjs public/assets/greenery/jacaranda.glb
- *      node scripts/compress-assets.mjs public/assets/Infrastructure/concrete_road_barrier.glb
- *      node scripts/compress-assets.mjs public/assets/Infrastructure/covered_car.glb
+ *      node scripts/compress-assets.mjs assets/glb/greenery/jacaranda.glb
+ *      node scripts/compress-assets.mjs assets/glb/Infrastructure/concrete_road_barrier.glb
+ *      node scripts/compress-assets.mjs assets/glb/Infrastructure/covered_car.glb
  */
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -27,32 +27,33 @@ import { MeshoptSimplifier } from 'meshoptimizer';
 import sharp from 'sharp';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const GLB_ROOT = path.join(ROOT, 'assets/glb');
 const TEXTURE_SIZE = 1024;
-const JACARANDA_REL = 'public/assets/greenery/jacaranda.glb';
+const JACARANDA_REL = path.join(GLB_ROOT, 'greenery/jacaranda.glb');
 const JACARANDA_KEEP_NODE = 'jacaranda_tree_LOD1';
-const BARRIER_REL = 'public/assets/Infrastructure/concrete_road_barrier.glb';
+const BARRIER_REL = path.join(GLB_ROOT, 'Infrastructure/concrete_road_barrier.glb');
 const BARRIER_KEEP_NODE = 'concrete_road_barrier_LOD1';
-const COVERED_CAR_REL = 'public/assets/Infrastructure/covered_car.glb';
+const COVERED_CAR_REL = path.join(GLB_ROOT, 'Infrastructure/covered_car.glb');
 /** Skip geometry work when the packed LODs are already stripped. */
 const JACARANDA_SIMPLIFY_MIN_VERTS = 200_000;
 /** Unconstrained error so the ratio is actually reached on dense foliage. */
 const JACARANDA_SIMPLIFY_RATIO = 0.03;
 
 const RESIZE_TARGETS = [
-  'public/assets/textures/floor/forrest_ground.glb',
-  'public/assets/textures/floor/asphalt.glb',
-  'public/assets/textures/floor/brown_floor_tiles.glb',
-  'public/assets/textures/wall/castle_brick_broken.glb',
-  'public/assets/textures/wall/broken_brick.glb',
-  'public/assets/textures/wall/cliff_side.glb',
-  'public/assets/characters/shared/base-animations.glb',
-  'public/assets/characters/civilians/remy.glb',
-  'public/assets/characters/civilians/liza.glb',
-  'public/assets/characters/civilians/james.glb',
-  'public/assets/characters/soldiers/swat-1.glb',
-  'public/assets/characters/soldiers/swat-2.glb',
-  'public/assets/characters/soldiers/swat-3.glb',
-  'public/assets/weapons/pistol_a.glb',
+  path.join(GLB_ROOT, 'textures/floor/forrest_ground.glb'),
+  path.join(GLB_ROOT, 'textures/floor/asphalt.glb'),
+  path.join(GLB_ROOT, 'textures/floor/brown_floor_tiles.glb'),
+  path.join(GLB_ROOT, 'textures/wall/castle_brick_broken.glb'),
+  path.join(GLB_ROOT, 'textures/wall/broken_brick.glb'),
+  path.join(GLB_ROOT, 'textures/wall/cliff_side.glb'),
+  path.join(GLB_ROOT, 'characters/shared/base-animations.glb'),
+  path.join(GLB_ROOT, 'characters/civilians/remy.glb'),
+  path.join(GLB_ROOT, 'characters/civilians/liza.glb'),
+  path.join(GLB_ROOT, 'characters/civilians/james.glb'),
+  path.join(GLB_ROOT, 'characters/soldiers/swat-1.glb'),
+  path.join(GLB_ROOT, 'characters/soldiers/swat-2.glb'),
+  path.join(GLB_ROOT, 'characters/soldiers/swat-3.glb'),
+  path.join(GLB_ROOT, 'weapons/pistol_a.glb'),
 ];
 
 function formatMb(bytes) {

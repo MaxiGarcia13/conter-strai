@@ -2,12 +2,12 @@ import { NodeIO } from '@gltf-transform/core';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 const CHARACTER_MESHES = [
-  { id: 'remy', path: './public/assets/characters/civilians/remy.glb' },
-  { id: 'james', path: './public/assets/characters/civilians/james.glb' },
-  { id: 'liza', path: './public/assets/characters/civilians/liza.glb' },
-  { id: 'swat-1', path: './public/assets/characters/soldiers/swat-1.glb' },
-  { id: 'swat-2', path: './public/assets/characters/soldiers/swat-2.glb' },
-  { id: 'swat-3', path: './public/assets/characters/soldiers/swat-3.glb' },
+  { id: 'remy', path: './assets/glb/characters/civilians/remy.glb' },
+  { id: 'james', path: './assets/glb/characters/civilians/james.glb' },
+  { id: 'liza', path: './assets/glb/characters/civilians/liza.glb' },
+  { id: 'swat-1', path: './assets/glb/characters/soldiers/swat-1.glb' },
+  { id: 'swat-2', path: './assets/glb/characters/soldiers/swat-2.glb' },
+  { id: 'swat-3', path: './assets/glb/characters/soldiers/swat-3.glb' },
 ] as const;
 
 describe('shared animation pack', () => {
@@ -15,7 +15,7 @@ describe('shared animation pack', () => {
 
   beforeAll(async () => {
     const io = new NodeIO();
-    const doc = await io.read('./public/assets/characters/shared/base-animations.glb');
+    const doc = await io.read('./assets/glb/characters/shared/base-animations.glb');
     const root = doc.getRoot();
     animationNames = root.listAnimations().map((a) => a.getName());
   });

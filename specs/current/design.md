@@ -245,12 +245,12 @@ Instanced jacaranda / vista-tier props are follow-up polish — [improvements.md
 
 ## Characters — shipped US-6
 
-Locomotion and action clips load from `/assets/characters/shared/base-animations.glb`. Mesh GLBs are skins only.
+Locomotion and action clips load from Cloudflare R2 (`https://conter-strai.maxig8.workers.dev/?q=characters/shared/base-animations.glb`). Mesh GLBs are skins only. Local source: [`assets/glb/`](../../assets/glb/README.md).
 
-| Skin ids                     | Team     | Mesh path                               |
-| ---------------------------- | -------- | --------------------------------------- |
-| `remy`, `james`, `liza`      | civilian | `/assets/characters/civilians/<id>.glb` |
-| `swat-1`, `swat-2`, `swat-3` | soldier  | `/assets/characters/soldiers/<id>.glb`  |
+| Skin ids                     | Team     | CDN query key (`?q=…`)              |
+| ---------------------------- | -------- | ----------------------------------- |
+| `remy`, `james`, `liza`      | civilian | `characters/civilians/<id>.glb`     |
+| `swat-1`, `swat-2`, `swat-3` | soldier  | `characters/soldiers/<id>.glb`      |
 
 Default play skin from session is `remy` (civilian, east spawn) when unset; non-default skins come from room session on `/room/{roomId}/play`.
 
@@ -380,7 +380,7 @@ Per-player `ready: boolean` on `PlayerState`; cleared on `startRound`. Countdown
 ### Reload + weapon mesh
 
 - **R** (idle) → `reloading`; **R** while kneeling → `reloading-kneel`. Busy until mixer `finished`; WASD cancels.
-- `pistol_a.glb` from registry `modelUrl`; `WeaponAttach` parents a clone under `mixamorig:RightHand` with grip offset on the weapon config.
+- `pistol_a.glb` from registry `modelUrl` (CDN via `glbCdnUrl`); `WeaponAttach` parents a clone under `mixamorig:RightHand` with grip offset on the weapon config.
 
 ### Vitest
 

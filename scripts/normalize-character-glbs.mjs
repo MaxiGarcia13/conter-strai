@@ -18,17 +18,18 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import draco3d from 'draco3dgltf';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const GLB_ROOT = path.join(ROOT, 'assets/glb');
 
 /** Cloth-like roughness matching `swat-1` (no miswired Mixamo glossiness-as-MR). */
 const TARGET_ROUGHNESS = 0.75;
 
 const DEFAULT_TARGETS = [
-  'public/assets/characters/civilians/remy.glb',
-  'public/assets/characters/civilians/liza.glb',
-  'public/assets/characters/civilians/james.glb',
-  'public/assets/characters/soldiers/swat-1.glb',
-  'public/assets/characters/soldiers/swat-2.glb',
-  'public/assets/characters/soldiers/swat-3.glb',
+  path.join(GLB_ROOT, 'characters/civilians/remy.glb'),
+  path.join(GLB_ROOT, 'characters/civilians/liza.glb'),
+  path.join(GLB_ROOT, 'characters/civilians/james.glb'),
+  path.join(GLB_ROOT, 'characters/soldiers/swat-1.glb'),
+  path.join(GLB_ROOT, 'characters/soldiers/swat-2.glb'),
+  path.join(GLB_ROOT, 'characters/soldiers/swat-3.glb'),
 ];
 
 const NUMBERED_MIXAMO_PREFIX = /^mixamorig\d+:/;

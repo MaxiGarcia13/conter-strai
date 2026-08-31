@@ -82,7 +82,7 @@ Full detail is in `.cursor/rules/` — follow those when they apply.
 
 ## Spec workflow
 
-- Open work: **US-12** (mobile touch controls) — see [`specs/us-12/`](./specs/us-12/); hygiene in [`specs/tech-debt.md`](./specs/tech-debt.md) and [`specs/improvements.md`](./specs/improvements.md)
+- Open work: none (US-12 shipped) — hygiene in [`specs/tech-debt.md`](./specs/tech-debt.md) and [`specs/improvements.md`](./specs/improvements.md)
 - On ship: fold delta into `specs/current/`, add a **CHANGELOG** row, delete the delta folder
 - Cross-cutting refactors (e.g. type split): row under **Shipped — other** in CHANGELOG; keep reference docs in `current/design.md`
 

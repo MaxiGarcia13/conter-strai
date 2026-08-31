@@ -4,9 +4,9 @@ Work queue points to open US deltas. Tick tasks in the delta folder; ship into `
 
 ## Suggested order
 
-1. **[US-12](../us-12/tasks.md)** — Mobile touch controls (move, look, shoot, kneel, sprint, pause; modular input layer)
+No open user-story deltas. Next: [improvements backlog](../improvements.md) §7 (greenery prop performance) and [tech-debt.md](../tech-debt.md).
 
-US-4 (local PvP loop), **US-5** (Colyseus multiplayer), **US-7** (match lobby), **US-8** (server security), **US-10** (no-opponent team shuffle), **US-11** (arena modularization), and the [improvements backlog](../improvements.md) §1–§6 polish pass are **shipped**. Fire **pose clip** on LMB is deferred — see [tech-debt.md](../tech-debt.md).
+US-4 (local PvP loop), **US-5** (Colyseus multiplayer), **US-7** (match lobby), **US-8** (server security), **US-9** (pause menu), **US-10** (no-opponent team shuffle), **US-11** (arena modularization), **US-12** (mobile touch controls), and the [improvements backlog](../improvements.md) §1–§6 polish pass are **shipped**. Fire **pose clip** on LMB is deferred — see [tech-debt.md](../tech-debt.md).
 
 ## Improvements (open)
 
@@ -18,4 +18,4 @@ US-4 (local PvP loop), **US-5** (Colyseus multiplayer), **US-7** (match lobby), 
 
 ## Open deltas
 
-- [US-12](../us-12/) — Mobile touch controls
+None.

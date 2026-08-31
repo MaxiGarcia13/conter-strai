@@ -55,7 +55,7 @@ src/
 ├── components/           Shared shell UI (site-topbar, cs-button, github-icon, play-loader)
 ├── modules/
 │   ├── lobby/            Room session, create/join/wait islands, invite share + QR
-│   ├── game/             Session shell, GameCanvas, FPS controls, HUD, round state
+│   ├── game/             Session shell, GameCanvas, FPS controls, HUD, round state, input providers
 │   ├── scenarios/        Config-driven maps (arena-01); team spawn points
 │   ├── props/            Prop registry (jacaranda, barriers, cars)
 │   ├── soldiers/         Skin registry, model, locomotion
@@ -170,18 +170,18 @@ The play canvas mounts the arena in phases, each in its own Suspense boundary wi
 
 ### Key components
 
-- `GameCanvas` — R3F Canvas, lights, camera
+- `GameCanvas` — R3F Canvas, lights, camera; mounts `<MobileControls />` on touch-primary
 - `ScenarioSky` — drei `<Sky>` + scene fog from `ArenaEnvironment`
 - `ScenarioGround` / `ScenarioHouses` / `ScenarioProps` — staged arena layers (see above)
 - `SoldierModel` — NPC spawns; `LocalPlayer` — one clone + mixer
-- `useFpsControls` — WASD, mouse, locomotion intent, collision
-- `useShooting` — camera-center pistol hitscan, cooldown, no friendly fire
+- `useFpsControls` — WASD / merged `PlayerFrameIntent`, mouse or touch look, locomotion, collision
+- `useShooting` — camera-center pistol hitscan via `fireWeapon()`, cooldown, no friendly fire
 - `useSoldierLocomotion` — idle / walk / run / crouch-walk + jump / kneel / reload / dying
-- `CameraHud` / `CrosshairHud` — mode label + screen crosshair; world aim marker on look-ray hit
+- `CameraHud` / `CrosshairHud` — mode label (desktop only) + screen crosshair; world aim marker on look-ray hit
 
-### Camera modes (**C**)
+### Camera modes (**C** / pause menu)
 
-Default on play boot: **over-the-shoulder**. Cycle with **C**: FPS → OTS → TPS → …
+Default on play boot: **over-the-shoulder**. Cycle with **C** (desktop) or **Cycle camera** in the pause menu: FPS → OTS → TPS → … `CameraHud` is hidden on touch-primary.
 
 | Mode                  | Role                                                                                                   |
 | --------------------- | ------------------------------------------------------------------------------------------------------ |
@@ -190,7 +190,7 @@ Default on play boot: **over-the-shoulder**. Cycle with **C**: FPS → OTS → T
 | **Third-person**      | Farther behind/above (~3.6 m back, ~2.4 m up)                                                          |
 | **Free (dev)**        | **V** toggles; ghost fly (WASD + click-to-look, Q/E up/down, Shift boost); no collision; player frozen |
 
-Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/state/player-state.ts`). OTS/TPS boom height rides head-bone world Y after mixer update. Free-cam + Playwright probe live under `game/dev/` and are **lazy-loaded only when `import.meta.env.DEV`** (absent from production bundles). Production pauses for any R3F `controls` owner — no free-cam import.
+Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/stores/player-state.ts`). OTS/TPS boom height rides head-bone world Y after mixer update. Free-cam + Playwright probe live under `game/dev/` and are **lazy-loaded only when `import.meta.env.DEV`** (absent from production bundles). Production pauses for any R3F `controls` owner — no free-cam import. Labels live in `CAMERA_MODE_LABELS` (`game/constants/camera-mode-labels.ts`) — shared by `CameraHud` and `GamePausePanel`.
 
 ### Locomotion / actions
 
@@ -240,7 +240,7 @@ Instanced jacaranda / vista-tier props are follow-up polish — [improvements.md
 
 | Layer          | Scope                                                                                                                                                                                          |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Vitest**     | Registries; floor-zone overlap; prop blockers; house open-sides / presets; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide |
+| **Vitest**     | Registries; floor-zone overlap; prop blockers; house open-sides / presets; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide; look-delta / joystick mapping / touch-primary gate / `fireWeapon` gating |
 | **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook    |
 
 ## Characters — shipped US-6
@@ -288,7 +288,7 @@ Attached on `LocalPlayer` and `SoldierModel` when `entityId` is set.
 
 ### HUD + elimination
 
-- `HealthBar` — DOM overlay, local player HP %.
+- `HealthBar` — DOM overlay, local player HP %; **top-right** + safe-area on touch-primary, **bottom-left** on desktop.
 - At 0 HP: `isEliminated: true`; FPS controls disabled; **`dying`** one-shot on mixer (`LocalPlayer` / `SoldierModel` via `getPose`).
 - No mid-round respawn; round reset restores HP.
 
@@ -331,19 +331,20 @@ When `HealthState.isEliminated`, FPS move/look/shoot is disabled and look is rel
 
 ### Look capture
 
-Browsers may reject `requestPointerLock()` without a user gesture. On mount, **`use-player-pointer-lock`** enables document-level `mousemove` look (`isLookEnabled` in `player-state.ts`); `#game-canvas` gets `cursor-none` while captured. Canvas **click** re-engages and best-effort upgrades to pointer lock (`request-pointer-lock.ts` swallows rejections). **Esc** / pause / elimination / **`round-end`** release look; re-engage when phase returns to **`live`** and player is alive. **`use-shooting`** gates fire on `isLookEnabled()`.
+Browsers may reject `requestPointerLock()` without a user gesture. On **desktop**, **`use-player-pointer-lock`** enables document-level `mousemove` look (`isLookEnabled` in `player-state.ts`); `#game-canvas` gets `cursor-none` while captured. Canvas **click** re-engages and best-effort upgrades to pointer lock (`request-pointer-lock.ts` swallows rejections). **Esc** / pause / elimination / **`round-end`** release look; re-engage when phase returns to **`live`** and player is alive. On **touch-primary**, look is touch-drag via `applyLookDelta` — no pointer-lock prompt; `useShooting` skips the pointer-lock gate.
 
 ### Pause menu
 
-[`game-pause-store.ts`](../../src/modules/game/state/game-pause-store.ts) (Zustand) + [`game-pause-panel.tsx`](../../src/modules/game/components/game-pause-panel.tsx) — visible when `isPaused && phase === 'live'`. **Escape** toggles pause in [`use-player-keyboard.ts`](../../src/modules/game/hooks/use-player-controls/use-player-keyboard.ts). While paused: movement, look, shoot, and pose actions early-out via `isPausedRef` in control hooks.
+[`game-pause-store.ts`](../../src/modules/game/stores/game-pause-store.ts) (Zustand) + [`game-pause-panel.tsx`](../../src/modules/game/components/game-pause-panel/game-pause-panel.tsx) — visible when `isPaused && phase === 'live'`. **Escape** toggles pause in [`use-player-keyboard.ts`](../../src/modules/game/hooks/use-player-controls/use-player-keyboard.ts); on touch-primary the top-left pause button calls `setPaused(true)`. While paused: movement, look, shoot, and pose actions early-out via `isPausedRef` in control hooks.
 
-| Action  | Behavior                                                                                                                                                      |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Restart | [`restart-round.ts`](../../src/modules/game/utils/restart-round.ts) — host `startMatch()` / offline `startRound`; triggers deploy gate again                  |
-| Leave   | [`leave-match-to-home.ts`](../../src/modules/game/utils/leave-match-to-home.ts) — `leaveMatch`, clear session, `location.href = '/'` **without** `deleteRoom` |
-| Resume  | `setPaused(false)` + re-engage look / pointer lock                                                                                                            |
+| Action         | Behavior                                                                                                                                                      |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Restart        | [`restart-round.ts`](../../src/modules/game/utils/restart-round.ts) — host `startMatch()` / offline `startRound`; triggers deploy gate again                  |
+| Leave          | [`leave-match-to-home.ts`](../../src/modules/game/utils/leave-match-to-home.ts) — `leaveMatch`, clear session, `location.href = '/'` **without** `deleteRoom` |
+| Resume         | `setPaused(false)` + re-engage look / pointer lock (desktop)                                                                                                   |
+| Cycle camera   | `cycleCameraMode()` — same fps → ots → tps order as **C**; live label via `CAMERA_MODE_LABELS`                                                               |
 
-Bindings listed in **Commands** come from [`game-bindings.ts`](../../src/modules/game/constants/game-bindings.ts). Pause store resets on round end / navigate away.
+Bindings listed in **Commands** come from [`game-bindings.ts`](../../src/modules/game/constants/game-bindings.ts) (`GAME_COMMANDS` desktop, `MOBILE_COMMANDS` on touch-primary). Pause store resets on round end / navigate away.
 
 ### Deploy-ready countdown
 
@@ -370,7 +371,7 @@ Per-player `ready: boolean` on `PlayerState`; cleared on `startRound`. Countdown
 
 ### Shooting
 
-- Pointer-locked **LMB** → `useShooting` raycast from camera center; range 100 m; cooldown `fireCooldownSeconds` (pistol 0.35 s).
+- Desktop pointer-locked **LMB**, or the touch fire button, → `fireWeapon()` / `useShooting` raycast from camera center; range 100 m; cooldown `fireCooldownSeconds` (pistol 0.35 s). Pointer-lock is not required on touch-primary.
 - Hits need `userData.hitZone` + `userData.entityId`; friendly fire skipped via round roster.
 - `resolveHitDamage` builds `DamageData` with equipped `weaponId` → health store `applyDamage`.
 - Gunshot SFX at the camera for the local shooter; peers hear spatial pistol audio via `fire` relay; injury SFX is spatial on the victim (local HP via `useHealthStore`, remote HP via `multiplayerStore`). Remote walk/run loops are per-peer with the same ~40 m linear falloff.
@@ -383,7 +384,85 @@ Per-player `ready: boolean` on `PlayerState`; cleared on `startRound`. Countdown
 
 ### Vitest
 
-`resolveHitDamage` (self / friendly / zone) and `checkRoundEnd` (team wipe → winner).
+`resolveHitDamage` (self / friendly / zone), `checkRoundEnd` (team wipe → winner), `applyLookDelta`, `joystickToAxes`, `isTouchPrimaryDevice`, and `fireWeapon` gating.
+
+## Input + mobile controls — shipped US-12
+
+Keyboard/mouse and touch are separate **providers**. Both write a shared intent layer under `src/modules/game/input/`; movement, look, and fire stay device-agnostic. Overlay is gated by `(pointer: coarse)` — desktop WASD + pointer-lock is unchanged.
+
+```mermaid
+flowchart LR
+  subgraph providers [Input providers]
+    KB[Keyboard + mouse]
+    Touch[MobileControls overlay]
+  end
+
+  subgraph intent [game/input/]
+    Ref[player-input-intent ref]
+    LookUtil[applyLookDelta]
+  end
+
+  subgraph helpers [game/utils/]
+    FireUtil[fireWeapon]
+    Pose[player-pose-actions]
+  end
+
+  subgraph consumers [Existing consumers]
+    MF[usePlayerMovementFrame]
+    PL[usePlayerPointerLock]
+    Shoot[useShooting]
+    Pause[game-pause-store]
+  end
+
+  KB --> Ref
+  Touch --> Ref
+  Touch --> LookUtil
+  Touch --> FireUtil
+  Touch --> Pose
+  Touch --> Pause
+  Ref --> MF
+  LookUtil --> PL
+  FireUtil --> Shoot
+```
+
+```
+src/modules/game/input/
+  types.ts                          # PlayerFrameIntent, GameAction
+  player-input-intent.ts            # imperative ref (hot path, not Zustand)
+  utils/
+    apply-look-delta.ts             # shared yaw/pitch delta
+    is-touch-primary-device.ts      # (pointer: coarse) gate
+    joystick-to-axes.ts             # vector → { strafe, forward }
+  hooks/
+    use-touch-look/                 # right-half drag → applyLookDelta
+  components/
+    mobile-controls/               # orchestrator + joystick / look / fire / pause
+```
+
+`fireWeapon()` lives in `game/utils/fire-weapon.ts` (extracted from `use-shooting.ts`). Face-button icons (`IconMenu` / `IconFire` / `IconButtonA` / `IconButtonB`) live in `src/components/icons/`.
+
+### Touch-primary layout
+
+```
+┌─────────────────────────────────────────┐
+│  [☰ Pause]                    [HP ████] │  ← safe-area top
+│                                         │
+│              (look drag zone)           │
+│                                         │
+│  [joystick]                   [fire]  │
+│                              [B] [A]    │
+└─────────────────────────────────────────┘
+```
+
+| Zone               | Component                  | Action                                                        |
+| ------------------ | -------------------------- | ------------------------------------------------------------- |
+| Top-left           | `PauseButton` (`IconMenu`) | `setPaused(true)` → `GamePausePanel`                         |
+| Top-right          | `HealthBar` (relocated)     | existing combat HUD                                            |
+| Bottom-left        | `VirtualJoystick`          | move axes                                                     |
+| Bottom-right stack | `ActionButton` × 3        | `IconButtonB` kneel (tap), `IconButtonA` run (hold), `IconFire` fire |
+| Right ~50%         | `LookZone`                 | touch-drag look                                               |
+
+`#game-canvas` uses `touch-action: none` while the overlay is active. Coupling: `mobile-controls` may import `input/*`, `player-pose-actions`, `fire-weapon`, and `game-pause-store` — never `usePlayerControls` internals or R3F hooks. No touch listeners inside `combat/`, `soldiers/`, or pure movement utils.
 
 ## Multiplayer — shipped US-5
 

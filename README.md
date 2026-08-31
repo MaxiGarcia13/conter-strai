@@ -42,7 +42,7 @@ If you are changing the code, use the dev workflow in [CONTRIBUTING.md](./CONTRI
 
 ## Host a LAN party
 
-One computer runs the game. Everyone else only needs a browser on the same Wi-Fi.
+One computer runs the game. Everyone else only needs a browser on the same Wi-Fi — including phones and tablets (on-screen controls).
 
 1. On the **host** computer, start the server as above (`npm install`, then `npm run build`, then `npm run preview`).
 2. Find that computer’s local address (not `localhost`):
@@ -82,15 +82,15 @@ Camera mode can also be cycled from the pause menu.
 
 On a **touch-primary** device (phone or tablet), `/play` shows on-screen controls. No keyboard, mouse, or pointer-lock prompt is required.
 
-| Control                         | Action                                                         |
-| ------------------------------- | -------------------------------------------------------------- |
-| Left joystick                   | Move                                                           |
-| Drag the right half of the screen | Look                                                         |
-| Fire button                     | Shoot                                                          |
-| **A** (hold)                    | Sprint                                                         |
-| **B** (tap)                     | Kneel                                                          |
-| Menu (top-left)                 | Pause                                                           |
-| Pause menu → Cycle camera       | First person / over the shoulder / third person                 |
+| Control                           | Action                                          |
+| --------------------------------- | ----------------------------------------------- |
+| Left joystick                     | Move                                            |
+| Drag the right half of the screen  | Look                                            |
+| Fire button                       | Shoot                                           |
+| **A** (hold)                      | Sprint                                          |
+| **B** (tap)                       | Kneel                                           |
+| Menu (top-left)                   | Pause                                           |
+| Pause menu → Cycle camera         | First person / over the shoulder / third person |
 
 Jump, reload, and an in-game camera button are not on the overlay — camera changes from the pause menu.
 

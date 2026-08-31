@@ -64,23 +64,23 @@ export function CreateRoomFields() {
     <div className="flex flex-1 flex-col gap-6">
       <div className="flex flex-1 flex-col gap-8 lg:flex-row">
         <div className="flex flex-1 flex-col gap-6">
-        <TeamToggle team={team} onChange={handleTeamChange} />
-        <CharacterPicker
-          skinIds={TEAM_SKINS[team]}
-          selectedId={skinId}
-          onSelect={setSkinId}
-        />
-        <ArenaPicker
-          scenarios={SCENARIO_LIST}
-          selectedId={scenarioId}
-          onSelect={setScenarioId}
-        />
+          <TeamToggle team={team} onChange={handleTeamChange} />
+          <CharacterPicker
+            skinIds={TEAM_SKINS[team]}
+            selectedId={skinId}
+            onSelect={setSkinId}
+          />
+          <ArenaPicker
+            scenarios={SCENARIO_LIST}
+            selectedId={scenarioId}
+            onSelect={setScenarioId}
+          />
 
-        {error && (
-          <p role="alert" className="font-mono text-xs tracking-widest text-danger">
-            {error.message}
-          </p>
-        )}
+          {error && (
+            <p role="alert" className="font-mono text-xs tracking-widest text-danger">
+              {error.message}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-1 flex-col items-center gap-4">

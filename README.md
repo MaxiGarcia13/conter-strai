@@ -61,16 +61,16 @@ Rooms time out after 40 minutes if nobody starts or restarts a round.
 
 ## Controls
 
-| Key | Action |
-| --- | --- |
-| WASD | Move |
-| Space | Sprint |
-| Mouse | Look / shoot (left click) |
-| Q | Jump |
-| Shift | Kneel |
-| R | Reload |
-| C | Cycle camera (first person / over the shoulder / third person) |
-| Esc | Pause |
+| Key   | Action                                                         |
+| ----- | -------------------------------------------------------------- |
+| WASD  | Move                                                           |
+| Space | Sprint                                                         |
+| Mouse | Look / shoot (left click)                                      |
+| Q     | Jump                                                           |
+| Shift | Kneel                                                          |
+| R     | Reload                                                         |
+| C     | Cycle camera (first person / over the shoulder / third person) |
+| Esc   | Pause                                                          |
 
 ## Contributing
 

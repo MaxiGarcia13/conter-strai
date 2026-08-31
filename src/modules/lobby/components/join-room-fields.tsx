@@ -82,47 +82,47 @@ export function JoinRoomFields({ roomId: initialRoomId }: JoinRoomFieldsProps) {
     <div className="flex flex-1 flex-col gap-6">
       <div className="flex flex-1 flex-col gap-8 lg:flex-row">
         <div className="flex flex-1 flex-col gap-6">
-        <div>
-          <label
-            htmlFor="room-id"
-            className="mb-3 block font-mono text-xs tracking-widest uppercase text-foreground-muted"
-          >
-            Room id
-          </label>
-          <input
-            id="room-id"
-            name="roomId"
-            type="text"
-            value={roomId}
-            onChange={(event) => setRoomId(normalizeRoomId(event.target.value))}
-            maxLength={ROOM_ID_LENGTH}
-            readOnly={roomIdLocked}
-            required
-            autoComplete="off"
-            spellCheck={false}
-            autoCapitalize="characters"
-            autoFocus={!roomIdLocked}
-            placeholder="ABC123"
-            className="w-full border border-surface-border bg-surface px-3 py-2.5 font-mono text-sm tracking-widest uppercase text-foreground placeholder:text-foreground-muted focus:border-accent focus:outline-none read-only:text-accent"
+          <div>
+            <label
+              htmlFor="room-id"
+              className="mb-3 block font-mono text-xs tracking-widest uppercase text-foreground-muted"
+            >
+              Room id
+            </label>
+            <input
+              id="room-id"
+              name="roomId"
+              type="text"
+              value={roomId}
+              onChange={(event) => setRoomId(normalizeRoomId(event.target.value))}
+              maxLength={ROOM_ID_LENGTH}
+              readOnly={roomIdLocked}
+              required
+              autoComplete="off"
+              spellCheck={false}
+              autoCapitalize="characters"
+              autoFocus={!roomIdLocked}
+              placeholder="ABC123"
+              className="w-full border border-surface-border bg-surface px-3 py-2.5 font-mono text-sm tracking-widest uppercase text-foreground placeholder:text-foreground-muted focus:border-accent focus:outline-none read-only:text-accent"
+            />
+          </div>
+
+          <TeamToggle team={team} onChange={handleTeamChange} />
+          <CharacterPicker
+            skinIds={TEAM_SKINS[team]}
+            selectedId={skinId}
+            onSelect={setSkinId}
           />
-        </div>
 
-        <TeamToggle team={team} onChange={handleTeamChange} />
-        <CharacterPicker
-          skinIds={TEAM_SKINS[team]}
-          selectedId={skinId}
-          onSelect={setSkinId}
-        />
-
-        <p className="font-mono text-xs tracking-widest uppercase text-foreground-muted">
-          {roomIdLocked ? arenaName : 'Host arena — synced on join'}
-        </p>
-
-        {error && (
-          <p role="alert" className="font-mono text-xs tracking-widest text-danger">
-            {error.message}
+          <p className="font-mono text-xs tracking-widest uppercase text-foreground-muted">
+            {roomIdLocked ? arenaName : 'Host arena — synced on join'}
           </p>
-        )}
+
+          {error && (
+            <p role="alert" className="font-mono text-xs tracking-widest text-danger">
+              {error.message}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-1 flex-col items-center gap-4">

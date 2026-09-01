@@ -1,6 +1,8 @@
+import { useCallback } from 'react';
 import { ArrowDownIcon, FireIcon, RunIcon } from '@/components/icons';
 import { setTouchRunning } from '@/modules/game/input/player-input-intent';
 import { fireWeapon } from '@/modules/game/utils/fire-weapon';
+import { warmupGameSounds } from '@/modules/game/utils/play-game-sound';
 import { toggleKneel } from '@/modules/game/utils/player-pose-actions';
 import { ActionButton } from './action-button';
 import { LookZone } from './look-zone';
@@ -8,8 +10,12 @@ import { PauseButton } from './pause-button';
 import { VirtualJoystick } from './virtual-joystick';
 
 export function MobileControls() {
+  const onFirstTouch = useCallback(() => {
+    void warmupGameSounds();
+  }, []);
+
   return (
-    <>
+    <div className="contents" onTouchStartCapture={onFirstTouch}>
       <PauseButton />
       <LookZone />
       <VirtualJoystick />
@@ -41,6 +47,6 @@ export function MobileControls() {
         </div>
 
       </div>
-    </>
+    </div>
   );
 }

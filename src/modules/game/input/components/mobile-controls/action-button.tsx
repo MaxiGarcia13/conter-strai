@@ -36,10 +36,11 @@ export function ActionButton({
       e.stopPropagation();
       activeTouchIdRef.current = e.changedTouches[0].identifier;
 
+      setPressed(true);
+
       if (mode === 'fire' || mode === 'kneel') {
         onAction();
       } else {
-        setPressed(true);
         onHoldStart?.();
       }
     },

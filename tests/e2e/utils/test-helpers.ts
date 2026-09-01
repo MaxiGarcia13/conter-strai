@@ -73,7 +73,7 @@ export async function navigateToRoomPlay(
   return roomId;
 }
 
-export async function waitForCanvas(page: Page): Promise<void> {
+async function waitForCanvas(page: Page): Promise<void> {
   await expect(page.locator('canvas')).toBeVisible();
 }
 
@@ -94,7 +94,7 @@ export async function navigateToPlayFromWaitingRoom(page: Page, roomId: string):
 }
 
 /** Hard-nav to `/play` with the lobby handoff flag (host or guest). */
-export async function navigateToPlayWithHandoff(page: Page, roomId: string): Promise<void> {
+async function navigateToPlayWithHandoff(page: Page, roomId: string): Promise<void> {
   await markPlayHandoff(page, roomId);
   await page.goto(`/room/${roomId}/play`);
 }
@@ -214,11 +214,6 @@ export async function waitForLiveRound(page: Page): Promise<void> {
 
 /** `/play` through deploy + countdown — no pause probe (for round-end flows). */
 export async function waitForPlayThroughCountdown(page: Page): Promise<void> {
-  await waitThroughCountdown(page);
-}
-
-/** Wait for the 3–2–1 overlay to clear so the server round is `in_progress`. */
-export async function waitForCountdownToFinish(page: Page): Promise<void> {
   await waitThroughCountdown(page);
 }
 

@@ -23,7 +23,7 @@ Aug 2026 audit (knip + grep — grep `src/` before deleting):
 - [x] Soldier / weapons tuning — un-export if grep confirms no callers: `CROSSFADE_SECONDS` (`apply-clip-transition.ts`), `WEAPON_ATTACH_SCALE` (`weapon-attach.tsx`), `RIGHT_HAND_BONE_NAMES` (`find-right-hand-bone.ts`), `PISTOL_GRIP_DOWN_AXIS` (`pistol-grip-alignment.ts`)
 - [x] Multiplayer tuning constants — un-export if only used in-file: `REMOTE_*` in `resolve-remote-locomotion.ts`, `REMOTE_FOLLOW_RATE` in `step-remote-render-transform.ts`, `MOVE_MAX_DELTA_METERS` / `MOVE_SPEED_TOLERANCE` in `validate-move.ts`, `TRANSFORM_SYNC_INTERVAL_MS` in colyseus adapter barrel
 - [x] Multiplayer adapter barrel — trim unused re-exports (`onLeave`, `PlayerStateSchema`, listener/payload types in `colyseus-adapter/index.ts` and `schema/index.ts`) or document as intentional public API
-- [ ] E2E helpers — un-export `waitForCanvas`, `navigateToPlayWithHandoff`, `waitForCountdownToFinish` from `tests/e2e/test-helpers.ts` if only used in-file
+- [x] E2E helpers — un-export `waitForCanvas`, `navigateToPlayWithHandoff`, `waitForCountdownToFinish` from `tests/e2e/test-helpers.ts` if only used in-file
 
 ## Package & dependency hygiene
 

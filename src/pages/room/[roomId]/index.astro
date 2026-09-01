@@ -7,8 +7,8 @@ const { roomId } = Astro.params;
 if (!roomId) return Astro.redirect('/');
 ---
 
-<BaseLayout title={`Room ${roomId} — Conter Strai`} description='Waiting room — invite friends and start the match.'>
-  <SitePage topbarTitle='Waiting Room' showBackHome>
-    <WaitingRoom client:only='react' roomId={roomId} />
+<BaseLayout title={`Room ${roomId} — Conter Strai`} description="Waiting room — invite friends and start the match.">
+  <SitePage topbarTitle="Waiting Room" showBackHome>
+    <WaitingRoom client:only="react" roomId={roomId} />
   </SitePage>
 </BaseLayout>

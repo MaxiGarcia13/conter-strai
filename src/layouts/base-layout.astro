@@ -33,60 +33,60 @@ const themeColor = '#0d0f14';
 ---
 
 <!doctype html>
-<html lang='en'>
+<html lang="en">
   <head>
-    <meta charset='utf-8' />
-    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
-    <meta name='description' content={description} />
-    <meta name='keywords' content={metaKeywords} />
-    <meta name='author' content={author} />
-    <meta name='creator' content={author} />
-    <meta name='theme-color' content={themeColor} />
-    <meta name='robots' content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'} />
-    <link rel='canonical' href={canonicalURL} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={metaKeywords} />
+    <meta name="author" content={author} />
+    <meta name="creator" content={author} />
+    <meta name="theme-color" content={themeColor} />
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'} />
+    <link rel="canonical" href={canonicalURL} />
 
     <!-- First-paint faces only. ExtraBold is preloaded on the landing head slot. -->
     <link
-      rel='preload'
-      href='/fonts/Barlow_Condensed/BarlowCondensed-Regular.woff2'
-      as='font'
-      type='font/woff2'
+      rel="preload"
+      href="/fonts/Barlow_Condensed/BarlowCondensed-Regular.woff2"
+      as="font"
+      type="font/woff2"
       crossorigin
     />
 
     <link
-      rel='preload'
-      href='/fonts/Share_Tech_Mono/ShareTechMono-Regular.woff2'
-      as='font'
-      type='font/woff2'
+      rel="preload"
+      href="/fonts/Share_Tech_Mono/ShareTechMono-Regular.woff2"
+      as="font"
+      type="font/woff2"
       crossorigin
     />
 
     <!-- Open Graph -->
-    <meta property='og:type' content={type} />
-    <meta property='og:site_name' content={siteName} />
-    <meta property='og:locale' content='en_US' />
-    <meta property='og:url' content={canonicalURL} />
-    <meta property='og:title' content={title} />
-    <meta property='og:description' content={description} />
-    <meta property='og:image' content={imageURL} />
-    <meta property='og:image:alt' content={imageAlt} />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={imageURL} />
+    <meta property="og:image:alt" content={imageAlt} />
 
     <!-- Twitter / X -->
-    <meta name='twitter:card' content='summary' />
-    <meta name='twitter:title' content={title} />
-    <meta name='twitter:description' content={description} />
-    <meta name='twitter:image' content={imageURL} />
-    <meta name='twitter:image:alt' content={imageAlt} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageURL} />
+    <meta name="twitter:image:alt" content={imageAlt} />
 
-    <link rel='icon' type='image/png' href='/conter-strai.png' />
-    <link rel='apple-touch-icon' href='/conter-strai.png' />
-    <slot name='head' />
+    <link rel="icon" type="image/png" href="/conter-strai.png" />
+    <link rel="apple-touch-icon" href="/conter-strai.png" />
+    <slot name="head" />
   </head>
   <body>
-    <div class='game-atmosphere' aria-hidden='true'></div>
-    <div class='relative z-10 flex min-h-dvh flex-col'>
+    <div class="game-atmosphere" aria-hidden="true"></div>
+    <div class="relative z-10 flex min-h-dvh flex-col">
       <slot />
       {showSiteFooter && <SiteFooter />}
     </div>

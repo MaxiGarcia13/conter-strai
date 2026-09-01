@@ -22,46 +22,46 @@ const bullets = ['Online PvP combat', 'Fast tactical rounds', 'Runs in your brow
 const repoUrl = homepage.replace(/#readme$/, '');
 ---
 
-<BaseLayout title={title} description={description} image={ogImage.src} imageAlt='Soldiers geared up for deployment'>
+<BaseLayout title={title} description={description} image={ogImage.src} imageAlt="Soldiers geared up for deployment">
   <link
-    slot='head'
-    rel='preload'
-    href='/fonts/Barlow_Condensed/BarlowCondensed-ExtraBold.woff2'
-    as='font'
-    type='font/woff2'
+    slot="head"
+    rel="preload"
+    href="/fonts/Barlow_Condensed/BarlowCondensed-ExtraBold.woff2"
+    as="font"
+    type="font/woff2"
     crossorigin
   />
   <SitePage>
-    <p slot='topbar-leading' class='flex items-center gap-2 text-accent'>
+    <p slot="topbar-leading" class="flex items-center gap-2 text-accent">
       <span aria-label={`Version ${version}`}>v{version}</span>
     </p>
-    <p slot='topbar-center'>
-      <span class='text-foreground'>Civilians</span>
-      <span class='text-accent mx-2'>vs</span>
-      <span class='text-foreground'>Soldiers</span>
+    <p slot="topbar-center">
+      <span class="text-foreground">Civilians</span>
+      <span class="text-accent mx-2">vs</span>
+      <span class="text-foreground">Soldiers</span>
     </p>
     <a
-      slot='topbar-trailing'
+      slot="topbar-trailing"
       href={repoUrl}
-      class='site-link inline-flex items-center gap-2'
-      target='_blank'
-      rel='noopener noreferrer'
+      class="site-link inline-flex items-center gap-2"
+      target="_blank"
+      rel="noopener noreferrer"
     >
-      <GithubIcon class='size-4 shrink-0' />
+      <GithubIcon class="size-4 shrink-0" />
       Contribute on GitHub
     </a>
 
-    <div class='grid flex-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16'>
-      <div class='hud-corners p-5 sm:p-8'>
-        <SitePageHeader eyebrow='Tactical shooter' titleSize='hero' leading='Conter ' accent='Strai' lede='hero'>
+    <div class="grid flex-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16">
+      <div class="hud-corners p-5 sm:p-8">
+        <SitePageHeader eyebrow="Tactical shooter" titleSize="hero" leading="Conter " accent="Strai" lede="hero">
           The revolution starts here — choose your side and fight.
         </SitePageHeader>
 
-        <ul class='mt-8 space-y-0 border-t border-surface-border'>
+        <ul class="mt-8 space-y-0 border-t border-surface-border">
           {
             bullets.map((bullet, index) => (
-              <li class='text-foreground-muted flex items-center gap-4 border-b border-surface-border py-3 text-base font-medium tracking-wide'>
-                <span class='font-mono text-accent w-8 shrink-0 text-xs tracking-widest'>
+              <li class="text-foreground-muted flex items-center gap-4 border-b border-surface-border py-3 text-base font-medium tracking-wide">
+                <span class="font-mono text-accent w-8 shrink-0 text-xs tracking-widest">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 {bullet}
@@ -70,23 +70,23 @@ const repoUrl = homepage.replace(/#readme$/, '');
           }
         </ul>
 
-        <div class='mt-10 flex flex-wrap items-center gap-4'>
-          <CsButton href='/room' variant='primary'>Create Room</CsButton>
-          <CsButton href='/room/join' variant='secondary'>Join Room</CsButton>
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <CsButton href="/room" variant="primary">Create Room</CsButton>
+          <CsButton href="/room/join" variant="secondary">Join Room</CsButton>
         </div>
       </div>
 
-      <div class='hero-art-grid relative flex items-center justify-center'>
-        <div class='bg-accent/25 pointer-events-none absolute inset-[18%] rounded-full blur-3xl' aria-hidden='true'>
+      <div class="hero-art-grid relative flex items-center justify-center">
+        <div class="bg-accent/25 pointer-events-none absolute inset-[18%] rounded-full blur-3xl" aria-hidden="true">
         </div>
         <Image
           src={csImg}
-          alt='Soldiers geared up for deployment'
+          alt="Soldiers geared up for deployment"
           widths={[256, 480, 768]}
-          sizes='(max-width: 1024px) 90vw, 960px'
-          class='relative z-10 mx-auto h-auto max-h-[min(70vh,40rem)] w-auto object-contain drop-shadow-2xl'
-          loading='eager'
-          decoding='async'
+          sizes="(max-width: 1024px) 90vw, 960px"
+          class="relative z-10 mx-auto h-auto max-h-[min(70vh,40rem)] w-auto object-contain drop-shadow-2xl"
+          loading="eager"
+          decoding="async"
         />
       </div>
     </div>

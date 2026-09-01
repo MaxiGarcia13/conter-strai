@@ -14,6 +14,7 @@ import {
 } from '../constants/player';
 import { checkRoundEnd } from '../utils/check-round-end';
 import { resetPlayerTransform, setPlayerPose } from './player-state';
+import { useWeaponAmmoStore } from './weapon-ammo-store';
 
 const COUNTDOWN_START = 3;
 const COUNTDOWN_TICK_MS = 1_000;
@@ -52,6 +53,7 @@ export const useRoundStore = create<RoundState>()((set, get) => ({
     const scenario = getScenarioById(scenarioId);
 
     useHealthStore.getState().resetAll();
+    useWeaponAmmoStore.getState().reset();
     setPlayerPose(null);
     clearCountdownTimer();
 

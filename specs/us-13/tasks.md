@@ -10,7 +10,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 - [x] Add `src/modules/game/stores/weapon-ammo-store.ts` — `shotsInMag`, `recordShot`, `needsReload`, `onReloadComplete`, `reset`
 - [x] `fire-weapon.ts` — block when `needsReload()`; call `recordShot()` after cooldown stamp; export test reset helper
 - [x] `local-player.tsx` — `clearReloadingPose()` calls `onReloadComplete()`
-- [ ] `round-store.ts` `startRound` — reset weapon ammo store
+- [x] `round-store.ts` `startRound` — reset weapon ammo store
 - [ ] Unit: extend `tests/units/game/fire-weapon.test.ts` (12-shot limit, reload refill, existing reload-pose block still passes)
 
 ## Mobile reload button (US-13.6–US-13.7)

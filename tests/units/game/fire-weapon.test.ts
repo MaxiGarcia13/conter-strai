@@ -3,9 +3,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 import { setPlayerPose } from '@/modules/game/stores/player-state';
 import { useRoundStore } from '@/modules/game/stores/round-store';
-import { fireWeapon, resetFireWeaponCooldown, setFireWeaponView } from '@/modules/game/utils/fire-weapon';
+import { useWeaponAmmoStore } from '@/modules/game/stores/weapon-ammo-store';
+import {
+  fireWeapon,
+  resetFireWeaponCooldown,
+  resetWeaponAmmo,
+  setFireWeaponView,
+} from '@/modules/game/utils/fire-weapon';
 import { playGameSound } from '@/modules/game/utils/play-game-sound';
-import { PISTOL_FIRE_COOLDOWN_MS } from '@/modules/weapons/constants/pistol';
+import { PISTOL_FIRE_COOLDOWN_MS, PISTOL_MAGAZINE_SIZE } from '@/modules/weapons/constants/pistol';
 
 vi.mock('@/modules/game/utils/play-game-sound', () => ({
   playGameSound: vi.fn(),
@@ -17,6 +23,7 @@ const playGameSoundMock = vi.mocked(playGameSound);
 describe('fireWeapon', () => {
   beforeEach(() => {
     resetFireWeaponCooldown();
+    resetWeaponAmmo();
     useGamePauseStore.getState().reset();
     useRoundStore.setState({ phase: 'live' });
     setPlayerPose(null);
@@ -76,5 +83,25 @@ describe('fireWeapon', () => {
     expect(fireWeapon(1_000)).toBe(true);
     expect(fireWeapon(1_000 + PISTOL_FIRE_COOLDOWN_MS)).toBe(true);
     expect(playGameSoundMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('fires for a full magazine then blocks the shot that would empty it', () => {
+    for (let i = 0; i < PISTOL_MAGAZINE_SIZE; i++) {
+      expect(fireWeapon(1_000 + i * PISTOL_FIRE_COOLDOWN_MS)).toBe(true);
+    }
+    expect(fireWeapon(1_000 + PISTOL_MAGAZINE_SIZE * PISTOL_FIRE_COOLDOWN_MS)).toBe(false);
+    expect(playGameSoundMock).toHaveBeenCalledTimes(PISTOL_MAGAZINE_SIZE);
+  });
+
+  it('refills the magazine when a reload completes', () => {
+    for (let i = 0; i < PISTOL_MAGAZINE_SIZE; i++) {
+      expect(fireWeapon(1_000 + i * PISTOL_FIRE_COOLDOWN_MS)).toBe(true);
+    }
+    expect(fireWeapon(1_000 + PISTOL_MAGAZINE_SIZE * PISTOL_FIRE_COOLDOWN_MS)).toBe(false);
+
+    useWeaponAmmoStore.getState().onReloadComplete();
+
+    expect(fireWeapon(1_000 + (PISTOL_MAGAZINE_SIZE + 1) * PISTOL_FIRE_COOLDOWN_MS)).toBe(true);
+    expect(playGameSoundMock).toHaveBeenCalledTimes(PISTOL_MAGAZINE_SIZE + 1);
   });
 });

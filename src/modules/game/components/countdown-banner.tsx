@@ -1,16 +1,8 @@
-import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
-import { useRoundStore } from '../stores/round-store';
+import { useEffectiveRoundPhase } from '@/modules/game/hooks/use-effective-round-phase';
 
 /** Full-screen 3–2–1 overlay before combat — visible above loaders and HUD. */
 export function CountdownBanner() {
-  const connected = useMultiplayerStore((state) => state.connected);
-  const mpPhase = useMultiplayerStore((state) => state.phase);
-  const mpCountdown = useMultiplayerStore((state) => state.countdown);
-  const roundPhase = useRoundStore((state) => state.phase);
-  const roundCountdown = useRoundStore((state) => state.countdown);
-
-  const phase = connected ? mpPhase : roundPhase;
-  const countdown = connected ? mpCountdown : (phase === 'countdown' ? roundCountdown : null);
+  const { phase, countdown } = useEffectiveRoundPhase();
 
   if (phase !== 'countdown' || countdown == null || countdown < 1) {
     return null;

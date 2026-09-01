@@ -4,12 +4,11 @@ import { useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import { useHealthStore } from '@/modules/combat';
 import { LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
+import { useEffectiveRoundPhase } from '@/modules/game/hooks/use-effective-round-phase';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 import { resetPlayerTransform } from '@/modules/game/stores/player-state';
-import { useRoundStore } from '@/modules/game/stores/round-store';
 import { npcBlockersFromScenario } from '@/modules/game/utils/npc-blockers-from-scenario';
 import { propBlockersFromScenario } from '@/modules/game/utils/prop-blockers-from-scenario';
-import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { useLocomotionSounds } from '../use-locomotion-sounds';
 import { usePressedKeyCodes } from '../use-pressed-key-codes';
 import { usePlayerKeyboard } from './use-player-keyboard';
@@ -43,10 +42,7 @@ export function usePlayerControls({
     (s) => s.healthById[LOCAL_PLAYER_ENTITY_ID]?.isEliminated ?? false,
   );
   const paused = useGamePauseStore((s) => s.isPaused);
-  const connected = useMultiplayerStore((s) => s.connected);
-  const mpPhase = useMultiplayerStore((s) => s.phase);
-  const roundPhase = useRoundStore((s) => s.phase);
-  const phase = connected ? mpPhase : roundPhase;
+  const { phase } = useEffectiveRoundPhase();
   const npcBlockers = useMemo(
     () => npcBlockersFromScenario(scenario, spawn.key),
     [scenario, spawn.key],

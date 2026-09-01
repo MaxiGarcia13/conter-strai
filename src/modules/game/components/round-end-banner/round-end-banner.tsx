@@ -1,7 +1,7 @@
 import type { ScenarioId } from '@/modules/scenarios';
 import { useState } from 'react';
 import { CsButton } from '@/components/cs-button';
-import { useRoundStore } from '@/modules/game/stores/round-store';
+import { useEffectiveRoundPhase } from '@/modules/game/hooks/use-effective-round-phase';
 import { restartRound } from '@/modules/game/utils/restart-round';
 import { clearRoomSession, readRoomSession } from '@/modules/lobby/utils/room-session';
 import { leaveMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
@@ -18,17 +18,12 @@ interface RoundEndBannerProps {
 /** Full-screen overlay shown when a round ends. Server-driven in a match. */
 export function RoundEndBanner({ roomId, scenarioId }: RoundEndBannerProps) {
   const connected = useMultiplayerStore((state) => state.connected);
-  const mpPhase = useMultiplayerStore((state) => state.phase);
-  const mpWinner = useMultiplayerStore((state) => state.winner);
-  const roundPhase = useRoundStore((state) => state.phase);
-  const roundWinner = useRoundStore((state) => state.winner);
+  const { phase, winner } = useEffectiveRoundPhase();
 
   const session = roomId ? readRoomSession(roomId) : null;
   const isHost = session?.role === 'host' || !roomId;
   const [closing, setClosing] = useState(false);
 
-  const phase = roomId ? mpPhase : roundPhase;
-  const winner = roomId ? mpWinner : roundWinner;
   /** Multiplayer: host only. Offline: always. */
   const canRestart = roomId ? isHost : true;
 

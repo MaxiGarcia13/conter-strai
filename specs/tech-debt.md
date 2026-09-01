@@ -176,7 +176,7 @@ Join → waiting → browser **back** to `/room/{id}/join` → second **Join Roo
 
 Small DRY wins from a codebase audit (Aug 2026). Pick up when touching round-end, pause, or lobby close flows.
 
-- [ ] **Unify offline vs multiplayer phase resolution** — `src/modules/game/hooks/use-effective-round-phase.ts` (or similar)
+- [x] **Unify offline vs multiplayer phase resolution** — `src/modules/game/hooks/use-effective-round-phase.ts` (or similar)
   1. Grep `connected ? mpPhase : roundPhase` and `roomId ? mpPhase : roundPhase` (expect `countdown-banner`, `game-pause-panel`, `use-player-controls`, `round-end-banner`).
   2. Add `useEffectiveRoundPhase()` returning `{ phase, countdown?, winner? }` with one authoritative rule (prefer `connected` for live play; document why if `roomId` differs for round-end).
   3. Replace duplicated store subscriptions in callers; add a small unit test for the resolution rule if any logic is non-trivial.

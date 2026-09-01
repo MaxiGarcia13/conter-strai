@@ -5,10 +5,10 @@ import { CsButton } from '@/components/cs-button';
 import { CAMERA_MODE_LABELS } from '@/modules/game/constants/camera-mode-labels';
 import { GAME_COMMANDS, MOBILE_COMMANDS } from '@/modules/game/constants/game-bindings';
 import { useCameraMode } from '@/modules/game/hooks/use-camera-mode';
+import { useEffectiveRoundPhase } from '@/modules/game/hooks/use-effective-round-phase';
 import { isTouchPrimaryDevice } from '@/modules/game/input/utils/is-touch-primary-device';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 import { cycleCameraMode } from '@/modules/game/stores/player-state';
-import { useRoundStore } from '@/modules/game/stores/round-store';
 import { leaveMatchToHome } from '@/modules/game/utils/leave-match-to-home';
 import { restartRound } from '@/modules/game/utils/restart-round';
 import { readRoomSession } from '@/modules/lobby/utils/room-session';
@@ -29,9 +29,7 @@ export function GamePausePanel({ roomId, scenarioId }: GamePausePanelProps) {
   const setShowCommands = useGamePauseStore((s) => s.setShowCommands);
 
   const connected = useMultiplayerStore((s) => s.connected);
-  const mpPhase = useMultiplayerStore((s) => s.phase);
-  const roundPhase = useRoundStore((s) => s.phase);
-  const phase = connected ? mpPhase : roundPhase;
+  const { phase } = useEffectiveRoundPhase();
 
   const cameraMode = useCameraMode();
 

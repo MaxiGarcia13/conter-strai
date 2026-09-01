@@ -17,10 +17,10 @@ Locally (`astro dev`, including Playwright), `glbCdnUrl()` points at **`/api/moc
 
 ## Path mapping
 
-| Local source                                | Local (`astro dev` / e2e)                                      | Production CDN                                                              |
-| ------------------------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `assets/glb/characters/civilians/james.glb` | `/api/mock/local-glb?q=characters/civilians/james.glb`         | `https://conter-strai.maxig8.workers.dev/?q=characters/civilians/james.glb` |
-| `assets/glb/<key>`                          | `/api/mock/local-glb?q=<key>`                                  | `https://conter-strai.maxig8.workers.dev/?q=<key>`                          |
+| Local source                                | Local (`astro dev` / e2e)                              | Production CDN                                                              |
+| ------------------------------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------- |
+| `assets/glb/characters/civilians/james.glb` | `/api/mock/local-glb?q=characters/civilians/james.glb` | `https://conter-strai.maxig8.workers.dev/?q=characters/civilians/james.glb` |
+| `assets/glb/<key>`                          | `/api/mock/local-glb?q=<key>`                          | `https://conter-strai.maxig8.workers.dev/?q=<key>`                          |
 
 The `q` query value is the path under `assets/glb/` (no `/assets` prefix). Registries pass keys like `/characters/civilians/james.glb`; `glbCdnUrl()` strips the leading slash and builds the URL.
 

@@ -7,7 +7,6 @@ import { DEFAULT_MAX_PER_TEAM } from '@/modules/game/constants/play-defaults';
 import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
 import { TEAM_SKINS } from '@/modules/teams/constants/team-skins';
 import { PISTOL_FIRE_COOLDOWN_MS } from '@/modules/weapons/constants/pistol';
-import { isE2e } from '../dev/is-e2e';
 import { registerE2eEndRound } from '../dev/register-e2e-end-round';
 import { createMatchState } from '../schema/match-state';
 import { createPlayerState } from '../schema/player-state';
@@ -15,8 +14,10 @@ import { assertRoomJoinable, computeExpiresAt } from '../utils/room-expiry';
 import { isRemotePoseMessage } from '../utils/syncable-remote-pose';
 import { isMoveMessage, moveExceedsThreshold } from '../utils/validate-move';
 import { applyMatchShot, isShotMessage } from './apply-match-shot';
+import { createMatchCountdown } from './create-match-countdown';
 import { assignTeam, checkTeamWipe, recalculateSpawnIndices, shuffleTeamsIfNoOpponents, teamCount } from './match-teams';
 import { placePlayerAtSpawn, resolveTeamSpawn, respawnMatchPlayers } from './place-match-player';
+import { scheduleMatchExpiry } from './schedule-match-expiry';
 
 export interface MatchMetadata {
   roomCode: string;
@@ -34,7 +35,6 @@ interface JoinOptions {
 
 const MAX_CLIENTS = DEFAULT_MAX_PER_TEAM * 2;
 const COUNTDOWN_START = 3;
-const COUNTDOWN_TICK_MS = 1_000;
 /** Ms the room stays queryable after `expiresAt` so REST can return 410. */
 const DISPOSE_GRACE_MS = 1_000;
 
@@ -42,8 +42,8 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
   private hostSessionId: string | null = null;
   /** Spawn slot claimed at join — reused on round restart. */
   private spawnIndexBySession = new Map<string, number>();
-  private countdownTimer: ReturnType<typeof setInterval> | null = null;
-  private expiryTimer: ReturnType<typeof setTimeout> | null = null;
+  private countdown: ReturnType<typeof createMatchCountdown> | null = null;
+  private expiry: ReturnType<typeof scheduleMatchExpiry> | null = null;
   /** Host close / API dispose — skip the reconnection grace window on teardown. */
   private disposing = false;
   /** Clients that sent `leaveLobby` — skip the reconnect grace on disconnect. */
@@ -58,7 +58,15 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
     this.maxClients = MAX_CLIENTS;
     this.state = createMatchState({ scenario: meta.scenario });
     this.metadata = meta;
-    this.scheduleExpiry();
+    this.countdown = createMatchCountdown(this.state);
+    this.expiry = scheduleMatchExpiry({
+      graceMs: DISPOSE_GRACE_MS,
+      onExpired: () => {
+        this.broadcast('roomClosed');
+        void this.disposeLobby();
+      },
+    });
+    this.expiry.schedule(meta.expiresAt);
 
     this.onMessage('move', (client, data) => {
       const player = this.state.players.get(client.sessionId);
@@ -231,7 +239,7 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
   }
 
   private resetRound() {
-    this.clearCountdown();
+    this.countdown?.clear();
     this.renewExpiry();
     respawnMatchPlayers(this.state, this.spawnIndexBySession);
 
@@ -296,74 +304,17 @@ export class MatchRoom extends Room<{ state: MatchState; metadata: MatchMetadata
   }
 
   private startCountdown() {
-    this.state.countdown = COUNTDOWN_START;
-    this.state.roundPhase = 'countdown';
-    this.beginCountdown();
+    this.countdown?.begin(COUNTDOWN_START);
   }
 
   onDispose() {
-    this.clearCountdown();
-    if (this.expiryTimer) {
-      clearTimeout(this.expiryTimer);
-      this.expiryTimer = null;
-    }
+    this.countdown?.clear();
+    this.expiry?.cancel();
   }
 
   /** Slide `expiresAt` forward and reschedule auto-dispose (host restart / first match). */
   private renewExpiry() {
     this.metadata.expiresAt = computeExpiresAt();
-    if (this.expiryTimer) {
-      clearTimeout(this.expiryTimer);
-      this.expiryTimer = null;
-    }
-    this.scheduleExpiry();
-  }
-
-  /** Auto-dispose when the room code TTL elapses (see Room code TTL). */
-  private scheduleExpiry() {
-    const expiresAtMs = this.metadata.expiresAt ? Date.parse(this.metadata.expiresAt) : Number.NaN;
-    if (Number.isNaN(expiresAtMs)) {
-      return;
-    }
-    // E2E asserts REST 410; auto-dispose would race the query to 404.
-    if (isE2e()) {
-      return;
-    }
-    // Linger after expiresAt so REST can return 410 before the room is gone.
-    const delay = expiresAtMs + DISPOSE_GRACE_MS - Date.now();
-    if (delay <= 0) {
-      this.broadcast('roomClosed');
-      void this.disposeLobby();
-      return;
-    }
-    this.expiryTimer = setTimeout(() => {
-      this.expiryTimer = null;
-      this.broadcast('roomClosed');
-      void this.disposeLobby();
-    }, delay);
-  }
-
-  private beginCountdown() {
-    this.clearCountdown();
-    this.countdownTimer = setInterval(() => {
-      if (this.state.roundPhase !== 'countdown') {
-        this.clearCountdown();
-        return;
-      }
-      if (this.state.countdown <= 1) {
-        this.clearCountdown();
-        this.state.countdown = 0;
-        this.state.roundPhase = 'in_progress';
-        return;
-      }
-      this.state.countdown -= 1;
-    }, COUNTDOWN_TICK_MS);
-  }
-
-  private clearCountdown() {
-    if (this.countdownTimer) {
-      clearInterval(this.countdownTimer);
-      this.countdownTimer = null;
-    }
+    this.expiry?.schedule(this.metadata.expiresAt);
   }
 }

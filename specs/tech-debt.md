@@ -201,7 +201,7 @@ Small DRY wins from a codebase audit (Aug 2026). Pick up when touching round-end
   2. Presentational wrapper: `role`, `aria-*`, children; callers pass title + actions.
   3. Skip if the three overlays diverge further (countdown vs dialog vs alert semantics).
 
-- [ ] **Split `MatchRoom` message handlers** — `src/modules/multiplayer/rooms/match-room.ts`
-  1. Only when adding message types or editing teardown — file is ~300 lines but cohesive today.
-  2. Move `onMessage('move'|'shot'|…)`, countdown tick, and expiry scheduling into private modules in the same folder (mirror `use-soldier-locomotion/` layout).
-  3. Keep `MatchRoom` as the Colyseus `Room` class wiring handlers + state transitions; no public API change.
+- [x] **Split `MatchRoom` message handlers** — `src/modules/multiplayer/rooms/match-room.ts`
+   1. Extracted the standalone lifecycle subsystems into private modules in the same folder: `create-match-countdown.ts` (countdown tick → `in_progress`) and `schedule-match-expiry.ts` (TTL timer + grace → `roomClosed`/dispose), each with unit tests (`match-lifecycle-helpers.test.ts`).
+   2. `MatchRoom` now wires handlers + state transitions against owned `countdown` / `expiry` instances (delegating in `startCountdown`, `resetRound`, `renewExpiry`, `onDispose`); file shrunk ~369 → ~320 lines.
+   3. The `onMessage('move'|'shot'|…)` registrations stay inline: they are inseparable from the private per-session maps / transition methods, so moving them out would widen the class API (no public API change). No teardown / message-type work was pending, so per the task gate they were left cohesive.

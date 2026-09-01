@@ -182,9 +182,9 @@ Small DRY wins from a codebase audit (Aug 2026). Pick up when touching round-end
   3. Replace duplicated store subscriptions in callers; add a small unit test for the resolution rule if any logic is non-trivial.
 
 - [x] **Extract host / restart capabilities** — `src/modules/game/utils/host-capabilities.ts` (`resolveRoomHostCapabilities`) rather than a `use*` hook — it derives read-only from `roomId` + `readRoomSession` with no React state, so `react/no-unnecessary-use-prefix` would flag a hook wrapper.
-   1. Grep `readRoomSession` + `isHost` + `canRestart` (expect `round-end-banner`, `game-pause-panel`).
-   2. Resolver returns `{ isHost, canRestart }` from `roomId?: string` (`canRestart = roomId ? isHost : true`).
-   3. Callers keep UI-only state (`closing`, pause toggles); no behavior change.
+  1.  Grep `readRoomSession` + `isHost` + `canRestart` (expect `round-end-banner`, `game-pause-panel`).
+  2.  Resolver returns `{ isHost, canRestart }` from `roomId?: string` (`canRestart = roomId ? isHost : true`).
+  3.  Callers keep UI-only state (`closing`, pause toggles); no behavior change.
 
 - [x] **Shared dispose-room helper (404-tolerant)** — `src/modules/multiplayer/services/dispose-room-tolerant.ts`
   1. Grep `deleteRoom` + `LobbyRestError` + `status !== 404` (expect `round-end-banner`, `waiting-room-content`).
@@ -202,6 +202,6 @@ Small DRY wins from a codebase audit (Aug 2026). Pick up when touching round-end
   3. Skip if the three overlays diverge further (countdown vs dialog vs alert semantics).
 
 - [x] **Split `MatchRoom` message handlers** — `src/modules/multiplayer/rooms/match-room.ts`
-   1. Extracted the standalone lifecycle subsystems into private modules in the same folder: `create-match-countdown.ts` (countdown tick → `in_progress`) and `schedule-match-expiry.ts` (TTL timer + grace → `roomClosed`/dispose), each with unit tests (`match-lifecycle-helpers.test.ts`).
-   2. `MatchRoom` now wires handlers + state transitions against owned `countdown` / `expiry` instances (delegating in `startCountdown`, `resetRound`, `renewExpiry`, `onDispose`); file shrunk ~369 → ~320 lines.
-   3. The `onMessage('move'|'shot'|…)` registrations stay inline: they are inseparable from the private per-session maps / transition methods, so moving them out would widen the class API (no public API change). No teardown / message-type work was pending, so per the task gate they were left cohesive.
+  1.  Extracted the standalone lifecycle subsystems into private modules in the same folder: `create-match-countdown.ts` (countdown tick → `in_progress`) and `schedule-match-expiry.ts` (TTL timer + grace → `roomClosed`/dispose), each with unit tests (`match-lifecycle-helpers.test.ts`).
+  2.  `MatchRoom` now wires handlers + state transitions against owned `countdown` / `expiry` instances (delegating in `startCountdown`, `resetRound`, `renewExpiry`, `onDispose`); file shrunk ~369 → ~320 lines.
+  3.  The `onMessage('move'|'shot'|…)` registrations stay inline: they are inseparable from the private per-session maps / transition methods, so moving them out would widen the class API (no public API change). No teardown / message-type work was pending, so per the task gate they were left cohesive.

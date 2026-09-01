@@ -196,7 +196,7 @@ Small DRY wins from a codebase audit (Aug 2026). Pick up when touching round-end
   2. Add `leaveMatchToHomeAsHost(roomId, hostToken)` (or options on `leaveMatchToHome`) using `disposeRoomTolerant`; keep `closing` / `aria-busy` in the banner.
   3. Preserve comments: hard-nav tears page down; peers may navigate via `roomClosed`; do not await Colyseus reconnect grace on guest path.
 
-- [ ] **Extract game overlay shell** — `src/modules/game/components/game-overlay-panel.tsx` (optional / cosmetic)
+- [x] **Extract game overlay shell** — `src/modules/game/components/game-overlay-panel.tsx` (optional / cosmetic)
   1. Grep `fixed inset-0 z-20 flex items-center justify-center bg-background-deep/50` and inner `border border-surface-border bg-background-deep/90` (expect `round-end-banner`, `game-pause-panel`; `countdown-banner` is similar but `z-50` / larger type).
   2. Presentational wrapper: `role`, `aria-*`, children; callers pass title + actions.
   3. Skip if the three overlays diverge further (countdown vs dialog vs alert semantics).

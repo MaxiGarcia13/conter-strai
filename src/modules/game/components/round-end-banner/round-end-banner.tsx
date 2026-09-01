@@ -8,6 +8,7 @@ import { restartRound } from '@/modules/game/utils/restart-round';
 import { readRoomSession } from '@/modules/lobby/utils/room-session';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
+import { GameOverlayPanel } from '../game-overlay-panel';
 
 interface RoundEndBannerProps {
   roomId?: string;
@@ -55,40 +56,37 @@ export function RoundEndBanner({ roomId, scenarioId }: RoundEndBannerProps) {
   }
 
   return (
-    <div
+    <GameOverlayPanel
       role="alert"
-      aria-label={`${TEAM_DISPLAY_NAME[winner]} win the round`}
-      className="fixed inset-0 z-20 flex items-center justify-center bg-background-deep/50"
+      ariaLabel={`${TEAM_DISPLAY_NAME[winner]} win the round`}
     >
-      <div className="border border-surface-border bg-background-deep/90 px-8 py-6 text-center font-mono tracking-widest uppercase">
-        <p className="mb-1 text-sm text-foreground/60">Round Over</p>
-        <p className="text-2xl font-bold text-accent">
-          {TEAM_DISPLAY_NAME[winner]}
-          {' '}
-          Win
+      <p className="mb-1 text-sm text-foreground/60">Round Over</p>
+      <p className="text-2xl font-bold text-accent">
+        {TEAM_DISPLAY_NAME[winner]}
+        {' '}
+        Win
+      </p>
+      {connected && !canRestart && (
+        <p className="mt-3 text-xs tracking-widest text-foreground/50 normal-case">
+          Waiting for host to restart
         </p>
-        {connected && !canRestart && (
-          <p className="mt-3 text-xs tracking-widest text-foreground/50 normal-case">
-            Waiting for host to restart
-          </p>
-        )}
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-3 normal-case tracking-normal">
-          {canRestart && (
-            <CsButton type="button" variant="primary" onClick={handleRestart} disabled={closing}>
-              Restart
-            </CsButton>
-          )}
-          <CsButton
-            type="button"
-            variant="secondary"
-            onClick={handleHome}
-            disabled={closing}
-            aria-busy={closing}
-          >
-            {closing ? 'Closing…' : 'Home'}
+      )}
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-3 normal-case tracking-normal">
+        {canRestart && (
+          <CsButton type="button" variant="primary" onClick={handleRestart} disabled={closing}>
+            Restart
           </CsButton>
-        </div>
+        )}
+        <CsButton
+          type="button"
+          variant="secondary"
+          onClick={handleHome}
+          disabled={closing}
+          aria-busy={closing}
+        >
+          {closing ? 'Closing…' : 'Home'}
+        </CsButton>
       </div>
-    </div>
+    </GameOverlayPanel>
   );
 }

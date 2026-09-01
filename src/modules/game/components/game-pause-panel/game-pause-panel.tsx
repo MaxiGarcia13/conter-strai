@@ -13,6 +13,7 @@ import { resolveRoomHostCapabilities } from '@/modules/game/utils/host-capabilit
 import { leaveMatchToHome } from '@/modules/game/utils/leave-match-to-home';
 import { restartRound } from '@/modules/game/utils/restart-round';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
+import { GameOverlayPanel } from '../game-overlay-panel';
 import { CommandIcon } from './command-icon';
 
 interface GamePausePanelProps {
@@ -58,82 +59,75 @@ export function GamePausePanel({ roomId, scenarioId }: GamePausePanelProps) {
   const commands = isTouchPrimaryDevice() ? MOBILE_COMMANDS : GAME_COMMANDS;
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Game paused"
-      className="fixed inset-0 z-20 flex items-center justify-center bg-background-deep/50"
-    >
-      <div className="border border-surface-border bg-background-deep/90 px-8 py-6 text-center font-mono tracking-widest uppercase">
-        <p className="mb-4 text-2xl font-bold text-accent">{showCommands ? 'Commands' : 'Paused'}</p>
+    <GameOverlayPanel role="dialog" ariaLabel="Game paused" modal>
+      <p className="mb-4 text-2xl font-bold text-accent">{showCommands ? 'Commands' : 'Paused'}</p>
 
-        {showCommands
-          ? (
-              <div className="flex flex-col items-stretch gap-3 normal-case tracking-normal">
-                <dl className="border-t border-surface-border pt-4 text-left text-sm">
-                  {commands.map((command) => {
-                    if (command.devOnly && !import.meta.env.DEV)
-                      return null;
+      {showCommands
+        ? (
+            <div className="flex flex-col items-stretch gap-3 normal-case tracking-normal">
+              <dl className="border-t border-surface-border pt-4 text-left text-sm">
+                {commands.map((command) => {
+                  if (command.devOnly && !import.meta.env.DEV)
+                    return null;
 
-                    return (
-                      <div
-                        key={`${command.action}-${command.key}`}
-                        className="flex items-center justify-between gap-6 py-1"
-                      >
-                        <dt className="text-foreground/60">{command.action}</dt>
-                        <dd className="flex items-center gap-2 font-bold text-foreground">
-                          {command.iconId && <CommandIcon iconId={command.iconId} />}
-                          {command.key}
-                        </dd>
-                      </div>
-                    );
-                  })}
-                </dl>
+                  return (
+                    <div
+                      key={`${command.action}-${command.key}`}
+                      className="flex items-center justify-between gap-6 py-1"
+                    >
+                      <dt className="text-foreground/60">{command.action}</dt>
+                      <dd className="flex items-center gap-2 font-bold text-foreground">
+                        {command.iconId && <CommandIcon iconId={command.iconId} />}
+                        {command.key}
+                      </dd>
+                    </div>
+                  );
+                })}
+              </dl>
 
-                <CsButton type="button" variant="secondary" onClick={() => setShowCommands(false)}>
-                  Back
+              <CsButton type="button" variant="secondary" onClick={() => setShowCommands(false)}>
+                Back
+              </CsButton>
+            </div>
+          )
+        : (
+            <div className="flex flex-col items-stretch gap-3 normal-case tracking-normal">
+              <CsButton type="button" variant="primary" onClick={togglePause}>
+                Resume
+              </CsButton>
+
+              {canRestart && (
+                <CsButton type="button" variant="secondary" onClick={handleRestart}>
+                  Restart
                 </CsButton>
-              </div>
-            )
-          : (
-              <div className="flex flex-col items-stretch gap-3 normal-case tracking-normal">
-                <CsButton type="button" variant="primary" onClick={togglePause}>
-                  Resume
-                </CsButton>
+              )}
 
-                {canRestart && (
-                  <CsButton type="button" variant="secondary" onClick={handleRestart}>
-                    Restart
-                  </CsButton>
-                )}
-
-                <CsButton type="button" variant="secondary" onClick={cycleCameraMode}>
-                  <span className="flex items-center justify-between gap-3">
-                    <span>Cycle camera</span>
-                    <span className="text-foreground/60">
-                      {CAMERA_MODE_LABELS[cameraMode]}
-                    </span>
+              <CsButton type="button" variant="secondary" onClick={cycleCameraMode}>
+                <span className="flex items-center justify-between gap-3">
+                  <span>Cycle camera</span>
+                  <span className="text-foreground/60">
+                    {CAMERA_MODE_LABELS[cameraMode]}
                   </span>
-                </CsButton>
+                </span>
+              </CsButton>
 
-                <CsButton type="button" variant="secondary" onClick={() => setShowCommands(true)}>
-                  Commands
-                </CsButton>
+              <CsButton type="button" variant="secondary" onClick={() => setShowCommands(true)}>
+                Commands
+              </CsButton>
 
-                <CsButton type="button" variant="secondary" onClick={handleLeave}>
-                  Leave
-                </CsButton>
-              </div>
-            )}
+              <CsButton type="button" variant="secondary" onClick={handleLeave}>
+                Leave
+              </CsButton>
+            </div>
+          )}
 
-        <p
-          className="mt-6 text-xs tracking-widest text-foreground/40 normal-case"
-          aria-label={`Version ${version}`}
-        >
-          v
-          {version}
-        </p>
-      </div>
-    </div>
+      <p
+        className="mt-6 text-xs tracking-widest text-foreground/40 normal-case"
+        aria-label={`Version ${version}`}
+      >
+        v
+        {version}
+      </p>
+    </GameOverlayPanel>
   );
 }

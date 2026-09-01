@@ -3,6 +3,8 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { getEntry, render } from 'astro:content';
 import BackHomeLink from '@/components/back-home-link.astro';
+import SiteEyebrow from '@/components/site-eyebrow.astro';
+import SiteTitle from '@/components/site-title.astro';
 import SiteTopbar from '@/components/site-topbar.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
 import { parseShippedUserStories } from '@/utils/parse-changelog-shipped';
@@ -43,12 +45,8 @@ const contributorDocs = [
 
     <div class="flex flex-1 flex-col px-(--space-page-x) py-(--space-page-y)">
       <div class="mx-auto w-full max-w-3xl">
-        <p class="font-mono text-accent text-xs tracking-[0.32em] uppercase">// Project status</p>
-        <h1
-          class="font-display mt-3 text-[clamp(2.5rem,8vw,4.5rem)] leading-[0.9] font-extrabold tracking-[0.06em] text-foreground uppercase"
-        >
-          <span class="text-accent">Roadmap</span>
-        </h1>
+        <SiteEyebrow text="Project status" />
+        <SiteTitle accent="Roadmap" />
         <p class="text-foreground-muted mt-4 max-w-prose text-lg font-medium tracking-wide">
           Live view of the work queue and recent releases — sourced from
 

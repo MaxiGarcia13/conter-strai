@@ -2,6 +2,8 @@
 import csImg from '@assets/images/cs.png';
 import { getImage, Image } from 'astro:assets';
 import CsButton from '@/components/cs-button.astro';
+import SiteEyebrow from '@/components/site-eyebrow.astro';
+import SiteTitle from '@/components/site-title.astro';
 import SiteTopbar from '@/components/site-topbar.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
 
@@ -44,12 +46,8 @@ const bullets = ['Online PvP combat', 'Fast tactical rounds', 'Runs in your brow
       class="grid flex-1 items-center gap-12 px-(--space-page-x) py-(--space-page-y) lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16"
     >
       <div class="hud-corners p-5 sm:p-8">
-        <p class="font-mono text-accent text-xs tracking-[0.32em] uppercase">// Tactical shooter</p>
-        <h1
-          class="font-display mt-3 text-[clamp(3.25rem,12vw,7.25rem)] leading-[0.85] font-extrabold tracking-[0.06em] text-foreground uppercase"
-        >
-          Conter <span class="text-accent">Strai</span>
-        </h1>
+        <SiteEyebrow text="Tactical shooter" />
+        <SiteTitle size="hero" leading="Conter " accent="Strai" />
         <p class="text-foreground-muted mt-5 max-w-prose text-lg font-medium tracking-wide sm:text-xl">
           The revolution starts here — choose your side and fight.
         </p>

@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react';
 interface ActionButtonProps {
   label: string;
   icon: ReactNode;
-  mode: 'fire' | 'kneel' | 'sprint';
+  mode: 'fire' | 'kneel' | 'reload' | 'sprint';
   onAction: () => void;
   onHoldStart?: () => void;
   onHoldEnd?: () => void;
@@ -38,7 +38,7 @@ export function ActionButton({
 
       setPressed(true);
 
-      if (mode === 'fire' || mode === 'kneel') {
+      if (mode === 'fire' || mode === 'kneel' || mode === 'reload') {
         onAction();
       } else {
         onHoldStart?.();

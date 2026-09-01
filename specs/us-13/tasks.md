@@ -16,7 +16,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 ## Mobile reload button (US-13.6–US-13.7)
 
 - [x] Export `ReloadIcon` from `src/components/icons/index.ts`
-- [ ] `action-button.tsx` — add `'reload'` mode (tap → `onAction`, same as kneel)
+- [x] `action-button.tsx` — add `'reload'` mode (tap → `onAction`, same as kneel)
 - [ ] `mobile-controls.tsx` — reload button in kneel/run row → `requestReload()`
 - [ ] `game-bindings.ts` — `MOBILE_BINDINGS.reload` with `iconId: 'reload'`; extend `GameCommandIconId`; append to `MOBILE_COMMANDS`
 - [ ] `command-icon.tsx` — map `reload` → `ReloadIcon`

@@ -3,7 +3,6 @@ export { initMatch } from './init-match';
 export {
   leaveMatch,
   onFire,
-  onLeave,
   onPlayerUpdate,
   onPose,
   onRoundUpdate,
@@ -16,21 +15,9 @@ export {
 export { readMatchPlayers } from './read-match-players';
 export { toMoveMessage } from './to-move-message';
 export type {
-  FirePayload,
-  InitMatchOptions,
-  LeaveListener,
   MatchHandle,
   MatchPlayerSnapshot,
-  MatchRoom,
-  MoveMessage,
   PlayersUpdatePayload,
-  PlayerUpdateListener,
-  PoseListener,
-  PosePayload,
-  RemotePoseMessage,
-  RoomClosedListener,
-  RoundUpdateListener,
   RoundUpdatePayload,
   ShotPayload,
-  TransformSyncPayload,
 } from './types';

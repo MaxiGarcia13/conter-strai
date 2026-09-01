@@ -1,6 +1,5 @@
 import type {
   FireListener,
-  LeaveListener,
   PlayerUpdateListener,
   PoseListener,
   RemotePoseMessage,
@@ -56,10 +55,6 @@ export function onPlayerUpdate(listener: PlayerUpdateListener): () => void {
 
 export function onRoundUpdate(listener: RoundUpdateListener): () => void {
   return requireActiveMatch().onRoundUpdate(listener);
-}
-
-export function onLeave(listener: LeaveListener): () => void {
-  return requireActiveMatch().onLeave(listener);
 }
 
 export async function leaveMatch(): Promise<void> {

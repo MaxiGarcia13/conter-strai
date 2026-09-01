@@ -16,6 +16,7 @@ Depends on **US-4** (shipped — pistol hitscan, reload clips), **US-12** (shipp
 | US-13.8  | When a shot's raycast hits **visible world geometry** (walls, floor, props — untagged meshes) within **~2 m** of the camera, spawn a **client-only black impact mark** at the hit point (bullet-hole style). Marks are cosmetic; not synced to peers.          |
 | US-13.9  | Impact marks are capped (FIFO eviction, ~40 marks) and cleared on round start. Soldier hits do not spawn marks; a close wall in front of a farther soldier still gets a mark on the wall.                                                                      |
 | US-13.10 | Magazine gating is **client-side only** (same trust model as client raycast). Server `shot` / `fire` messages and fire-rate cooldown are unchanged.                                                                                                            |
+| US-13.11 | HUD shows **remaining / magazine** (e.g. `10/12`) grouped with the health bar — **bottom-left** on desktop, **top-right** on touch-primary; updates on each shot and refills after reload completes.                                                           |
 
 ## Acceptance
 
@@ -26,10 +27,10 @@ Depends on **US-4** (shipped — pistol hitscan, reload clips), **US-12** (shipp
 5. Point-blank wall shot (≤ ~2 m): black mark appears on the surface; shot beyond 2 m at a wall leaves no mark.
 6. Round restart clears magazine to full and removes impact marks.
 7. `npm run test:unit` passes including new magazine gating and `pick-close-world-impact` tests.
+8. Ammo HUD shows correct `remaining/12` while playing; stacks with health bar per device layout.
 
 ## Out of scope (this US)
 
-- HUD ammo counter (e.g. `7/12` near crosshair)
 - Auto-reload animation when the magazine empties
 - Server-authoritative magazine / anti-cheat
 - Syncing impact marks to remote clients

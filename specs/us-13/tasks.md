@@ -32,10 +32,20 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 - [ ] `round-store.ts` `startRound` — reset bullet impact store
 - [ ] Unit: `tests/units/game/pick-close-world-impact.test.ts`
 
+## Ammo HUD (US-13.11)
+
+- [ ] Add `src/modules/game/utils/get-rounds-remaining.ts` — `PISTOL_MAGAZINE_SIZE - shotsInMag`
+- [ ] Unit: `tests/units/game/get-rounds-remaining.test.ts`
+- [ ] Add `src/modules/game/components/ammo-hud.tsx` — `remaining / PISTOL_MAGAZINE_SIZE`, `role="status"`, accent when empty
+- [ ] Refactor `health-bar.tsx` — inner content only (no fixed positioning)
+- [ ] Add `src/modules/game/components/player-hud.tsx` — stacks health + ammo; bottom-left desktop, top-right touch-primary (same corners as FR-19)
+- [ ] `game-canvas.tsx` — replace standalone `<HealthBar />` with `<PlayerHud />`
+
 ## Acceptance & ship
 
 - [ ] Manual QA (desktop): 12 shots → blocked; R reload → fire again; point-blank wall mark; distant wall no mark
 - [ ] Manual QA (touch-primary): reload button refills mag; empty mag blocks fire; pause Commands shows reload icon
+- [ ] Manual QA: ammo HUD shows `remaining/12`, decrements on fire, refills after reload; grouped with health bar (bottom-left desktop, top-right mobile)
 - [ ] Round restart clears marks and refills magazine
 - [ ] `npm run test:unit` green
 - [ ] Fold US-13 into `specs/current/requirements.md` and `specs/current/design.md`

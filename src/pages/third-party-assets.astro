@@ -27,81 +27,81 @@ const tablerIcons = ['Arrow down', 'Arrow left (back)', 'Brand GitHub', 'Caret r
 ---
 
 <BaseLayout title={title} description={description}>
-  <SitePage topbarTitle="Credits" showBackHome narrow>
-    <SitePageHeader eyebrow="Attributions" leading="Third-party " accent="assets">
+  <SitePage topbarTitle='Credits' showBackHome narrow>
+    <SitePageHeader eyebrow='Attributions' leading='Third-party ' accent='assets'>
       Conter Strai is built with open assets from the community. Thank you to the artists and maintainers below.
     </SitePageHeader>
 
-    <div class="mt-10 space-y-8">
-      <SitePanel as="article" descriptionSize="base">
-        <a slot="title" href="https://polyhaven.com/" class="site-link" target="_blank" rel="noopener noreferrer">
+    <div class='mt-10 space-y-8'>
+      <SitePanel as='article' descriptionSize='base'>
+        <a slot='title' href='https://polyhaven.com/' class='site-link' target='_blank' rel='noopener noreferrer'>
           Poly Haven
         </a>
-        <p slot="description">
+        <p slot='description'>
           PBR textures and 3D models from
-          <a href="https://polyhaven.com/" class="site-inline-link" target="_blank" rel="noopener noreferrer">
+          <a href='https://polyhaven.com/' class='site-inline-link' target='_blank' rel='noopener noreferrer'>
             polyhaven.com
           </a>
           — CC0, free for any use.
         </p>
 
-        <div class="mt-5 grid gap-6 sm:grid-cols-2">
+        <div class='mt-5 grid gap-6 sm:grid-cols-2'>
           <div>
-            <h3 class="site-section-label">Textures</h3>
-            <ul class="text-foreground-muted mt-3 space-y-2 text-sm leading-relaxed">
-              {polyHavenTextures.map((item) => <li class="site-list-row">{item}</li>)}
+            <h3 class='site-section-label'>Textures</h3>
+            <ul class='text-foreground-muted mt-3 space-y-2 text-sm leading-relaxed'>
+              {polyHavenTextures.map((item) => <li class='site-list-row'>{item}</li>)}
             </ul>
           </div>
           <div>
-            <h3 class="site-section-label">Models</h3>
-            <ul class="text-foreground-muted mt-3 space-y-2 text-sm leading-relaxed">
-              {polyHavenModels.map((item) => <li class="site-list-row">{item}</li>)}
+            <h3 class='site-section-label'>Models</h3>
+            <ul class='text-foreground-muted mt-3 space-y-2 text-sm leading-relaxed'>
+              {polyHavenModels.map((item) => <li class='site-list-row'>{item}</li>)}
             </ul>
           </div>
         </div>
       </SitePanel>
 
-      <SitePanel as="article" descriptionSize="base">
-        <a slot="title" href="https://www.mixamo.com/" class="site-link" target="_blank" rel="noopener noreferrer">
+      <SitePanel as='article' descriptionSize='base'>
+        <a slot='title' href='https://www.mixamo.com/' class='site-link' target='_blank' rel='noopener noreferrer'>
           Mixamo
         </a>
-        <p slot="description">
+        <p slot='description'>
           Character meshes and skeletal animation from
-          <a href="https://www.mixamo.com/" class="site-inline-link" target="_blank" rel="noopener noreferrer">
+          <a href='https://www.mixamo.com/' class='site-inline-link' target='_blank' rel='noopener noreferrer'>
             mixamo.com
           </a>
           (Adobe). Used under the Mixamo terms of use.
         </p>
 
-        <div class="mt-5 grid gap-6 sm:grid-cols-2">
+        <div class='mt-5 grid gap-6 sm:grid-cols-2'>
           <div>
-            <h3 class="site-section-label">Characters</h3>
-            <ul class="text-foreground-muted mt-3 space-y-2 text-sm leading-relaxed">
-              {mixamoCharacters.map((item) => <li class="site-list-row">{item}</li>)}
+            <h3 class='site-section-label'>Characters</h3>
+            <ul class='text-foreground-muted mt-3 space-y-2 text-sm leading-relaxed'>
+              {mixamoCharacters.map((item) => <li class='site-list-row'>{item}</li>)}
             </ul>
           </div>
           <div>
-            <h3 class="site-section-label">Animation</h3>
-            <ul class="text-foreground-muted mt-3 space-y-2 text-sm leading-relaxed">
-              {mixamoAnimations.map((item) => <li class="site-list-row">{item}</li>)}
+            <h3 class='site-section-label'>Animation</h3>
+            <ul class='text-foreground-muted mt-3 space-y-2 text-sm leading-relaxed'>
+              {mixamoAnimations.map((item) => <li class='site-list-row'>{item}</li>)}
             </ul>
           </div>
         </div>
       </SitePanel>
 
-      <SitePanel as="article" descriptionSize="base">
-        <a slot="title" href="https://tabler.io/icons" class="site-link" target="_blank" rel="noopener noreferrer">
+      <SitePanel as='article' descriptionSize='base'>
+        <a slot='title' href='https://tabler.io/icons' class='site-link' target='_blank' rel='noopener noreferrer'>
           Tabler Icons
         </a>
-        <p slot="description">
+        <p slot='description'>
           UI icons from
-          <a href="https://tabler.io/" class="site-inline-link" target="_blank" rel="noopener noreferrer">tabler.io</a>
+          <a href='https://tabler.io/' class='site-inline-link' target='_blank' rel='noopener noreferrer'>tabler.io</a>
           — MIT license.
         </p>
 
-        <h3 class="site-section-label mt-5">Icons in use</h3>
-        <ul class="text-foreground-muted mt-3 columns-1 gap-x-8 space-y-2 text-sm leading-relaxed sm:columns-2">
-          {tablerIcons.map((item) => <li class="site-list-row break-inside-avoid">{item}</li>)}
+        <h3 class='site-section-label mt-5'>Icons in use</h3>
+        <ul class='text-foreground-muted mt-3 columns-1 gap-x-8 space-y-2 text-sm leading-relaxed sm:columns-2'>
+          {tablerIcons.map((item) => <li class='site-list-row break-inside-avoid'>{item}</li>)}
         </ul>
       </SitePanel>
     </div>

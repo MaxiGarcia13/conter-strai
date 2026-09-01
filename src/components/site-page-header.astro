@@ -17,7 +17,7 @@ const ledeClass = lede === 'hero' ? 'site-lede site-lede--hero' : 'site-lede sit
 
 <SiteEyebrow text={eyebrow} />
 <SiteTitle size={titleSize} leading={leading} accent={accent}>
-  <slot name="title" />
+  <slot name='title' />
 </SiteTitle>
 {
   Astro.slots.has('default') && (

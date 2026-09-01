@@ -13,14 +13,14 @@ const descriptionClass =
     : 'text-foreground-muted mt-2 text-sm';
 ---
 
-<Tag class="hud-corners border border-surface-border/80 p-5 sm:p-6">
-  <h2 class="font-display text-2xl font-bold tracking-wide text-foreground uppercase">
-    {title ?? <slot name="title" />}
+<Tag class='hud-corners border border-surface-border/80 p-5 sm:p-6'>
+  <h2 class='font-display text-2xl font-bold tracking-wide text-foreground uppercase'>
+    {title ?? <slot name='title' />}
   </h2>
   {
     Astro.slots.has('description') && (
       <div class={descriptionClass}>
-        <slot name="description" />
+        <slot name='description' />
       </div>
     )
   }

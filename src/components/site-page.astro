@@ -11,23 +11,23 @@ interface Props {
 const { topbarTitle, showBackHome = false, narrow = false } = Astro.props;
 ---
 
-<section class="relative flex flex-1 flex-col">
+<section class='relative flex flex-1 flex-col'>
   <SiteTopbar title={topbarTitle}>
     {
       Astro.slots.has('topbar-leading') ? (
-        <slot name="topbar-leading" slot="leading" />
+        <slot name='topbar-leading' slot='leading' />
       ) : showBackHome ? (
-        <BackHomeLink slot="leading" />
+        <BackHomeLink slot='leading' />
       ) : null
     }
-    {Astro.slots.has('topbar-center') && <slot name="topbar-center" slot="center" />}
-    {Astro.slots.has('topbar-trailing') && <slot name="topbar-trailing" slot="trailing" />}
+    {Astro.slots.has('topbar-center') && <slot name='topbar-center' slot='center' />}
+    {Astro.slots.has('topbar-trailing') && <slot name='topbar-trailing' slot='trailing' />}
   </SiteTopbar>
 
-  <div class="flex flex-1 flex-col px-(--space-page-x) py-(--space-page-y)">
+  <div class='flex flex-1 flex-col px-(--space-page-x) py-(--space-page-y)'>
     {
       narrow ? (
-        <div class="mx-auto w-full max-w-3xl">
+        <div class='mx-auto w-full max-w-3xl'>
           <slot />
         </div>
       ) : (

@@ -37,40 +37,40 @@ const contributorDocs = [
 ---
 
 <BaseLayout title={title} description={description}>
-  <SitePage topbarTitle="Roadmap" showBackHome narrow>
-    <SitePageHeader eyebrow="Project status" accent="Roadmap">
+  <SitePage topbarTitle='Roadmap' showBackHome narrow>
+    <SitePageHeader eyebrow='Project status' accent='Roadmap'>
       Live view of the work queue and recent releases — sourced from
 
-      <code class="text-foreground text-sm mx-1">specs/</code>
+      <code class='text-foreground text-sm mx-1'>specs/</code>
 
       at build time.
     </SitePageHeader>
 
-    <div class="mt-10 space-y-10">
-      <SitePanel title="What’s next">
-        <p slot="description">
-          From <code class="text-foreground">specs/current/tasks.md</code> — suggested order and open work below.
+    <div class='mt-10 space-y-10'>
+      <SitePanel title='What’s next'>
+        <p slot='description'>
+          From <code class='text-foreground'>specs/current/tasks.md</code> — suggested order and open work below.
         </p>
-        <article class="roadmap-prose roadmap-tasks mt-4">
+        <article class='roadmap-prose roadmap-tasks mt-4'>
           <TasksContent />
         </article>
       </SitePanel>
 
-      <SitePanel title="Recently shipped">
-        <p slot="description">
+      <SitePanel title='Recently shipped'>
+        <p slot='description'>
           Last five user stories from
-          <a href={specDocUrl('CHANGELOG.md')} class="site-inline-link" target="_blank" rel="noopener noreferrer">
+          <a href={specDocUrl('CHANGELOG.md')} class='site-inline-link' target='_blank' rel='noopener noreferrer'>
             CHANGELOG.md
           </a>.
         </p>
         {
           recentlyShipped.length > 0 ? (
-            <div class="mt-4 overflow-x-auto">
-              <table class="roadmap-shipped-table">
+            <div class='mt-4 overflow-x-auto'>
+              <table class='roadmap-shipped-table'>
                 <thead>
                   <tr>
-                    <th scope="col">US</th>
-                    <th scope="col">Summary</th>
+                    <th scope='col'>US</th>
+                    <th scope='col'>Summary</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -84,17 +84,17 @@ const contributorDocs = [
               </table>
             </div>
           ) : (
-            <p class="text-foreground-muted mt-4 text-sm">No shipped entries found.</p>
+            <p class='text-foreground-muted mt-4 text-sm'>No shipped entries found.</p>
           )
         }
       </SitePanel>
 
-      <SitePanel title="Full docs">
-        <p slot="description">For contributors — complete specs live in the repository.</p>
-        <nav class="roadmap-doc-links mt-4" aria-label="Contributor documentation">
+      <SitePanel title='Full docs'>
+        <p slot='description'>For contributors — complete specs live in the repository.</p>
+        <nav class='roadmap-doc-links mt-4' aria-label='Contributor documentation'>
           {
             contributorDocs.map(({ label, href }) => (
-              <a href={href} target="_blank" rel="noopener noreferrer">
+              <a href={href} target='_blank' rel='noopener noreferrer'>
                 {label}
               </a>
             ))

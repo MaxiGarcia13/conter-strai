@@ -8,24 +8,24 @@ const { roomId } = Astro.params;
 ---
 
 <BaseLayout
-  title="Play — Conter Strai"
-  description="Deploy into the arena. Move fast, hold angles, win the round."
+  title='Play — Conter Strai'
+  description='Deploy into the arena. Move fast, hold angles, win the round.'
   showSiteFooter={false}
 >
-  <main class="fixed inset-0 z-10 bg-black">
-    <PlayLoader id="play-boot" />
+  <main class='fixed inset-0 z-10 bg-black'>
+    <PlayLoader id='play-boot' />
 
     {
       roomId ? (
-        <GameCanvasWrapper client:only="react" roomId={roomId} />
+        <GameCanvasWrapper client:only='react' roomId={roomId} />
       ) : (
-        <MatchJoinError client:only="react" message="Room not found" />
+        <MatchJoinError client:only='react' message='Room not found' />
       )
     }
 
     <noscript>
       <p
-        class="font-mono text-foreground flex h-dvh items-center justify-center text-center text-sm tracking-widest uppercase"
+        class='font-mono text-foreground flex h-dvh items-center justify-center text-center text-sm tracking-widest uppercase'
       >
         Conter Strai needs JavaScript to run.
       </p>

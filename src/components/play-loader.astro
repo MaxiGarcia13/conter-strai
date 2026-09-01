@@ -8,10 +8,10 @@ const { id = 'play-boot', label = 'Loading engine' } = Astro.props;
 ---
 
 <!-- Instant feedback before React / Three.js download (client:only renders nothing). -->
-<div id={id} class="play-loader" aria-live="polite" aria-busy="true" data-testid="play-loader">
-  <p class="play-loader-label">{label}</p>
-  <div class="play-loader-track">
-    <div class="play-loader-indeterminate"></div>
+<div id={id} class='play-loader' aria-live='polite' aria-busy='true' data-testid='play-loader'>
+  <p class='play-loader-label'>{label}</p>
+  <div class='play-loader-track'>
+    <div class='play-loader-indeterminate'></div>
   </div>
 </div>
 

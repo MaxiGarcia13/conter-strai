@@ -15,6 +15,6 @@ const Tag = href ? 'a' : 'button';
 ---
 
 <Tag class:list={['cs-button', `cs-button--${variant}`, className]} href={href} type={href ? undefined : type}>
-  {showIcon && <CaretRightIcon className="cs-button__icon" aria-hidden="true" />}
-  <span class="cs-button__label"><slot /></span>
+  {showIcon && <CaretRightIcon className='cs-button__icon' aria-hidden='true' />}
+  <span class='cs-button__label'><slot /></span>
 </Tag>

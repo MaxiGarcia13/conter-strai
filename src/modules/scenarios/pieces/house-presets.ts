@@ -63,29 +63,6 @@ export const cornerRuin: HousePreset = {
   },
 };
 
-/** Tall fort-walled block with a single narrow doorway. */
-export const fortifiedBlock: HousePreset = {
-  width: 16,
-  depth: 11,
-  material: FORT,
-  height: 'full',
-  walls: {
-    south: { hole: 2.2 },
-  },
-};
-
-/** Small squat shack, low walls, big gap on one side. */
-export const streetShack: HousePreset = {
-  width: 8,
-  depth: 6,
-  material: PLASTER,
-  height: 'low',
-  walls: {
-    north: 'open',
-    east: { hole: 3 },
-  },
-};
-
 /** Blast-through fort ruin with an open breach and a low far wall. */
 export const bombedHouse: HousePreset = {
   width: 14,

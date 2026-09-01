@@ -40,7 +40,7 @@ Built for future maps; only `floorZone`, `wallAlongX` / `wallAlongZ`, and `build
 - [x] `WALL_LENGTH`, `STREET_WIDTH` — `src/modules/scenarios/pieces/constants.ts`
 - [x] Unused material aliases: `WALL_MATERIAL.cliff`, `FLOOR_MATERIAL.forest`, `FLOOR_MATERIAL.street` (arena-01 uses texture ids directly)
 - [x] Layout-only exports: make `arena01Streets`, `arena01Houses`, `houseFootprint` module-private if still only used in map modules / `house-helpers.ts`
-- [ ] **Unused house presets** — `fortifiedBlock`, `streetShack` in `src/modules/scenarios/pieces/house-presets.ts` (never imported; `ruinedCottage`, `cornerRuin`, `bombedHouse` are used in unit tests). Wire into a second map or remove until needed.
+- [x] **Unused house presets** — `fortifiedBlock`, `streetShack` in `src/modules/scenarios/pieces/house-presets.ts` (never imported; `ruinedCottage`, `cornerRuin`, `bombedHouse` are used in unit tests). Wire into a second map or remove until needed.
 
 ## Inactive but wired infrastructure
 

@@ -7,7 +7,7 @@ import {
 } from './syncable-remote-pose';
 
 /** Matches transform sync throttle (~20 Hz) — floors speed dt to avoid burst false-runs. */
-export const REMOTE_SYNC_INTERVAL_MS = 50;
+const REMOTE_SYNC_INTERVAL_MS = 50;
 
 /** Below this speed (m/s) a remote peer counts as idle. */
 export const REMOTE_IDLE_SPEED_MPS = 0.5;
@@ -16,7 +16,7 @@ export const REMOTE_RUN_ENTER_MPS = 6.5;
 /** Leave run only after speed drops below this (hysteresis vs enter). */
 export const REMOTE_RUN_EXIT_MPS = 5.2;
 /** Ignore sub-millimeter jitter between identical sync samples. */
-export const REMOTE_POSITION_EPSILON = 0.001;
+const REMOTE_POSITION_EPSILON = 0.001;
 /**
  * Keep walk/run after the last position change so ~20 Hz sync gaps do not
  * flicker the mixer back to idle every frame.
@@ -26,7 +26,7 @@ export const REMOTE_IDLE_HOLD_MS = 180;
  * A peer counts as backpedaling when velocity is mostly opposite their facing
  * (dot of facing × velocity below ~135°).
  */
-export const REMOTE_BACKWARD_DOT_THRESHOLD = -0.7;
+const REMOTE_BACKWARD_DOT_THRESHOLD = -0.7;
 
 export interface RemoteMotionSample {
   x: number;

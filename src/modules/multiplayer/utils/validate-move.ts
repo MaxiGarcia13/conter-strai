@@ -3,10 +3,10 @@ import { RUN_SPEED } from '@/modules/game/constants/locomotion';
 import { TRANSFORM_SYNC_INTERVAL_MS } from '../adapters/colyseus-adapter/types';
 
 /** Hard per-message horizontal teleport cap (meters). */
-export const MOVE_MAX_DELTA_METERS = 8;
+const MOVE_MAX_DELTA_METERS = 8;
 
 /** Headroom above `RUN_SPEED` for network jitter / hitched-frame gaps. */
-export const MOVE_SPEED_TOLERANCE = 1.75;
+const MOVE_SPEED_TOLERANCE = 1.75;
 
 /** Treat near-zero message gaps as at least one sync window to avoid false drops. */
 const MIN_SPAN_MS = TRANSFORM_SYNC_INTERVAL_MS;

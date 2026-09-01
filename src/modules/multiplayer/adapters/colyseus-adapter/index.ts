@@ -34,4 +34,3 @@ export type {
   ShotPayload,
   TransformSyncPayload,
 } from './types';
-export { TRANSFORM_SYNC_INTERVAL_MS } from './types';

@@ -1,4 +1,4 @@
-export type GameCommandIconId = 'menu' | 'fire' | 'run' | 'arrow-down';
+export type GameCommandIconId = 'menu' | 'fire' | 'run' | 'arrow-down' | 'reload';
 
 export interface GameCommand {
   key: string;
@@ -62,6 +62,11 @@ export const MOBILE_BINDINGS = {
     action: 'Kneel toggle',
     iconId: 'arrow-down',
   },
+  reload: {
+    label: 'Tap',
+    action: 'Reload',
+    iconId: 'reload',
+  },
   shoot: {
     label: 'Tap',
     action: 'Shoot',
@@ -121,6 +126,11 @@ export const MOBILE_COMMANDS: GameCommand[] = [
     key: MOBILE_BINDINGS.shoot.label,
     action: MOBILE_BINDINGS.shoot.action,
     iconId: MOBILE_BINDINGS.shoot.iconId,
+  },
+  {
+    key: MOBILE_BINDINGS.reload.label,
+    action: MOBILE_BINDINGS.reload.action,
+    iconId: MOBILE_BINDINGS.reload.iconId,
   },
   {
     key: MOBILE_BINDINGS.pause.label,

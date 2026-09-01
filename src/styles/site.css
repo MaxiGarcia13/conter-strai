@@ -1,0 +1,41 @@
+@layer components {
+  .site-link {
+    @apply hover:text-accent focus-visible:outline-accent underline-offset-4 motion-safe:transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-4;
+  }
+
+  .site-link-inline {
+    @apply hover:text-accent focus-visible:outline-accent inline-flex items-center gap-1.5 underline-offset-4 motion-safe:transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-4;
+  }
+
+  .site-inline-link {
+    @apply text-accent hover:underline;
+  }
+
+  .site-eyebrow {
+    @apply font-mono text-xs tracking-[0.32em] uppercase text-accent;
+  }
+
+  .site-eyebrow--muted {
+    @apply text-foreground-muted;
+  }
+
+  .site-lede {
+    @apply text-foreground-muted max-w-prose text-lg font-medium tracking-wide;
+  }
+
+  .site-lede--page {
+    @apply mt-4;
+  }
+
+  .site-lede--hero {
+    @apply mt-5 sm:text-xl;
+  }
+
+  .site-section-label {
+    @apply font-mono text-accent text-xs tracking-[0.24em] uppercase;
+  }
+
+  .site-list-row {
+    @apply border-b border-surface-border/60 pb-2;
+  }
+}

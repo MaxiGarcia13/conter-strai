@@ -1,0 +1,28 @@
+---
+import SiteEyebrow from '@/components/site-eyebrow.astro';
+import SiteTitle from '@/components/site-title.astro';
+
+interface Props {
+  eyebrow: string;
+  titleSize?: 'hero' | 'default';
+  leading?: string;
+  accent?: string;
+  lede?: 'page' | 'hero';
+}
+
+const { eyebrow, titleSize = 'default', leading, accent, lede = 'page' } = Astro.props;
+
+const ledeClass = lede === 'hero' ? 'site-lede site-lede--hero' : 'site-lede site-lede--page';
+---
+
+<SiteEyebrow text={eyebrow} />
+<SiteTitle size={titleSize} leading={leading} accent={accent}>
+  <slot name="title" />
+</SiteTitle>
+{
+  Astro.slots.has('default') && (
+    <div class={ledeClass}>
+      <slot />
+    </div>
+  )
+}

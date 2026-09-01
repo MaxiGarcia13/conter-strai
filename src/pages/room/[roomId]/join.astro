@@ -1,6 +1,5 @@
 ---
-import BackHomeLink from '@/components/back-home-link.astro';
-import SiteTopbar from '@/components/site-topbar.astro';
+import SitePage from '@/components/site-page.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
 import { JoinRoomForm } from '@/modules/lobby/components/join-room-form';
 
@@ -9,13 +8,7 @@ if (!roomId) return Astro.redirect('/room/join');
 ---
 
 <BaseLayout title={`Join ${roomId} — Conter Strai`} description="Pick your team and character, then join the match.">
-  <section class="relative flex flex-1 flex-col">
-    <SiteTopbar title="Join Room">
-      <BackHomeLink slot="leading" />
-    </SiteTopbar>
-
-    <div class="flex flex-1 flex-col px-(--space-page-x) py-(--space-page-y)">
-      <JoinRoomForm roomId={roomId} client:only="react" />
-    </div>
-  </section>
+  <SitePage topbarTitle="Join Room" showBackHome>
+    <JoinRoomForm roomId={roomId} client:only="react" />
+  </SitePage>
 </BaseLayout>

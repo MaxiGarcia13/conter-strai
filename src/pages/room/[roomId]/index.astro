@@ -1,6 +1,5 @@
 ---
-import BackHomeLink from '@/components/back-home-link.astro';
-import SiteTopbar from '@/components/site-topbar.astro';
+import SitePage from '@/components/site-page.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
 import { WaitingRoom } from '@/modules/lobby/components/waiting-room';
 
@@ -9,13 +8,7 @@ if (!roomId) return Astro.redirect('/');
 ---
 
 <BaseLayout title={`Room ${roomId} — Conter Strai`} description="Waiting room — invite friends and start the match.">
-  <section class="relative flex flex-1 flex-col">
-    <SiteTopbar title="Waiting Room">
-      <BackHomeLink slot="leading" />
-    </SiteTopbar>
-
-    <div class="flex flex-1 flex-col px-(--space-page-x) py-(--space-page-y)">
-      <WaitingRoom client:only="react" roomId={roomId} />
-    </div>
-  </section>
+  <SitePage topbarTitle="Waiting Room" showBackHome>
+    <WaitingRoom client:only="react" roomId={roomId} />
+  </SitePage>
 </BaseLayout>

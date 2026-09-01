@@ -1,43 +1,13 @@
 ---
-import { bugs, homepage, version } from '@root/package.json';
-import GithubIcon from '@/components/github-icon.astro';
-
-const repoUrl = homepage.replace(/#readme$/, '');
+import { bugs } from '@root/package.json';
 ---
 
 <footer
   class="font-mono text-foreground-muted p-4 flex flex-row flex-wrap items-center justify-center gap-4 border-t border-surface-border/80 text-xs tracking-[0.2em] uppercase"
 >
-  <span aria-label={`Version ${version}`}>v{version}</span>
+  <a href={bugs.url} class="site-link">Bugs & Feedback</a>
   &ndash;
-  <a
-    href={repoUrl}
-    class="hover:text-accent focus-visible:outline-accent inline-flex items-center gap-2 underline-offset-4 motion-safe:transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <GithubIcon class="size-4 shrink-0" />
-    Contribute on GitHub
-  </a>
+  <a href="/roadmap" class="site-link">Roadmap</a>
   &ndash;
-  <a
-    href={bugs.url}
-    class="hover:text-accent focus-visible:outline-accent underline-offset-4 motion-safe:transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
-  >
-    Bugs & Feedback
-  </a>
-  &ndash;
-  <a
-    href="/roadmap"
-    class="hover:text-accent focus-visible:outline-accent underline-offset-4 motion-safe:transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
-  >
-    Roadmap
-  </a>
-  &ndash;
-  <a
-    href="/third-party-assets"
-    class="hover:text-accent focus-visible:outline-accent underline-offset-4 motion-safe:transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
-  >
-    Third-Party Assets
-  </a>
+  <a href="/third-party-assets" class="site-link">Third-Party Assets</a>
 </footer>

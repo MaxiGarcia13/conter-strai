@@ -8,10 +8,6 @@ export const PITCH_LIMIT = Math.PI / 2 - 0.01;
 /** FPS look-down cap — prevents the camera from clipping into the player's own body. */
 export const LOOK_PITCH_FLOOR = -0.6;
 
-/** Camera-local offset for soldier arms/hands (x=right, y=down, z=forward). */
-export const VIEWMODEL_OFFSET: [number, number, number] = [0.12, -1.67, -0.35];
-/** Soldier mesh faces +Z; camera looks −Z. */
-export const VIEWMODEL_ROTATION_Y = Math.PI;
 /** Soldier faces +Z at yaw 0; offset aligns model forward with camera −Z. */
 export const MODEL_FORWARD_YAW_OFFSET = Math.PI;
 

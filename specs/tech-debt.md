@@ -191,7 +191,7 @@ Small DRY wins from a codebase audit (Aug 2026). Pick up when touching round-end
   2. Export `disposeRoomTolerant(roomId, hostToken?)` — calls `deleteRoom`, swallows `404`, rethrows other `LobbyRestError` / network failures.
   3. Unit test: mock fetch → `204`, `404`, `401` paths.
 
-- [ ] **Consolidate round-end Home navigation** — `src/modules/game/utils/leave-match-to-home.ts` (+ optional sibling)
+- [x] **Consolidate round-end Home navigation** — `src/modules/game/utils/leave-match-to-home.ts` (+ optional sibling)
   1. `round-end-banner` inlines host `deleteRoom` + guest `leaveMatch` + hard nav; pause panel already uses `leaveMatchToHome`.
   2. Add `leaveMatchToHomeAsHost(roomId, hostToken)` (or options on `leaveMatchToHome`) using `disposeRoomTolerant`; keep `closing` / `aria-busy` in the banner.
   3. Preserve comments: hard-nav tears page down; peers may navigate via `roomClosed`; do not await Colyseus reconnect grace on guest path.

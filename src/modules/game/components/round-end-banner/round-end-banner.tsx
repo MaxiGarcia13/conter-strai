@@ -3,10 +3,9 @@ import { useState } from 'react';
 import { CsButton } from '@/components/cs-button';
 import { useEffectiveRoundPhase } from '@/modules/game/hooks/use-effective-round-phase';
 import { resolveRoomHostCapabilities } from '@/modules/game/utils/host-capabilities';
+import { leaveMatchToHome, leaveMatchToHomeAsHost } from '@/modules/game/utils/leave-match-to-home';
 import { restartRound } from '@/modules/game/utils/restart-round';
-import { clearRoomSession, readRoomSession } from '@/modules/lobby/utils/room-session';
-import { leaveMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
-import { disposeRoomTolerant } from '@/modules/multiplayer/services/dispose-room-tolerant';
+import { readRoomSession } from '@/modules/lobby/utils/room-session';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 
@@ -44,30 +43,15 @@ export function RoundEndBanner({ roomId, scenarioId }: RoundEndBannerProps) {
       const sessionNow = readRoomSession(roomId);
       if (sessionNow?.role === 'host' && sessionNow.hostToken) {
         try {
-          await disposeRoomTolerant(roomId, sessionNow.hostToken);
+          await leaveMatchToHomeAsHost(roomId, sessionNow.hostToken);
         } catch {
           setClosing(false);
-          return;
         }
-        // Peers navigate via `roomClosed`; still exit locally if the message is missed.
-        clearRoomSession(roomId);
-        window.location.href = '/';
         return;
       }
-
-      if (connected) {
-        // Hard-nav tears the page down — do not await Colyseus reconnect grace.
-        void leaveMatch();
-      }
-      clearRoomSession(roomId);
-      window.location.href = '/';
-      return;
     }
 
-    if (connected) {
-      void leaveMatch();
-    }
-    window.location.href = '/';
+    leaveMatchToHome(roomId);
   }
 
   return (

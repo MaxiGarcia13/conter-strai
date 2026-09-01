@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { applyLookDelta } from '@/modules/game/input/utils/apply-look-delta';
 import { isTouchPrimaryDevice } from '@/modules/game/input/utils/is-touch-primary-device';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
-import { warmupGameSounds } from '@/modules/game/utils/play-game-sound';
+import { warmupGameSounds } from '@/modules/game/utils/game-audio-context';
 import { requestPointerLock } from '@/modules/game/utils/request-pointer-lock';
 
 interface UsePlayerPointerLockOptions {

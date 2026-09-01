@@ -1,4 +1,5 @@
 import type { Scene } from 'three';
+import type { LocomotionSoundLoops } from '../utils/locomotion-sound-loops';
 import type { LocomotionSoundId } from '../utils/resolve-locomotion-sound';
 import type { RemoteMotionSample } from '@/modules/multiplayer/utils/resolve-remote-locomotion';
 import type { SyncableRemotePose } from '@/modules/multiplayer/utils/syncable-remote-pose';
@@ -15,10 +16,10 @@ import {
   LOCOMOTION_SOUND_GAIN,
   LOCOMOTION_SOUND_MAX_DISTANCE,
   LOCOMOTION_SOUND_MIN_VOLUME,
-  LOCOMOTION_SOUND_URLS,
 } from '../constants/locomotion-sounds';
 import { computeSpatialVolume } from '../utils/compute-spatial-volume';
 import { findEntityWorldPosition } from '../utils/find-entity-world-position';
+import { createLocomotionSoundLoops } from '../utils/locomotion-sound-loops';
 import { resolveLocomotionSound } from '../utils/resolve-locomotion-sound';
 
 interface RemoteSoundTracker {
@@ -28,59 +29,23 @@ interface RemoteSoundTracker {
 }
 
 interface RemotePlayerLoops {
-  walk: HTMLAudioElement;
-  run: HTMLAudioElement;
-  active: LocomotionSoundId | null;
-}
-
-function createLoop(url: string): HTMLAudioElement {
-  const audio = new Audio(url);
-  audio.loop = true;
-  audio.preload = 'auto';
-  return audio;
+  loops: LocomotionSoundLoops;
 }
 
 function createRemoteLoops(): RemotePlayerLoops {
-  return {
-    walk: createLoop(LOCOMOTION_SOUND_URLS.walk),
-    run: createLoop(LOCOMOTION_SOUND_URLS.run),
-    active: null,
-  };
+  return { loops: createLocomotionSoundLoops() };
 }
 
-function disposeRemoteLoops(loops: RemotePlayerLoops): void {
-  loops.walk.pause();
-  loops.run.pause();
+function disposeRemoteLoops(remote: RemotePlayerLoops): void {
+  remote.loops.dispose();
 }
 
 function setRemoteLoop(
-  loops: RemotePlayerLoops,
+  remote: RemotePlayerLoops,
   target: LocomotionSoundId | null,
   volume: number,
 ): void {
-  if (target === loops.active) {
-    if (target) {
-      const audio = loops[target];
-      audio.volume = volume;
-      if (audio.paused) {
-        void audio.play().catch(() => {});
-      }
-    }
-    return;
-  }
-
-  if (loops.active) {
-    const previous = loops[loops.active];
-    previous.pause();
-    previous.currentTime = 0;
-  }
-  loops.active = target;
-
-  if (target) {
-    const audio = loops[target];
-    audio.volume = volume;
-    void audio.play().catch(() => {});
-  }
+  remote.loops.setActive(target, volume);
 }
 
 /** Loops walk/run movement SFX per remote peer, attenuated by distance to the listener. */
@@ -100,8 +65,8 @@ export function useRemoteLocomotionSounds(): void {
       return;
     }
     return () => {
-      for (const loops of loopsBySessionRef.current.values()) {
-        disposeRemoteLoops(loops);
+      for (const remote of loopsBySessionRef.current.values()) {
+        disposeRemoteLoops(remote);
       }
       loopsBySessionRef.current.clear();
       trackersRef.current.clear();
@@ -148,14 +113,14 @@ export function useRemoteLocomotionSounds(): void {
       const locomotion = resolveRemoteLocomotionForAnimation(tracker.motion, entry.pose, now);
       const sound = resolveLocomotionSound(locomotion, playback.pose);
 
-      let loops = loopsBySession.get(sessionId);
-      if (!loops) {
-        loops = createRemoteLoops();
-        loopsBySession.set(sessionId, loops);
+      let remote = loopsBySession.get(sessionId);
+      if (!remote) {
+        remote = createRemoteLoops();
+        loopsBySession.set(sessionId, remote);
       }
 
       if (!sound) {
-        setRemoteLoop(loops, null, 0);
+        setRemoteLoop(remote, null, 0);
         continue;
       }
 
@@ -167,7 +132,7 @@ export function useRemoteLocomotionSounds(): void {
         LOCOMOTION_SOUND_MAX_DISTANCE,
         LOCOMOTION_SOUND_MIN_VOLUME,
       );
-      setRemoteLoop(loops, sound, spatialVolume * LOCOMOTION_SOUND_GAIN[sound]);
+      setRemoteLoop(remote, sound, spatialVolume * LOCOMOTION_SOUND_GAIN[sound]);
     }
 
     for (const sessionId of loopsBySession.keys()) {

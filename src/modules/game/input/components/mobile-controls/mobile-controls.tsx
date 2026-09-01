@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { ArrowDownIcon, FireIcon, RunIcon } from '@/components/icons';
 import { setTouchRunning } from '@/modules/game/input/player-input-intent';
 import { fireWeapon } from '@/modules/game/utils/fire-weapon';
-import { warmupGameSounds } from '@/modules/game/utils/play-game-sound';
+import { warmupGameSounds } from '@/modules/game/utils/game-audio-context';
 import { toggleKneel } from '@/modules/game/utils/player-pose-actions';
 import { ActionButton } from './action-button';
 import { LookZone } from './look-zone';

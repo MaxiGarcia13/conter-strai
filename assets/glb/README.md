@@ -11,14 +11,16 @@ GLB files are large (characters, props, weapons). Serving them from the Astro / 
 - Use **deployed-server egress bandwidth** on every download and cache miss
 - Add load to the same process that runs Colyseus and SSR
 
-Instead, the game loads GLBs **directly from Cloudflare** via `glbCdnUrl()` — the browser fetches from `workers.dev`, and bytes stay on Cloudflare’s edge. The app server only ships HTML/JS; it never proxies or streams `.glb` files.
+Instead, production loads GLBs **directly from Cloudflare** via `glbCdnUrl()` — the browser fetches from `workers.dev`, and bytes stay on Cloudflare’s edge. The deployed app server only ships HTML/JS; it never proxies or streams `.glb` files.
+
+Locally (`astro dev`, including Playwright), `glbCdnUrl()` points at **`/api/mock/local-glb`**, which reads this tree from disk. That keeps `npm run dev` and e2e independent of R2 and worker CORS.
 
 ## Path mapping
 
-| Local source                                | CDN URL                                                                     |
-| ------------------------------------------- | --------------------------------------------------------------------------- |
-| `assets/glb/characters/civilians/james.glb` | `https://conter-strai.maxig8.workers.dev/?q=characters/civilians/james.glb` |
-| `assets/glb/<key>`                          | `https://conter-strai.maxig8.workers.dev/?q=<key>`                          |
+| Local source                                | Local (`astro dev` / e2e)                                      | Production CDN                                                              |
+| ------------------------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `assets/glb/characters/civilians/james.glb` | `/api/mock/local-glb?q=characters/civilians/james.glb`         | `https://conter-strai.maxig8.workers.dev/?q=characters/civilians/james.glb` |
+| `assets/glb/<key>`                          | `/api/mock/local-glb?q=<key>`                                  | `https://conter-strai.maxig8.workers.dev/?q=<key>`                          |
 
 The `q` query value is the path under `assets/glb/` (no `/assets` prefix). Registries pass keys like `/characters/civilians/james.glb`; `glbCdnUrl()` strips the leading slash and builds the URL.
 
@@ -55,4 +57,4 @@ Texture source GLBs in `assets/glb/textures/` are build-time inputs for `npm run
 
 ## E2E tests
 
-Playwright intercepts `workers.dev` GLB requests and serves files from `assets/glb/` (`tests/e2e/mock-glb-cdn.ts`) so CI does not depend on R2 reachability or CORS.
+Playwright’s webServer is `npm run dev`, so the client already requests `/api/mock/local-glb?q=<key>` (`src/pages/api/mock/local-glb.ts`). CI does not hit Cloudflare and does not intercept `workers.dev`.

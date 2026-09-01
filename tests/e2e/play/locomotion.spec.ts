@@ -2,7 +2,6 @@ import type { BrowserContext, Page } from '@playwright/test';
 import type { SoldierSkinId } from '@/modules/soldiers/types';
 import type { Team } from '@/modules/teams/types';
 import { expect, test } from '../fixtures/fixtures';
-import { createE2eContext } from '../utils/mock-glb-cdn';
 import {
   expectLocomotionClip,
   MOVE_CODES,
@@ -24,7 +23,7 @@ for (const character of characters) {
     let page: Page;
 
     test.beforeAll(async ({ browser }) => {
-      context = await createE2eContext(browser);
+      context = await browser.newContext();
       page = await context.newPage();
       await navigateToRoomPlay(page, { team, skin });
       await waitForPlayTest(page);

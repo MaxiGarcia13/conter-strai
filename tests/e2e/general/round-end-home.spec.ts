@@ -6,7 +6,6 @@ import {
   seedHostSession,
   waitForMatchSession,
 } from '../utils/lobby-helpers';
-import { createE2eContext } from '../utils/mock-glb-cdn';
 import {
   clickHostRoundEndHome,
   ensureGuestReachedPlay,
@@ -57,8 +56,8 @@ test.describe.serial('two-player round-end Home', () => {
     test.setTimeout(120_000);
     const hostRoom = await createHostRoom(request);
     roomId = hostRoom.roomId;
-    hostContext = await createE2eContext(browser);
-    guestContext = await createE2eContext(browser);
+    hostContext = await browser.newContext();
+    guestContext = await browser.newContext();
     hostPage = await hostContext.newPage();
     guestPage = await guestContext.newPage();
     await startTwoPlayerRound(hostPage, guestPage, hostRoom);

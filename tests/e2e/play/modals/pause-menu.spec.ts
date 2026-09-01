@@ -1,6 +1,5 @@
 import type { BrowserContext, Page } from '@playwright/test';
 import { expect, test } from '@tests/e2e/fixtures';
-import { createE2eContext } from '@tests/e2e/mock-glb-cdn';
 import {
   captureConsoleErrors,
   expectNoConsoleErrors,
@@ -15,7 +14,7 @@ test.describe.serial('pause menu in a live round', () => {
   let page: Page;
 
   test.beforeAll(async ({ browser }) => {
-    context = await createE2eContext(browser);
+    context = await browser.newContext();
     page = await context.newPage();
     await startMatchFromWaitingRoom(page);
     await waitForLiveRound(page);

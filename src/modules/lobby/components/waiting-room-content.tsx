@@ -81,14 +81,14 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
   return (
     <div className="flex flex-1 flex-col gap-6">
       <div className="hud-corners border-surface-border p-4">
-        <p className="site-eyebrow site-eyebrow--muted">// Room</p>
+        <p className="site-eyebrow site-eyebrow--muted">{`//` + ' Room'}</p>
         <p className="font-mono mt-2 text-2xl tracking-widest uppercase text-foreground">
           {roomId}
         </p>
       </div>
 
       <div className="border-surface-border border p-4">
-        <p className="site-eyebrow site-eyebrow--muted">// Your Details</p>
+        <p className="site-eyebrow site-eyebrow--muted">{`//` + ' Your Details'}</p>
         <dl className="mt-3 space-y-2">
           <div className="flex justify-between">
             <dt className="font-mono text-xs tracking-widest uppercase text-foreground-muted">
@@ -128,7 +128,7 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
       </div>
 
       <div className="border-surface-border border p-4">
-        <p className="site-eyebrow site-eyebrow--muted">// Players</p>
+        <p className="site-eyebrow site-eyebrow--muted">{`//` + ' Players'}</p>
         <WaitingRoomSeats
           snapshot={snapshotQuery.data}
           isPending={snapshotQuery.isPending}

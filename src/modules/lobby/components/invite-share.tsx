@@ -24,9 +24,7 @@ export function InviteShare({ roomId }: InviteShareProps) {
 
   return (
     <div className="border-surface-border border p-4">
-      <p className="font-mono text-xs tracking-[0.32em] uppercase text-foreground-muted">
-        // Invite
-      </p>
+      <p className="site-eyebrow site-eyebrow--muted">{`//` + ' Invite'}</p>
       <div className="mt-3 flex items-center gap-2">
         <input
           readOnly

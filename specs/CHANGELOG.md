@@ -9,7 +9,9 @@
 
 ## Open
 
-None.
+| US | Summary |
+|----|---------|
+| **US-13** | Pistol magazine reload (12 rounds, manual refill), mobile reload button (`ReloadIcon`), client-only close-range (~2 m) black wall impact marks |
 
 ## Shipped
 

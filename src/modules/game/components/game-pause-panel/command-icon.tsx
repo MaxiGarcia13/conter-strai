@@ -1,11 +1,18 @@
 import type { GameCommandIconId } from '@/modules/game/constants/game-bindings';
-import { ArrowDownIcon, FireIcon, MenuIcon, RunIcon } from '@/components/icons';
+import {
+  ArrowDownIcon,
+  FireIcon,
+  MenuIcon,
+  ReloadIcon,
+  RunIcon,
+} from '@/components/icons';
 
 const COMMAND_ICONS = {
   'menu': MenuIcon,
   'fire': FireIcon,
   'run': RunIcon,
   'arrow-down': ArrowDownIcon,
+  'reload': ReloadIcon,
 } as const satisfies Record<GameCommandIconId, typeof MenuIcon>;
 
 interface CommandIconProps {

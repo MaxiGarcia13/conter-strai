@@ -19,7 +19,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 - [x] `action-button.tsx` — add `'reload'` mode (tap → `onAction`, same as kneel)
 - [x] `mobile-controls.tsx` — reload button in kneel/run row → `requestReload()`
 - [x] `game-bindings.ts` — `MOBILE_BINDINGS.reload` with `iconId: 'reload'`; extend `GameCommandIconId`; append to `MOBILE_COMMANDS`
-- [ ] `command-icon.tsx` — map `reload` → `ReloadIcon`
+- [x] `command-icon.tsx` — map `reload` → `ReloadIcon`
 
 ## Close-range impact marks (US-13.8–US-13.9)
 

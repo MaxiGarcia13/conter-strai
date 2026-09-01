@@ -35,7 +35,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 ## Ammo HUD (US-13.11)
 
 - [x] Add `src/modules/game/utils/get-rounds-remaining.ts` — `PISTOL_MAGAZINE_SIZE - shotsInMag`
-- [ ] Unit: `tests/units/game/get-rounds-remaining.test.ts`
+- [x] Unit: `tests/units/game/get-rounds-remaining.test.ts`
 - [ ] Add `src/modules/game/components/ammo-hud.tsx` — `remaining / PISTOL_MAGAZINE_SIZE`, `role="status"`, accent when empty
 - [ ] Refactor `health-bar.tsx` — inner content only (no fixed positioning)
 - [ ] Add `src/modules/game/components/player-hud.tsx` — stacks health + ammo; bottom-left desktop, top-right touch-primary (same corners as FR-19)

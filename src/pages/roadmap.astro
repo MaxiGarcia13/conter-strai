@@ -4,6 +4,7 @@ import path from 'node:path';
 import { getEntry, render } from 'astro:content';
 import BackHomeLink from '@/components/back-home-link.astro';
 import SiteEyebrow from '@/components/site-eyebrow.astro';
+import SitePanel from '@/components/site-panel.astro';
 import SiteTitle from '@/components/site-title.astro';
 import SiteTopbar from '@/components/site-topbar.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
@@ -56,19 +57,17 @@ const contributorDocs = [
         </p>
 
         <div class="mt-10 space-y-10">
-          <section class="hud-corners border border-surface-border/80 p-5 sm:p-6">
-            <h2 class="font-display text-2xl font-bold tracking-wide text-foreground uppercase">What&rsquo;s next</h2>
-            <p class="text-foreground-muted mt-2 text-sm">
+          <SitePanel title="What&rsquo;s next">
+            <p slot="description">
               From <code class="text-foreground">specs/current/tasks.md</code> — suggested order and open work below.
             </p>
             <article class="roadmap-prose roadmap-tasks mt-4">
               <TasksContent />
             </article>
-          </section>
+          </SitePanel>
 
-          <section class="hud-corners border border-surface-border/80 p-5 sm:p-6">
-            <h2 class="font-display text-2xl font-bold tracking-wide text-foreground uppercase">Recently shipped</h2>
-            <p class="text-foreground-muted mt-2 text-sm">
+          <SitePanel title="Recently shipped">
+            <p slot="description">
               Last five user stories from
               <a
                 href={specDocUrl('CHANGELOG.md')}
@@ -103,11 +102,10 @@ const contributorDocs = [
                 <p class="text-foreground-muted mt-4 text-sm">No shipped entries found.</p>
               )
             }
-          </section>
+          </SitePanel>
 
-          <section class="hud-corners border border-surface-border/80 p-5 sm:p-6">
-            <h2 class="font-display text-2xl font-bold tracking-wide text-foreground uppercase">Full docs</h2>
-            <p class="text-foreground-muted mt-2 text-sm">For contributors — complete specs live in the repository.</p>
+          <SitePanel title="Full docs">
+            <p slot="description">For contributors — complete specs live in the repository.</p>
             <nav class="roadmap-doc-links mt-4" aria-label="Contributor documentation">
               {
                 contributorDocs.map(({ label, href }) => (
@@ -117,7 +115,7 @@ const contributorDocs = [
                 ))
               }
             </nav>
-          </section>
+          </SitePanel>
         </div>
       </div>
     </div>

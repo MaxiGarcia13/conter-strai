@@ -1,6 +1,7 @@
 ---
 import BackHomeLink from '@/components/back-home-link.astro';
 import SiteEyebrow from '@/components/site-eyebrow.astro';
+import SitePanel from '@/components/site-panel.astro';
 import SiteTitle from '@/components/site-title.astro';
 import SiteTopbar from '@/components/site-topbar.astro';
 import BaseLayout from '@/layouts/base-layout.astro';
@@ -25,6 +26,9 @@ const mixamoCharacters = ['James, Liza, Remy (civilians)', 'SWAT 1–3 (soldiers
 const mixamoAnimations = ['Idle, walk, run, and combat locomotion', 'Aim, crouch, death, and hit reactions'];
 
 const tablerIcons = ['Arrow down', 'Arrow left (back)', 'Brand GitHub', 'Caret right', 'Flame', 'Menu', 'Run'];
+
+const externalTitleLinkClass =
+  'hover:text-accent focus-visible:outline-accent underline-offset-4 motion-safe:transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-4';
 ---
 
 <BaseLayout title={title} description={description}>
@@ -42,18 +46,17 @@ const tablerIcons = ['Arrow down', 'Arrow left (back)', 'Brand GitHub', 'Caret r
         </p>
 
         <div class="mt-10 space-y-8">
-          <article class="hud-corners border border-surface-border/80 p-5 sm:p-6">
-            <h2 class="font-display text-2xl font-bold tracking-wide text-foreground uppercase">
-              <a
-                href="https://polyhaven.com/"
-                class="hover:text-accent focus-visible:outline-accent underline-offset-4 motion-safe:transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Poly Haven
-              </a>
-            </h2>
-            <p class="text-foreground-muted mt-2 text-base leading-relaxed">
+          <SitePanel as="article" descriptionSize="base">
+            <a
+              slot="title"
+              href="https://polyhaven.com/"
+              class={externalTitleLinkClass}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Poly Haven
+            </a>
+            <p slot="description">
               PBR textures and 3D models from
               <a
                 href="https://polyhaven.com/"
@@ -80,20 +83,19 @@ const tablerIcons = ['Arrow down', 'Arrow left (back)', 'Brand GitHub', 'Caret r
                 </ul>
               </div>
             </div>
-          </article>
+          </SitePanel>
 
-          <article class="hud-corners border border-surface-border/80 p-5 sm:p-6">
-            <h2 class="font-display text-2xl font-bold tracking-wide text-foreground uppercase">
-              <a
-                href="https://www.mixamo.com/"
-                class="hover:text-accent focus-visible:outline-accent underline-offset-4 motion-safe:transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Mixamo
-              </a>
-            </h2>
-            <p class="text-foreground-muted mt-2 text-base leading-relaxed">
+          <SitePanel as="article" descriptionSize="base">
+            <a
+              slot="title"
+              href="https://www.mixamo.com/"
+              class={externalTitleLinkClass}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Mixamo
+            </a>
+            <p slot="description">
               Character meshes and skeletal animation from
               <a
                 href="https://www.mixamo.com/"
@@ -120,20 +122,19 @@ const tablerIcons = ['Arrow down', 'Arrow left (back)', 'Brand GitHub', 'Caret r
                 </ul>
               </div>
             </div>
-          </article>
+          </SitePanel>
 
-          <article class="hud-corners border border-surface-border/80 p-5 sm:p-6">
-            <h2 class="font-display text-2xl font-bold tracking-wide text-foreground uppercase">
-              <a
-                href="https://tabler.io/icons"
-                class="hover:text-accent focus-visible:outline-accent underline-offset-4 motion-safe:transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Tabler Icons
-              </a>
-            </h2>
-            <p class="text-foreground-muted mt-2 text-base leading-relaxed">
+          <SitePanel as="article" descriptionSize="base">
+            <a
+              slot="title"
+              href="https://tabler.io/icons"
+              class={externalTitleLinkClass}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Tabler Icons
+            </a>
+            <p slot="description">
               UI icons from
               <a
                 href="https://tabler.io/"
@@ -154,7 +155,7 @@ const tablerIcons = ['Arrow down', 'Arrow left (back)', 'Brand GitHub', 'Caret r
                 ))
               }
             </ul>
-          </article>
+          </SitePanel>
         </div>
       </div>
     </div>

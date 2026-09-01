@@ -1,0 +1,28 @@
+---
+interface Props {
+  as?: 'section' | 'article';
+  title?: string;
+  descriptionSize?: 'sm' | 'base';
+}
+
+const { as: Tag = 'section', title, descriptionSize = 'sm' } = Astro.props;
+
+const descriptionClass =
+  descriptionSize === 'base'
+    ? 'text-foreground-muted mt-2 text-base leading-relaxed'
+    : 'text-foreground-muted mt-2 text-sm';
+---
+
+<Tag class="hud-corners border border-surface-border/80 p-5 sm:p-6">
+  <h2 class="font-display text-2xl font-bold tracking-wide text-foreground uppercase">
+    {title ?? <slot name="title" />}
+  </h2>
+  {
+    Astro.slots.has('description') && (
+      <div class={descriptionClass}>
+        <slot name="description" />
+      </div>
+    )
+  }
+  <slot />
+</Tag>

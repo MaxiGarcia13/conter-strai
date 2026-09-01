@@ -1,6 +1,5 @@
 import type { Object3D } from 'three';
 import { SkinnedMesh } from 'three';
-import { SkeletonUtils } from 'three-stdlib';
 
 /** Skinned mesh root in soldier GLBs (avoids duplicate empty armatures). */
 export const SOLDIER_ROOT_NAME = 'Armature';
@@ -14,16 +13,6 @@ export function soldierScaleVector(source: Object3D, multiplier: number): [numbe
   return [s, s, s];
 }
 
-function refreshSkinnedMeshes(root: Object3D): void {
-  root.traverse((child) => {
-    if (child instanceof SkinnedMesh) {
-      child.frustumCulled = false;
-      child.skeleton.pose();
-      child.skeleton.update();
-    }
-  });
-}
-
 /**
  * Animated skeletons invalidate cached bounding spheres (a pre-pose raycast
  * caches a degenerate one); soldier visibility never relies on them.
@@ -34,13 +23,4 @@ export function disableSkinnedMeshCulling(root: Object3D): void {
       child.frustumCulled = false;
     }
   });
-}
-
-/** Clones the soldier armature and multiplies its existing scale (GLB embeds 0.01 → ~1.7 m). */
-export function cloneSoldierRoot(scene: Object3D, scaleMultiplier = 1): Object3D {
-  const source = getSoldierArmature(scene);
-  const clone = SkeletonUtils.clone(source);
-  clone.scale.multiplyScalar(scaleMultiplier);
-  refreshSkinnedMeshes(clone);
-  return clone;
 }

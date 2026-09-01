@@ -49,10 +49,6 @@ export const MOVE_KEY_CODES = [
   MOVE_CODES.right,
 ] as const;
 
-export function isMovePressed(pressed: Set<string>): boolean {
-  return MOVE_KEY_CODES.some((code) => pressed.has(code));
-}
-
 /** Mobile touch control labels — mirrors {@link GAME_BINDINGS} for pause-panel Commands on touch-primary. */
 export const MOBILE_BINDINGS = {
   move: { label: 'Joystick', action: 'Move' },

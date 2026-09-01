@@ -13,7 +13,7 @@ Remove or stop exporting symbols with no callers (grep `src/` before deleting).
 
 Aug 2026 audit (knip + grep — grep `src/` before deleting):
 
-- [ ] `isMovePressed` — `src/modules/game/constants/game-bindings.ts` (movement uses `axesFromPressedCodes` instead)
+- [x] `isMovePressed` — `src/modules/game/constants/game-bindings.ts` (movement uses `axesFromPressedCodes` instead)
 - [ ] `VIEWMODEL_OFFSET`, `VIEWMODEL_ROTATION_Y` — `src/modules/game/constants/player.ts` (viewmodel tuning lives on skin registry `viewModelScale`)
 - [ ] `GameMode` — `src/modules/game/types.ts` (type defined, never referenced)
 - [ ] `cloneSoldierRoot` — `src/modules/soldiers/utils/clone-soldier-root.ts` (superseded by `useSoldierMesh` + drei `<Clone>`; keep `getSoldierArmature`, `soldierScaleVector`, `disableSkinnedMeshCulling`)

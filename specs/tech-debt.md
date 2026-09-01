@@ -15,7 +15,7 @@ Aug 2026 audit (knip + grep — grep `src/` before deleting):
 
 - [x] `isMovePressed` — `src/modules/game/constants/game-bindings.ts` (movement uses `axesFromPressedCodes` instead)
 - [x] `VIEWMODEL_OFFSET`, `VIEWMODEL_ROTATION_Y` — `src/modules/game/constants/player.ts` (viewmodel tuning lives on skin registry `viewModelScale`)
-- [ ] `GameMode` — `src/modules/game/types.ts` (type defined, never referenced)
+- [x] `GameMode` — `src/modules/game/types.ts` (type defined, never referenced)
 - [ ] `cloneSoldierRoot` — `src/modules/soldiers/utils/clone-soldier-root.ts` (superseded by `useSoldierMesh` + drei `<Clone>`; keep `getSoldierArmature`, `soldierScaleVector`, `disableSkinnedMeshCulling`)
 - [ ] `DEV_CONTROLS` — un-export from `src/modules/game/dev/use-free-camera-look.ts` if only used in-folder
 - [ ] `NPC_BODY_RADIUS` — un-export from `src/modules/game/utils/npc-blockers-from-scenario.ts` if module-private

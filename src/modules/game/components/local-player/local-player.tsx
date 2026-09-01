@@ -20,6 +20,7 @@ import {
   setBodyAnchorY,
   setPlayerPose,
 } from '@/modules/game/stores/player-state';
+import { useWeaponAmmoStore } from '@/modules/game/stores/weapon-ammo-store';
 import { placeCameraAtHead } from '@/modules/game/utils/fps-head-camera';
 import { resolveLocomotionTimeScale } from '@/modules/game/utils/resolve-locomotion-time-scale';
 import { flushLocalClipSync } from '@/modules/multiplayer/utils/sync-local-clip';
@@ -49,6 +50,7 @@ function clearReloadingPose() {
   if (pose === 'reloading' || pose === 'reloadingKneel') {
     flushLocalClipSync();
   }
+  useWeaponAmmoStore.getState().onReloadComplete();
 }
 const clearShootingPose = () => clearPlayerPoseIf('shooting');
 function clearInterruptedPoses() {

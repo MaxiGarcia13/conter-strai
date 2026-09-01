@@ -9,7 +9,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 - [x] Add `PISTOL_MAGAZINE_SIZE = 12` to `src/modules/weapons/constants/pistol.ts`
 - [x] Add `src/modules/game/stores/weapon-ammo-store.ts` — `shotsInMag`, `recordShot`, `needsReload`, `onReloadComplete`, `reset`
 - [x] `fire-weapon.ts` — block when `needsReload()`; call `recordShot()` after cooldown stamp; export test reset helper
-- [ ] `local-player.tsx` — `clearReloadingPose()` calls `onReloadComplete()`
+- [x] `local-player.tsx` — `clearReloadingPose()` calls `onReloadComplete()`
 - [ ] `round-store.ts` `startRound` — reset weapon ammo store
 - [ ] Unit: extend `tests/units/game/fire-weapon.test.ts` (12-shot limit, reload refill, existing reload-pose block still passes)
 

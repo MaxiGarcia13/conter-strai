@@ -10,7 +10,7 @@ import { Matrix4, Quaternion, Vector3 } from 'three';
 export const PISTOL_BARREL_AXIS = [1, 0, 0] as const;
 
 /** Magazine / grip bottom in pistol GLB local space. */
-export const PISTOL_GRIP_DOWN_AXIS = [0, -1, 0] as const;
+const PISTOL_GRIP_DOWN_AXIS = [0, -1, 0] as const;
 
 /** Euler XYZ radians; barrel forward + magazine down at idle neutral aim on swat-1. */
 export const DEFAULT_PISTOL_GRIP_ROTATION: [number, number, number] = [

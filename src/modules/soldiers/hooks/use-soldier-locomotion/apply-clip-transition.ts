@@ -2,7 +2,7 @@ import type { AnimationMixer } from 'three';
 import type { ClipKey, SoldierActions } from './types';
 import { playDyingHard } from './soldier-actions';
 
-export const CROSSFADE_SECONDS = 0.2;
+const CROSSFADE_SECONDS = 0.2;
 /** Remote locomotion blends longer so ~20 Hz clip changes do not snap. */
 export const REMOTE_LOCOMOTION_CROSSFADE_SECONDS = 0.35;
 /** Jump one-shots snap in so the takeoff is not delayed by a locomotion fade. */

@@ -8,7 +8,7 @@ import { findRightHandBone } from '../utils/find-right-hand-bone';
 import { DEFAULT_WEAPON_ID, weapons } from '../weapon-registry';
 
 /** Mixamo bone translations are in cm; weapon GLBs are authored in meters. */
-export const WEAPON_ATTACH_SCALE = 100;
+const WEAPON_ATTACH_SCALE = 100;
 
 interface WeaponAttachProps {
   modelRef: RefObject<Group | null>;

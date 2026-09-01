@@ -6,6 +6,9 @@ export const PISTOL_MAX_RANGE_METERS = 100;
 /** Minimum interval between pistol shots (ms). Mirrors `fireCooldownSeconds`. */
 export const PISTOL_FIRE_COOLDOWN_MS = 200;
 
+/** Shots per full magazine. */
+export const PISTOL_MAGAZINE_SIZE = 12;
+
 /** Per-zone fractions of max HP for the pistol — server and client authority. */
 export const PISTOL_DAMAGE_BY_ZONE: Record<HitZone, number> = {
   head: 0.4,

@@ -18,7 +18,7 @@ Aug 2026 audit (knip + grep — grep `src/` before deleting):
 - [x] `GameMode` — `src/modules/game/types.ts` (type defined, never referenced)
 - [x] `cloneSoldierRoot` — `src/modules/soldiers/utils/clone-soldier-root.ts` (superseded by `useSoldierMesh` + drei `<Clone>`; keep `getSoldierArmature`, `soldierScaleVector`, `disableSkinnedMeshCulling`)
 - [x] `DEV_CONTROLS` — un-export from `src/modules/game/dev/use-free-camera-look.ts` if only used in-folder
-- [ ] `NPC_BODY_RADIUS` — un-export from `src/modules/game/utils/npc-blockers-from-scenario.ts` if module-private
+- [x] `NPC_BODY_RADIUS` — un-export from `src/modules/game/utils/npc-blockers-from-scenario.ts` if module-private
 - [ ] Scenario utils — un-export if only used in-file: `holeWidth` (`wall-segment-helpers.ts`), `faceCenterYaw` (`spawn-helpers.ts`), `configureTexture` (`texture-library-utils.ts`), `segmentWall` (`wall-mesh-builders.ts`); keep `preloadScenarioTextures()` side effect, drop the export if unused
 - [ ] Soldier / weapons tuning — un-export if grep confirms no callers: `CROSSFADE_SECONDS` (`apply-clip-transition.ts`), `WEAPON_ATTACH_SCALE` (`weapon-attach.tsx`), `RIGHT_HAND_BONE_NAMES` (`find-right-hand-bone.ts`), `PISTOL_GRIP_DOWN_AXIS` (`pistol-grip-alignment.ts`)
 - [ ] Multiplayer tuning constants — un-export if only used in-file: `REMOTE_*` in `resolve-remote-locomotion.ts`, `REMOTE_FOLLOW_RATE` in `step-remote-render-transform.ts`, `MOVE_MAX_DELTA_METERS` / `MOVE_SPEED_TOLERANCE` in `validate-move.ts`, `TRANSFORM_SYNC_INTERVAL_MS` in colyseus adapter barrel

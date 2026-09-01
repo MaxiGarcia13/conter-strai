@@ -4,8 +4,7 @@ import type { Team } from '@/modules/teams';
 import { spawnKey } from '@/modules/scenarios';
 import { PLAYER_RADIUS } from '../constants/player';
 
-/** Standing body radius for world NPCs — matches the local player capsule. */
-export const NPC_BODY_RADIUS = PLAYER_RADIUS;
+const NPC_BODY_RADIUS = PLAYER_RADIUS;
 
 /** Static XZ discs for every scenario spawn except the local player's slot. */
 export function npcBlockersFromScenario(

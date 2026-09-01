@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
-import { ArrowDownIcon, FireIcon, RunIcon } from '@/components/icons';
+import { ArrowDownIcon, FireIcon, ReloadIcon, RunIcon } from '@/components/icons';
 import { setTouchRunning } from '@/modules/game/input/player-input-intent';
 import { fireWeapon } from '@/modules/game/utils/fire-weapon';
 import { warmupGameSounds } from '@/modules/game/utils/game-audio-context';
-import { toggleKneel } from '@/modules/game/utils/player-pose-actions';
+import { requestReload, toggleKneel } from '@/modules/game/utils/player-pose-actions';
 import { ActionButton } from './action-button';
 import { LookZone } from './look-zone';
 import { PauseButton } from './pause-button';
@@ -35,6 +35,12 @@ export function MobileControls() {
             icon={<ArrowDownIcon className="size-8" />}
             mode="kneel"
             onAction={toggleKneel}
+          />
+          <ActionButton
+            label="Reload"
+            icon={<ReloadIcon className="size-8" />}
+            mode="reload"
+            onAction={requestReload}
           />
           <ActionButton
             label="Run"

@@ -9,22 +9,12 @@ interface Props {
   showIcon?: boolean;
 }
 
-const {
-  href,
-  variant = 'primary',
-  type = 'button',
-  class: className,
-  showIcon = true,
-} = Astro.props;
+const { href, variant = 'primary', type = 'button', class: className, showIcon = true } = Astro.props;
 
 const Tag = href ? 'a' : 'button';
 ---
 
-<Tag
-  class:list={['cs-button', `cs-button--${variant}`, className]}
-  href={href}
-  type={href ? undefined : type}
->
+<Tag class:list={['cs-button', `cs-button--${variant}`, className]} href={href} type={href ? undefined : type}>
   {showIcon && <CaretRightIcon className="cs-button__icon" aria-hidden="true" />}
   <span class="cs-button__label"><slot /></span>
 </Tag>

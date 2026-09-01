@@ -10,8 +10,8 @@ import { specDocUrl } from '@/utils/spec-doc-links';
 import '@/styles/roadmap-prose.css';
 
 const title = 'Roadmap — Conter Strai';
-const description
-  = 'What is next for Conter Strai — open work from specs/current/tasks.md and recently shipped user stories.';
+const description =
+  'What is next for Conter Strai — open work from specs/current/tasks.md and recently shipped user stories.';
 
 const tasksEntry = await getEntry('specs', 'current/tasks');
 if (!tasksEntry) {
@@ -43,17 +43,13 @@ const contributorDocs = [
 
     <div class="flex flex-1 flex-col px-(--space-page-x) py-(--space-page-y)">
       <div class="mx-auto w-full max-w-3xl">
-        <p class="font-mono text-accent text-xs tracking-[0.32em] uppercase">
-          // Project status
-        </p>
+        <p class="font-mono text-accent text-xs tracking-[0.32em] uppercase">// Project status</p>
         <h1
           class="font-display mt-3 text-[clamp(2.5rem,8vw,4.5rem)] leading-[0.9] font-extrabold tracking-[0.06em] text-foreground uppercase"
         >
           <span class="text-accent">Roadmap</span>
         </h1>
-        <p
-          class="text-foreground-muted mt-4 max-w-prose text-lg font-medium tracking-wide"
-        >
+        <p class="text-foreground-muted mt-4 max-w-prose text-lg font-medium tracking-wide">
           Live view of the work queue and recent releases — sourced from
 
           <code class="text-foreground text-sm mx-1">specs/</code>
@@ -62,31 +58,18 @@ const contributorDocs = [
         </p>
 
         <div class="mt-10 space-y-10">
-          <section
-            class="hud-corners border border-surface-border/80 p-5 sm:p-6"
-          >
-            <h2
-              class="font-display text-2xl font-bold tracking-wide text-foreground uppercase"
-            >
-              What&rsquo;s next
-            </h2>
+          <section class="hud-corners border border-surface-border/80 p-5 sm:p-6">
+            <h2 class="font-display text-2xl font-bold tracking-wide text-foreground uppercase">What&rsquo;s next</h2>
             <p class="text-foreground-muted mt-2 text-sm">
-              From <code class="text-foreground">specs/current/tasks.md</code> — suggested
-              order and open work below.
+              From <code class="text-foreground">specs/current/tasks.md</code> — suggested order and open work below.
             </p>
             <article class="roadmap-prose roadmap-tasks mt-4">
               <TasksContent />
             </article>
           </section>
 
-          <section
-            class="hud-corners border border-surface-border/80 p-5 sm:p-6"
-          >
-            <h2
-              class="font-display text-2xl font-bold tracking-wide text-foreground uppercase"
-            >
-              Recently shipped
-            </h2>
+          <section class="hud-corners border border-surface-border/80 p-5 sm:p-6">
+            <h2 class="font-display text-2xl font-bold tracking-wide text-foreground uppercase">Recently shipped</h2>
             <p class="text-foreground-muted mt-2 text-sm">
               Last five user stories from
               <a
@@ -94,12 +77,12 @@ const contributorDocs = [
                 class="text-accent hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"
-              >CHANGELOG.md</a
-              >.
+              >
+                CHANGELOG.md
+              </a>.
             </p>
             {
-              recentlyShipped.length > 0
-? (
+              recentlyShipped.length > 0 ? (
                 <div class="mt-4 overflow-x-auto">
                   <table class="roadmap-shipped-table">
                     <thead>
@@ -118,30 +101,16 @@ const contributorDocs = [
                     </tbody>
                   </table>
                 </div>
-              )
-: (
-                <p class="text-foreground-muted mt-4 text-sm">
-                  No shipped entries found.
-                </p>
+              ) : (
+                <p class="text-foreground-muted mt-4 text-sm">No shipped entries found.</p>
               )
             }
           </section>
 
-          <section
-            class="hud-corners border border-surface-border/80 p-5 sm:p-6"
-          >
-            <h2
-              class="font-display text-2xl font-bold tracking-wide text-foreground uppercase"
-            >
-              Full docs
-            </h2>
-            <p class="text-foreground-muted mt-2 text-sm">
-              For contributors — complete specs live in the repository.
-            </p>
-            <nav
-              class="roadmap-doc-links mt-4"
-              aria-label="Contributor documentation"
-            >
+          <section class="hud-corners border border-surface-border/80 p-5 sm:p-6">
+            <h2 class="font-display text-2xl font-bold tracking-wide text-foreground uppercase">Full docs</h2>
+            <p class="text-foreground-muted mt-2 text-sm">For contributors — complete specs live in the repository.</p>
+            <nav class="roadmap-doc-links mt-4" aria-label="Contributor documentation">
               {
                 contributorDocs.map(({ label, href }) => (
                   <a href={href} target="_blank" rel="noopener noreferrer">

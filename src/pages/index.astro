@@ -13,21 +13,12 @@ const ogImage = await getImage({
 });
 
 const title = 'Conter Strai';
-const description
-  = 'The revolution starts here — choose Civilians or Soldiers. Conter Strai is an online PvP tactical shooter that runs in your browser.';
-const bullets = [
-  'Online PvP combat',
-  'Fast tactical rounds',
-  'Runs in your browser — no install',
-];
+const description =
+  'The revolution starts here — choose Civilians or Soldiers. Conter Strai is an online PvP tactical shooter that runs in your browser.';
+const bullets = ['Online PvP combat', 'Fast tactical rounds', 'Runs in your browser — no install'];
 ---
 
-<BaseLayout
-  title={title}
-  description={description}
-  image={ogImage.src}
-  imageAlt="Soldiers geared up for deployment"
->
+<BaseLayout title={title} description={description} image={ogImage.src} imageAlt="Soldiers geared up for deployment">
   <link
     slot="head"
     rel="preload"
@@ -39,10 +30,7 @@ const bullets = [
   <section class="relative flex flex-1 flex-col">
     <SiteTopbar>
       <p slot="leading" class="flex items-center gap-2 text-accent">
-        <span
-          class="motion-safe:animate-pulse size-1.5 shrink-0 rounded-full bg-accent"
-          aria-hidden="true"
-        ></span>
+        <span class="motion-safe:animate-pulse size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>
         Live
       </p>
       <p slot="center">
@@ -56,17 +44,13 @@ const bullets = [
       class="grid flex-1 items-center gap-12 px-(--space-page-x) py-(--space-page-y) lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16"
     >
       <div class="hud-corners p-5 sm:p-8">
-        <p class="font-mono text-accent text-xs tracking-[0.32em] uppercase">
-          // Tactical shooter
-        </p>
+        <p class="font-mono text-accent text-xs tracking-[0.32em] uppercase">// Tactical shooter</p>
         <h1
           class="font-display mt-3 text-[clamp(3.25rem,12vw,7.25rem)] leading-[0.85] font-extrabold tracking-[0.06em] text-foreground uppercase"
         >
           Conter <span class="text-accent">Strai</span>
         </h1>
-        <p
-          class="text-foreground-muted mt-5 max-w-prose text-lg font-medium tracking-wide sm:text-xl"
-        >
+        <p class="text-foreground-muted mt-5 max-w-prose text-lg font-medium tracking-wide sm:text-xl">
           The revolution starts here — choose your side and fight.
         </p>
 
@@ -90,10 +74,7 @@ const bullets = [
       </div>
 
       <div class="hero-art-grid relative flex items-center justify-center">
-        <div
-          class="bg-accent/25 pointer-events-none absolute inset-[18%] rounded-full blur-3xl"
-          aria-hidden="true"
-        >
+        <div class="bg-accent/25 pointer-events-none absolute inset-[18%] rounded-full blur-3xl" aria-hidden="true">
         </div>
         <Image
           src={csImg}

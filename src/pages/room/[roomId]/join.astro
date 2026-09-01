@@ -5,14 +5,10 @@ import BaseLayout from '@/layouts/base-layout.astro';
 import { JoinRoomForm } from '@/modules/lobby/components/join-room-form';
 
 const roomId = Astro.params.roomId;
-if (!roomId)
-  return Astro.redirect('/room/join');
+if (!roomId) return Astro.redirect('/room/join');
 ---
 
-<BaseLayout
-  title={`Join ${roomId} — Conter Strai`}
-  description="Pick your team and character, then join the match."
->
+<BaseLayout title={`Join ${roomId} — Conter Strai`} description="Pick your team and character, then join the match.">
   <section class="relative flex flex-1 flex-col">
     <SiteTopbar title="Join Room">
       <BackHomeLink slot="leading" />

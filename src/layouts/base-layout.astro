@@ -3,37 +3,37 @@ import {
   author,
   keywords,
   description as packageDescription,
-} from '@root/package.json';
-import SiteFooter from '@/components/site-footer.astro';
-import '@/styles/global.css';
+} from "@root/package.json";
+import SiteFooter from "@/components/site-footer.astro";
+import "@/styles/global.css";
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
   imageAlt?: string;
-  type?: 'website' | 'article';
+  type?: "website" | "article";
   noindex?: boolean;
   /** Hide the shared site footer (e.g. fullscreen play). */
   showSiteFooter?: boolean;
 }
 
 const {
-  title = 'Conter Strai',
+  title = "Conter Strai",
   description = packageDescription,
-  image = '/favicon.png',
-  imageAlt = 'Conter Strai — browser tactical shooter',
-  type = 'website',
+  image = "/favicon.png",
+  imageAlt = "Conter Strai — browser tactical shooter",
+  type = "website",
   noindex = false,
   showSiteFooter = true,
 } = Astro.props;
 
-const metaKeywords = keywords.join(', ');
+const metaKeywords = keywords.join(", ");
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
 const imageURL = new URL(image, Astro.site ?? Astro.url);
-const siteName = 'Conter Strai';
-const themeColor = '#0d0f14';
+const siteName = "Conter Strai";
+const themeColor = "#0d0f14";
 ---
 
 <!doctype html>
@@ -50,8 +50,8 @@ const themeColor = '#0d0f14';
     <meta
       name="robots"
       content={noindex
-        ? 'noindex, nofollow'
-        : 'index, follow, max-image-preview:large'}
+        ? "noindex, nofollow"
+        : "index, follow, max-image-preview:large"}
     />
     <link rel="canonical" href={canonicalURL} />
 
@@ -63,6 +63,7 @@ const themeColor = '#0d0f14';
       type="font/woff2"
       crossorigin
     />
+
     <link
       rel="preload"
       href="/fonts/Share_Tech_Mono/ShareTechMono-Regular.woff2"

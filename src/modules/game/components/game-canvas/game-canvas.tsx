@@ -3,7 +3,6 @@ import type { SoldierSkinId } from '@/modules/soldiers';
 import type { Team } from '@/modules/teams';
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useMemo } from 'react';
-import { HealthBar } from '@/modules/combat';
 import { DEFAULT_PLAY_SKIN_ID, DEFAULT_SCENARIO_ID } from '@/modules/game/constants/play-defaults';
 import { LazyDevGameChrome, LazyDevSceneTools } from '@/modules/game/dev';
 import { MobileControls } from '@/modules/game/input/components/mobile-controls';
@@ -28,6 +27,7 @@ import { LazyGamePausePanel } from '../game-pause-panel';
 import { LoadingReporter } from '../loading-reporter';
 import { LazyLocalPlayer } from '../local-player';
 import { PlayerControls } from '../player-controls';
+import { PlayerHud } from '../player-hud';
 import { LazyRoundEndBanner } from '../round-end-banner';
 import { ShootingController } from '../shooting-controller';
 
@@ -103,7 +103,7 @@ export function GameCanvas({
 
       <DeferredAfterLoad>
         <CrosshairHud />
-        <HealthBar />
+        <PlayerHud />
       </DeferredAfterLoad>
 
       {import.meta.env.DEV && <LazyDevGameChrome />}

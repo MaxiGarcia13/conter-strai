@@ -6,8 +6,8 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## Constants & magazine store (US-13.1–US-13.5)
 
-- [ ] Add `PISTOL_MAGAZINE_SIZE = 12` to `src/modules/weapons/constants/pistol.ts`
-- [ ] Add `src/modules/game/stores/weapon-ammo-store.ts` — `shotsInMag`, `recordShot`, `needsReload`, `onReloadComplete`, `reset`
+- [x] Add `PISTOL_MAGAZINE_SIZE = 12` to `src/modules/weapons/constants/pistol.ts`
+- [x] Add `src/modules/game/stores/weapon-ammo-store.ts` — `shotsInMag`, `recordShot`, `needsReload`, `onReloadComplete`, `reset`
 - [ ] `fire-weapon.ts` — block when `needsReload()`; call `recordShot()` after cooldown stamp; export test reset helper
 - [ ] `local-player.tsx` — `clearReloadingPose()` calls `onReloadComplete()`
 - [ ] `round-store.ts` `startRound` — reset weapon ammo store

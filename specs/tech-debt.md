@@ -186,7 +186,7 @@ Small DRY wins from a codebase audit (Aug 2026). Pick up when touching round-end
    2. Resolver returns `{ isHost, canRestart }` from `roomId?: string` (`canRestart = roomId ? isHost : true`).
    3. Callers keep UI-only state (`closing`, pause toggles); no behavior change.
 
-- [ ] **Shared dispose-room helper (404-tolerant)** — `src/modules/multiplayer/services/dispose-room-tolerant.ts` (or extend `delete-room.ts`)
+- [x] **Shared dispose-room helper (404-tolerant)** — `src/modules/multiplayer/services/dispose-room-tolerant.ts`
   1. Grep `deleteRoom` + `LobbyRestError` + `status !== 404` (expect `round-end-banner`, `waiting-room-content`).
   2. Export `disposeRoomTolerant(roomId, hostToken?)` — calls `deleteRoom`, swallows `404`, rethrows other `LobbyRestError` / network failures.
   3. Unit test: mock fetch → `204`, `404`, `401` paths.

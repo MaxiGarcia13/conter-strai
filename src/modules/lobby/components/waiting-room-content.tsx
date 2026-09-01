@@ -5,8 +5,7 @@ import { navigateToPlay } from '@/modules/lobby/utils/play-handoff';
 import { startMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
 import { useLobbyPresence } from '@/modules/multiplayer/hooks/use-lobby-presence';
 import { useMatchJoin } from '@/modules/multiplayer/hooks/use-match-join';
-import { deleteRoom } from '@/modules/multiplayer/services/delete-room';
-import { LobbyRestError } from '@/modules/multiplayer/services/lobby-rest';
+import { disposeRoomTolerant } from '@/modules/multiplayer/services/dispose-room-tolerant';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { getScenarioById } from '@/modules/scenarios/get-scenario-by-id';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
@@ -24,7 +23,7 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
   const snapshotQuery = useRoomSnapshot(session ? roomId : '', { poll: true });
   const dispose = useMutation({
     mutationFn: ([closeRoomId, hostToken]: [string, string | undefined]) =>
-      deleteRoom(closeRoomId, hostToken),
+      disposeRoomTolerant(closeRoomId, hostToken),
   });
 
   const { joining, error: joinError } = useMatchJoin(roomId);
@@ -69,10 +68,9 @@ export function WaitingRoomContent({ roomId }: WaitingRoomContentProps) {
     }
     try {
       await dispose.mutateAsync([roomId, readRoomSession(roomId)?.hostToken]);
-    } catch (cause) {
-      if (!(cause instanceof LobbyRestError) || cause.status !== 404) {
-        return;
-      }
+    } catch {
+      // Non-404 failures stay on the waiting room; react-query exposes `dispose.error`.
+      return;
     }
     clearRoomSession(roomId);
     window.location.href = '/room';

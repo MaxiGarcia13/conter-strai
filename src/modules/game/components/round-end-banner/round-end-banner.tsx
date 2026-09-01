@@ -6,8 +6,7 @@ import { resolveRoomHostCapabilities } from '@/modules/game/utils/host-capabilit
 import { restartRound } from '@/modules/game/utils/restart-round';
 import { clearRoomSession, readRoomSession } from '@/modules/lobby/utils/room-session';
 import { leaveMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
-import { deleteRoom } from '@/modules/multiplayer/services/delete-room';
-import { LobbyRestError } from '@/modules/multiplayer/services/lobby-rest';
+import { disposeRoomTolerant } from '@/modules/multiplayer/services/dispose-room-tolerant';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { TEAM_DISPLAY_NAME } from '@/modules/teams';
 
@@ -45,12 +44,10 @@ export function RoundEndBanner({ roomId, scenarioId }: RoundEndBannerProps) {
       const sessionNow = readRoomSession(roomId);
       if (sessionNow?.role === 'host' && sessionNow.hostToken) {
         try {
-          await deleteRoom(roomId, sessionNow.hostToken);
-        } catch (cause) {
-          if (!(cause instanceof LobbyRestError) || cause.status !== 404) {
-            setClosing(false);
-            return;
-          }
+          await disposeRoomTolerant(roomId, sessionNow.hostToken);
+        } catch {
+          setClosing(false);
+          return;
         }
         // Peers navigate via `roomClosed`; still exit locally if the message is missed.
         clearRoomSession(roomId);

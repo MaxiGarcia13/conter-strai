@@ -53,8 +53,8 @@ export function getPlayerFrameIntent(
   const running = moving && (pressed.has(codes.runModifier) || touchIntent.running);
 
   return {
-    strafe: strafe as -1 | 0 | 1,
-    forward: forward as -1 | 0 | 1,
+    strafe,
+    forward,
     running,
   };
 }

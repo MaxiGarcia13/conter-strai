@@ -181,10 +181,10 @@ Small DRY wins from a codebase audit (Aug 2026). Pick up when touching round-end
   2. Add `useEffectiveRoundPhase()` returning `{ phase, countdown?, winner? }` with one authoritative rule (prefer `connected` for live play; document why if `roomId` differs for round-end).
   3. Replace duplicated store subscriptions in callers; add a small unit test for the resolution rule if any logic is non-trivial.
 
-- [ ] **Extract host / restart capabilities** — `src/modules/game/hooks/use-room-host-capabilities.ts` (or `lobby/` if reused outside play)
-  1. Grep `readRoomSession` + `isHost` + `canRestart` (expect `round-end-banner`, `game-pause-panel`).
-  2. Hook returns `{ isHost, canRestart }` from `roomId?: string` (`canRestart = roomId ? isHost : true`).
-  3. Callers keep UI-only state (`closing`, pause toggles); no behavior change.
+- [x] **Extract host / restart capabilities** — `src/modules/game/utils/host-capabilities.ts` (`resolveRoomHostCapabilities`) rather than a `use*` hook — it derives read-only from `roomId` + `readRoomSession` with no React state, so `react/no-unnecessary-use-prefix` would flag a hook wrapper.
+   1. Grep `readRoomSession` + `isHost` + `canRestart` (expect `round-end-banner`, `game-pause-panel`).
+   2. Resolver returns `{ isHost, canRestart }` from `roomId?: string` (`canRestart = roomId ? isHost : true`).
+   3. Callers keep UI-only state (`closing`, pause toggles); no behavior change.
 
 - [ ] **Shared dispose-room helper (404-tolerant)** — `src/modules/multiplayer/services/dispose-room-tolerant.ts` (or extend `delete-room.ts`)
   1. Grep `deleteRoom` + `LobbyRestError` + `status !== 404` (expect `round-end-banner`, `waiting-room-content`).

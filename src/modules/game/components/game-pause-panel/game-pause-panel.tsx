@@ -9,9 +9,9 @@ import { useEffectiveRoundPhase } from '@/modules/game/hooks/use-effective-round
 import { isTouchPrimaryDevice } from '@/modules/game/input/utils/is-touch-primary-device';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 import { cycleCameraMode } from '@/modules/game/stores/player-state';
+import { resolveRoomHostCapabilities } from '@/modules/game/utils/host-capabilities';
 import { leaveMatchToHome } from '@/modules/game/utils/leave-match-to-home';
 import { restartRound } from '@/modules/game/utils/restart-round';
-import { readRoomSession } from '@/modules/lobby/utils/room-session';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { CommandIcon } from './command-icon';
 
@@ -33,9 +33,7 @@ export function GamePausePanel({ roomId, scenarioId }: GamePausePanelProps) {
 
   const cameraMode = useCameraMode();
 
-  const session = roomId ? readRoomSession(roomId) : null;
-  const isHost = session?.role === 'host' || !roomId;
-  const canRestart = roomId ? isHost : true;
+  const { canRestart } = resolveRoomHostCapabilities(roomId);
 
   // Pause is only meaningful while live — close it on round end / leave.
   useEffect(() => {

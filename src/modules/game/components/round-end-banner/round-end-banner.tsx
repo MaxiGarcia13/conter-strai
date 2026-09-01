@@ -2,6 +2,7 @@ import type { ScenarioId } from '@/modules/scenarios';
 import { useState } from 'react';
 import { CsButton } from '@/components/cs-button';
 import { useEffectiveRoundPhase } from '@/modules/game/hooks/use-effective-round-phase';
+import { resolveRoomHostCapabilities } from '@/modules/game/utils/host-capabilities';
 import { restartRound } from '@/modules/game/utils/restart-round';
 import { clearRoomSession, readRoomSession } from '@/modules/lobby/utils/room-session';
 import { leaveMatch } from '@/modules/multiplayer/adapters/colyseus-adapter';
@@ -19,13 +20,9 @@ interface RoundEndBannerProps {
 export function RoundEndBanner({ roomId, scenarioId }: RoundEndBannerProps) {
   const connected = useMultiplayerStore((state) => state.connected);
   const { phase, winner } = useEffectiveRoundPhase();
+  const { canRestart } = resolveRoomHostCapabilities(roomId);
 
-  const session = roomId ? readRoomSession(roomId) : null;
-  const isHost = session?.role === 'host' || !roomId;
   const [closing, setClosing] = useState(false);
-
-  /** Multiplayer: host only. Offline: always. */
-  const canRestart = roomId ? isHost : true;
 
   if (phase !== 'round-end' || !winner) {
     return null;

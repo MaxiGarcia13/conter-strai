@@ -35,6 +35,32 @@ describe('shared animation pack', () => {
   });
 });
 
+describe('lobby preview animation pack', () => {
+  const path = './assets/glb/characters/shared/character-preview-animation.glb';
+  let animationNames: string[];
+  let nodeNames: Set<string>;
+
+  beforeAll(async () => {
+    const io = new NodeIO();
+    const doc = await io.read(path);
+    const root = doc.getRoot();
+    animationNames = root.listAnimations().map((a) => a.getName());
+    nodeNames = new Set(root.listNodes().map((n) => n.getName()));
+  });
+
+  it('has fight and looking-around clips', () => {
+    expect(animationNames).toContain('figth');
+    expect(animationNames).toContain('looking-around');
+  });
+
+  it('uses mixamorig: skeleton contract', () => {
+    expect(nodeNames.has('mixamorig:Hips')).toBe(true);
+    for (const name of nodeNames) {
+      expect(name).not.toMatch(/^mixamorig\d+:/);
+    }
+  });
+});
+
 for (const mesh of CHARACTER_MESHES) {
   describe(`${mesh.id}.glb`, () => {
     let nodeNames: Set<string>;

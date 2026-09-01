@@ -139,6 +139,8 @@ sessionStorage[`cs:room:${roomId}`] = {
 
 Missing/invalid play session → `civilian` + `remy` + `arena-01` with team↔skin consistency. Invite URL is path-only: `{origin}/room/{roomId}/join`. `ScenarioConfig.previewImageUrl` optional — `arena-01` uses `/assets/scenarios/arena-01.png` in create-room `ArenaPicker`. Civilian east spawn required for civilian pick.
 
+Create/join R3F character preview (`CharacterPreview`) plays lobby-only clips from [`character-preview-animation.glb`](../../assets/glb/characters/shared/character-preview-animation.glb) (CDN `?q=characters/shared/character-preview-animation.glb`): soldiers use `figth` (once, hold last pose), civilians use `looking-around` (loop). Hips translation is stripped so the pose stays planted; play still uses [`base-animations.glb`](../../assets/glb/characters/shared/base-animations.glb) (`idle-shooting`).
+
 ## Play island (`/room/.../play`) — shipped US-2 + US-7 boot + US-11 arena
 
 Units: **1 world unit = 1 meter**.

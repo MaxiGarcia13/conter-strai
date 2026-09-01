@@ -2,7 +2,7 @@ import type { SoldierSkinId } from '@/modules/soldiers';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { ScenarioLighting } from '@/modules/scenarios/components/scenario-lighting';
-import { SoldierModel } from '@/modules/soldiers';
+import { CharacterPreviewModel } from './character-preview-model';
 
 interface CharacterPreviewProps {
   skinId: SoldierSkinId;
@@ -19,10 +19,10 @@ export function CharacterPreview({ skinId }: CharacterPreviewProps) {
       gl={{ antialias: true }}
     >
       <ScenarioLighting />
-      <SoldierModel id={skinId} animated={false} />
+      <CharacterPreviewModel skinId={skinId} />
       <OrbitControls
         target={[0, PREVIEW_TARGET_Y, 0]}
-        autoRotate
+        autoRotate={false}
         autoRotateSpeed={2}
         enableZoom={false}
         enablePan={false}

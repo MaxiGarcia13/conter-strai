@@ -21,13 +21,21 @@ export function MobileControls() {
       <VirtualJoystick />
 
       <div className="pointer-events-auto fixed right-6 bottom-22 z-10 flex flex-col items-end gap-2">
-        <ActionButton
-          size="large"
-          label="Fire"
-          icon={<FireIcon className="size-12" />}
-          mode="fire"
-          onAction={fireWeapon}
-        />
+        <div className="flex items-end gap-2">
+          <ActionButton
+            label="Reload"
+            icon={<ReloadIcon className="size-8" />}
+            mode="reload"
+            onAction={requestReload}
+          />
+          <ActionButton
+            size="large"
+            label="Fire"
+            icon={<FireIcon className="size-12" />}
+            mode="fire"
+            onAction={fireWeapon}
+          />
+        </div>
 
         <div className="flex gap-2">
           <ActionButton
@@ -35,12 +43,6 @@ export function MobileControls() {
             icon={<ArrowDownIcon className="size-8" />}
             mode="kneel"
             onAction={toggleKneel}
-          />
-          <ActionButton
-            label="Reload"
-            icon={<ReloadIcon className="size-8" />}
-            mode="reload"
-            onAction={requestReload}
           />
           <ActionButton
             label="Run"

@@ -3,5 +3,5 @@ export { BackIcon } from './back-icon';
 export { CaretRightIcon } from './caret-right-icon';
 export { FireIcon } from './fire-icon';
 export { MenuIcon } from './menu-icon';
-export { ReloadIcon } from './reload';
+export { ReloadIcon } from './reload-icon';
 export { RunIcon } from './run-icon';

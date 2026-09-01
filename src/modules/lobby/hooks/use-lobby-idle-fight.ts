@@ -4,9 +4,9 @@ import type { SoldierSkinId } from '@/modules/soldiers';
 import { useGLTF } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
-import { AnimationMixer, LoopOnce, LoopRepeat } from 'three';
+import { AnimationMixer, LoopOnce } from 'three';
 import { resolveCrossfadeSeconds } from '@/modules/soldiers/hooks/use-soldier-locomotion/apply-clip-transition';
-import { LOBBY_PREVIEW_ANIMATIONS_URL, LOBBY_PREVIEW_SOLDIER_CLIP } from '../constants/idle-fight';
+import { LOBBY_PREVIEW_ANIMATIONS_URL } from '../constants/idle-fight';
 import { prepareLobbyIdleClip } from '../utils/prepare-lobby-idle-clip';
 import { resolveLobbyPreviewClipName } from '../utils/resolve-lobby-preview-clip-name';
 

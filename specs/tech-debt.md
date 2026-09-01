@@ -17,7 +17,7 @@ Aug 2026 audit (knip + grep — grep `src/` before deleting):
 - [x] `VIEWMODEL_OFFSET`, `VIEWMODEL_ROTATION_Y` — `src/modules/game/constants/player.ts` (viewmodel tuning lives on skin registry `viewModelScale`)
 - [x] `GameMode` — `src/modules/game/types.ts` (type defined, never referenced)
 - [x] `cloneSoldierRoot` — `src/modules/soldiers/utils/clone-soldier-root.ts` (superseded by `useSoldierMesh` + drei `<Clone>`; keep `getSoldierArmature`, `soldierScaleVector`, `disableSkinnedMeshCulling`)
-- [ ] `DEV_CONTROLS` — un-export from `src/modules/game/dev/use-free-camera-look.ts` if only used in-folder
+- [x] `DEV_CONTROLS` — un-export from `src/modules/game/dev/use-free-camera-look.ts` if only used in-folder
 - [ ] `NPC_BODY_RADIUS` — un-export from `src/modules/game/utils/npc-blockers-from-scenario.ts` if module-private
 - [ ] Scenario utils — un-export if only used in-file: `holeWidth` (`wall-segment-helpers.ts`), `faceCenterYaw` (`spawn-helpers.ts`), `configureTexture` (`texture-library-utils.ts`), `segmentWall` (`wall-mesh-builders.ts`); keep `preloadScenarioTextures()` side effect, drop the export if unused
 - [ ] Soldier / weapons tuning — un-export if grep confirms no callers: `CROSSFADE_SECONDS` (`apply-clip-transition.ts`), `WEAPON_ATTACH_SCALE` (`weapon-attach.tsx`), `RIGHT_HAND_BONE_NAMES` (`find-right-hand-bone.ts`), `PISTOL_GRIP_DOWN_AXIS` (`pistol-grip-alignment.ts`)

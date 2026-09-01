@@ -7,7 +7,7 @@ import { MOUSE_SENSITIVITY, PITCH_LIMIT } from '../constants/player';
 import { requestPointerLock } from '../utils/request-pointer-lock';
 
 /** Marker so production player code can pause without importing this module. */
-export const DEV_CONTROLS = Object.assign(new EventDispatcher(), { enabled: true });
+const DEV_CONTROLS = Object.assign(new EventDispatcher(), { enabled: true });
 
 interface UseFreeCameraLookOptions {
   enabled: boolean;

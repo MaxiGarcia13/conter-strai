@@ -5,7 +5,7 @@ import { scenarios } from '../scenario-registry';
 import { collectMapEntries } from './texture-library-utils';
 
 /** Warms R3F's texture cache before ScenarioGround mounts. */
-export function preloadScenarioTextures(): void {
+function preloadScenarioTextures(): void {
   const urls = new Set(
     Object.values(scenarios).flatMap((scenario) =>
       collectMapEntries(getScenarioTextureIds(scenario)).map((entry) => entry.url),

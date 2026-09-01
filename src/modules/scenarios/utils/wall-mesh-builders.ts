@@ -34,7 +34,7 @@ function wallBox(
   };
 }
 
-export function segmentWall(
+function segmentWall(
   segment: ScenarioWallSegment,
   index: number,
   defaultHeight: number,

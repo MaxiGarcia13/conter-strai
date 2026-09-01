@@ -34,7 +34,7 @@ export function collectMapEntries(textureIds: TextureId[]): LoadedMapEntry[] {
   return entries;
 }
 
-export function configureTexture(texture: THREE.Texture, slot: LoadedMapEntry['slot']): THREE.Texture {
+function configureTexture(texture: THREE.Texture, slot: LoadedMapEntry['slot']): THREE.Texture {
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
   texture.colorSpace = slot === 'map' ? THREE.SRGBColorSpace : THREE.NoColorSpace;

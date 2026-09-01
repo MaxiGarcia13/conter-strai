@@ -16,7 +16,7 @@ function defaultHeight(side: HouseSide | undefined, fallback: HouseWallHeight): 
   return fallback;
 }
 
-export function holeWidth(side: HouseSide | undefined): number | null {
+function holeWidth(side: HouseSide | undefined): number | null {
   if (!side || side === 'full' || side === 'open') {
     return null;
   }

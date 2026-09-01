@@ -11,7 +11,7 @@ export interface WeaponAmmoState {
 }
 
 export const useWeaponAmmoStore = create<WeaponAmmoState>()((set, get) => ({
-  shotsInMag: PISTOL_MAGAZINE_SIZE,
+  shotsInMag: 0,
 
   recordShot: () => set((s) => ({ shotsInMag: s.shotsInMag + 1 })),
 
@@ -19,5 +19,5 @@ export const useWeaponAmmoStore = create<WeaponAmmoState>()((set, get) => ({
 
   onReloadComplete: () => set({ shotsInMag: 0 }),
 
-  reset: () => set({ shotsInMag: PISTOL_MAGAZINE_SIZE }),
+  reset: () => set({ shotsInMag: 0 }),
 }));

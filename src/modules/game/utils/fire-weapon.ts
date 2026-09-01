@@ -7,6 +7,7 @@ import { useHealthStore } from '@/modules/combat';
 import { DEFAULT_LOCAL_TEAM, LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 import { useRoundStore } from '@/modules/game/stores/round-store';
+import { useWeaponAmmoStore } from '@/modules/game/stores/weapon-ammo-store';
 import {
   getActiveMatch,
   sendFire,
@@ -42,6 +43,11 @@ export function resetFireWeaponCooldown(): void {
   lastFireMs = Number.NEGATIVE_INFINITY;
 }
 
+/** Test helper — refills the shared magazine to a full load. */
+export function resetWeaponAmmo(): void {
+  useWeaponAmmoStore.getState().reset();
+}
+
 /**
  * Shared hitscan fire. Returns true when a shot is taken (cooldown stamped),
  * even if the ray misses. Pointer-lock is a caller concern.
@@ -61,6 +67,10 @@ export function fireWeapon(now = performance.now()): boolean {
     return false;
   }
 
+  if (useWeaponAmmoStore.getState().needsReload()) {
+    return false;
+  }
+
   const cooldownMs = weapons[DEFAULT_WEAPON_ID].fireCooldownSeconds * 1000;
   if (now - lastFireMs < cooldownMs) {
     return false;
@@ -71,6 +81,7 @@ export function fireWeapon(now = performance.now()): boolean {
   }
 
   lastFireMs = now;
+  useWeaponAmmoStore.getState().recordShot();
   const { camera, scene } = view;
   // FPS: local gunshot originates at the camera (always full volume for self).
   playGameSound('pistol', {

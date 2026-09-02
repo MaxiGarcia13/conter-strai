@@ -105,6 +105,7 @@ const arena01Houses: HouseFootprint[] = [
       },
       north: {
         hole: HOLE,
+
       },
     },
   },

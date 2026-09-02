@@ -36,8 +36,8 @@ Depends on **US-14** window segment + `baseY` work (already in tree). Prefer imp
 
 ## Acceptance
 
-- [ ] `npm run test:unit` green
-- [ ] Manual smoke: arena-01 `house-right-tall` west shows two openings; door passable; window blocks movement; hitscan through window gap
+- [x] `npm run test:unit` green
+- [x] Manual smoke: arena-01 `house-right-tall` west shows two openings; door passable; window blocks movement; hitscan through window gap
 
 ## Ship
 

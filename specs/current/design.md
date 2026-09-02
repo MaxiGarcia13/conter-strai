@@ -18,11 +18,11 @@ stateDiagram-v2
   RoundEnd --> RoundStart: host Restart (server reset in multiplayer)
 ```
 
-| Phase           | Behavior                                                                                                  |
-| --------------- | --------------------------------------------------------------------------------------------------------- |
-| **Round start** | Split players into Civilians / Soldiers; teleport to team spawns; full HP; equip pistol                   |
-| **In progress** | PvP combat; eliminated players spectate or wait (no respawn)                                              |
-| **Round end**   | One team wiped → opposing team wins; show banner. Next-round reset is server-authoritative in multiplayer |
+| Phase           | Behavior                                                                                                                   |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Round start** | Split players into Civilians / Soldiers; teleport to team spawns; full HP; full magazine; equip pistol; clear impact marks |
+| **In progress** | PvP combat; eliminated players spectate or wait (no respawn)                                                               |
+| **Round end**   | One team wiped → opposing team wins; show banner. Next-round reset is server-authoritative in multiplayer                  |
 
 ## Teams
 
@@ -44,7 +44,7 @@ Join-time: `assignTeam` honors seat preference + overflow fallback (max 3 per si
 | Rifle  | No                        | Primary weapon    |
 | Others | No                        | SMG, sniper, etc. |
 
-Weapon registry lives in `src/modules/weapons/` (`weapon-registry.ts`, `PistolWeaponConfig`). Pistol mesh attaches at runtime to the Mixamo right-hand bone (`WeaponAttach`); do not bake weapons into character mesh GLBs.
+Weapon registry lives in `src/modules/weapons/` (`weapon-registry.ts`, `PistolWeaponConfig`). Constants: `PISTOL_MAGAZINE_SIZE = 12`, `CLOSE_RANGE_IMPACT_METERS = 10`. Pistol mesh attaches at runtime to the Mixamo right-hand bone (`WeaponAttach`); do not bake weapons into character mesh GLBs. Client-side magazine (`weapon-ammo-store`) gates `fireWeapon()`; total ammo is unlimited.
 
 ## Module map
 
@@ -172,7 +172,7 @@ The play canvas mounts the arena in phases, each in its own Suspense boundary wi
 
 ### Key components
 
-- `GameCanvas` — R3F Canvas, lights, camera; mounts `<MobileControls />` on touch-primary
+- `GameCanvas` — R3F Canvas, lights, camera; mounts `<BulletImpactMarks />` inside Canvas and `<PlayerHud />` / `<MobileControls />` in the DOM overlay
 - `ScenarioSky` — drei `<Sky>` + scene fog from `ArenaEnvironment`
 - `ScenarioGround` / `ScenarioHouses` / `ScenarioProps` — staged arena layers (see above)
 - `SoldierModel` — NPC spawns; `LocalPlayer` — one clone + mixer
@@ -180,6 +180,8 @@ The play canvas mounts the arena in phases, each in its own Suspense boundary wi
 - `useShooting` — camera-center pistol hitscan via `fireWeapon()`, cooldown, no friendly fire
 - `useSoldierLocomotion` — idle / walk / run / crouch-walk + jump / kneel / reload / dying
 - `CameraHud` / `CrosshairHud` — mode label (desktop only) + screen crosshair; world aim marker on look-ray hit
+- `PlayerHud` — stacks `HealthBar` + `AmmoHud` (remaining / 12); same corners as FR-19
+- `BulletImpactMarks` — client-only black discs on close world hits (≤ ~10 m)
 
 ### Camera modes (**C** / pause menu)
 
@@ -196,22 +198,22 @@ Shared hot-path state: `origin`, `yaw`, `pitch`, `mode` (`game/stores/player-sta
 
 ### Locomotion / actions
 
-| Input              | Clip                     | Notes                                                                               |
-| ------------------ | ------------------------ | ----------------------------------------------------------------------------------- |
-| Stand still        | `idle`                   | Default                                                                             |
-| WASD               | `walk`                   | In-place; hips translation stripped                                                 |
-| WASD + Space       | `run`                    | Faster move + run clip                                                              |
-| **S**              | `walk-backward`          | ~70% walk speed; dominant backpedal (`forward < 0` and `\|forward\| >= \|strafe\|`) |
-| **S** + Space      | `run-backward`           | ~60% run speed; backpedal clip                                                      |
-| **E**              | `kneel`                  | Toggle; `LoopOnce` + clamp; WASD does **not** clear kneel                           |
-| Kneel + WASD       | `crouch-walking`         | Loop; walk-speed; kneel pose kept                                                   |
-| Kneel + WASD+Space | `run`                    | Run speed + stand run clip; kneel pose kept → resumes on stop                       |
-| Kneel + S          | `crouch-walking` / `run` | No crouch-backward clip; falls back to crouch-walk or run-over-kneel                |
-| **F** (idle/kneel) | `jump-idle`              | In-place one-shot; no Y physics; kneel lifts on keypress                            |
-| **F** (walk/run)   | `jump`                   | Forward one-shot; clears kneel first                                                |
-| **R**              | `reloading`              | One-shot; stand+idle or `reloading-kneel`; WASD cancels                             |
-| **LMB**            | —                        | Hitscan pistol (no `shooting` pose until a shippable clip)                          |
-| **Esc** (live)     | —                        | Toggle pause menu; releases look; no pause during **`loading`** / **`countdown`**   |
+| Input              | Clip                     | Notes                                                                                       |
+| ------------------ | ------------------------ | ------------------------------------------------------------------------------------------- |
+| Stand still        | `idle`                   | Default                                                                                     |
+| WASD               | `walk`                   | In-place; hips translation stripped                                                         |
+| WASD + Space       | `run`                    | Faster move + run clip                                                                      |
+| **S**              | `walk-backward`          | ~70% walk speed; dominant backpedal (`forward < 0` and `\|forward\| >= \|strafe\|`)         |
+| **S** + Space      | `run-backward`           | ~60% run speed; backpedal clip                                                              |
+| **E**              | `kneel`                  | Toggle; `LoopOnce` + clamp; WASD does **not** clear kneel                                   |
+| Kneel + WASD       | `crouch-walking`         | Loop; walk-speed; kneel pose kept                                                           |
+| Kneel + WASD+Space | `run`                    | Run speed + stand run clip; kneel pose kept → resumes on stop                               |
+| Kneel + S          | `crouch-walking` / `run` | No crouch-backward clip; falls back to crouch-walk or run-over-kneel                        |
+| **F** (idle/kneel) | `jump-idle`              | In-place one-shot; no Y physics; kneel lifts on keypress                                    |
+| **F** (walk/run)   | `jump`                   | Forward one-shot; clears kneel first                                                        |
+| **R**              | `reloading`              | One-shot; stand+idle or `reloading-kneel`; WASD cancels; mixer `finished` refills mag to 12 |
+| **LMB**            | —                        | Hitscan pistol (no `shooting` pose until a shippable clip)                                  |
+| **Esc** (live)     | —                        | Toggle pause menu; releases look; no pause during **`loading`** / **`countdown`**           |
 
 Priority: blocking one-shots (`reloading` / `reloading-kneel` > `jump` / `jump-idle`) → kneel + run → run → kneel + walk → crouch-walk → kneel + idle → locomotion run-backward / walk-backward → walk / run → idle → **`dying`** on elimination. Optional `shooting` is mixer-ready but not triggered.
 
@@ -238,10 +240,10 @@ Floor zone-on-zone overlap at the same Y causes z-fighting; streets split at jun
 
 ### Testing
 
-| Layer          | Scope                                                                                                                                                                                                                                                                    |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Vitest**     | Registries; floor-zone overlap; prop blockers; house open-sides / presets; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide; look-delta / joystick mapping / touch-primary gate / `fireWeapon` gating |
-| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook                                                                              |
+| Layer          | Scope                                                                                                                                                                                                                                                                                                                         |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vitest**     | Registries; floor-zone overlap; prop blockers; house open-sides / presets; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide; look-delta / joystick mapping / touch-primary gate / `fireWeapon` magazine gating / `pickCloseWorldImpact` / rounds remaining |
+| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook                                                                                                                                   |
 
 ## Characters — shipped US-6
 
@@ -288,19 +290,19 @@ Attached on `LocalPlayer` and `SoldierModel` when `entityId` is set.
 
 ### HUD + elimination
 
-- `HealthBar` — DOM overlay, local player HP %; **top-right** + safe-area on touch-primary, **bottom-left** on desktop.
+- `PlayerHud` — DOM overlay stacking `HealthBar` (HP %) and `AmmoHud` (`remaining / 12`); **top-right** + safe-area on touch-primary, **bottom-left** on desktop. `HealthBar` is inner content only (no fixed positioning).
 - At 0 HP: `isEliminated: true`; FPS controls disabled; **`dying`** one-shot on mixer (`LocalPlayer` / `SoldierModel` via `getPose`).
 - No mid-round respawn; round reset restores HP.
 
 ### Key files
 
-| File                                | Role                                 |
-| ----------------------------------- | ------------------------------------ |
-| `combat/apply-damage.ts`            | Pure zone × weapon × difficulty math |
-| `combat/health-store.ts`            | Zustand `HealthSystem`               |
-| `combat/components/hitbox-mesh.tsx` | Invisible zone colliders             |
-| `combat/components/health-bar.tsx`  | HUD                                  |
-| `weapons/weapon-registry.ts`        | Pistol `damageByZone`                |
+| File                                | Role                                         |
+| ----------------------------------- | -------------------------------------------- |
+| `combat/apply-damage.ts`            | Pure zone × weapon × difficulty math         |
+| `combat/health-store.ts`            | Zustand `HealthSystem`                       |
+| `combat/components/hitbox-mesh.tsx` | Invisible zone colliders                     |
+| `combat/components/health-bar.tsx`  | Inner HP content (positioned by `PlayerHud`) |
+| `weapons/weapon-registry.ts`        | Pistol `damageByZone`                        |
 
 ## Data flow (combat)
 
@@ -318,7 +320,7 @@ Local team-elimination on `/room/.../play`. In multiplayer, damage, elimination,
 ### Round service (`game/state/round-store.ts`)
 
 ```
-startRound() → roster from ScenarioConfig.teamSpawns, resetAll HP, teleport local player, equip pistol
+startRound() → roster from ScenarioConfig.teamSpawns, resetAll HP, reset magazine + impact marks, teleport local player, equip pistol
 checkRoundEnd() → if all civilians eliminated OR all soldiers eliminated → endRound(winner)
 endRound(winner) → RoundPhase 'round-end', winner banner with Restart / Home (no auto-restart; host or offline Restart starts the next round)
 ```
@@ -371,7 +373,7 @@ Per-player `ready: boolean` on `PlayerState`; cleared on `startRound`. Countdown
 
 ### Shooting
 
-- Desktop pointer-locked **LMB**, or the touch fire button, → `fireWeapon()` / `useShooting` raycast from camera center; range 100 m; cooldown `fireCooldownSeconds` (pistol 0.35 s). Pointer-lock is not required on touch-primary.
+- Desktop pointer-locked **LMB**, or the touch fire button, → `fireWeapon()` / `useShooting` raycast from camera center; range 100 m; cooldown `fireCooldownSeconds` (pistol 0.35 s). Empty magazine blocks the shot (dry-fire SFX, no hitscan). Pointer-lock is not required on touch-primary.
 - Hits need `userData.hitZone` + `userData.entityId`; friendly fire skipped via round roster.
 - `resolveHitDamage` builds `DamageData` with equipped `weaponId` → health store `applyDamage`.
 - Gunshot SFX at the camera for the local shooter; peers hear spatial pistol audio via `fire` relay; injury SFX is spatial on the victim (local HP via `useHealthStore`, remote HP via `multiplayerStore`). Remote walk/run loops are per-peer with the same ~40 m linear falloff.
@@ -379,12 +381,28 @@ Per-player `ready: boolean` on `PlayerState`; cleared on `startRound`. Countdown
 
 ### Reload + weapon mesh
 
-- **R** (idle) → `reloading`; **R** while kneeling → `reloading-kneel`. Busy until mixer `finished`; WASD cancels.
+- **R** (idle) or mobile reload tap → `reloading`; while kneeling → `reloading-kneel`. Busy until mixer `finished`; WASD cancels standing reload (magazine does not refill). On `finished`, `onReloadComplete()` sets `shotsInMag = 0` (12 available). Tactical reload while not empty is allowed.
 - `pistol_a.glb` from registry `modelUrl` (CDN via `glbCdnUrl`); `WeaponAttach` parents a clone under `mixamorig:RightHand` with grip offset on the weapon config.
+
+### Magazine + close-range impacts
+
+- `weapon-ammo-store` (Zustand): `shotsInMag`, `recordShot`, `needsReload`, `onReloadComplete`, `reset`. `fireWeapon()` early-returns when `needsReload()`; `recordShot()` after cooldown stamp.
+- `pickCloseWorldImpact` walks the same ray as `pickBulletHit`; first visible untagged mesh within `CLOSE_RANGE_IMPACT_METERS` (10). Runs in parallel so a close wall still marks when a soldier stands behind it.
+- `bullet-impact-store` FIFO-caps ~40 marks; `BulletImpactMarks` renders small black `CircleGeometry` discs (`meshBasicMaterial` `#111`, polygon offset). Client-only — no Colyseus messages.
+
+| File                                    | Role                                                |
+| --------------------------------------- | --------------------------------------------------- |
+| `weapons/constants/pistol.ts`           | `PISTOL_MAGAZINE_SIZE`, `CLOSE_RANGE_IMPACT_METERS` |
+| `game/stores/weapon-ammo-store.ts`      | Client magazine                                     |
+| `game/stores/bullet-impact-store.ts`    | FIFO impact list                                    |
+| `game/utils/pick-close-world-impact.ts` | Close untagged hit                                  |
+| `game/components/player-hud.tsx`        | Health + ammo shell                                 |
+| `game/components/ammo-hud.tsx`          | `remaining / 12`                                    |
+| `game/components/bullet-impact-marks/`  | R3F discs                                           |
 
 ### Vitest
 
-`resolveHitDamage` (self / friendly / zone), `checkRoundEnd` (team wipe → winner), `applyLookDelta`, `joystickToAxes`, `isTouchPrimaryDevice`, and `fireWeapon` gating.
+`resolveHitDamage` (self / friendly / zone), `checkRoundEnd` (team wipe → winner), `applyLookDelta`, `joystickToAxes`, `isTouchPrimaryDevice`, `fireWeapon` magazine gating, `pickCloseWorldImpact`, and `getRoundsRemaining`.
 
 ## Input + mobile controls — shipped US-12
 
@@ -439,28 +457,28 @@ src/modules/game/input/
     mobile-controls/               # orchestrator + joystick / look / fire / pause
 ```
 
-`fireWeapon()` lives in `game/utils/fire-weapon.ts` (extracted from `use-shooting.ts`). Face-button icons (`MenuIcon` / `FireIcon` / `RunIcon` / `ArrowDownIcon`) live in `src/components/icons/`.
+`fireWeapon()` lives in `game/utils/fire-weapon.ts` (extracted from `use-shooting.ts`). Face-button icons (`MenuIcon` / `FireIcon` / `RunIcon` / `ArrowDownIcon` / `ReloadIcon`) live in `src/components/icons/`.
 
 ### Touch-primary layout
 
 ```
 ┌─────────────────────────────────────────┐
-│  [☰ Pause]                    [HP ████] │  ← safe-area top
+│  [☰ Pause]              [HP] [AMMO n/12]│  ← safe-area top
 │                                         │
 │              (look drag zone)           │
 │                                         │
-│  [joystick]                   [fire]  │
+│  [joystick]              [reload][fire] │
 │                              [B] [A]    │
 └─────────────────────────────────────────┘
 ```
 
-| Zone               | Component                  | Action                                                             |
-| ------------------ | -------------------------- | ------------------------------------------------------------------ |
-| Top-left           | `PauseButton` (`MenuIcon`) | `setPaused(true)` → `GamePausePanel`                               |
-| Top-right          | `HealthBar` (relocated)    | existing combat HUD                                                |
-| Bottom-left        | `VirtualJoystick`          | move axes                                                          |
-| Bottom-right stack | `ActionButton` × 3         | `ArrowDownIcon` kneel (tap), `RunIcon` run (hold), `FireIcon` fire |
-| Right ~50%         | `LookZone`                 | touch-drag look                                                    |
+| Zone               | Component                  | Action                                                                           |
+| ------------------ | -------------------------- | -------------------------------------------------------------------------------- |
+| Top-left           | `PauseButton` (`MenuIcon`) | `setPaused(true)` → `GamePausePanel`                                             |
+| Top-right          | `PlayerHud`                | health + ammo (FR-19 / FR-62)                                                    |
+| Bottom-left        | `VirtualJoystick`          | move axes                                                                        |
+| Bottom-right stack | `ActionButton` × 4         | `ReloadIcon` reload (tap), `FireIcon` fire, `ArrowDownIcon` kneel, `RunIcon` run |
+| Right ~50%         | `LookZone`                 | touch-drag look                                                                  |
 
 `#game-canvas` uses `touch-action: none` while the overlay is active. Coupling: `mobile-controls` may import `input/*`, `player-pose-actions`, `fire-weapon`, and `game-pause-store` — never `usePlayerControls` internals or R3F hooks. No touch listeners inside `combat/`, `soldiers/`, or pure movement utils.
 

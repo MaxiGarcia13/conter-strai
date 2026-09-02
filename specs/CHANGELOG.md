@@ -9,14 +9,13 @@
 
 ## Open
 
-| US | Summary |
-|----|---------|
-| **US-13** | Pistol magazine reload (12 rounds, manual refill), mobile reload button (`ReloadIcon`), client-only close-range (~2 m) black wall impact marks |
+None.
 
 ## Shipped
 
 | US | Summary |
 |----|---------|
+| **US-13** | Pistol magazine reload (12 rounds, manual refill, ammo HUD), mobile reload button (`ReloadIcon`), client-only close-range (~10 m) black wall impact marks |
 | **US-12** | Mobile touch controls — modular input layer, virtual joystick, look zone, fire/kneel/sprint buttons, top-bar pause + health HUD, camera cycle from pause menu |
 | **US-11** | Arena modularization (Ruined Village polish) — composable `arena-01`, collidable props, house presets, sky/fog, open perimeter, non-overlapping floors |
 | **US-10** | Shuffle teams when lobby has no opponents — even split on `startRound` if one team is empty; skip mixed/solo; skin remap + spawn recalc; client session sync |

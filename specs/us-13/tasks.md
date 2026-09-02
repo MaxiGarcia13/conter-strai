@@ -23,14 +23,14 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## Close-range impact marks (US-13.8–US-13.9)
 
-- [x] Add `CLOSE_RANGE_IMPACT_METERS = 2` to `src/modules/weapons/constants/pistol.ts` (or colocate with helper)
+- [x] Add `CLOSE_RANGE_IMPACT_METERS = 10` to `src/modules/weapons/constants/pistol.ts` (or colocate with helper)
 - [x] Add `src/modules/game/utils/pick-close-world-impact.ts`
 - [x] Add `src/modules/game/stores/bullet-impact-store.ts` — FIFO cap ~40, `reset` on round start
 - [x] Add `src/modules/game/components/bullet-impact-marks/bullet-impact-marks.tsx` (+ barrel `index.ts`)
-- [ ] `fire-weapon.ts` — after raycast, push close world impacts to store
-- [ ] `game-canvas.tsx` — mount `<BulletImpactMarks />` inside `<Canvas>`
-- [ ] `round-store.ts` `startRound` — reset bullet impact store
-- [ ] Unit: `tests/units/game/pick-close-world-impact.test.ts`
+- [x] `fire-weapon.ts` — after raycast, push close world impacts to store
+- [x] `game-canvas.tsx` — mount `<BulletImpactMarks />` inside `<Canvas>`
+- [x] `round-store.ts` `startRound` — reset bullet impact store
+- [x] Unit: `tests/units/game/pick-close-world-impact.test.ts`
 
 ## Ammo HUD (US-13.11)
 

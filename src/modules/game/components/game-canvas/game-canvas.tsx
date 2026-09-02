@@ -20,6 +20,7 @@ import { ScenarioLighting } from '@/modules/scenarios/components/scenario-lighti
 import { ScenarioSky } from '@/modules/scenarios/components/scenario-sky';
 import { DEFAULT_SUN_POSITION } from '@/modules/scenarios/constants/scenario-lighting';
 import { AimMarker } from '../aim-marker';
+import { BulletImpactMarks } from '../bullet-impact-marks';
 import { CameraHud } from '../camera-hud';
 import { CrosshairHud } from '../crosshair-hud';
 import { DeferredAfterLoad } from '../deferred-after-load';
@@ -91,6 +92,7 @@ export function GameCanvas({
           <LazyLocalPlayer skinId={skinId} />
 
           <AimMarker />
+          <BulletImpactMarks />
           <ShootingController />
         </DeferredAfterLoad>
 

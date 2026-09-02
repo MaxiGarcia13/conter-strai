@@ -13,6 +13,7 @@ import {
   LOCAL_PLAYER_ENTITY_ID,
 } from '../constants/player';
 import { checkRoundEnd } from '../utils/check-round-end';
+import { useBulletImpactStore } from './bullet-impact-store';
 import { resetPlayerTransform, setPlayerPose } from './player-state';
 import { useWeaponAmmoStore } from './weapon-ammo-store';
 
@@ -54,6 +55,7 @@ export const useRoundStore = create<RoundState>()((set, get) => ({
 
     useHealthStore.getState().resetAll();
     useWeaponAmmoStore.getState().reset();
+    useBulletImpactStore.getState().reset();
     setPlayerPose(null);
     clearCountdownTimer();
 

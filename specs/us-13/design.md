@@ -37,7 +37,7 @@ Add to [`src/modules/weapons/constants/pistol.ts`](../../src/modules/weapons/con
 
 ```ts
 export const PISTOL_MAGAZINE_SIZE = 12;
-export const CLOSE_RANGE_IMPACT_METERS = 2;
+export const CLOSE_RANGE_IMPACT_METERS = 10;
 ```
 
 ## Magazine store
@@ -118,7 +118,7 @@ Material: `meshBasicMaterial` color `#111`, `polygonOffset: true`. No `@react-th
 | Test file                                                           | Coverage                                                       |
 | ------------------------------------------------------------------- | -------------------------------------------------------------- |
 | [`fire-weapon.test.ts`](../../tests/units/game/fire-weapon.test.ts) | 12 shots OK, 13th blocked; post-`onReloadComplete` fires again |
-| `pick-close-world-impact.test.ts`                                   | Within 2 m → impact; beyond → null; skips local player         |
+| `pick-close-world-impact.test.ts`                                   | Within 10 m → impact; beyond → null; skips local player        |
 
 ## Ship checklist
 

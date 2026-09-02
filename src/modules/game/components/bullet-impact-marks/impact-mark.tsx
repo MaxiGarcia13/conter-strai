@@ -4,7 +4,7 @@ import { Quaternion, Vector3 } from 'three';
 /** Meters the disc nudges off the surface to prevent z-fighting. */
 export const IMPACT_OFFSET_METERS = 0.01;
 /** Disc radius in meters. */
-export const IMPACT_RADIUS_METERS = 0.035;
+export const IMPACT_RADIUS_METERS = 0.015;
 
 const DISC_FORWARD = new Vector3(0, 0, 1);
 

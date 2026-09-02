@@ -10,7 +10,7 @@ export const PISTOL_FIRE_COOLDOWN_MS = 200;
 export const PISTOL_MAGAZINE_SIZE = 12;
 
 /** Distance (meters) within which a wall hit spawns a cosmetic impact mark. */
-export const CLOSE_RANGE_IMPACT_METERS = 2;
+export const CLOSE_RANGE_IMPACT_METERS = 10;
 
 /** Per-zone fractions of max HP for the pistol — server and client authority. */
 export const PISTOL_DAMAGE_BY_ZONE: Record<HitZone, number> = {

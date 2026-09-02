@@ -16,8 +16,10 @@ import {
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import { PISTOL_MAX_RANGE_METERS } from '@/modules/weapons/constants/pistol';
 import { DEFAULT_WEAPON_ID, weapons } from '@/modules/weapons/weapon-registry';
+import { useBulletImpactStore } from '../stores/bullet-impact-store';
 import { getPlayerPose } from '../stores/player-state';
 import { pickBulletHit } from './pick-bullet-hit';
+import { pickCloseWorldImpact } from './pick-close-world-impact';
 import { playGameSound } from './play-game-sound';
 import { resolveHitDamage } from './resolve-hit-damage';
 
@@ -104,8 +106,15 @@ export function fireWeapon(now = performance.now()): boolean {
   raycaster.far = PISTOL_MAX_RANGE_METERS;
   raycaster.setFromCamera(SCREEN_CENTER, camera);
 
+  const intersections = raycaster.intersectObject(scene, true);
+
+  const impact = pickCloseWorldImpact(intersections);
+  if (impact) {
+    useBulletImpactStore.getState().addImpact(impact);
+  }
+
   const hit: BulletHitResult | null = pickBulletHit(
-    raycaster.intersectObject(scene, true),
+    intersections,
     LOCAL_PLAYER_ENTITY_ID,
   );
   if (!hit || !hit.entityId || !hit.hitZone) {

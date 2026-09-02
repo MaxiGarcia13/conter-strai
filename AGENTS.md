@@ -17,6 +17,7 @@ Browser tactical shooter: **Civilians** vs **Soldiers**, round-based team elimin
 | [`specs/tech-debt.md`](./specs/tech-debt.md)           | Hygiene backlog                                        |
 | [`.cursor/rules/`](./.cursor/rules/)                   | Always-on and scoped coding rules                      |
 | [`.cursor/skills/`](./.cursor/skills/)                 | Domain skills (R3F, Three.js, Astro, a11y, …)          |
+| [`docs/asset-pipeline.md`](./docs/asset-pipeline.md)   | GLB / texture script workflow (`assets:*` npm scripts) |
 
 **Spec before code** for behavior changes. Update the relevant `specs/us-<n>/` (or `current/`) first; tick tasks only after acceptance passes.
 

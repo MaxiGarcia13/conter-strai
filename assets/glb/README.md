@@ -27,7 +27,7 @@ The `q` query value is the path under `assets/glb/` (no `/assets` prefix). Regis
 ## Workflow
 
 1. Edit GLBs in this tree (Git LFS tracks `*.glb`).
-2. Run asset scripts as needed (`npm run assets:compress`, `assets:normalize-characters`, etc.).
+2. Run asset scripts as needed — see **[docs/asset-pipeline.md](../../docs/asset-pipeline.md)** for when and how (`assets:compress`, `assets:normalize-characters`, `assets:snap-animation-floor`, …).
 3. **Upload updated objects to R2** so the worker serves the new files (see below).
 4. Registries in `src/modules/` reference CDN URLs via `glbCdnUrl()` — no copy in `public/`.
 

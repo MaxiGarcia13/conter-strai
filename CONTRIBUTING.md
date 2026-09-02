@@ -51,16 +51,22 @@ For a production-like server (or a LAN party), use `npm run build` then `npm run
 
 ### Scripts
 
-| Command                             | Description                                                        |
-| ----------------------------------- | ------------------------------------------------------------------ |
-| `npm run dev`                       | Dev server                                                         |
-| `npm run build`                     | Production build (+ custom Astro/Colyseus entry)                   |
-| `npm run preview`                   | Run production entry (`dist/server/custom-entry.mjs`; build first) |
-| `npm run lint` / `npm run lint:fix` | ESLint                                                             |
-| `npm run test`                      | Unit + e2e                                                         |
-| `npm run test:unit`                 | Vitest                                                             |
-| `npm run test:e2e`                  | Playwright                                                         |
-| `npm run phoenix`                   | Clean install (`node_modules`, `dist`, `.astro`)                   |
+| Command                               | Description                                                                     |
+| ------------------------------------- | ------------------------------------------------------------------------------- |
+| `npm run dev`                         | Dev server                                                                      |
+| `npm run build`                       | Production build (+ custom Astro/Colyseus entry)                                |
+| `npm run preview`                     | Run production entry (`dist/server/custom-entry.mjs`; build first)              |
+| `npm run lint` / `npm run lint:fix`   | ESLint                                                                          |
+| `npm run test`                        | Unit + e2e                                                                      |
+| `npm run test:unit`                   | Vitest                                                                          |
+| `npm run test:e2e`                    | Playwright                                                                      |
+| `npm run phoenix`                     | Clean install (`node_modules`, `dist`, `.astro`)                                |
+| `npm run assets:compress`             | Resize / optimize GLBs (see [docs/asset-pipeline.md](./docs/asset-pipeline.md)) |
+| `npm run assets:normalize-characters` | Mixamo skeleton + material fixes on character GLBs                              |
+| `npm run assets:snap-animation-floor` | Floor-snap hips Y on shared animation packs                                     |
+| `npm run assets:extract-maps`         | Extract PBR maps from texture GLBs into `public/`                               |
+
+**Asset pipeline:** when to run each script, recommended order, and CLI flags — [docs/asset-pipeline.md](./docs/asset-pipeline.md).
 
 **Render:** Build Command `npm run build`, Start Command `npm run preview`. One Web Service — Astro + Colyseus share `$PORT`.
 

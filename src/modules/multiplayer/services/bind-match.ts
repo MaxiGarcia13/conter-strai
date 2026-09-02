@@ -4,11 +4,13 @@ import type { EntityId } from '@/modules/soldiers';
 import { useHealthStore } from '@/modules/combat';
 import { DEFAULT_MAX_HP } from '@/modules/combat/constants/health';
 import { LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
+import { useBulletImpactStore } from '@/modules/game/stores/bullet-impact-store';
 import {
   resetPlayerTransform,
   setPlayerLocomotion,
   setPlayerPose,
 } from '@/modules/game/stores/player-state';
+import { useWeaponAmmoStore } from '@/modules/game/stores/weapon-ammo-store';
 import { clearRoomSession, readRoomSession, writeRoomSession } from '@/modules/lobby/utils/room-session';
 import { requestHitReaction } from '@/modules/soldiers/state/hit-reaction-state';
 import { useMultiplayerStore } from '../stores/multiplayer-store';
@@ -25,6 +27,8 @@ function applyLocalRoundRespawn(handle: MatchHandle): void {
   resetPlayerTransform(local.x, local.z, local.rotY);
   setPlayerPose(null);
   setPlayerLocomotion('idle');
+  useWeaponAmmoStore.getState().reset();
+  useBulletImpactStore.getState().reset();
   useHealthStore.getState().syncHealth(LOCAL_PLAYER_ENTITY_ID, {
     currentHp: local.hp,
     maxHp: DEFAULT_MAX_HP,

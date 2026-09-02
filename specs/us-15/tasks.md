@@ -6,12 +6,12 @@ Depends on **US-14** window segment + `baseY` work (already in tree). Prefer imp
 
 ## Spec
 
-- [ ] Review [requirements.md](./requirements.md) and [design.md](./design.md) with implementer
+- [x] Review [requirements.md](./requirements.md) and [design.md](./design.md) with implementer
 
 ## Types + parsing
 
-- [ ] Add `WallDoorSpec`, `WallWindowSpec`, `WallHoleSpec` to [`house-helpers.ts`](../../src/modules/scenarios/pieces/house-helpers.ts)
-- [ ] Extend `HouseSide` with optional `holes?: WallHoleSpec[]` (keep `hole` shorthand)
+- [x] Add `WallDoorSpec`, `WallWindowSpec`, `WallHoleSpec` to [`house-helpers.ts`](../../src/modules/scenarios/pieces/house-helpers.ts)
+- [x] Extend `HouseSide` with optional `holes?: WallHoleSpec[]` (keep `hole` shorthand)
 - [ ] Add `normalizeOpenings(side) → WallHoleSpec[]` in [`wall-segment-helpers.ts`](../../src/modules/scenarios/pieces/wall-segment-helpers.ts) (`holes` wins over `hole`; default `along: 0`)
 
 ## Segment generation

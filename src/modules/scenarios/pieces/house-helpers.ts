@@ -26,14 +26,36 @@ export interface WallWindowHole {
 
 export type WallOpening = WallDoorHole | WallWindowHole;
 
+/** Door opening spec with optional horizontal offset. */
+export interface WallDoorSpec {
+  kind: 'door';
+  width: number;
+  /** Meters from wall center along the wall axis. Default: 0 */
+  along?: number;
+}
+
+/** Window opening spec with optional horizontal offset. */
+export interface WallWindowSpec {
+  kind: 'window';
+  width: number;
+  height: number;
+  /** Sill height above ground (m). Default: 1.0 */
+  bottom?: number;
+  /** Meters from wall center along the wall axis. Default: 0 */
+  along?: number;
+}
+
+export type WallHoleSpec = WallDoorSpec | WallWindowSpec;
+
 /**
  * A wall edge: `'full'` solid, `'open'` no wall/collision, or a spec with an
- * optional centered `hole` and per-side `height`.
+ * optional centered `hole` (US-14 shorthand) or multiple `holes` (US-15),
+ * plus per-side `height`.
  */
 export type HouseSide
   = | 'full'
     | 'open'
-    | { hole?: WallOpening; height?: HouseWallHeight };
+    | { hole?: WallOpening; holes?: WallHoleSpec[]; height?: HouseWallHeight };
 
 export interface HouseWalls {
   north?: HouseSide;

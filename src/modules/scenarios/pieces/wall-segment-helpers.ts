@@ -19,14 +19,6 @@ function defaultHeight(side: HouseSide | undefined, fallback: HouseWallHeight): 
   return fallback;
 }
 
-function holeWidth(side: HouseSide | undefined): number | null {
-  if (!side || side === 'full' || side === 'open') {
-    return null;
-  }
-  const hole = side.hole;
-  return typeof hole === 'number' ? hole : null;
-}
-
 /** Parsed opening from a wall side. */
 export type ParsedOpening =
   | { kind: 'none' }
@@ -65,6 +57,11 @@ export function collisionHole(
   return [{ axis, center, width: opening.width }];
 }
 
+/** Does this window fit within the wall, or fall back to a solid wall? */
+function windowFits(opening: { width: number; height: number; bottom: number }, totalLength: number, wallHeight: number): boolean {
+  return !(opening.width >= totalLength - 0.6 || opening.bottom + opening.height >= wallHeight - 0.1);
+}
+
 export function wallSegmentsAlongX(
   z: number,
   centerX: number,
@@ -78,10 +75,27 @@ export function wallSegmentsAlongX(
     return [];
   }
   const height = sideHeight(side, fallbackHeight);
-  const gap = holeWidth(side);
-  if (gap === null || gap >= totalLength - 0.6) {
+  const opening = parseOpening(side);
+
+  if (opening.kind === 'window') {
+    if (!windowFits(opening, totalLength, height)) {
+      return [wallAlongX(centerX, z, totalLength, height, material, idPrefix)];
+    }
+    const segmentLength = (totalLength - opening.width) / 2;
+    const pillarOffset = segmentLength / 2 + opening.width / 2;
+    const lintelHeight = height - opening.bottom - opening.height;
+    return [
+      wallAlongX(centerX - pillarOffset, z, segmentLength, height, material, `${idPrefix}-a`),
+      wallAlongX(centerX, z, opening.width, opening.bottom, material, `${idPrefix}-sill`),
+      wallAlongX(centerX, z, opening.width, lintelHeight, material, `${idPrefix}-lintel`, opening.bottom + opening.height),
+      wallAlongX(centerX + pillarOffset, z, segmentLength, height, material, `${idPrefix}-b`),
+    ];
+  }
+
+  if (opening.kind !== 'door' || opening.width >= totalLength - 0.6) {
     return [wallAlongX(centerX, z, totalLength, height, material, idPrefix)];
   }
+  const gap = opening.width;
   const segmentLength = (totalLength - gap) / 2;
   const offset = segmentLength / 2 + gap / 2;
   return [
@@ -103,10 +117,27 @@ export function wallSegmentsAlongZ(
     return [];
   }
   const height = sideHeight(side, fallbackHeight);
-  const gap = holeWidth(side);
-  if (gap === null || gap >= totalLength - 0.6) {
+  const opening = parseOpening(side);
+
+  if (opening.kind === 'window') {
+    if (!windowFits(opening, totalLength, height)) {
+      return [wallAlongZ(x, centerZ, totalLength, height, material, idPrefix)];
+    }
+    const segmentLength = (totalLength - opening.width) / 2;
+    const pillarOffset = segmentLength / 2 + opening.width / 2;
+    const lintelHeight = height - opening.bottom - opening.height;
+    return [
+      wallAlongZ(x, centerZ - pillarOffset, segmentLength, height, material, `${idPrefix}-a`),
+      wallAlongZ(x, centerZ, opening.width, opening.bottom, material, `${idPrefix}-sill`),
+      wallAlongZ(x, centerZ, opening.width, lintelHeight, material, `${idPrefix}-lintel`, opening.bottom + opening.height),
+      wallAlongZ(x, centerZ + pillarOffset, segmentLength, height, material, `${idPrefix}-b`),
+    ];
+  }
+
+  if (opening.kind !== 'door' || opening.width >= totalLength - 0.6) {
     return [wallAlongZ(x, centerZ, totalLength, height, material, idPrefix)];
   }
+  const gap = opening.width;
   const segmentLength = (totalLength - gap) / 2;
   const offset = segmentLength / 2 + gap / 2;
   return [

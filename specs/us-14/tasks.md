@@ -14,13 +14,13 @@ Tick when done; ship into `specs/current/` when all acceptance criteria in [requ
 
 ## Segment generation
 
-- [ ] Implement window branch in `wallSegmentsAlongX` / `wallSegmentsAlongZ` (pillars + sill + lintel)
-- [ ] Keep door (`number`) path unchanged — two spans, no center segment
-- [ ] Update `collisionHole()` — emit metadata for doors only
+- [x] Implement window branch in `wallSegmentsAlongX` / `wallSegmentsAlongZ` (pillars + sill + lintel)
+- [x] Keep door (`number`) path unchanged — two spans, no center segment
+- [x] Update `collisionHole()` — emit metadata for doors only
 
 ## Rendering
 
-- [ ] Thread `baseY` through [`wall-helpers.ts`](../../src/modules/scenarios/pieces/wall-helpers.ts)
+- [x] Thread `baseY` through [`wall-helpers.ts`](../../src/modules/scenarios/pieces/wall-helpers.ts)
 - [ ] Honor `baseY` in [`wall-mesh-builders.ts`](../../src/modules/scenarios/utils/wall-mesh-builders.ts) box positioning
 - [ ] Pass `baseY` through [`collision-helpers.ts`](../../src/modules/scenarios/pieces/collision-helpers.ts) (future-proof)
 

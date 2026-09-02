@@ -12,7 +12,7 @@ Depends on **US-14** window segment + `baseY` work (already in tree). Prefer imp
 
 - [x] Add `WallDoorSpec`, `WallWindowSpec`, `WallHoleSpec` to [`house-helpers.ts`](../../src/modules/scenarios/pieces/house-helpers.ts)
 - [x] Extend `HouseSide` with optional `holes?: WallHoleSpec[]` (keep `hole` shorthand)
-- [ ] Add `normalizeOpenings(side) → WallHoleSpec[]` in [`wall-segment-helpers.ts`](../../src/modules/scenarios/pieces/wall-segment-helpers.ts) (`holes` wins over `hole`; default `along: 0`)
+- [x] Add `normalizeOpenings(side) → WallHoleSpec[]` in [`wall-segment-helpers.ts`](../../src/modules/scenarios/pieces/wall-segment-helpers.ts) (`holes` wins over `hole`; default `along: 0`)
 
 ## Segment generation
 

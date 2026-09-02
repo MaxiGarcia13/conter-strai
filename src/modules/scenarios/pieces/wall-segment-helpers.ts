@@ -1,6 +1,6 @@
 import type { CollisionAxis, CollisionHole, ScenarioWallSegment } from '../types';
 import type { WallMaterialId } from './constants';
-import type { HouseSide, HouseWallHeight } from './house-helpers';
+import type { HouseSide, HouseWallHeight, WallDoorSpec, WallHoleSpec, WallWindowSpec } from './house-helpers';
 import { WALL_HEIGHT } from './constants';
 import { wallAlongX, wallAlongZ } from './wall-helpers';
 
@@ -42,6 +42,30 @@ export function parseOpening(side: HouseSide | undefined): ParsedOpening {
     };
   }
   return { kind: 'none' };
+}
+
+/** Normalize a `HouseSide` into a list of `WallHoleSpec`. `holes` wins over `hole`. */
+export function normalizeOpenings(side: HouseSide | undefined): WallHoleSpec[] {
+  if (!side || side === 'full' || side === 'open') {
+    return [];
+  }
+  if (side.holes) {
+    return side.holes.map((spec) => ({ ...spec, along: spec.along ?? 0 }));
+  }
+  if (typeof side.hole === 'number' && side.hole >= 0) {
+    return [{ kind: 'door' as const, width: side.hole, along: 0 }];
+  }
+  if (side.hole && typeof side.hole === 'object') {
+    const win = side.hole;
+    return [{
+      kind: 'window' as const,
+      width: win.width,
+      height: win.height,
+      bottom: win.bottom ?? WINDOW_DEFAULT_BOTTOM,
+      along: 0,
+    }];
+  }
+  return [];
 }
 
 export function collisionHole(

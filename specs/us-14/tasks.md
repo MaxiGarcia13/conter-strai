@@ -9,7 +9,7 @@ Tick when done; ship into `specs/current/` when all acceptance criteria in [requ
 ## Types + parsing
 
 - [x] Add `WallDoorHole`, `WallWindowHole`, `WallOpening` to [`house-helpers.ts`](../../src/modules/scenarios/pieces/house-helpers.ts)
-- [ ] Add optional `baseY?: number` to [`ScenarioWallSegment`](../../src/modules/scenarios/types.ts)
+- [x] Add optional `baseY?: number` to [`ScenarioWallSegment`](../../src/modules/scenarios/types.ts)
 - [ ] Add `parseOpening()` helper in [`wall-segment-helpers.ts`](../../src/modules/scenarios/pieces/wall-segment-helpers.ts)
 
 ## Segment generation

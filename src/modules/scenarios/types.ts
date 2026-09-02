@@ -30,6 +30,8 @@ export interface ScenarioWallSegment {
   end: Vec3;
   height?: number;
   assetId?: TextureId;
+  /** Bottom of the segment above ground (m); default `0`. */
+  baseY?: number;
 }
 
 export type CollisionAxis = 'x' | 'z';

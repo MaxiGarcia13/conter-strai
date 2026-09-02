@@ -25,8 +25,8 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 - [x] Add `CLOSE_RANGE_IMPACT_METERS = 2` to `src/modules/weapons/constants/pistol.ts` (or colocate with helper)
 - [x] Add `src/modules/game/utils/pick-close-world-impact.ts`
-- [ ] Add `src/modules/game/stores/bullet-impact-store.ts` — FIFO cap ~40, `reset` on round start
-- [ ] Add `src/modules/game/components/bullet-impact-marks/bullet-impact-marks.tsx` (+ barrel `index.ts`)
+- [x] Add `src/modules/game/stores/bullet-impact-store.ts` — FIFO cap ~40, `reset` on round start
+- [x] Add `src/modules/game/components/bullet-impact-marks/bullet-impact-marks.tsx` (+ barrel `index.ts`)
 - [ ] `fire-weapon.ts` — after raycast, push close world impacts to store
 - [ ] `game-canvas.tsx` — mount `<BulletImpactMarks />` inside `<Canvas>`
 - [ ] `round-store.ts` `startRound` — reset bullet impact store

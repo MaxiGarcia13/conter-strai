@@ -27,8 +27,8 @@ Extend house wall authoring so map authors can place **windows** — horizontal 
 
 - Y-aware collision (player crouch vs window height)
 - Window frame / glass props
-- Multiple windows per wall side
-- Horizontal offset (openings stay centered, same as doors)
+- Multiple windows per wall side — [US-15](../us-15/requirements.md)
+- Horizontal offset — [US-15](../us-15/requirements.md)
 - Manual `ScenarioWallSegment` window authoring outside `buildHouses`
 
 ## Acceptance

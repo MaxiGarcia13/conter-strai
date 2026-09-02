@@ -20,10 +20,10 @@ function defaultHeight(side: HouseSide | undefined, fallback: HouseWallHeight): 
 }
 
 /** Parsed opening from a wall side. */
-export type ParsedOpening =
-  | { kind: 'none' }
-  | { kind: 'door'; width: number }
-  | { kind: 'window'; width: number; height: number; bottom: number };
+export type ParsedOpening
+  = | { kind: 'none' }
+    | { kind: 'door'; width: number }
+    | { kind: 'window'; width: number; height: number; bottom: number };
 
 /** Extract the opening kind + geometry for a `HouseSide`. */
 export function parseOpening(side: HouseSide | undefined): ParsedOpening {

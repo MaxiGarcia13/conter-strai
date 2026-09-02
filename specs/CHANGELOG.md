@@ -12,6 +12,7 @@
 | US | Summary |
 |----|---------|
 | **US-14** | Wall windows — partial-height house wall openings (configurable width/height); doors stay passable; arena-01 placement |
+| **US-15** | Multiple openings per wall + `along` offset — `holes[]` door/window specs; single `hole` shorthand stays centered |
 
 ## Shipped
 

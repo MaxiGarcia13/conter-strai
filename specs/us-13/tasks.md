@@ -23,7 +23,7 @@ See [`design.md`](./design.md) and [`requirements.md`](./requirements.md).
 
 ## Close-range impact marks (US-13.8–US-13.9)
 
-- [ ] Add `CLOSE_RANGE_IMPACT_METERS = 2` to `src/modules/weapons/constants/pistol.ts` (or colocate with helper)
+- [x] Add `CLOSE_RANGE_IMPACT_METERS = 2` to `src/modules/weapons/constants/pistol.ts` (or colocate with helper)
 - [ ] Add `src/modules/game/utils/pick-close-world-impact.ts`
 - [ ] Add `src/modules/game/stores/bullet-impact-store.ts` — FIFO cap ~40, `reset` on round start
 - [ ] Add `src/modules/game/components/bullet-impact-marks/bullet-impact-marks.tsx` (+ barrel `index.ts`)

@@ -19,22 +19,6 @@ export const arena01Greenery: ScenarioProp[] = [
   { id: 'jacaranda', position: [31, 0, -15] },
   { id: 'jacaranda', position: [35, 0, -20] },
 
-  ...([
-    [-74, -48],
-    [74, -48],
-    [-74, 48],
-    [74, 48],
-    [-66, 30],
-    [66, 30],
-    [-66, -30],
-    [66, -30],
-    [-66, 0],
-    [66, 0],
-    [-30, 66],
-    [30, 66],
-    [-30, -66],
-    [30, -66],
-  ] as [number, number][]).map(
-    ([x, z]): ScenarioProp => ({ id: 'jacaranda', position: [x, 0, z], collidable: false }),
-  ),
+  { id: 'jacaranda', position: [-25, 0, -5] },
+  { id: 'jacaranda', position: [-15, 0, 15] },
 ];

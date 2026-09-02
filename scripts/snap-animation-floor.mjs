@@ -55,19 +55,19 @@ const DEFAULT_TARGETS = [
  * @type {Record<string, ClipSnapSettings>}
  */
 const BASE_ANIMATIONS_SNAP_CLIPS = {
-  jump: { mode: 'auto', boost: 1.15 },
+  'jump': { mode: 'auto', boost: 1.15 },
   'jump-idle': { mode: 'auto' },
-  kneel: { mode: 'auto' },
-  dying: { mode: 'auto' },
-  reloading: { mode: 'auto' },
+  'kneel': { mode: 'auto' },
+  'dying': { mode: 'auto' },
+  'reloading': { mode: 'auto' },
   'reloading-kneel': { mode: 'auto' },
   'hit-reaction': { mode: 'auto' },
-  shooting: { mode: 'auto' },
+  'shooting': { mode: 'auto' },
 };
 
 /** Lobby preview pack — hips are stripped at runtime but source Y is normalized too. */
 const PREVIEW_ANIMATION_SNAP_CLIPS = {
-  figth: { mode: 'auto' },
+  'figth': { mode: 'auto' },
   'looking-around': { mode: 'auto' },
   'looking-bihind': { mode: 'auto' },
 };

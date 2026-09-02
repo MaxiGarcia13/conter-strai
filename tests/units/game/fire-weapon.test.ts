@@ -90,7 +90,29 @@ describe('fireWeapon', () => {
       expect(fireWeapon(1_000 + i * PISTOL_FIRE_COOLDOWN_MS)).toBe(true);
     }
     expect(fireWeapon(1_000 + PISTOL_MAGAZINE_SIZE * PISTOL_FIRE_COOLDOWN_MS)).toBe(false);
-    expect(playGameSoundMock).toHaveBeenCalledTimes(PISTOL_MAGAZINE_SIZE);
+    expect(playGameSoundMock).toHaveBeenCalledTimes(PISTOL_MAGAZINE_SIZE + 1);
+    expect(playGameSoundMock).toHaveBeenLastCalledWith('emptyGun', expect.anything());
+  });
+
+  it('plays empty-gun SFX when firing with an empty magazine', () => {
+    for (let i = 0; i < PISTOL_MAGAZINE_SIZE; i++) {
+      fireWeapon(1_000 + i * PISTOL_FIRE_COOLDOWN_MS);
+    }
+    playGameSoundMock.mockClear();
+
+    const emptyMagTime = 1_000 + PISTOL_MAGAZINE_SIZE * PISTOL_FIRE_COOLDOWN_MS;
+    expect(fireWeapon(emptyMagTime)).toBe(false);
+    expect(playGameSoundMock).toHaveBeenCalledOnce();
+    expect(playGameSoundMock).toHaveBeenCalledWith('emptyGun', expect.objectContaining({
+      source: expect.anything(),
+      listener: expect.anything(),
+    }));
+
+    expect(fireWeapon(emptyMagTime + PISTOL_FIRE_COOLDOWN_MS - 1)).toBe(false);
+    expect(playGameSoundMock).toHaveBeenCalledOnce();
+
+    expect(fireWeapon(emptyMagTime + PISTOL_FIRE_COOLDOWN_MS)).toBe(false);
+    expect(playGameSoundMock).toHaveBeenCalledTimes(2);
   });
 
   it('refills the magazine when a reload completes', () => {
@@ -102,6 +124,6 @@ describe('fireWeapon', () => {
     useWeaponAmmoStore.getState().onReloadComplete();
 
     expect(fireWeapon(1_000 + (PISTOL_MAGAZINE_SIZE + 1) * PISTOL_FIRE_COOLDOWN_MS)).toBe(true);
-    expect(playGameSoundMock).toHaveBeenCalledTimes(PISTOL_MAGAZINE_SIZE + 1);
+    expect(playGameSoundMock).toHaveBeenCalledTimes(PISTOL_MAGAZINE_SIZE + 2);
   });
 });

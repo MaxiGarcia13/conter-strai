@@ -67,11 +67,19 @@ export function fireWeapon(now = performance.now()): boolean {
     return false;
   }
 
+  const cooldownMs = weapons[DEFAULT_WEAPON_ID].fireCooldownSeconds * 1000;
+
   if (useWeaponAmmoStore.getState().needsReload()) {
+    if (view && now - lastFireMs >= cooldownMs) {
+      lastFireMs = now;
+      playGameSound('emptyGun', {
+        source: view.camera.position,
+        listener: view.camera.position,
+      });
+    }
     return false;
   }
 
-  const cooldownMs = weapons[DEFAULT_WEAPON_ID].fireCooldownSeconds * 1000;
   if (now - lastFireMs < cooldownMs) {
     return false;
   }

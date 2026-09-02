@@ -8,8 +8,8 @@ Depends on **US-4** (shipped — pistol hitscan, reload clips), **US-12** (shipp
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | US-13.1  | Pistol has a **magazine of 12 shots** per reload cycle. Total ammo is **unlimited** — no pickups, no round ammo cap beyond the magazine.                                                                                                                       |
 | US-13.2  | Each successful `fireWeapon()` call (hit or miss) consumes **one round** from the current magazine.                                                                                                                                                            |
-| US-13.3  | When the magazine is **empty** (`shotsInMag >= 12`), `fireWeapon()` returns without firing (same gating family as cooldown / reload pose). **No auto-reload** — the player must reload manually.                                                               |
-| US-13.4  | **R** (desktop) triggers the existing reload pose when idle (`reloading`) or kneeling (`reloading-kneel`). On mixer `finished`, the magazine refills to **12 available shots**. Voluntary reload while the magazine is not empty is allowed (tactical reload). |
+| US-13.3  | When the magazine is **empty** (`shotsInMag >= 12`), `fireWeapon()` returns without firing (same gating family as cooldown / reload pose). Plays `empty-gun.m4a` on dry-fire (respecting fire cooldown). **No auto-reload** — the player must reload manually. |
+| US-13.4  | **R** (desktop) triggers the existing reload pose when idle (`reloading`) or kneeling (`reloading-kneel`). Plays `reloading-gun.m4a` on reload start (local only). On mixer `finished`, the magazine refills to **12 available shots**. Voluntary reload while the magazine is not empty is allowed (tactical reload). |
 | US-13.5  | Magazine state **resets to full** on round start / restart (offline `startRound` and multiplayer rematch deploy).                                                                                                                                              |
 | US-13.6  | On **touch-primary**, a **reload** tap button in the mobile overlay calls `requestReload()` with the same pose rules as desktop **R** (idle or kneel only; WASD still cancels standing reload). Uses `ReloadIcon` from `src/components/icons/reload.tsx`.      |
 | US-13.7  | Pause panel **Commands** on touch-primary lists reload with the reload icon (`MOBILE_BINDINGS.reload` → `MOBILE_COMMANDS`). Desktop Commands list unchanged (shows **R**).                                                                                     |
@@ -20,7 +20,7 @@ Depends on **US-4** (shipped — pistol hitscan, reload clips), **US-12** (shipp
 
 ## Acceptance
 
-1. Solo `/room/{id}/play` (desktop): fire 12 times — 13th click does nothing (no SFX). Press **R** while idle — reload animation plays; after it finishes, can fire 12 more times.
+1. Solo `/room/{id}/play` (desktop): fire 12 times — 13th click plays empty-gun SFX (no hitscan; respects fire cooldown). Press **R** while idle — reload animation and reload-gun SFX play; after it finishes, can fire 12 more times.
 2. Reload while kneeling uses `reloading-kneel`; returns to kneel on finish; magazine refills.
 3. WASD during standing reload cancels reload (existing behavior); magazine does **not** refill until a reload completes.
 4. Touch-primary: reload button visible; tap reload when idle/kneel refills magazine; fire button blocked when empty.

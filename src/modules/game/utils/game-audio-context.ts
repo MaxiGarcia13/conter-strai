@@ -3,6 +3,8 @@ import { LOCOMOTION_SOUND_URLS } from '../constants/locomotion-sounds';
 const COMBAT_SOUND_URLS = {
   pistol: '/assets/characters/sounds/pistol.m4a',
   ouch: '/assets/characters/sounds/ouch.m4a',
+  emptyGun: '/assets/characters/sounds/empty-gun.m4a',
+  reloadingGun: '/assets/characters/sounds/reloading-gun.m4a',
 } as const;
 
 export const GAME_AUDIO_URLS = {

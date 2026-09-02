@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   getPlayerPose,
   resetPlayerPoseEpoch,
@@ -11,12 +11,20 @@ import {
   requestReload,
   toggleKneel,
 } from '@/modules/game/utils/player-pose-actions';
+import { playGameSound } from '@/modules/game/utils/play-game-sound';
+
+vi.mock('@/modules/game/utils/play-game-sound', () => ({
+  playGameSound: vi.fn(),
+}));
+
+const playGameSoundMock = vi.mocked(playGameSound);
 
 describe('player pose actions', () => {
   beforeEach(() => {
     setPlayerPose(null);
     setPlayerLocomotion('idle');
     resetPlayerPoseEpoch();
+    playGameSoundMock.mockClear();
   });
 
   describe('requestJump', () => {
@@ -73,18 +81,23 @@ describe('player pose actions', () => {
     it('reloads from idle', () => {
       requestReload();
       expect(getPlayerPose()).toBe('reloading');
+      expect(playGameSoundMock).toHaveBeenCalledOnce();
+      expect(playGameSoundMock).toHaveBeenCalledWith('reloadingGun');
     });
 
     it('kneel-reloads while kneeling', () => {
       setPlayerPose('kneel');
       requestReload();
       expect(getPlayerPose()).toBe('reloadingKneel');
+      expect(playGameSoundMock).toHaveBeenCalledOnce();
+      expect(playGameSoundMock).toHaveBeenCalledWith('reloadingGun');
     });
 
     it('does not reload while walking', () => {
       setPlayerLocomotion('walk');
       requestReload();
       expect(getPlayerPose()).toBeNull();
+      expect(playGameSoundMock).not.toHaveBeenCalled();
     });
 
     it('cancels standing reload', () => {

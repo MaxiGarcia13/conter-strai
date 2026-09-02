@@ -5,6 +5,7 @@ import {
   setPlayerPose,
 } from '@/modules/game/stores/player-state';
 import { flushLocalClipSync } from '@/modules/multiplayer/utils/sync-local-clip';
+import { playGameSound } from './play-game-sound';
 
 function applyPoseAndSync(
   next: ReturnType<typeof getPlayerPose>,
@@ -48,8 +49,10 @@ export function requestReload(): void {
   const pose = getPlayerPose();
   if (pose === null && getPlayerLocomotion() === 'idle') {
     applyPoseAndSync('reloading', { retriggerOneShot: true });
+    playGameSound('reloadingGun');
   } else if (pose === 'kneel') {
     applyPoseAndSync('reloadingKneel', { retriggerOneShot: true });
+    playGameSound('reloadingGun');
   }
 }
 

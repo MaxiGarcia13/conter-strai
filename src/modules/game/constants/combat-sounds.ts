@@ -8,4 +8,6 @@ export const COMBAT_SOUND_MIN_VOLUME = 0.05;
 export const GAME_SOUND_GAIN = {
   pistol: 0.5,
   ouch: 0.5,
+  emptyGun: 0.5,
+  reloadingGun: 0.5,
 } as const;

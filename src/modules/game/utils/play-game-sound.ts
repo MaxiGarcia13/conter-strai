@@ -11,7 +11,7 @@ import {
   resetGameAudioForTests,
 } from './game-audio-context';
 
-export type GameSoundId = 'pistol' | 'ouch';
+export type GameSoundId = 'pistol' | 'ouch' | 'emptyGun' | 'reloadingGun';
 
 export interface SpatialSoundOptions {
   source: Vec3;

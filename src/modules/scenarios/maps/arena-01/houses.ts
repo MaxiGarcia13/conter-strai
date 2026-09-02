@@ -124,7 +124,6 @@ const arena01Houses: HouseFootprint[] = [
             height: 1.4,
             along: -4.5,
           },
-
         ],
       },
       west: {

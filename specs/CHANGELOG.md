@@ -9,15 +9,14 @@
 
 ## Open
 
-| US | Summary |
-|----|---------|
-| **US-14** | Wall windows — partial-height house wall openings (configurable width/height); doors stay passable; arena-01 placement |
-| **US-15** | Multiple openings per wall + `along` offset — `holes[]` door/window specs; single `hole` shorthand stays centered |
+None.
 
 ## Shipped
 
 | US | Summary |
 |----|---------|
+| **US-15** | Multiple openings per wall + `along` offset — `holes[]` door/window specs; single `hole` shorthand stays centered |
+| **US-14** | Wall windows — partial-height house wall openings (configurable width/height); doors stay passable; arena-01 placement |
 | **US-13** | Pistol magazine reload (12 rounds, manual refill, ammo HUD), mobile reload button (`ReloadIcon`), client-only close-range (~10 m) black wall impact marks |
 | **US-12** | Mobile touch controls — modular input layer, virtual joystick, look zone, fire/kneel/sprint buttons, top-bar pause + health HUD, camera cycle from pause menu |
 | **US-11** | Arena modularization (Ruined Village polish) — composable `arena-01`, collidable props, house presets, sky/fog, open perimeter, non-overlapping floors |

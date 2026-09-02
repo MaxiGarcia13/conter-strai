@@ -288,10 +288,19 @@ describe('multiple wall openings', () => {
     expect(mid.end[0]).toBeCloseTo(2.4);
     expect(right.start[0]).toBeCloseTo(3.6);
 
-    // Door is a passable gap: no full-height segment between left and mid spanning the gap.
-    expect(segments.every((s) => Math.abs(s.end[0] - s.start[0]) > 1)).toBe(true);
+    // Door gap (−3.1 … −0.9) has no covering full-height segment.
+    const doorMidX = -2;
+    expect(
+      segments.some(
+        (s) =>
+          Math.min(s.start[0], s.end[0]) < doorMidX
+          && Math.max(s.start[0], s.end[0]) > doorMidX
+          && (s.baseY ?? 0) === 0
+          && s.height === WALL_HEIGHT.full,
+      ),
+    ).toBe(false);
 
-    // Window sill/lintel sit at the window's along with the US-14 baseY.
+    // Window sill/lintel sit at the window's along with sill/lintel baseY.
     expect(sill.start[0]).toBeCloseTo(2.4);
     expect(sill.end[0]).toBeCloseTo(3.6);
     expect(sill.height).toBeCloseTo(1.2);
@@ -407,5 +416,34 @@ describe('multiple wall openings', () => {
     expect(holes).toHaveLength(2);
     expect(holes.map((hole) => hole.center[0])).toEqual([-3, 3]);
     expect(holes.map((hole) => hole.width)).toEqual([1.5, 1.5]);
+  });
+
+  it('lets holes win over hole shorthand on the same side', () => {
+    const built = buildHouses([
+      {
+        id: 'house-holes-wins',
+        centerX: 0,
+        centerZ: 0,
+        width: 12,
+        depth: 10,
+        material: WALL_MATERIAL.plaster,
+        walls: {
+          north: {
+            hole: WALL_HOLE_WIDTH,
+            holes: [{ kind: 'window', width: 1.2, height: 1.0, bottom: 1.2 }],
+          },
+        },
+      },
+    ]);
+
+    const segments = wallSegmentsAtZ(built, -5);
+    expect(segments).toHaveLength(4);
+    expect(segments.map((segment) => segment.id)).toEqual([
+      'house-holes-wins-north-a',
+      'house-holes-wins-north-b-sill',
+      'house-holes-wins-north-b-lintel',
+      'house-holes-wins-north-c',
+    ]);
+    expect(built.holes).toHaveLength(0);
   });
 });

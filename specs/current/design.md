@@ -219,31 +219,43 @@ Priority: blocking one-shots (`reloading` / `reloading-kneel` > `jump` / `jump-i
 
 ### Interior collision
 
-Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`. Player circle (`PLAYER_RADIUS`) vs segments after intended move; outer bounds clamp last. Collidable props (`propBlockersFromScenario`) add XZ **circle** discs or **oriented boxes** (`collisionHalfExtents` × placement `rotationY`) so long props like `coveredCar` (~1.79×4.38 m) cannot be walked through. Connected remotes add moving discs at their current transform (`remoteBlockersFromPlayers`); unused spawn slots do not. Playable clamp stays **100×50 m** even when the vista skirt extends past the edge.
+Axis-aligned segments from house footprints (`buildHouses`). `HouseSide` authoring:
+
+| Authoring                             | Geometry                                                                                                                | Movement                           |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `hole: number`                        | Full-height gap, centered                                                                                               | Passable doorway                   |
+| `hole: { width, height, bottom? }`    | Centered window: pillars + **sill** (`baseY: 0`, height `bottom` default 1.0 m) + **lintel** (`baseY: bottom + height`) | Blocked — sill fills the XZ column |
+| `holes: [{ kind, width, along?, … }]` | One or more openings; `along` is meters from the wall center (north/south **+X**, east/west **+Z**)                     | Door = passable; window = blocked  |
+
+If both `hole` and `holes` are set, **`holes` wins**. Invalid sets (opening past a **0.3 m** end remnant, adjacent openings closer than **0.6 m** edge-to-edge, overlap, or window `bottom + height ≥ side height − 0.1 m`) fall back to a **solid wall**.
+
+`ScenarioWallSegment.baseY` (default `0`) is honored by mesh builders so lintels sit above the gap. Collision stays **XZ-only** — window sills block walking at any player height. `collisionHoles` metadata lists **doors only** (informational; movement uses segment presence).
+
+Player circle (`PLAYER_RADIUS`) vs segments after intended move; outer bounds clamp last. Collidable props (`propBlockersFromScenario`) add XZ **circle** discs or **oriented boxes** (`collisionHalfExtents` × placement `rotationY`) so long props like `coveredCar` (~1.79×4.38 m) cannot be walked through. Connected remotes add moving discs at their current transform (`remoteBlockersFromPlayers`); unused spawn slots do not. Playable clamp stays **100×50 m** even when the vista skirt extends past the edge.
 
 ### arena-01 — Ruined Village
 
 Authored as composable modules under `src/modules/scenarios/maps/arena-01/` (`compose`, `ground`, `houses`, `greenery`, `infrastructure`, `spawns`, `environment`). Thin `index.ts` re-exports `ScenarioConfig`.
 
-| Field         | Value                                                                                           |
-| ------------- | ----------------------------------------------------------------------------------------------- |
-| **bounds**    | 100 m × 50 m playable; wall height 3.5 m                                                        |
-| **floor**     | `forrest_ground` base + non-overlapping asphalt street zones (`assertNoFloorOverlaps`)          |
-| **houses**    | Procedural footprints (`buildHouses`); street-facing doorways; presets in `house-presets.ts`    |
-| **walls**     | Interior ruin segments only                                                                     |
-| **perimeter** | `mode: 'open'`, `vistaExtension: 100` — no cliff outer box; forest skirt + non-collidable trees |
-| **sky / fog** | drei `<Sky>` (`sky.type: 'gradient'`); fog `#c3d5e8` near 50 / far 150                          |
-| **spawns**    | Soldiers west (−X), Civilians east (+X); unique coords per team; face map center                |
-| **props**     | Collidable jacaranda (6–12 in-bounds), 8× `concreteRoadBarrier`, covered cars; skirt trees off  |
+| Field         | Value                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **bounds**    | 100 m × 50 m playable; wall height 3.5 m                                                                                              |
+| **floor**     | `forrest_ground` base + non-overlapping asphalt street zones (`assertNoFloorOverlaps`)                                                |
+| **houses**    | Procedural footprints (`buildHouses`); street-facing doorways and windows (`hole` / `holes` + `along`); presets in `house-presets.ts` |
+| **walls**     | Interior ruin segments only                                                                                                           |
+| **perimeter** | `mode: 'open'`, `vistaExtension: 100` — no cliff outer box; forest skirt + non-collidable trees                                       |
+| **sky / fog** | drei `<Sky>` (`sky.type: 'gradient'`); fog `#c3d5e8` near 50 / far 150                                                                |
+| **spawns**    | Soldiers west (−X), Civilians east (+X); unique coords per team; face map center                                                      |
+| **props**     | Collidable jacaranda (6–12 in-bounds), 8× `concreteRoadBarrier`, covered cars; skirt trees off                                        |
 
 Floor zone-on-zone overlap at the same Y causes z-fighting; streets split at junctions and house floors are inset. Named house presets (`ruinedCottage`, `cornerRuin`, `fortifiedBlock`, `streetShack`, `bombedHouse`) carry height / open-side variants for map authoring — unused presets are tracked in [tech-debt.md](../tech-debt.md).
 
 ### Testing
 
-| Layer          | Scope                                                                                                                                                                                                                                                                                                                                                                  |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Vitest**     | Registries; floor-zone overlap; prop blockers (discs + car OBB); remote movement discs; house open-sides / presets; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide; look-delta / joystick mapping / touch-primary gate / `fireWeapon` magazine gating / `pickCloseWorldImpact` / rounds remaining |
-| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook                                                                                                                                                                            |
+| Layer          | Scope                                                                                                                                                                                                                                                                                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Vitest**     | Registries; floor-zone overlap; prop blockers (discs + car OBB); remote movement discs; house open-sides / presets / window + multi-hole wall math; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide; look-delta / joystick mapping / touch-primary gate / `fireWeapon` magazine gating / `pickCloseWorldImpact` / rounds remaining |
+| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook                                                                                                                                                                                                            |
 
 ## Characters — shipped US-6
 

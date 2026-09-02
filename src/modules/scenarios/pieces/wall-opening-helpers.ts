@@ -79,12 +79,13 @@ export function collisionHole(
 
   const holes: CollisionHole[] = [];
   for (const spec of sorted) {
-    if (spec.kind === 'door' && spec.width < totalLength - ADJACENT_GAP) {
-      if (axis === 'x') {
-        holes.push({ axis, center: [center[0] + spec.along, center[1], center[2]], width: spec.width });
-      } else {
-        holes.push({ axis, center: [center[0], center[1], center[2] + spec.along], width: spec.width });
-      }
+    if (spec.kind !== 'door') {
+      continue;
+    }
+    if (axis === 'x') {
+      holes.push({ axis, center: [center[0] + spec.along, center[1], center[2]], width: spec.width });
+    } else {
+      holes.push({ axis, center: [center[0], center[1], center[2] + spec.along], width: spec.width });
     }
   }
   return holes;

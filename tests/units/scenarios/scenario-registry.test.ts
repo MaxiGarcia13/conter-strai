@@ -60,5 +60,10 @@ describe('scenario-registry', () => {
 
     expect(holes.length).toBeGreaterThan(0);
     expect(holes.every(({ axis, width }) => (axis === 'x' || axis === 'z') && width > 0)).toBe(true);
+
+    const windowSills = walls.filter((segment) => segment.id?.endsWith('-sill'));
+    const windowLintels = walls.filter((segment) => segment.id?.endsWith('-lintel'));
+    expect(windowSills.length).toBeGreaterThan(0);
+    expect(windowLintels.length).toBe(windowSills.length);
   });
 });

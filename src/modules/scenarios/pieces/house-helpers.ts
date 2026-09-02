@@ -50,7 +50,7 @@ export type WallHoleSpec = WallDoorSpec | WallWindowSpec;
 
 /**
  * A wall edge: `'full'` solid, `'open'` no wall/collision, or a spec with an
- * optional centered `hole` (US-14 shorthand) or multiple `holes` (US-15),
+ * optional centered `hole` shorthand or multiple `holes` (optional `along`),
  * plus per-side `height`.
  */
 export type HouseSide

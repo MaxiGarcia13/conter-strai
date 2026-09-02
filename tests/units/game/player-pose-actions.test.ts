@@ -5,13 +5,13 @@ import {
   setPlayerLocomotion,
   setPlayerPose,
 } from '@/modules/game/stores/player-state';
+import { playGameSound } from '@/modules/game/utils/play-game-sound';
 import {
   cancelReload,
   requestJump,
   requestReload,
   toggleKneel,
 } from '@/modules/game/utils/player-pose-actions';
-import { playGameSound } from '@/modules/game/utils/play-game-sound';
 
 vi.mock('@/modules/game/utils/play-game-sound', () => ({
   playGameSound: vi.fn(),

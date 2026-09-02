@@ -1,4 +1,4 @@
-import type { CircleBlocker } from './resolve-player-collision';
+import type { BoxBlocker, CircleBlocker } from './resolve-player-collision';
 import type { CollisionSegment } from '@/modules/scenarios/types';
 import {
   RUN_BACKWARD_SPEED,
@@ -9,7 +9,11 @@ import {
 import { PLAYER_RADIUS } from '@/modules/game/constants/player';
 import { resolveLocomotionState } from '@/modules/soldiers/utils/resolve-locomotion-state';
 import { clamp } from '@/utils/clamp';
-import { resolveCircleBlockers, resolvePlayerCollision } from './resolve-player-collision';
+import {
+  resolveBoxBlockers,
+  resolveCircleBlockers,
+  resolvePlayerCollision,
+} from './resolve-player-collision';
 
 export interface AdvanceInput {
   transform: { x: number; z: number; yaw: number };
@@ -21,6 +25,7 @@ export interface AdvanceInput {
   wallThickness: number;
   npcBlockers: CircleBlocker[];
   solidNpcFlags: boolean[];
+  boxBlockers?: BoxBlocker[];
   bounds: { width: number; depth: number };
 }
 
@@ -36,7 +41,7 @@ function isBackward(strafe: number, forward: number): boolean {
 }
 
 /**
- * Pure movement advance: intended move → wall collision → NPC discs → bounds clamp.
+ * Pure movement advance: intended move → wall collision → NPC discs → prop boxes → bounds clamp.
  * No React, refs, or store access — fully testable.
  */
 export function advancePlayerTransform({
@@ -49,6 +54,7 @@ export function advancePlayerTransform({
   wallThickness,
   npcBlockers,
   solidNpcFlags,
+  boxBlockers = [],
   bounds,
 }: AdvanceInput): AdvanceResult {
   const moving = strafe !== 0 || forward !== 0;
@@ -82,8 +88,9 @@ export function advancePlayerTransform({
 
   const solidNpcs = npcBlockers.filter((_, i) => solidNpcFlags[i]);
   const afterNpcs = resolveCircleBlockers({ x, z }, solidNpcs, PLAYER_RADIUS);
-  x = afterNpcs.x;
-  z = afterNpcs.z;
+  const afterBoxes = resolveBoxBlockers(afterNpcs, boxBlockers, PLAYER_RADIUS);
+  x = afterBoxes.x;
+  z = afterBoxes.z;
 
   const halfWidth = Math.max(bounds.width / 2 - PLAYER_RADIUS, 0);
   const halfDepth = Math.max(bounds.depth / 2 - PLAYER_RADIUS, 0);

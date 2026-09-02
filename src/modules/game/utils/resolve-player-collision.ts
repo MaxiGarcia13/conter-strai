@@ -14,6 +14,16 @@ export interface CircleBlocker {
   entityId?: string;
 }
 
+/** Oriented XZ box (yaw around Y). halfWidth is local X, halfDepth is local Z. */
+export interface BoxBlocker {
+  x: number;
+  z: number;
+  halfWidth: number;
+  halfDepth: number;
+  yaw: number;
+  entityId?: string;
+}
+
 const COLLISION_EPSILON = 1e-8;
 const RESOLUTION_PASSES = 4;
 const MAX_COLLISION_STEP = 0.2;
@@ -146,4 +156,72 @@ export function resolveCircleBlockers(
   }
 
   return resolved;
+}
+
+/**
+ * Pushes the player circle out of overlapping oriented boxes (cars, long cover).
+ * Uses Three.js Y-rotation: worldX = lx·cos + lz·sin, worldZ = −lx·sin + lz·cos.
+ */
+export function resolveBoxBlockers(
+  position: PlayerPosition,
+  blockers: BoxBlocker[],
+  playerRadius: number,
+): PlayerPosition {
+  const resolved = { ...position };
+
+  for (let pass = 0; pass < RESOLUTION_PASSES; pass += 1) {
+    let moved = false;
+    for (const blocker of blockers) {
+      if (resolveCircleVsOrientedBox(resolved, blocker, playerRadius)) {
+        moved = true;
+      }
+    }
+    if (!moved) {
+      break;
+    }
+  }
+
+  return resolved;
+}
+
+function resolveCircleVsOrientedBox(
+  position: PlayerPosition,
+  blocker: BoxBlocker,
+  playerRadius: number,
+): boolean {
+  const cosYaw = Math.cos(blocker.yaw);
+  const sinYaw = Math.sin(blocker.yaw);
+  const deltaX = position.x - blocker.x;
+  const deltaZ = position.z - blocker.z;
+  let localX = deltaX * cosYaw - deltaZ * sinYaw;
+  let localZ = deltaX * sinYaw + deltaZ * cosYaw;
+
+  const closestX = clamp(localX, -blocker.halfWidth, blocker.halfWidth);
+  const closestZ = clamp(localZ, -blocker.halfDepth, blocker.halfDepth);
+  const normalX = localX - closestX;
+  const normalZ = localZ - closestZ;
+  const distanceSquared = normalX * normalX + normalZ * normalZ;
+
+  if (distanceSquared >= playerRadius * playerRadius) {
+    return false;
+  }
+
+  if (distanceSquared > COLLISION_EPSILON) {
+    const distance = Math.sqrt(distanceSquared);
+    const push = playerRadius - distance;
+    localX += (normalX / distance) * push;
+    localZ += (normalZ / distance) * push;
+  } else {
+    const remainX = blocker.halfWidth + playerRadius - Math.abs(localX);
+    const remainZ = blocker.halfDepth + playerRadius - Math.abs(localZ);
+    if (remainX < remainZ) {
+      localX = (localX < 0 ? -1 : 1) * (blocker.halfWidth + playerRadius);
+    } else {
+      localZ = (localZ < 0 ? -1 : 1) * (blocker.halfDepth + playerRadius);
+    }
+  }
+
+  position.x = blocker.x + localX * cosYaw + localZ * sinYaw;
+  position.z = blocker.z - localX * sinYaw + localZ * cosYaw;
+  return true;
 }

@@ -79,18 +79,18 @@ src/modules/
 ├── combat/hitbox-preset-registry.ts
 ├── combat/apply-damage.ts
 ├── weapons/types.ts            PistolWeaponConfig, BulletHitResult, Loadout
-├── props/types.ts              PropDefinition (scale, collidable, collisionRadius)
+├── props/types.ts              PropDefinition (scale, collidable, collisionRadius, collisionHalfExtents)
 └── game/types.ts               GameMode, RoundPhase
 ```
 
-| Domain       | Key types                                                            | Notes                                                                     |
-| ------------ | -------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| **Scenario** | `ScenarioConfig`, `ArenaLayout`, `SpawnerConfig`, `ArenaEnvironment` | Flat access (`scenario.bounds`); maps under `scenarios/maps/<id>/`        |
-| **Soldier**  | `SoldierSkin`, `CharacterMeshData`, `Soldier`, `SoldierController`   | Visual preset decoupled from hitbox via `hitboxPresetId`                  |
-| **Combat**   | `HitboxPreset`, `HitZone`, `DamageData`, `HealthSystem`              | Owns collider presets and raycast zones                                   |
-| **Weapons**  | `PistolWeaponConfig` / `WeaponConfig`, `Loadout`                     | Per-weapon `damageByZone`; combat applies × difficulty                    |
-| **Props**    | `PropDefinition`                                                     | Registry + `collisionRadius` discs; placements live on the scenario       |
-| **Game**     | `GameMode`, `RoundPhase`                                             | `'team-elimination'`; `'live' \| 'loading' \| 'countdown' \| 'round-end'` |
+| Domain       | Key types                                                            | Notes                                                                                        |
+| ------------ | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Scenario** | `ScenarioConfig`, `ArenaLayout`, `SpawnerConfig`, `ArenaEnvironment` | Flat access (`scenario.bounds`); maps under `scenarios/maps/<id>/`                           |
+| **Soldier**  | `SoldierSkin`, `CharacterMeshData`, `Soldier`, `SoldierController`   | Visual preset decoupled from hitbox via `hitboxPresetId`                                     |
+| **Combat**   | `HitboxPreset`, `HitZone`, `DamageData`, `HealthSystem`              | Owns collider presets and raycast zones                                                      |
+| **Weapons**  | `PistolWeaponConfig` / `WeaponConfig`, `Loadout`                     | Per-weapon `damageByZone`; combat applies × difficulty                                       |
+| **Props**    | `PropDefinition`                                                     | Registry + `collisionRadius` discs or `collisionHalfExtents` OBB; placements on the scenario |
+| **Game**     | `GameMode`, `RoundPhase`                                             | `'team-elimination'`; `'live' \| 'loading' \| 'countdown' \| 'round-end'`                    |
 
 Shipped 2026-08-23 — see [CHANGELOG](../CHANGELOG.md#shipped--other).
 
@@ -150,7 +150,7 @@ Units: **1 world unit = 1 meter**.
 | Registry         | Role                                                                                | Example ids                                                     |
 | ---------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | **Texture**      | Floor/wall GLB materials under `/assets/textures/`                                  | `forrest_ground`, `coral_fort_wall`                             |
-| **Prop**         | Placeable objects (trees, cover); `collisionRadius` discs for movement              | `jacaranda`, `concreteRoadBarrier`, `coveredCar`                |
+| **Prop**         | Placeable objects (trees, cover); discs or oriented boxes for movement              | `jacaranda`, `concreteRoadBarrier`, `coveredCar`                |
 | **Scenario**     | Map layout: bounds, materials, props, team spawns                                   | `arena-01`                                                      |
 | **Soldier skin** | Visual presets (`SoldierSkin`); hitbox via `hitboxPresetId`; clips from shared pack | `remy` (default), `james`, `liza`, `swat-1`, `swat-2`, `swat-3` |
 
@@ -219,7 +219,7 @@ Priority: blocking one-shots (`reloading` / `reloading-kneel` > `jump` / `jump-i
 
 ### Interior collision
 
-Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`. Player circle (`PLAYER_RADIUS`) vs segments after intended move; outer bounds clamp last. Collidable props add XZ circle blockers (`propBlockersFromScenario`) merged with NPC discs in player controls. Playable clamp stays **100×50 m** even when the vista skirt extends past the edge.
+Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`. Player circle (`PLAYER_RADIUS`) vs segments after intended move; outer bounds clamp last. Collidable props (`propBlockersFromScenario`) add XZ **circle** discs (merged with NPC bodies) or **oriented boxes** (`collisionHalfExtents` × placement `rotationY`) so long props like `coveredCar` (~1.79×4.38 m) cannot be walked through. Playable clamp stays **100×50 m** even when the vista skirt extends past the edge.
 
 ### arena-01 — Ruined Village
 
@@ -240,10 +240,10 @@ Floor zone-on-zone overlap at the same Y causes z-fighting; streets split at jun
 
 ### Testing
 
-| Layer          | Scope                                                                                                                                                                                                                                                                                                                         |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Vitest**     | Registries; floor-zone overlap; prop blockers; house open-sides / presets; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide; look-delta / joystick mapping / touch-primary gate / `fireWeapon` magazine gating / `pickCloseWorldImpact` / rounds remaining |
-| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook                                                                                                                                   |
+| Layer          | Scope                                                                                                                                                                                                                                                                                                                                           |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vitest**     | Registries; floor-zone overlap; prop blockers (discs + car OBB); house open-sides / presets; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide; look-delta / joystick mapping / touch-primary gate / `fireWeapon` magazine gating / `pickCloseWorldImpact` / rounds remaining |
+| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook                                                                                                                                                     |
 
 ## Characters — shipped US-6
 

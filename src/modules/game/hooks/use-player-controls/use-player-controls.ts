@@ -26,7 +26,8 @@ interface UsePlayerControlsOptions {
 /**
  * Binds WASD + pointer-lock mouse look to the shared player transform and
  * positions the camera for the active mode each frame. Movement resolves
- * interior walls and NPC bodies before clamping against the scenario's outer bounds.
+ * interior walls, NPC discs, and collidable prop boxes before clamping
+ * against the scenario's outer bounds.
  */
 export function usePlayerControls({
   bounds,
@@ -51,8 +52,8 @@ export function usePlayerControls({
     () => propBlockersFromScenario(scenario),
     [scenario],
   );
-  const blockers = useMemo(
-    () => [...npcBlockers, ...propBlockers],
+  const circleBlockers = useMemo(
+    () => [...npcBlockers, ...propBlockers.circles],
     [npcBlockers, propBlockers],
   );
 
@@ -96,7 +97,8 @@ export function usePlayerControls({
     bounds,
     collisionSegments,
     wallThickness,
-    npcBlockers: blockers,
+    npcBlockers: circleBlockers,
+    boxBlockers: propBlockers.boxes,
     pressedCodesRef,
     eliminatedRef,
     isPausedRef,

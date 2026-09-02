@@ -1,6 +1,7 @@
 import type { CollisionSegment } from '@/modules/scenarios/types';
 import { describe, expect, it } from 'vitest';
 import {
+  resolveBoxBlockers,
   resolveCircleBlockers,
   resolvePlayerCollision,
 } from '@/modules/game/utils/resolve-player-collision';
@@ -67,5 +68,60 @@ describe('resolveCircleBlockers', () => {
     );
 
     expect(resolved).toEqual({ x: 2, z: 0 });
+  });
+});
+
+const carBox = {
+  x: 0,
+  z: 0,
+  halfWidth: 0.9,
+  halfDepth: 2.19,
+  yaw: 0,
+};
+
+describe('resolveBoxBlockers', () => {
+  it('keeps the player out of a car along its long axis (old disc did not)', () => {
+    const resolved = resolveBoxBlockers({ x: 0, z: 2 }, [carBox], 0.4);
+
+    expect(resolved.x).toBeCloseTo(0);
+    expect(resolved.z).toBeCloseTo(2.59);
+  });
+
+  it('stops a player approaching the hood from outside', () => {
+    const resolved = resolveBoxBlockers({ x: 0, z: 2.4 }, [carBox], 0.4);
+
+    expect(resolved.x).toBeCloseTo(0);
+    expect(resolved.z).toBeCloseTo(2.59);
+  });
+
+  it('stops a player approaching the side', () => {
+    const resolved = resolveBoxBlockers({ x: 1.1, z: 0 }, [carBox], 0.4);
+
+    expect(resolved.x).toBeCloseTo(1.3);
+    expect(resolved.z).toBeCloseTo(0);
+  });
+
+  it('pushes a player standing in the cabin out the nearest face', () => {
+    const resolved = resolveBoxBlockers({ x: 0, z: 0 }, [carBox], 0.4);
+
+    expect(Math.abs(resolved.x)).toBeCloseTo(1.3);
+    expect(resolved.z).toBeCloseTo(0);
+  });
+
+  it('rotates the box with yaw so a sideways car blocks along X', () => {
+    const resolved = resolveBoxBlockers(
+      { x: 2, z: 0 },
+      [{ ...carBox, yaw: Math.PI / 2 }],
+      0.4,
+    );
+
+    expect(resolved.x).toBeCloseTo(2.59);
+    expect(resolved.z).toBeCloseTo(0);
+  });
+
+  it('leaves a player clear of the box untouched', () => {
+    const resolved = resolveBoxBlockers({ x: 3, z: 3 }, [carBox], 0.4);
+
+    expect(resolved).toEqual({ x: 3, z: 3 });
   });
 });

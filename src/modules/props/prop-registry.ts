@@ -22,7 +22,8 @@ export const props: Record<string, PropDefinition> = {
     modelUrl: glbCdnUrl('/Infrastructure/covered_car.glb'),
     scale: 1,
     collidable: true,
-    collisionRadius: 1.2,
+    // covered_car.glb world AABB at scale 1 is ~1.79 × 4.38 m (X × Z).
+    collisionHalfExtents: [0.9, 2.19],
   },
 };
 

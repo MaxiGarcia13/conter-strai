@@ -1,6 +1,6 @@
 import type { RefObject } from 'react';
 import type { Camera } from 'three';
-import type { CircleBlocker } from '@/modules/game/utils/resolve-player-collision';
+import type { BoxBlocker, CircleBlocker } from '@/modules/game/utils/resolve-player-collision';
 import type { ScenarioConfig } from '@/modules/scenarios';
 import { useFrame } from '@react-three/fiber';
 
@@ -28,6 +28,7 @@ interface UsePlayerMovementFrameOptions {
   collisionSegments: NonNullable<ScenarioConfig['collisionSegments']>;
   wallThickness: number;
   npcBlockers: CircleBlocker[];
+  boxBlockers: BoxBlocker[];
   pressedCodesRef: RefObject<Set<string>>;
   eliminatedRef: RefObject<boolean>;
   isPausedRef: RefObject<boolean>;
@@ -41,6 +42,7 @@ export function usePlayerMovementFrame({
   collisionSegments,
   wallThickness,
   npcBlockers,
+  boxBlockers,
   pressedCodesRef,
   eliminatedRef,
   isPausedRef,
@@ -105,6 +107,7 @@ export function usePlayerMovementFrame({
       wallThickness,
       npcBlockers,
       solidNpcFlags,
+      boxBlockers,
       bounds,
     });
 

@@ -203,4 +203,42 @@ describe('advancePlayerTransform', () => {
 
     expect(withDeadNpc.z).toBeCloseTo(withoutNpc.z);
   });
+
+  it('blocks walking into a covered-car oriented box', () => {
+    const result = advancePlayerTransform({
+      transform: { x: 0, z: 2.7, yaw: 0 },
+      strafe: 0,
+      forward: 1,
+      running: false,
+      delta: 0.1,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [],
+      solidNpcFlags: [],
+      boxBlockers: [{ x: 0, z: 0, halfWidth: 0.9, halfDepth: 2.19, yaw: 0 }],
+      bounds: defaultBounds,
+    });
+
+    expect(result.z).toBeCloseTo(2.59);
+    expect(result.x).toBeCloseTo(0);
+  });
+
+  it('pushes a player already inside a car even when standing still', () => {
+    const result = advancePlayerTransform({
+      transform: { x: 0, z: 0.2, yaw: 0 },
+      strafe: 0,
+      forward: 0,
+      running: false,
+      delta: 0.016,
+      collisionSegments: [],
+      wallThickness: 0.5,
+      npcBlockers: [],
+      solidNpcFlags: [],
+      boxBlockers: [{ x: 0, z: 0, halfWidth: 0.9, halfDepth: 2.19, yaw: 0 }],
+      bounds: defaultBounds,
+    });
+
+    expect(Math.abs(result.x)).toBeCloseTo(1.3);
+    expect(result.z).toBeCloseTo(0.2);
+  });
 });

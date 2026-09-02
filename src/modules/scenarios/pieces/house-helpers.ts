@@ -1,7 +1,7 @@
 import type { CollisionHole, ScenarioFloorZone, ScenarioWallSegment } from '../types';
-import type { WALL_HEIGHT, WallMaterialId } from './constants';
+import type { WallMaterialId } from './constants';
 import type { TextureId } from '@/modules/textures';
-import { FLOOR_MATERIAL } from './constants';
+import { FLOOR_MATERIAL, WALL_HEIGHT } from './constants';
 import { floorZone } from './floor-helpers';
 import { collisionHole } from './wall-opening-helpers';
 import { wallSegmentsAlongX, wallSegmentsAlongZ } from './wall-segment-helpers';
@@ -104,10 +104,28 @@ function houseFootprint(house: HouseFootprint): {
   const westX = centerX - halfW;
   const eastX = centerX + halfW;
   const holes: CollisionHole[] = [
-    ...collisionHole(walls.north, 'x', [centerX, 0, northZ], width),
-    ...collisionHole(walls.south, 'x', [centerX, 0, southZ], width),
-    ...collisionHole(walls.west, 'z', [westX, 0, centerZ], depth),
-    ...collisionHole(walls.east, 'z', [eastX, 0, centerZ], depth),
+    ...collisionHole(
+      walls.north,
+      'x',
+      [centerX, 0, northZ],
+      width,
+      WALL_HEIGHT[sideHeight(house, walls.north)],
+    ),
+    ...collisionHole(
+      walls.south,
+      'x',
+      [centerX, 0, southZ],
+      width,
+      WALL_HEIGHT[sideHeight(house, walls.south)],
+    ),
+    ...collisionHole(
+      walls.west,
+      'z',
+      [westX, 0, centerZ],
+      depth,
+      WALL_HEIGHT[sideHeight(house, walls.west)],
+    ),
+    ...collisionHole(walls.east, 'z', [eastX, 0, centerZ], depth, WALL_HEIGHT[sideHeight(house, walls.east)]),
   ];
 
   const segments: ScenarioWallSegment[] = [

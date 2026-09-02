@@ -67,13 +67,18 @@ export function collisionHole(
   axis: CollisionAxis,
   center: [number, number, number],
   totalLength: number,
+  wallHeight: number,
 ): CollisionHole[] {
-  const openings = normalizeOpenings(side);
-  if (openings.length === 0)
+  const sorted = normalizeOpenings(side).sort((a, b) => a.along - b.along);
+  if (sorted.length === 0)
+    return [];
+
+  // Invalid openings fall back to a solid wall — no passable holes.
+  if (!validateOpenings(sorted, totalLength, wallHeight))
     return [];
 
   const holes: CollisionHole[] = [];
-  for (const spec of openings) {
+  for (const spec of sorted) {
     if (spec.kind === 'door' && spec.width < totalLength - ADJACENT_GAP) {
       if (axis === 'x') {
         holes.push({ axis, center: [center[0] + spec.along, center[1], center[2]], width: spec.width });

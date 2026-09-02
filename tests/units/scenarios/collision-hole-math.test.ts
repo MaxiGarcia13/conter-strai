@@ -1,5 +1,5 @@
+import type { HouseSide } from '@/modules/scenarios/pieces/house-helpers';
 import { describe, expect, it } from 'vitest';
-
 import { buildCollisionSegments } from '@/modules/scenarios/pieces/collision-helpers';
 import { FLOOR_MATERIAL, WALL_HEIGHT, WALL_MATERIAL } from '@/modules/scenarios/pieces/constants';
 import { buildHouses, HOUSE_FLOOR_INSET, WALL_HOLE_WIDTH } from '@/modules/scenarios/pieces/house-helpers';
@@ -247,5 +247,150 @@ describe('collision hole math', () => {
 
     const bombedNorth = built.walls.filter((s) => s.id?.startsWith('h-bombed-north'));
     expect(bombedNorth).toHaveLength(0);
+  });
+});
+
+describe('multiple wall openings', () => {
+  it('emits solid spans, a door gap, and window sill/lintel for two openings on one side', () => {
+    const built = buildHouses([
+      {
+        id: 'house-two-openings',
+        centerX: 0,
+        centerZ: 0,
+        width: 12,
+        depth: 10,
+        material: WALL_MATERIAL.plaster,
+        walls: {
+          north: {
+            holes: [
+              { kind: 'door', width: 2.2, along: -2 },
+              { kind: 'window', width: 1.2, height: 1.0, bottom: 1.2, along: 3 },
+            ],
+          },
+        },
+      },
+    ]);
+
+    const segments = wallSegmentsAtZ(built, -5);
+    // solid left of door, solid between door+window, sill, lintel, solid right of window
+    expect(segments).toHaveLength(5);
+
+    const [left, mid, sill, lintel, right] = segments;
+
+    // Door gap spans [-3.1, -0.9]; left solid ends at -3.1, mid solid starts at -0.9.
+    expect(left.end[0]).toBeCloseTo(-3.1);
+    expect(mid.start[0]).toBeCloseTo(-0.9);
+    // Window spans [2.4, 3.6]; mid solid ends there and right solid starts after.
+    expect(mid.end[0]).toBeCloseTo(2.4);
+    expect(right.start[0]).toBeCloseTo(3.6);
+
+    // Door is a passable gap: no full-height segment between left and mid spanning the gap.
+    expect(segments.every((s) => Math.abs(s.end[0] - s.start[0]) > 1)).toBe(true);
+
+    // Window sill/lintel sit at the window's along with the US-14 baseY.
+    expect(sill.start[0]).toBeCloseTo(2.4);
+    expect(sill.end[0]).toBeCloseTo(3.6);
+    expect(sill.height).toBeCloseTo(1.2);
+    expect(sill.baseY ?? 0).toBe(0);
+    expect(lintel.baseY ?? 0).toBeCloseTo(1.2 + 1.0);
+
+    // Only the door produces a CollisionHole, centered at its offset position.
+    expect(built.holes).toHaveLength(1);
+    expect(built.holes[0]).toEqual({ axis: 'x', center: [-2, 0, -5], width: 2.2 });
+  });
+
+  it('places opening centers at wallCenter + along on both X and Z walls', () => {
+    const built = buildHouses([
+      {
+        id: 'house-along-axis',
+        centerX: 10,
+        centerZ: 20,
+        width: 12,
+        depth: 14,
+        material: WALL_MATERIAL.plaster,
+        walls: {
+          north: { holes: [{ kind: 'door', width: 2.2, along: 3 }] },
+          west: { holes: [{ kind: 'door', width: 2.2, along: -2 }] },
+        },
+      },
+    ]);
+
+    // North is an X-axis wall: center shifts along X.
+    const northHole = built.holes.find((h) => h.axis === 'x' && h.center[2] === 20 - 7);
+    expect(northHole).toEqual({ axis: 'x', center: [10 + 3, 0, 13], width: 2.2 });
+
+    // West is a Z-axis wall: center shifts along Z.
+    const westHole = built.holes.find((h) => h.axis === 'z' && h.center[0] === 10 - 6);
+    expect(westHole).toEqual({ axis: 'z', center: [4, 0, 20 - 2], width: 2.2 });
+  });
+
+  it('falls back to a solid wall for overlap, too-close, past-end, and invalid window height', () => {
+    const invalidSides: HouseSide[] = [
+      // overlapping openings
+      {
+        holes: [
+          { kind: 'door', width: 2.2, along: -1 },
+          { kind: 'window', width: 2.0, height: 1.0, along: 0 },
+        ],
+      },
+      // adjacent too close (edge-to-edge under 0.6 m)
+      {
+        holes: [
+          { kind: 'door', width: 2.2, along: -2 },
+          { kind: 'window', width: 1.0, height: 1.0, along: 0 },
+        ],
+      },
+      // past the wall end
+      { holes: [{ kind: 'door', width: 2.2, along: 4.7 }] },
+      // window too tall for the side height
+      { holes: [{ kind: 'window', width: 1.2, height: 1.0, bottom: 3.0, along: 0 }] },
+    ];
+
+    for (const walls of invalidSides) {
+      const built = buildHouses([
+        {
+          id: 'house-invalid-openings',
+          centerX: 0,
+          centerZ: 0,
+          width: 12,
+          depth: 10,
+          material: WALL_MATERIAL.plaster,
+          walls: { north: walls },
+        },
+      ]);
+
+      const segments = wallSegmentsAtZ(built, -5);
+      expect(segments).toHaveLength(1);
+      expect(segments[0].start[0]).toBeCloseTo(-6);
+      expect(segments[0].end[0]).toBeCloseTo(6);
+      expect(built.holes.filter((hole) => hole.axis === 'x' && hole.center[2] === -5)).toHaveLength(0);
+    }
+  });
+
+  it('collisionHole emits per-door entries with offset centers and omits windows', () => {
+    const built = buildHouses([
+      {
+        id: 'house-multi-door-holes',
+        centerX: 0,
+        centerZ: 0,
+        width: 12,
+        depth: 10,
+        material: WALL_MATERIAL.plaster,
+        walls: {
+          north: {
+            holes: [
+              { kind: 'door', width: 1.5, along: -3 },
+              { kind: 'window', width: 1.0, height: 1.0, along: 0 },
+              { kind: 'door', width: 1.5, along: 3 },
+            ],
+          },
+        },
+      },
+    ]);
+
+    const holes = built.holes.filter((hole) => hole.axis === 'x' && hole.center[2] === -5);
+    expect(holes).toHaveLength(2);
+    expect(holes.map((hole) => hole.center[0])).toEqual([-3, 3]);
+    expect(holes.map((hole) => hole.width)).toEqual([1.5, 1.5]);
   });
 });

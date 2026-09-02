@@ -22,13 +22,13 @@ Depends on **US-14** window segment + `baseY` work (already in tree). Prefer imp
 
 ## Tests
 
-- [ ] Two openings on one side (door + window) — expected span count, door gap, window sill/lintel `baseY`
-- [ ] `along` places opening center at `wallCenter + along` (X walls and Z walls)
-- [ ] Overlap / too-close / past-end / invalid window height → solid wall
-- [ ] `{ hole: number }` and `{ hole: { width, height } }` still produce the US-14 single centered layout (regression)
-- [ ] `collisionHole()` count and centers for offset doors; windows still omitted
-- [ ] Existing [`wall-corners.test.ts`](../../tests/units/scenarios/wall-corners.test.ts) still passes
-- [ ] Update [`scenario-registry.test.ts`](../../tests/units/scenarios/scenario-registry.test.ts) if arena door count/centers change
+- [x] Two openings on one side (door + window) — expected span count, door gap, window sill/lintel `baseY`
+- [x] `along` places opening center at `wallCenter + along` (X walls and Z walls)
+- [x] Overlap / too-close / past-end / invalid window height → solid wall
+- [x] `{ hole: number }` and `{ hole: { width, height } }` still produce the US-14 single centered layout (regression) — covered by existing doorway/window tests in `collision-hole-math.test.ts`
+- [x] `collisionHole()` count and centers for offset doors; windows still omitted
+- [x] Existing [`wall-corners.test.ts`](../../tests/units/scenarios/wall-corners.test.ts) still passes
+- [x] Update [`scenario-registry.test.ts`](../../tests/units/scenarios/scenario-registry.test.ts) if arena door count/centers change — unchanged (arena-01 map untouched), still passes
 
 ## Map authoring
 

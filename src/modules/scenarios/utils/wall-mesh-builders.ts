@@ -51,10 +51,11 @@ function segmentWall(
   }
   const height = segment.height ?? defaultHeight;
   const assetId = segment.assetId ?? defaultAssetId;
+  const baseY = segment.baseY ?? 0;
   return wallBox(
     segment.id ?? `seg-${index}`,
     [length, height, thickness],
-    [(start[0] + end[0]) / 2, height / 2, (start[2] + end[2]) / 2],
+    [(start[0] + end[0]) / 2, baseY + height / 2, (start[2] + end[2]) / 2],
     Math.atan2(dz, dx),
     getScenarioMaterial(materials, assetId),
   );

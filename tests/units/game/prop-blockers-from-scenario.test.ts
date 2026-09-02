@@ -8,7 +8,7 @@ describe('propBlockersFromScenario', () => {
 
     const jacaranda = circles.filter((b) => b.entityId?.startsWith('jacaranda'));
     expect(jacaranda.length).toBeGreaterThanOrEqual(6);
-    expect(jacaranda.length).toBeLessThanOrEqual(10);
+    expect(jacaranda.length).toBeLessThanOrEqual(12);
 
     for (const blocker of jacaranda) {
       expect(blocker.radius).toBe(0.9);

@@ -36,7 +36,10 @@ const arena01Houses: HouseFootprint[] = [
     width: 16,
     depth: 8,
     material: PLASTER,
-    walls: { south: { hole: HOLE } },
+    walls: {
+      south: { hole: HOLE },
+      north: { hole: { width: 1.5, height: 1.0 } },
+    },
   },
   {
     id: 'house-tr',
@@ -58,6 +61,7 @@ const arena01Houses: HouseFootprint[] = [
     walls: {
       east: { hole: HOLE },
       north: { hole: HOLE },
+      west: { hole: { width: 1.2, height: 1.0 } },
     },
   },
   // Center — small holes on street-facing sides
@@ -68,7 +72,11 @@ const arena01Houses: HouseFootprint[] = [
     width: 20,
     depth: 16,
     material: PLASTER,
-    walls: { north: { hole: HOLE }, east: { hole: HOLE } },
+    walls: {
+      north: { hole: HOLE },
+      east: { hole: HOLE },
+      south: { hole: { width: 1.2, height: 1.2 } },
+    },
   },
   {
     id: 'house-center-bottom',

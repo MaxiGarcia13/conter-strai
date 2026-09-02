@@ -30,12 +30,12 @@ Tick when done; ship into `specs/current/` when all acceptance criteria in [requ
 - [x] Door still 2 segments + hole metadata (regression)
 - [x] Invalid oversized window → solid wall
 - [x] Segment heights and `baseY` values asserted
-- [ ] Update [`scenario-registry.test.ts`](../../tests/units/scenarios/scenario-registry.test.ts) hole count after arena edits
+- [x] Update [`scenario-registry.test.ts`](../../tests/units/scenarios/scenario-registry.test.ts) hole count after arena edits
 - [x] Existing [`wall-corners.test.ts`](../../tests/units/scenarios/wall-corners.test.ts) still passes
 
 ## Map authoring
 
-- [ ] Add windows to 2–3 houses in [`maps/arena-01/houses.ts`](../../src/modules/scenarios/maps/arena-01/houses.ts) and/or [`house-presets.ts`](../../src/modules/scenarios/pieces/house-presets.ts)
+- [x] Add windows to 2–3 houses in [`maps/arena-01/houses.ts`](../../src/modules/scenarios/maps/arena-01/houses.ts) and/or [`house-presets.ts`](../../src/modules/scenarios/pieces/house-presets.ts)
 
 ## Acceptance
 

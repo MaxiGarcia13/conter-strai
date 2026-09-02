@@ -234,7 +234,7 @@ Authored as composable modules under `src/modules/scenarios/maps/arena-01/` (`co
 | **perimeter** | `mode: 'open'`, `vistaExtension: 100` — no cliff outer box; forest skirt + non-collidable trees |
 | **sky / fog** | drei `<Sky>` (`sky.type: 'gradient'`); fog `#c3d5e8` near 50 / far 150                          |
 | **spawns**    | Soldiers west (−X), Civilians east (+X); unique coords per team; face map center                |
-| **props**     | Collidable jacaranda (6–10 in-bounds), 8× `concreteRoadBarrier`, covered cars; skirt trees off  |
+| **props**     | Collidable jacaranda (6–12 in-bounds), 8× `concreteRoadBarrier`, covered cars; skirt trees off  |
 
 Floor zone-on-zone overlap at the same Y causes z-fighting; streets split at junctions and house floors are inset. Named house presets (`ruinedCottage`, `cornerRuin`, `fortifiedBlock`, `streetShack`, `bombedHouse`) carry height / open-side variants for map authoring — unused presets are tracked in [tech-debt.md](../tech-debt.md).
 

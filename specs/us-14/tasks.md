@@ -26,12 +26,12 @@ Tick when done; ship into `specs/current/` when all acceptance criteria in [requ
 
 ## Tests
 
-- [ ] Window produces 4 segments (L, R, sill, lintel) + no `collisionHole` entry
-- [ ] Door still 2 segments + hole metadata (regression)
-- [ ] Invalid oversized window → solid wall
-- [ ] Segment heights and `baseY` values asserted
+- [x] Window produces 4 segments (L, R, sill, lintel) + no `collisionHole` entry
+- [x] Door still 2 segments + hole metadata (regression)
+- [x] Invalid oversized window → solid wall
+- [x] Segment heights and `baseY` values asserted
 - [ ] Update [`scenario-registry.test.ts`](../../tests/units/scenarios/scenario-registry.test.ts) hole count after arena edits
-- [ ] Existing [`wall-corners.test.ts`](../../tests/units/scenarios/wall-corners.test.ts) still passes
+- [x] Existing [`wall-corners.test.ts`](../../tests/units/scenarios/wall-corners.test.ts) still passes
 
 ## Map authoring
 

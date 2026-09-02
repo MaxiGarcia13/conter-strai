@@ -5,6 +5,10 @@ import { FLOOR_MATERIAL, WALL_HEIGHT, WALL_MATERIAL } from '@/modules/scenarios/
 import { buildHouses, HOUSE_FLOOR_INSET, WALL_HOLE_WIDTH } from '@/modules/scenarios/pieces/house-helpers';
 import { applyHousePreset, bombedHouse, cornerRuin, ruinedCottage } from '@/modules/scenarios/pieces/house-presets';
 
+function wallSegmentsAtZ(built: ReturnType<typeof buildHouses>, z: number) {
+  return built.walls.filter((segment) => segment.start[2] === z && segment.end[2] === z);
+}
+
 describe('collision hole math', () => {
   it('splits the north wall into two spans around a doorway hole and records the hole metadata', () => {
     const built = buildHouses([
@@ -108,6 +112,76 @@ describe('collision hole math', () => {
 
     const rest = built.walls.filter((segment) => segment.start[2] !== -5);
     expect(rest.every((segment) => segment.height === WALL_HEIGHT.full)).toBe(true);
+  });
+
+  it('windows produce left/right pillars, sill and lintel with a raised base and no hole metadata', () => {
+    const built = buildHouses([
+      {
+        id: 'house-window-test',
+        centerX: 0,
+        centerZ: 0,
+        width: 12,
+        depth: 10,
+        material: WALL_MATERIAL.plaster,
+        walls: { north: { hole: { width: 1.2, height: 1.0, bottom: 1.2 } } },
+      },
+    ]);
+
+    const northZ = -5;
+    const segments = wallSegmentsAtZ(built, northZ);
+
+    expect(segments).toHaveLength(4);
+    expect(segments.map((segment) => segment.id)).toEqual([
+      'house-window-test-north-a',
+      'house-window-test-north-sill',
+      'house-window-test-north-lintel',
+      'house-window-test-north-b',
+    ]);
+
+    const [left, sill, lintel, right] = segments;
+
+    const pillarWidth = (12 - 1.2) / 2;
+    expect(Math.abs(left.end[0] - left.start[0])).toBeCloseTo(pillarWidth);
+    expect(Math.abs(right.end[0] - right.start[0])).toBeCloseTo(pillarWidth);
+    expect(left.height).toBe(WALL_HEIGHT.full);
+    expect(right.height).toBe(WALL_HEIGHT.full);
+    expect(left.baseY ?? 0).toBe(0);
+    expect(right.baseY ?? 0).toBe(0);
+
+    expect(Math.abs(sill.end[0] - sill.start[0])).toBeCloseTo(1.2);
+    expect(sill.height).toBeCloseTo(1.2);
+    expect(sill.baseY ?? 0).toBe(0);
+
+    expect(Math.abs(lintel.end[0] - lintel.start[0])).toBeCloseTo(1.2);
+    expect(lintel.height).toBeCloseTo(WALL_HEIGHT.full - 1.2 - 1.0);
+    expect(lintel.baseY ?? 0).toBeCloseTo(1.2 + 1.0);
+
+    expect(built.holes.filter((hole) => hole.axis === 'x' && hole.center[2] === northZ)).toHaveLength(0);
+  });
+
+  it('falls back to a solid wall when a window is too wide or too tall', () => {
+    for (const hole of [
+      { width: 12, height: 1.0, bottom: 1.2 },
+      { width: 1.2, height: 1.0, bottom: 3.0 },
+    ]) {
+      const built = buildHouses([
+        {
+          id: `house-window-invalid-${hole.width}-${hole.bottom}`,
+          centerX: 0,
+          centerZ: 0,
+          width: 12,
+          depth: 10,
+          material: WALL_MATERIAL.plaster,
+          walls: { north: { hole } },
+        },
+      ]);
+
+      const segments = wallSegmentsAtZ(built, -5);
+      expect(segments).toHaveLength(1);
+      expect(segments[0].start[0]).toBeCloseTo(-6);
+      expect(segments[0].end[0]).toBeCloseTo(6);
+      expect(built.holes.filter((hole) => hole.axis === 'x')).toHaveLength(0);
+    }
   });
 
   it('insets the interior floor from the walls by default and via override', () => {

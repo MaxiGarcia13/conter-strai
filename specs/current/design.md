@@ -219,7 +219,7 @@ Priority: blocking one-shots (`reloading` / `reloading-kneel` > `jump` / `jump-i
 
 ### Interior collision
 
-Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`. Player circle (`PLAYER_RADIUS`) vs segments after intended move; outer bounds clamp last. Collidable props (`propBlockersFromScenario`) add XZ **circle** discs (merged with NPC bodies) or **oriented boxes** (`collisionHalfExtents` × placement `rotationY`) so long props like `coveredCar` (~1.79×4.38 m) cannot be walked through. Playable clamp stays **100×50 m** even when the vista skirt extends past the edge.
+Axis-aligned segments from house footprints; doorway holes via `WALL_HOLE_WIDTH`. Player circle (`PLAYER_RADIUS`) vs segments after intended move; outer bounds clamp last. Collidable props (`propBlockersFromScenario`) add XZ **circle** discs or **oriented boxes** (`collisionHalfExtents` × placement `rotationY`) so long props like `coveredCar` (~1.79×4.38 m) cannot be walked through. Connected remotes add moving discs at their current transform (`remoteBlockersFromPlayers`); unused spawn slots do not. Playable clamp stays **100×50 m** even when the vista skirt extends past the edge.
 
 ### arena-01 — Ruined Village
 
@@ -240,10 +240,10 @@ Floor zone-on-zone overlap at the same Y causes z-fighting; streets split at jun
 
 ### Testing
 
-| Layer          | Scope                                                                                                                                                                                                                                                                                                                                           |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Vitest**     | Registries; floor-zone overlap; prop blockers (discs + car OBB); house open-sides / presets; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide; look-delta / joystick mapping / touch-primary gate / `fireWeapon` magazine gating / `pickCloseWorldImpact` / rounds remaining |
-| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook                                                                                                                                                     |
+| Layer          | Scope                                                                                                                                                                                                                                                                                                                                                                  |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vitest**     | Registries; floor-zone overlap; prop blockers (discs + car OBB); remote movement discs; house open-sides / presets; shared-pack + mesh Armature contract; clip resolve / hips strip; kneel→crouch-walk; locomotion; collision; FPS hide; look-delta / joystick mapping / touch-primary gate / `fireWeapon` magazine gating / `pickCloseWorldImpact` / rounds remaining |
+| **Playwright** | Room play (`remy` / `swat-1`); no `PropertyBinding` errors; kneel + WASD stays crouched; camera cycle without pre-click; pause menu; deploy-before-countdown; optional `__PLAY_TEST__` hook                                                                                                                                                                            |
 
 ## Characters — shipped US-6
 
@@ -325,7 +325,7 @@ checkRoundEnd() → if all civilians eliminated OR all soldiers eliminated → e
 endRound(winner) → RoundPhase 'round-end', winner banner with Restart / Home (no auto-restart; host or offline Restart starts the next round)
 ```
 
-Local player occupies the session skin/team (default civilian `remy`); offline play fills remaining spawns with `ScenarioSoldiers` NPCs. Multiplayer disables bots — opponents are `RemotePlayer` peers.
+Local player occupies the session skin/team (default civilian `remy`). Offline / solo has no dummy soldiers at empty spawn slots. Multiplayer opponents are `RemotePlayer` peers (they block movement at their live transform).
 
 When `HealthState.isEliminated`, FPS move/look/shoot is disabled and look is released until the next `startRound()`.
 

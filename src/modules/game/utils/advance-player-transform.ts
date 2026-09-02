@@ -41,7 +41,7 @@ function isBackward(strafe: number, forward: number): boolean {
 }
 
 /**
- * Pure movement advance: intended move → wall collision → NPC discs → prop boxes → bounds clamp.
+ * Pure movement advance: intended move → wall collision → body discs → prop boxes → bounds clamp.
  * No React, refs, or store access — fully testable.
  */
 export function advancePlayerTransform({

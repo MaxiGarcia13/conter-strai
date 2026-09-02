@@ -6,7 +6,7 @@ import { DEFAULT_LOCAL_SPAWN_INDEX, DEFAULT_LOCAL_TEAM } from '../constants/play
 
 /** Everything the local player needs to claim a team spawn slot. */
 export interface LocalSpawn {
-  /** Spawn slot key — ScenarioSoldiers skips it so no NPC duplicates the player. */
+  /** Spawn slot key (`civilian-0`, …) for the claimed team index. */
   key: string;
   position: Vec3;
   yaw: number;

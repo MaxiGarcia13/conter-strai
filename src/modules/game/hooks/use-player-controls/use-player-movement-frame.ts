@@ -5,7 +5,6 @@ import type { ScenarioConfig } from '@/modules/scenarios';
 import { useFrame } from '@react-three/fiber';
 
 import { useRef } from 'react';
-import { useHealthStore } from '@/modules/combat';
 import {
   MAX_FRAME_DELTA_SECONDS,
 } from '@/modules/game/constants/player';
@@ -20,6 +19,7 @@ import {
 import { useRoundStore } from '@/modules/game/stores/round-store';
 import { advancePlayerTransform } from '@/modules/game/utils/advance-player-transform';
 import { applyCameraMode } from '@/modules/game/utils/apply-camera-mode';
+import { remoteBlockersFromPlayers } from '@/modules/game/utils/remote-blockers-from-players';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 
 interface UsePlayerMovementFrameOptions {
@@ -27,7 +27,7 @@ interface UsePlayerMovementFrameOptions {
   bounds: ScenarioConfig['bounds'];
   collisionSegments: NonNullable<ScenarioConfig['collisionSegments']>;
   wallThickness: number;
-  npcBlockers: CircleBlocker[];
+  propCircleBlockers: CircleBlocker[];
   boxBlockers: BoxBlocker[];
   pressedCodesRef: RefObject<Set<string>>;
   eliminatedRef: RefObject<boolean>;
@@ -41,7 +41,7 @@ export function usePlayerMovementFrame({
   bounds,
   collisionSegments,
   wallThickness,
-  npcBlockers,
+  propCircleBlockers,
   boxBlockers,
   pressedCodesRef,
   eliminatedRef,
@@ -92,10 +92,17 @@ export function usePlayerMovementFrame({
     const { strafe, forward, running } = getPlayerFrameIntent(pressed);
     const transform = getPlayerTransform();
 
-    const health = useHealthStore.getState();
-    const solidNpcFlags = npcBlockers.map(
-      (blocker) => !blocker.entityId || !health.getHealth(blocker.entityId)?.isEliminated,
+    const remotes = useMultiplayerStore.getState().remotePlayers;
+    const remoteBlockers = remoteBlockersFromPlayers(
+      Object.values(remotes).map((player) => ({
+        x: player.transform.x,
+        z: player.transform.z,
+        entityId: player.sessionId,
+        isEliminated: player.health.isEliminated,
+      })),
     );
+    const circleBlockers = [...remoteBlockers, ...propCircleBlockers];
+    const solidNpcFlags = circleBlockers.map(() => true);
 
     const result = advancePlayerTransform({
       transform,
@@ -105,7 +112,7 @@ export function usePlayerMovementFrame({
       delta,
       collisionSegments,
       wallThickness,
-      npcBlockers,
+      npcBlockers: circleBlockers,
       solidNpcFlags,
       boxBlockers,
       bounds,

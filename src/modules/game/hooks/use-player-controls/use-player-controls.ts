@@ -7,7 +7,6 @@ import { LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
 import { useEffectiveRoundPhase } from '@/modules/game/hooks/use-effective-round-phase';
 import { useGamePauseStore } from '@/modules/game/stores/game-pause-store';
 import { resetPlayerTransform } from '@/modules/game/stores/player-state';
-import { npcBlockersFromScenario } from '@/modules/game/utils/npc-blockers-from-scenario';
 import { propBlockersFromScenario } from '@/modules/game/utils/prop-blockers-from-scenario';
 import { useLocomotionSounds } from '../use-locomotion-sounds';
 import { usePressedKeyCodes } from '../use-pressed-key-codes';
@@ -26,7 +25,7 @@ interface UsePlayerControlsOptions {
 /**
  * Binds WASD + pointer-lock mouse look to the shared player transform and
  * positions the camera for the active mode each frame. Movement resolves
- * interior walls, NPC discs, and collidable prop boxes before clamping
+ * interior walls, live remotes, and collidable props before clamping
  * against the scenario's outer bounds.
  */
 export function usePlayerControls({
@@ -44,17 +43,9 @@ export function usePlayerControls({
   );
   const paused = useGamePauseStore((s) => s.isPaused);
   const { phase } = useEffectiveRoundPhase();
-  const npcBlockers = useMemo(
-    () => npcBlockersFromScenario(scenario, spawn.key),
-    [scenario, spawn.key],
-  );
   const propBlockers = useMemo(
     () => propBlockersFromScenario(scenario),
     [scenario],
-  );
-  const circleBlockers = useMemo(
-    () => [...npcBlockers, ...propBlockers.circles],
-    [npcBlockers, propBlockers],
   );
 
   const pressedCodesRef = usePressedKeyCodes();
@@ -97,7 +88,7 @@ export function usePlayerControls({
     bounds,
     collisionSegments,
     wallThickness,
-    npcBlockers: circleBlockers,
+    propCircleBlockers: propBlockers.circles,
     boxBlockers: propBlockers.boxes,
     pressedCodesRef,
     eliminatedRef,

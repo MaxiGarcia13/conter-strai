@@ -1,29 +1,39 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { parseShippedUserStories } from '@/utils/parse-changelog-shipped';
 
-const changelog = readFileSync(
-  path.join(process.cwd(), 'specs/CHANGELOG.md'),
-  'utf8',
-);
+const changelog = `## Shipped
+
+| US | Summary |
+|----|---------|
+| **US-13** | Pistol magazine reload |
+| **US-12** | Mobile touch controls |
+| **US-11** | Arena modularization |
+| **US-10** | Shuffle teams |
+
+## Shipped — other
+
+| Date | Item | Summary |
+|------|------|---------|
+| 2026-08-31 | Other | Not a US row |
+`;
 
 describe('parseShippedUserStories', () => {
   it('returns the newest US rows first', () => {
     const rows = parseShippedUserStories(changelog, 3);
 
-    expect(rows).toHaveLength(3);
-    expect(rows[0]).toEqual({
-      us: 'US-13',
-      summary: expect.stringContaining('Pistol magazine'),
-    });
-    expect(rows[2]?.us).toBe('US-11');
+    expect(rows).toEqual([
+      { us: 'US-13', summary: 'Pistol magazine reload' },
+      { us: 'US-12', summary: 'Mobile touch controls' },
+      { us: 'US-11', summary: 'Arena modularization' },
+    ]);
   });
 
   it('respects the limit', () => {
-    const all = parseShippedUserStories(changelog, 99);
-    expect(all.length).toBeGreaterThan(5);
-    expect(parseShippedUserStories(changelog, 5)).toHaveLength(5);
-    expect(parseShippedUserStories(changelog, all.length)).toHaveLength(all.length);
+    expect(parseShippedUserStories(changelog, 2)).toHaveLength(2);
+    expect(parseShippedUserStories(changelog, 99)).toHaveLength(4);
+  });
+
+  it('returns an empty list when the shipped table is missing', () => {
+    expect(parseShippedUserStories('# Changelog\n\n## Open\n\nNone.\n')).toEqual([]);
   });
 });

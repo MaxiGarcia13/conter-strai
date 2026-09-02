@@ -42,6 +42,8 @@ export interface CollisionSegment {
   end: Vec3;
   axis: CollisionAxis;
   height?: number;
+  /** Bottom of the segment above ground (m); default `0`. */
+  baseY?: number;
 }
 
 /** Open span in an interior wall, measured along its axis. */

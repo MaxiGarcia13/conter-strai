@@ -14,5 +14,11 @@ function getAxis(start: ScenarioWallSegment['start'], end: ScenarioWallSegment['
 
 /** Interior collider lines from authored wall spans; doorway gaps stay open. */
 export function buildCollisionSegments(wallSegments: ScenarioWallSegment[]): CollisionSegment[] {
-  return wallSegments.map(({ start, end, height }) => ({ start, end, axis: getAxis(start, end), height }));
+  return wallSegments.map(({ start, end, height, baseY }) => ({
+    start,
+    end,
+    axis: getAxis(start, end),
+    height,
+    baseY,
+  }));
 }

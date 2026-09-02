@@ -22,7 +22,7 @@ Tick when done; ship into `specs/current/` when all acceptance criteria in [requ
 
 - [x] Thread `baseY` through [`wall-helpers.ts`](../../src/modules/scenarios/pieces/wall-helpers.ts)
 - [x] Honor `baseY` in [`wall-mesh-builders.ts`](../../src/modules/scenarios/utils/wall-mesh-builders.ts) box positioning
-- [ ] Pass `baseY` through [`collision-helpers.ts`](../../src/modules/scenarios/pieces/collision-helpers.ts) (future-proof)
+- [x] Pass `baseY` through [`collision-helpers.ts`](../../src/modules/scenarios/pieces/collision-helpers.ts) (future-proof)
 
 ## Tests
 

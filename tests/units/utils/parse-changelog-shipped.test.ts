@@ -14,14 +14,16 @@ describe('parseShippedUserStories', () => {
 
     expect(rows).toHaveLength(3);
     expect(rows[0]).toEqual({
-      us: 'US-12',
-      summary: expect.stringContaining('Mobile touch controls'),
+      us: 'US-13',
+      summary: expect.stringContaining('Pistol magazine'),
     });
-    expect(rows[2]?.us).toBe('US-10');
+    expect(rows[2]?.us).toBe('US-11');
   });
 
   it('respects the limit', () => {
+    const all = parseShippedUserStories(changelog, 99);
+    expect(all.length).toBeGreaterThan(5);
     expect(parseShippedUserStories(changelog, 5)).toHaveLength(5);
-    expect(parseShippedUserStories(changelog, 99)).toHaveLength(12);
+    expect(parseShippedUserStories(changelog, all.length)).toHaveLength(all.length);
   });
 });

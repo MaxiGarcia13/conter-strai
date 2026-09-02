@@ -5,26 +5,35 @@ import {
   setPlayerLocomotion,
   setPlayerPose,
 } from '@/modules/game/stores/player-state';
-import { playGameSound } from '@/modules/game/utils/play-game-sound';
 import {
   cancelReload,
   requestJump,
   requestReload,
   toggleKneel,
 } from '@/modules/game/utils/player-pose-actions';
+import {
+  resetReloadGunSoundForTests,
+  scheduleReloadGunSound,
+  stopReloadGunSound,
+} from '@/modules/game/utils/reload-gun-sound';
 
-vi.mock('@/modules/game/utils/play-game-sound', () => ({
-  playGameSound: vi.fn(),
+vi.mock('@/modules/game/utils/reload-gun-sound', () => ({
+  scheduleReloadGunSound: vi.fn(),
+  stopReloadGunSound: vi.fn(),
+  resetReloadGunSoundForTests: vi.fn(),
 }));
 
-const playGameSoundMock = vi.mocked(playGameSound);
+const scheduleReloadGunSoundMock = vi.mocked(scheduleReloadGunSound);
+const stopReloadGunSoundMock = vi.mocked(stopReloadGunSound);
 
 describe('player pose actions', () => {
   beforeEach(() => {
     setPlayerPose(null);
     setPlayerLocomotion('idle');
     resetPlayerPoseEpoch();
-    playGameSoundMock.mockClear();
+    scheduleReloadGunSoundMock.mockClear();
+    stopReloadGunSoundMock.mockClear();
+    resetReloadGunSoundForTests();
   });
 
   describe('requestJump', () => {
@@ -81,35 +90,35 @@ describe('player pose actions', () => {
     it('reloads from idle', () => {
       requestReload();
       expect(getPlayerPose()).toBe('reloading');
-      expect(playGameSoundMock).toHaveBeenCalledOnce();
-      expect(playGameSoundMock).toHaveBeenCalledWith('reloadingGun');
+      expect(scheduleReloadGunSoundMock).toHaveBeenCalledOnce();
     });
 
     it('kneel-reloads while kneeling', () => {
       setPlayerPose('kneel');
       requestReload();
       expect(getPlayerPose()).toBe('reloadingKneel');
-      expect(playGameSoundMock).toHaveBeenCalledOnce();
-      expect(playGameSoundMock).toHaveBeenCalledWith('reloadingGun');
+      expect(scheduleReloadGunSoundMock).toHaveBeenCalledOnce();
     });
 
     it('does not reload while walking', () => {
       setPlayerLocomotion('walk');
       requestReload();
       expect(getPlayerPose()).toBeNull();
-      expect(playGameSoundMock).not.toHaveBeenCalled();
+      expect(scheduleReloadGunSoundMock).not.toHaveBeenCalled();
     });
 
-    it('cancels standing reload', () => {
+    it('cancels standing reload and stops reload SFX', () => {
       setPlayerPose('reloading');
       cancelReload();
       expect(getPlayerPose()).toBeNull();
+      expect(stopReloadGunSoundMock).toHaveBeenCalledOnce();
     });
 
-    it('returns to kneel after kneel-reload cancel', () => {
+    it('returns to kneel after kneel-reload cancel and stops reload SFX', () => {
       setPlayerPose('reloadingKneel');
       cancelReload();
       expect(getPlayerPose()).toBe('kneel');
+      expect(stopReloadGunSoundMock).toHaveBeenCalledOnce();
     });
   });
 });

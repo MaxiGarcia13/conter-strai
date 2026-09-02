@@ -63,6 +63,74 @@ function playViaWebAudio(id: GameSoundId, gain: number): boolean {
   return true;
 }
 
+export interface StoppableGameSoundPlayback {
+  stop: () => void;
+}
+
+function stopWebAudioSource(source: AudioBufferSourceNode, gainNode: GainNode): void {
+  try {
+    source.stop();
+  } catch {
+    // Already stopped.
+  }
+  source.disconnect();
+  gainNode.disconnect();
+}
+
+function stopHtmlAudioInstance(instance: HTMLAudioElement): void {
+  instance.pause();
+  instance.currentTime = 0;
+}
+
+function resolveSoundGain(id: GameSoundId, spatial?: SpatialSoundOptions): number {
+  const spatialVolume = spatial
+    ? computeSpatialVolume(
+        spatial.source,
+        spatial.listener,
+        spatial.maxDistance,
+        spatial.minVolume,
+      )
+    : 1;
+  return spatialVolume * GAME_SOUND_GAIN[id];
+}
+
+function playStoppableViaWebAudio(id: GameSoundId, gain: number): StoppableGameSoundPlayback | null {
+  const buffer = getDecodedBuffer(id);
+  if (!buffer) {
+    return null;
+  }
+
+  const ctx = getGameAudioContext();
+  if (ctx.state === 'suspended') {
+    void ctx.resume();
+  }
+
+  const source = ctx.createBufferSource();
+  const gainNode = ctx.createGain();
+  source.buffer = buffer;
+  gainNode.gain.value = gain;
+  source.connect(gainNode);
+  gainNode.connect(ctx.destination);
+  source.start();
+
+  return {
+    stop: () => stopWebAudioSource(source, gainNode),
+  };
+}
+
+function playStoppableViaHtmlAudio(id: GameSoundId, gain: number): StoppableGameSoundPlayback {
+  const instance = spawnSoundInstance(id);
+  instance.currentTime = 0;
+  instance.volume = gain;
+  void instance.play().catch(() => {
+    // Missing asset or autoplay policy — non-fatal for gameplay.
+  });
+
+  return {
+    stop: () => stopHtmlAudioInstance(instance),
+  };
+}
+
 function playViaHtmlAudio(id: GameSoundId, gain: number): void {
   const instance = spawnSoundInstance(id);
   instance.currentTime = 0;
@@ -74,19 +142,20 @@ function playViaHtmlAudio(id: GameSoundId, gain: number): void {
 
 /** Plays a one-shot game SFX; clones the cached element so rapid fire can overlap. */
 export function playGameSound(id: GameSoundId, spatial?: SpatialSoundOptions): void {
-  const spatialVolume = spatial
-    ? computeSpatialVolume(
-        spatial.source,
-        spatial.listener,
-        spatial.maxDistance,
-        spatial.minVolume,
-      )
-    : 1;
-  const gain = spatialVolume * GAME_SOUND_GAIN[id];
+  const gain = resolveSoundGain(id, spatial);
 
   if (!playViaWebAudio(id, gain)) {
     playViaHtmlAudio(id, gain);
   }
+}
+
+/** Plays a one-shot SFX that can be stopped before it finishes (reload cancel). */
+export function playStoppableGameSound(
+  id: GameSoundId,
+  spatial?: SpatialSoundOptions,
+): StoppableGameSoundPlayback {
+  const gain = resolveSoundGain(id, spatial);
+  return playStoppableViaWebAudio(id, gain) ?? playStoppableViaHtmlAudio(id, gain);
 }
 
 /** Plays a combat SFX at a soldier's world position, attenuated for the listener. */

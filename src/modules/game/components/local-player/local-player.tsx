@@ -22,6 +22,7 @@ import {
 } from '@/modules/game/stores/player-state';
 import { useWeaponAmmoStore } from '@/modules/game/stores/weapon-ammo-store';
 import { placeCameraAtHead } from '@/modules/game/utils/fps-head-camera';
+import { stopReloadGunSound } from '@/modules/game/utils/reload-gun-sound';
 import { resolveLocomotionTimeScale } from '@/modules/game/utils/resolve-locomotion-time-scale';
 import { flushLocalClipSync } from '@/modules/multiplayer/utils/sync-local-clip';
 import { SoldierMeshBody } from '@/modules/soldiers/components/soldier-mesh-body';
@@ -43,6 +44,7 @@ function clearJumpPose() {
 }
 function clearReloadingPose() {
   const pose = getPlayerPose();
+  stopReloadGunSound();
   clearPlayerPoseIf('reloading');
   if (pose === 'reloadingKneel') {
     setPlayerPose('kneel');

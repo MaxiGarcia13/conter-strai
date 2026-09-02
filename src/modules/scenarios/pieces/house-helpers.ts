@@ -13,6 +13,19 @@ export const HOUSE_FLOOR_INSET = 0.45;
 
 export type HouseWallHeight = keyof typeof WALL_HEIGHT;
 
+/** Door: full-height passable opening (meters). */
+export type WallDoorHole = number;
+
+/** Window: partial-height blocked opening. */
+export interface WallWindowHole {
+  width: number;
+  height: number;
+  /** Sill height above ground (m). Default: 1.0 */
+  bottom?: number;
+}
+
+export type WallOpening = WallDoorHole | WallWindowHole;
+
 /**
  * A wall edge: `'full'` solid, `'open'` no wall/collision, or a spec with an
  * optional centered `hole` and per-side `height`.
@@ -20,7 +33,7 @@ export type HouseWallHeight = keyof typeof WALL_HEIGHT;
 export type HouseSide
   = | 'full'
     | 'open'
-    | { hole?: number; height?: HouseWallHeight };
+    | { hole?: WallOpening; height?: HouseWallHeight };
 
 export interface HouseWalls {
   north?: HouseSide;

@@ -4,11 +4,11 @@ Tick when done; ship into `specs/current/` when all acceptance criteria in [requ
 
 ## Spec
 
-- [ ] Review [requirements.md](./requirements.md) and [design.md](./design.md) with implementer
+- [x] Review [requirements.md](./requirements.md) and [design.md](./design.md) with implementer
 
 ## Types + parsing
 
-- [ ] Add `WallDoorHole`, `WallWindowHole`, `WallOpening` to [`house-helpers.ts`](../../src/modules/scenarios/pieces/house-helpers.ts)
+- [x] Add `WallDoorHole`, `WallWindowHole`, `WallOpening` to [`house-helpers.ts`](../../src/modules/scenarios/pieces/house-helpers.ts)
 - [ ] Add optional `baseY?: number` to [`ScenarioWallSegment`](../../src/modules/scenarios/types.ts)
 - [ ] Add `parseOpening()` helper in [`wall-segment-helpers.ts`](../../src/modules/scenarios/pieces/wall-segment-helpers.ts)
 

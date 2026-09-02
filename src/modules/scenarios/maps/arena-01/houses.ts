@@ -18,7 +18,11 @@ const arena01Houses: HouseFootprint[] = [
     width: 14,
     depth: 8,
     material: PLASTER,
-    walls: { south: { hole: HOLE } },
+    walls: {
+      south: {
+        hole: HOLE,
+      },
+    },
   },
   {
     id: 'house-tlc',
@@ -95,7 +99,14 @@ const arena01Houses: HouseFootprint[] = [
     width: 18,
     depth: 16,
     material: FORT,
-    walls: { west: { hole: HOLE }, north: { hole: HOLE } },
+    walls: {
+      west: {
+        hole: HOLE,
+      },
+      north: {
+        hole: HOLE,
+      },
+    },
   },
   {
     id: 'house-br',

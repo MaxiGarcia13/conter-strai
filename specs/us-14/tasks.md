@@ -39,7 +39,7 @@ Tick when done; ship into `specs/current/` when all acceptance criteria in [requ
 
 ## Acceptance
 
-- [ ] `npm run test:unit` green
+- [x] `npm run test:unit` green
 - [ ] Manual smoke: arena-01 shows windows; doors passable; windows block movement; hitscan through gap
 
 ## Ship

@@ -84,8 +84,8 @@ const PRESET_BY_RELATIVE_PATH = new Map([
  * @property {string | null} explicitOutput - Copy destination when provided.
  * @property {boolean} inPlace - True when output is omitted or matches input.
  * @property {Map<string, ClipSnapSettings>} clipSettings - CLI clip overrides.
- * @property {boolean} dryRun
- * @property {boolean} listOnly
+ * @property {boolean} dryRun - True when no files should be written.
+ * @property {boolean} listOnly - True when only the list of animations should be printed.
  */
 
 /**

@@ -125,19 +125,6 @@ function readComponents(values, index, componentCount) {
 }
 
 /**
- * @param {number[]} components
- * @param {Float32Array | Int8Array | Uint8Array | Uint16Array | Int16Array | Uint32Array | Float64Array} target
- * @param {number} index
- * @param {number} componentCount
- */
-function writeComponents(components, target, index, componentCount) {
-  const base = index * componentCount;
-  for (let c = 0; c < componentCount; c++) {
-    target[base + c] = components[c];
-  }
-}
-
-/**
  * @param {number[]} a
  * @param {number[]} b
  * @param {number} alpha

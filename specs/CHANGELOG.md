@@ -9,7 +9,9 @@
 
 ## Open
 
-None.
+| US | Summary |
+|----|---------|
+| **US-14** | Wall windows — partial-height house wall openings (configurable width/height); doors stay passable; arena-01 placement |
 
 ## Shipped
 

@@ -4,7 +4,9 @@ Work queue points to open US deltas. Tick tasks in the delta folder; ship into `
 
 ## Suggested order
 
-None open. Hygiene in [tech-debt.md](../tech-debt.md) and [improvements.md](../improvements.md).
+1. **[US-14](../us-14/tasks.md)** — wall windows (partial-height openings on house walls)
+
+Hygiene in [tech-debt.md](../tech-debt.md) and [improvements.md](../improvements.md).
 
 US-4 (local PvP loop), **US-5** (Colyseus multiplayer), **US-7** (match lobby), **US-8** (server security), **US-9** (pause menu), **US-10** (no-opponent team shuffle), **US-11** (arena modularization), **US-12** (mobile touch controls), **US-13** (pistol magazine, mobile reload, close-range impact marks), and the [improvements backlog](../improvements.md) §1–§6 polish pass are **shipped**. Fire **pose clip** on LMB is deferred — see [tech-debt.md](../tech-debt.md).
 
@@ -18,4 +20,4 @@ None.
 
 ## Open deltas
 
-None.
+- [US-14](../us-14/) — wall windows ([requirements](../us-14/requirements.md) · [design](../us-14/design.md) · [tasks](../us-14/tasks.md))

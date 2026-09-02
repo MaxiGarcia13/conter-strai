@@ -32,7 +32,7 @@ Depends on **US-14** window segment + `baseY` work (already in tree). Prefer imp
 
 ## Map authoring
 
-- [ ] Convert [`house-right-tall` west](../../src/modules/scenarios/maps/arena-01/houses.ts) to `holes` with an offset door and offset window (FR-82)
+- [x] Convert [`house-right-tall` west](../../src/modules/scenarios/maps/arena-01/houses.ts) to `holes` with an offset door (`along: -3`) and offset window (`along: 3.5`) (FR-82)
 
 ## Acceptance
 

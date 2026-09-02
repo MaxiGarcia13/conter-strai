@@ -9,6 +9,10 @@ function wallSegmentsAtZ(built: ReturnType<typeof buildHouses>, z: number) {
   return built.walls.filter((segment) => segment.start[2] === z && segment.end[2] === z);
 }
 
+function wallSegmentsAtX(built: ReturnType<typeof buildHouses>, x: number) {
+  return built.walls.filter((segment) => segment.start[0] === x && segment.end[0] === x);
+}
+
 describe('collision hole math', () => {
   it('splits the north wall into two spans around a doorway hole and records the hole metadata', () => {
     const built = buildHouses([
@@ -322,6 +326,17 @@ describe('multiple wall openings', () => {
     // West is a Z-axis wall: center shifts along Z.
     const westHole = built.holes.find((h) => h.axis === 'z' && h.center[0] === 10 - 6);
     expect(westHole).toEqual({ axis: 'z', center: [4, 0, 20 - 2], width: 2.2 });
+
+    // Split spans must sit on the house, not at the origin (local along ≠ world).
+    const northSpans = wallSegmentsAtZ(built, 13);
+    expect(northSpans).toHaveLength(2);
+    expect(Math.min(...northSpans.flatMap((s) => [s.start[0], s.end[0]]))).toBeCloseTo(10 - 6);
+    expect(Math.max(...northSpans.flatMap((s) => [s.start[0], s.end[0]]))).toBeCloseTo(10 + 6);
+
+    const westSpans = wallSegmentsAtX(built, 4);
+    expect(westSpans).toHaveLength(2);
+    expect(Math.min(...westSpans.flatMap((s) => [s.start[2], s.end[2]]))).toBeCloseTo(20 - 7);
+    expect(Math.max(...westSpans.flatMap((s) => [s.start[2], s.end[2]]))).toBeCloseTo(20 + 7);
   });
 
   it('falls back to a solid wall for overlap, too-close, past-end, and invalid window height', () => {

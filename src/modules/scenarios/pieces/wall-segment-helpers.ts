@@ -75,14 +75,14 @@ function wallSegmentsFromOpenings(
     const openStart = spec.along - spec.width / 2;
     if (openStart - cursor > 0) {
       const len = openStart - cursor;
-      const center = cursor + len / 2;
+      const center = centerCoord + cursor + len / 2;
       segments.push(make(center, fixedCoord, len, height, material, spanId(idPrefix, idx++)));
     }
 
     if (spec.kind === 'door') {
       // Passable gap — no segment
     } else {
-      segments.push(...emitWindowSegment(make, spec.along, fixedCoord, spec, height, material, spanId(idPrefix, idx++)));
+      segments.push(...emitWindowSegment(make, centerCoord + spec.along, fixedCoord, spec, height, material, spanId(idPrefix, idx++)));
     }
 
     cursor = spec.along + spec.width / 2;
@@ -90,7 +90,7 @@ function wallSegmentsFromOpenings(
 
   if (half - cursor > 0) {
     const len = half - cursor;
-    const center = cursor + len / 2;
+    const center = centerCoord + cursor + len / 2;
     segments.push(make(center, fixedCoord, len, height, material, spanId(idPrefix, idx++)));
   }
 

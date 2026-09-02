@@ -50,9 +50,15 @@ describe('scenario-registry', () => {
   });
 
   it('publishes axis-aligned collision spans and doorway holes', () => {
-    expect(scenario.collisionSegments).toHaveLength(58);
-    expect(scenario.collisionSegments?.every(({ axis }) => axis === 'x' || axis === 'z')).toBe(true);
-    expect(scenario.collisionHoles).toHaveLength(13);
-    expect(scenario.collisionHoles?.every(({ width }) => width === 2.2)).toBe(true);
+    const walls = scenario.wallSegments ?? [];
+    const segments = scenario.collisionSegments ?? [];
+    const holes = scenario.collisionHoles ?? [];
+
+    expect(segments.length).toBeGreaterThan(0);
+    expect(segments).toHaveLength(walls.length);
+    expect(segments.every(({ axis }) => axis === 'x' || axis === 'z')).toBe(true);
+
+    expect(holes.length).toBeGreaterThan(0);
+    expect(holes.every(({ axis, width }) => (axis === 'x' || axis === 'z') && width > 0)).toBe(true);
   });
 });

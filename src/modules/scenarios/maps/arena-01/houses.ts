@@ -20,7 +20,19 @@ const arena01Houses: HouseFootprint[] = [
     material: PLASTER,
     walls: {
       south: {
-        hole: HOLE,
+        holes: [
+          {
+            kind: 'door',
+            width: HOLE,
+            along: -3.5,
+          },
+          {
+            kind: 'window',
+            width: 4,
+            height: 1.4,
+            along: 3,
+          },
+        ],
       },
     },
   },
@@ -31,7 +43,23 @@ const arena01Houses: HouseFootprint[] = [
     width: 14,
     depth: 8,
     material: PLASTER,
-    walls: { south: { hole: HOLE } },
+    walls: {
+      south: {
+        holes: [
+          {
+            kind: 'door',
+            width: HOLE,
+            along: 2,
+          },
+          {
+            kind: 'window',
+            width: 3,
+            height: 1.4,
+            along: -3.5,
+          },
+        ],
+      },
+    },
   },
   {
     id: 'house-trc',
@@ -41,8 +69,38 @@ const arena01Houses: HouseFootprint[] = [
     depth: 8,
     material: PLASTER,
     walls: {
-      south: { hole: HOLE },
+      south: {
+        holes: [
+          {
+            kind: 'door',
+            width: HOLE,
+            along: 2,
+          },
+          {
+            kind: 'window',
+            width: 1,
+            height: 1.4,
+            along: -3.5,
+          },
+          {
+            kind: 'window',
+            width: 1,
+            height: 1.4,
+            along: 5,
+          },
+        ],
+      },
       north: { hole: { width: 1.5, height: 1.0 } },
+      east: {
+        holes: [
+          {
+            kind: 'window',
+            width: 1,
+            height: 1.4,
+            along: 1,
+          },
+        ],
+      },
     },
   },
   {
@@ -52,7 +110,34 @@ const arena01Houses: HouseFootprint[] = [
     width: 14,
     depth: 8,
     material: PLASTER,
-    walls: { south: { hole: HOLE } },
+    walls: {
+      south: {
+        holes: [
+          {
+            kind: 'door',
+            width: HOLE,
+            along: 2.5,
+          },
+          {
+            kind: 'window',
+            width: 1,
+            height: 1.4,
+            along: -4.5,
+          },
+
+        ],
+      },
+      west: {
+        holes: [
+          {
+            kind: 'window',
+            width: 1,
+            height: 1.4,
+            along: 1.5,
+          },
+        ],
+      },
+    },
   },
   // Left block — east hole toward vertical street
   {
@@ -63,9 +148,39 @@ const arena01Houses: HouseFootprint[] = [
     depth: 14,
     material: PLASTER,
     walls: {
-      east: { hole: HOLE },
-      north: { hole: HOLE },
-      west: { hole: { width: 1.2, height: 1.0 } },
+      east: {
+        holes: [
+          {
+            kind: 'door',
+            width: HOLE,
+            along: 3.5,
+          },
+          {
+            kind: 'window',
+            width: 1.6,
+            height: 1.2,
+            along: -3.5,
+          },
+        ],
+      },
+      north: {
+        holes: [
+          {
+            kind: 'door',
+            width: HOLE,
+            along: -6.5,
+          },
+          {
+            kind: 'window',
+            width: 2.5,
+            height: 1.2,
+            along: 7.5,
+          },
+        ],
+      },
+      west: {
+        hole: { width: 1.2, height: 1.0 },
+      },
     },
   },
   // Center — small holes on street-facing sides
@@ -77,7 +192,29 @@ const arena01Houses: HouseFootprint[] = [
     depth: 16,
     material: PLASTER,
     walls: {
-      north: { hole: HOLE },
+      west: {
+        holes: [{
+          kind: 'window',
+          width: 2,
+          height: 2,
+          along: 6,
+        }],
+      },
+      north: {
+        holes: [
+          {
+            kind: 'door',
+            width: HOLE,
+            along: -6.5,
+          },
+          {
+            kind: 'window',
+            width: 1.6,
+            height: 1.2,
+            along: 6.5,
+          },
+        ],
+      },
       east: { hole: HOLE },
       south: { hole: { width: 1.2, height: 1.2 } },
     },
@@ -89,7 +226,29 @@ const arena01Houses: HouseFootprint[] = [
     width: 14,
     depth: 6,
     material: PLASTER,
-    walls: { north: { hole: HOLE } },
+    walls: {
+      north: { hole: HOLE },
+      west: {
+        holes: [
+          {
+            kind: 'window',
+            width: 1.5,
+            height: 1.4,
+            along: -1.8,
+          },
+        ],
+      },
+      east: {
+        holes: [
+          {
+            kind: 'window',
+            width: 1.3,
+            height: 1.4,
+            along: 1,
+          },
+        ],
+      },
+    },
   },
   // Right block — west hole toward vertical street
   {
@@ -101,10 +260,34 @@ const arena01Houses: HouseFootprint[] = [
     material: FORT,
     walls: {
       west: {
-        hole: HOLE,
+        holes: [
+          {
+            kind: 'door',
+            width: HOLE,
+            along: 5.5,
+          },
+          {
+            kind: 'window',
+            width: 1.6,
+            height: 1.2,
+            along: -6.5,
+          },
+        ],
       },
       north: {
-        hole: HOLE,
+        holes: [
+          {
+            kind: 'window',
+            width: 1.6,
+            height: 1.2,
+            along: -7.5,
+          },
+          {
+            kind: 'door',
+            width: HOLE,
+            along: 5.5,
+          },
+        ],
       },
     },
   },

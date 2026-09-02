@@ -43,6 +43,7 @@
     "assets:compress": "node scripts/compress-assets.mjs",
     "assets:normalize-characters": "node scripts/normalize-character-glbs.mjs",
     "assets:snap-animation-floor": "node scripts/snap-animation-floor.mjs",
+    "assets:trim-animation-clips": "node scripts/trim-animation-clips.mjs",
     "assets:extract-maps": "node scripts/extract-texture-maps.mjs",
     "clean": "rm -rf node_modules && rm -rf dist && rm -rf .astro",
     "phoenix": "npm run clean && npm i"

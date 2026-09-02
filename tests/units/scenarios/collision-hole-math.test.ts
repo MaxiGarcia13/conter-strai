@@ -133,9 +133,9 @@ describe('collision hole math', () => {
     expect(segments).toHaveLength(4);
     expect(segments.map((segment) => segment.id)).toEqual([
       'house-window-test-north-a',
-      'house-window-test-north-sill',
-      'house-window-test-north-lintel',
-      'house-window-test-north-b',
+      'house-window-test-north-b-sill',
+      'house-window-test-north-b-lintel',
+      'house-window-test-north-c',
     ]);
 
     const [left, sill, lintel, right] = segments;

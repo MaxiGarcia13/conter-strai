@@ -3,7 +3,8 @@ import type { WALL_HEIGHT, WallMaterialId } from './constants';
 import type { TextureId } from '@/modules/textures';
 import { FLOOR_MATERIAL } from './constants';
 import { floorZone } from './floor-helpers';
-import { collisionHole, wallSegmentsAlongX, wallSegmentsAlongZ } from './wall-segment-helpers';
+import { collisionHole } from './wall-opening-helpers';
+import { wallSegmentsAlongX, wallSegmentsAlongZ } from './wall-segment-helpers';
 
 /** Default doorway / blast-hole width (meters). */
 export const WALL_HOLE_WIDTH = 2.2;

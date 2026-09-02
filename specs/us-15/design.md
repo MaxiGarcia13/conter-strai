@@ -76,7 +76,7 @@ Opening world center:
 | `{ holes: [...] }`                     | as written (`along` defaults to `0`)       |
 | both `hole` and `holes`                | **`holes` wins**                           |
 
-Keep `WallOpening` / `parseOpening()` for the shorthand path, or fold both into a shared `normalizeOpenings(side) → WallHoleSpec[]`.
+Shorthand `hole` and `holes` both fold into `normalizeOpenings(side)` in [`wall-opening-helpers.ts`](../../src/modules/scenarios/pieces/wall-opening-helpers.ts).
 
 ## Segment layout
 
@@ -117,7 +117,7 @@ Use the new API on **`house-right-tall` west** (currently a single centered `hol
 | Area   | Files                                                                                   |
 | ------ | --------------------------------------------------------------------------------------- |
 | Spec   | `specs/us-15/*`, `specs/current/tasks.md`, `specs/CHANGELOG.md` Open row                |
-| Domain | `house-helpers.ts`, `wall-segment-helpers.ts`                                           |
+| Domain | `house-helpers.ts`, `wall-opening-helpers.ts`, `wall-segment-helpers.ts` |
 | Map    | `maps/arena-01/houses.ts` (and presets only if a preset should demo two openings)       |
 | Tests  | `collision-hole-math.test.ts`, `scenario-registry.test.ts` if door count/centers change |
 

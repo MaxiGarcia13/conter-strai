@@ -12,13 +12,13 @@ Depends on **US-14** window segment + `baseY` work (already in tree). Prefer imp
 
 - [x] Add `WallDoorSpec`, `WallWindowSpec`, `WallHoleSpec` to [`house-helpers.ts`](../../src/modules/scenarios/pieces/house-helpers.ts)
 - [x] Extend `HouseSide` with optional `holes?: WallHoleSpec[]` (keep `hole` shorthand)
-- [x] Add `normalizeOpenings(side) → WallHoleSpec[]` in [`wall-segment-helpers.ts`](../../src/modules/scenarios/pieces/wall-segment-helpers.ts) (`holes` wins over `hole`; default `along: 0`)
+- [x] Add `normalizeOpenings(side) → WallHoleSpec[]` in [`wall-opening-helpers.ts`](../../src/modules/scenarios/pieces/wall-opening-helpers.ts) (`holes` wins over `hole`; default `along: 0`)
 
 ## Segment generation
 
-- [ ] Generalize `wallSegmentsAlongX` / `wallSegmentsAlongZ` to walk sorted openings (solid spans + door gaps + window sill/lintel at each `along`)
-- [ ] Shared validation: end remnant 0.3 m, adjacent gap 0.6 m, US-14 window height check — failure → solid wall
-- [ ] Update `collisionHole()` — one metadata entry per door at `center + along` along the wall axis
+- [x] Generalize `wallSegmentsAlongX` / `wallSegmentsAlongZ` to walk sorted openings (solid spans + door gaps + window sill/lintel at each `along`) — `wallSegmentsFromOpenings()`
+- [x] Shared validation: end remnant 0.3 m, adjacent gap 0.6 m, US-14 window height check — failure → solid wall — `validateOpenings()`
+- [x] Update `collisionHole()` — one metadata entry per door at `center + along` along the wall axis
 
 ## Tests
 

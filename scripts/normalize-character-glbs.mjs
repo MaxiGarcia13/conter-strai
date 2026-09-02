@@ -31,6 +31,7 @@ const DEFAULT_TARGETS = [
   path.join(GLB_ROOT, 'characters/soldiers/swat-2.glb'),
   path.join(GLB_ROOT, 'characters/soldiers/swat-3.glb'),
   path.join(GLB_ROOT, 'characters/shared/character-preview-animation.glb'),
+  path.join(GLB_ROOT, 'characters/shared/base-animations.glb'),
 ];
 
 const NUMBERED_MIXAMO_PREFIX = /^mixamorig\d+:/;

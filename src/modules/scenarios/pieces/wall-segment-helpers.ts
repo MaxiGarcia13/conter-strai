@@ -4,6 +4,9 @@ import type { HouseSide, HouseWallHeight } from './house-helpers';
 import { WALL_HEIGHT } from './constants';
 import { wallAlongX, wallAlongZ } from './wall-helpers';
 
+/** Default window sill height above ground (m). */
+export const WINDOW_DEFAULT_BOTTOM = 1.0;
+
 function sideHeight(side: HouseSide | undefined, fallback: HouseWallHeight): number {
   const height = defaultHeight(side, fallback);
   return WALL_HEIGHT[height];
@@ -20,7 +23,33 @@ function holeWidth(side: HouseSide | undefined): number | null {
   if (!side || side === 'full' || side === 'open') {
     return null;
   }
-  return side.hole ?? null;
+  const hole = side.hole;
+  return typeof hole === 'number' ? hole : null;
+}
+
+/** Parsed opening from a wall side. */
+export type ParsedOpening =
+  | { kind: 'none' }
+  | { kind: 'door'; width: number }
+  | { kind: 'window'; width: number; height: number; bottom: number };
+
+/** Extract the opening kind + geometry for a `HouseSide`. */
+export function parseOpening(side: HouseSide | undefined): ParsedOpening {
+  if (!side || side === 'full' || side === 'open') {
+    return { kind: 'none' };
+  }
+  if (typeof side.hole === 'number') {
+    return side.hole >= 0 ? { kind: 'door', width: side.hole } : { kind: 'none' };
+  }
+  if (side.hole && typeof side.hole === 'object') {
+    return {
+      kind: 'window',
+      width: side.hole.width,
+      height: side.hole.height,
+      bottom: side.hole.bottom ?? WINDOW_DEFAULT_BOTTOM,
+    };
+  }
+  return { kind: 'none' };
 }
 
 export function collisionHole(
@@ -29,14 +58,11 @@ export function collisionHole(
   center: [number, number, number],
   totalLength: number,
 ): CollisionHole[] {
-  if (side === 'open') {
+  const opening = parseOpening(side);
+  if (opening.kind !== 'door' || opening.width >= totalLength - 0.6) {
     return [];
   }
-  const width = holeWidth(side);
-  if (width === null || width >= totalLength - 0.6) {
-    return [];
-  }
-  return [{ axis, center, width }];
+  return [{ axis, center, width: opening.width }];
 }
 
 export function wallSegmentsAlongX(

@@ -8,14 +8,17 @@ export interface ServerHealthEffects {
   localHealth: HealthState | null;
   /** Players who lost HP and are still alive (flinch) — session ids. */
   hitReactions: EntityId[];
+  /** Players who lost HP, including lethal hits — session ids. Local injury SFX. */
+  injuredIds: EntityId[];
   /** Next prev-HP cache, pruned of players no longer present. */
   nextById: Map<EntityId, number>;
 }
 
 /**
  * Pure server-snapshot → client health side effects. A player flinches when
- * their HP drops while still alive; elimination is handled by the dying pose,
- * and first sighting never flinches.
+ * their HP drops while still alive; elimination is handled by the dying pose.
+ * Injury SFX fires on any HP drop (including lethal). First sighting never
+ * flinches or grunts.
  */
 export function resolveServerHealthEffects(
   payload: PlayersUpdatePayload,
@@ -23,6 +26,7 @@ export function resolveServerHealthEffects(
 ): ServerHealthEffects {
   const nextById = new Map<EntityId, number>();
   const hitReactions: EntityId[] = [];
+  const injuredIds: EntityId[] = [];
   let localHealth: HealthState | null = null;
 
   for (const snapshot of payload.players) {
@@ -30,8 +34,11 @@ export function resolveServerHealthEffects(
     const prev = prevById.get(id);
     nextById.set(id, snapshot.hp);
 
-    if (prev !== undefined && snapshot.hp < prev && !snapshot.eliminated) {
-      hitReactions.push(id);
+    if (prev !== undefined && snapshot.hp < prev) {
+      injuredIds.push(id);
+      if (!snapshot.eliminated) {
+        hitReactions.push(id);
+      }
     }
 
     if (id === payload.localSessionId) {
@@ -43,5 +50,10 @@ export function resolveServerHealthEffects(
     }
   }
 
-  return { localHealth, hitReactions, nextById };
+  return {
+    localHealth,
+    hitReactions,
+    injuredIds,
+    nextById,
+  };
 }

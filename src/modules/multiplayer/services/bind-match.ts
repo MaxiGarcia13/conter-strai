@@ -3,6 +3,7 @@ import type { MatchRoundPhase } from '../schema';
 import type { EntityId } from '@/modules/soldiers';
 import { useHealthStore } from '@/modules/combat';
 import { DEFAULT_MAX_HP } from '@/modules/combat/constants/health';
+import { requestInjurySound } from '@/modules/combat/injury-sound-events';
 import { LOCAL_PLAYER_ENTITY_ID } from '@/modules/game/constants/player';
 import { useBulletImpactStore } from '@/modules/game/stores/bullet-impact-store';
 import {
@@ -51,9 +52,9 @@ function syncLocalTeamAndSkin(roomId: string, payload: PlayersUpdatePayload): vo
 
 /**
  * Feeds an active match into the stores: player/round snapshots populate the
- * multiplayer store, the local player's HP mirrors into the health store (so
- * HealthBar / movement freeze / dying pose stay server-driven), and HP drops
- * trigger hit reactions. Returns an unbind for cleanup on leave/dev remount.
+ * multiplayer store, the local player's HP mirrors into `useHealthStore`, and
+ * HP drops trigger local hit reactions and injury SFX (not networked).
+ * Returns an unbind for cleanup on leave/dev remount.
  */
 export function bindMatch(handle: MatchHandle, roomId: string): () => void {
   let prevById = new Map<EntityId, number>();
@@ -62,7 +63,10 @@ export function bindMatch(handle: MatchHandle, roomId: string): () => void {
   const offPlayerUpdate = handle.onPlayerUpdate((payload) => {
     syncLocalTeamAndSkin(roomId, payload);
 
-    const { localHealth, hitReactions, nextById } = resolveServerHealthEffects(payload, prevById);
+    const { localHealth, hitReactions, injuredIds, nextById } = resolveServerHealthEffects(
+      payload,
+      prevById,
+    );
     prevById = nextById;
 
     useMultiplayerStore.getState().applyPlayersUpdate(payload);
@@ -75,6 +79,12 @@ export function bindMatch(handle: MatchHandle, roomId: string): () => void {
       if (changed) {
         useHealthStore.getState().syncHealth(LOCAL_PLAYER_ENTITY_ID, localHealth);
       }
+    }
+
+    for (const sessionId of injuredIds) {
+      requestInjurySound(
+        sessionId === payload.localSessionId ? LOCAL_PLAYER_ENTITY_ID : toClientEntity(sessionId),
+      );
     }
 
     for (const sessionId of hitReactions) {

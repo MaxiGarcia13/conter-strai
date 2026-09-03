@@ -388,7 +388,7 @@ Per-player `ready: boolean` on `PlayerState`; cleared on `startRound`. Countdown
 - Desktop pointer-locked **LMB**, or the touch fire button, → `fireWeapon()` / `useShooting` raycast from camera center; range 100 m; cooldown `fireCooldownSeconds` (pistol 0.35 s). Empty magazine blocks the shot (dry-fire SFX, no hitscan). Pointer-lock is not required on touch-primary.
 - Hits need `userData.hitZone` + `userData.entityId`; friendly fire skipped via round roster.
 - `resolveHitDamage` builds `DamageData` with equipped `weaponId` → health store `applyDamage`.
-- Gunshot SFX at the camera for the local shooter; peers hear spatial pistol audio via `fire` relay; injury SFX is spatial on the victim (local HP via `useHealthStore`, remote HP via `multiplayerStore`). Remote walk/run loops are per-peer with the same ~40 m linear falloff.
+- Gunshot SFX at the camera for the local shooter; peers hear spatial pistol audio via `fire` relay. Injury SFX (`ouch`) is **local-only** (no network event): queued on HP drop, delayed ~150 ms, full volume for the listener's own hit; peer grunts use the same ~40 m falloff as footsteps and are silent beyond that. Remote walk/run loops are per-peer (one loop per gait, gain by distance) with the same ~40 m linear falloff.
 - **`shooting` pose is not played** — mixer can resolve an optional clip, but LMB does not set the pose until a shippable fire animation is approved.
 
 ### Reload + weapon mesh
@@ -623,7 +623,7 @@ onPlayerUpdate / onRoundUpdate / onLeave
 - Waiting room joins early: `useMatchJoin` + `bindMatch`; `/play` reconnects via `room.reconnectionToken` after hard navigation.
 - `LocalTransformSync` forwards player transform via adapter (~20 Hz coalesced).
 - `useShooting` → `sendShot`; hit detection client-side; damage/elimination server-authoritative.
-- `bindMatch(handle, roomId)` feeds multiplayer store; local HP mirrors into `useHealthStore`; remote HP drives spatial injury SFX; local `team` / `skin` sync into `sessionStorage` when the server snapshot differs (post-shuffle).
+- `bindMatch(handle, roomId)` feeds multiplayer store; local HP mirrors into `useHealthStore`; HP drops request local hit-reaction + injury SFX (no `ouch` relay); local `team` / `skin` sync into `sessionStorage` when the server snapshot differs (post-shuffle).
 - Bots disabled while match connected; `RoundEndBanner` reads multiplayer store in match mode.
 - `RemotePlayer` reads store roster; transforms via `getState()` in `useFrame`.
 

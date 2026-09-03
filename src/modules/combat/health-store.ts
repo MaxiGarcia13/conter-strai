@@ -6,6 +6,7 @@ import { requestHitReaction } from '@/modules/soldiers/state/hit-reaction-state'
 import { weapons } from '@/modules/weapons/weapon-registry';
 import { applyDamage as computeNextHp } from './apply-damage';
 import { DEFAULT_MAX_HP } from './constants/health';
+import { requestInjurySound } from './injury-sound-events';
 import { isEliminated } from './is-eliminated';
 
 export interface HealthStoreState extends HealthSystem {
@@ -44,6 +45,9 @@ export const useHealthStore = create<HealthStoreState>()((set, get) => ({
       isEliminated: isEliminated(nextHp),
     };
     set((state) => ({ healthById: { ...state.healthById, [targetId]: nextState } }));
+    if (nextHp < (existing?.currentHp ?? maxHp)) {
+      requestInjurySound(targetId);
+    }
     if (!nextState.isEliminated) {
       requestHitReaction(targetId);
     }

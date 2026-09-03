@@ -44,6 +44,7 @@ describe('resolveServerHealthEffects', () => {
     );
 
     expect(result.hitReactions).toEqual(['peer']);
+    expect(result.injuredIds).toEqual(['peer']);
   });
 
   it('does not flinch a peer whose drop is also elimination', () => {
@@ -58,6 +59,7 @@ describe('resolveServerHealthEffects', () => {
     );
 
     expect(result.hitReactions).toEqual([]);
+    expect(result.injuredIds).toEqual(['peer']);
   });
 
   it('does not flinch on first sighting or on unchanged HP', () => {
@@ -67,6 +69,7 @@ describe('resolveServerHealthEffects', () => {
     );
 
     expect(result.hitReactions).toEqual([]);
+    expect(result.injuredIds).toEqual([]);
   });
 
   it('tracks next HP per session and prunes absent players', () => {
@@ -85,5 +88,6 @@ describe('resolveServerHealthEffects', () => {
     expect(result.nextById.get(LOCAL)).toBe(90);
     expect(result.nextById.get('peer')).toBe(55);
     expect(result.nextById.has('gone')).toBe(false);
+    expect(result.injuredIds).toEqual([LOCAL, 'peer']);
   });
 });

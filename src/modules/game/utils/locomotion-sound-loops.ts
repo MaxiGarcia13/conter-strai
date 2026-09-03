@@ -6,6 +6,9 @@ interface LoopChannel {
   webGain: GainNode;
   webSource: AudioBufferSourceNode | null;
   htmlAudio: HTMLAudioElement | null;
+  /** Bumped on stop so a stale `play()` cannot restart the clip. */
+  htmlGeneration: number;
+  htmlPlayPending: boolean;
 }
 
 export interface LocomotionSoundLoops {
@@ -28,7 +31,13 @@ function createLoopChannel(): LoopChannel {
     webGain,
     webSource: null,
     htmlAudio: null,
+    htmlGeneration: 0,
+    htmlPlayPending: false,
   };
+}
+
+function isHtmlLooping(audio: HTMLAudioElement): boolean {
+  return !audio.paused && !audio.ended;
 }
 
 /** Looping walk/run SFX via Web Audio, with HTML Audio fallback before warmup finishes. */
@@ -53,6 +62,8 @@ export function createLocomotionSoundLoops(): LocomotionSoundLoops {
   };
 
   const stopHtmlChannel = (channel: LoopChannel): void => {
+    channel.htmlGeneration += 1;
+    channel.htmlPlayPending = false;
     if (!channel.htmlAudio) {
       return;
     }
@@ -93,15 +104,35 @@ export function createLocomotionSoundLoops(): LocomotionSoundLoops {
     channel.webSource = source;
   };
 
-  const startHtmlChannel = (id: LocomotionSoundId, gain: number): void => {
+  const playHtml = (id: LocomotionSoundId, gain: number): void => {
     const channel = channels[id];
-    stopWebChannel(channel);
-
     channel.htmlAudio ??= createHtmlLoop(id);
-    channel.htmlAudio.volume = gain;
-    void channel.htmlAudio.play().catch(() => {
-      // Autoplay policy — non-fatal for gameplay.
+    const audio = channel.htmlAudio;
+    audio.volume = gain;
+
+    if (isHtmlLooping(audio) || channel.htmlPlayPending) {
+      return;
+    }
+
+    const generation = channel.htmlGeneration;
+    channel.htmlPlayPending = true;
+    void audio.play().then(() => {
+      if (generation !== channel.htmlGeneration) {
+        audio.pause();
+        audio.currentTime = 0;
+        return;
+      }
+      channel.htmlPlayPending = false;
+    }).catch(() => {
+      if (generation === channel.htmlGeneration) {
+        channel.htmlPlayPending = false;
+      }
     });
+  };
+
+  const startHtmlChannel = (id: LocomotionSoundId, gain: number): void => {
+    stopWebChannel(channels[id]);
+    playHtml(id, gain);
   };
 
   const startChannel = (id: LocomotionSoundId, gain: number): void => {
@@ -120,18 +151,21 @@ export function createLocomotionSoundLoops(): LocomotionSoundLoops {
     }
     if (channel.htmlAudio) {
       channel.htmlAudio.volume = gain;
-      if (channel.htmlAudio.paused) {
-        void channel.htmlAudio.play().catch(() => {});
-      }
     }
   };
 
   return {
     setActive(target, gain) {
       if (target === active) {
-        if (target) {
-          setChannelGain(target, gain);
+        if (!target) {
+          return;
         }
+        // Warmup can finish mid-gait — switch to Web Audio once, never retrigger HTML.
+        if (getDecodedBuffer(target) && !channels[target].webSource) {
+          startWebChannel(target, gain);
+          return;
+        }
+        setChannelGain(target, gain);
         return;
       }
 

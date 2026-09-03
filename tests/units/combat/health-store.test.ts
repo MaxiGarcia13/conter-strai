@@ -1,7 +1,14 @@
 import type { HealthSystem } from '@/modules/combat';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useHealthStore } from '@/modules/combat/health-store';
+import { requestInjurySound } from '@/modules/combat/injury-sound-events';
 import { DEFAULT_WEAPON_ID } from '@/modules/weapons/weapon-registry';
+
+vi.mock('@/modules/combat/injury-sound-events', () => ({
+  requestInjurySound: vi.fn(),
+}));
+
+const requestInjurySoundMock = vi.mocked(requestInjurySound);
 
 function pistolHeadHit(attackerId: string, targetId: string) {
   return useHealthStore
@@ -12,6 +19,7 @@ function pistolHeadHit(attackerId: string, targetId: string) {
 describe('health-store', () => {
   beforeEach(() => {
     useHealthStore.getState().resetAll();
+    requestInjurySoundMock.mockClear();
   });
 
   it('implements the HealthSystem contract', () => {
@@ -25,6 +33,7 @@ describe('health-store', () => {
     const nextHp = pistolHeadHit('player-1', 'npc-1');
 
     expect(nextHp).toBeCloseTo(60);
+    expect(requestInjurySoundMock).toHaveBeenCalledExactlyOnceWith('npc-1');
     expect(useHealthStore.getState().getHealth('npc-1')).toEqual({
       currentHp: expect.closeTo(60),
       maxHp: 100,
@@ -39,6 +48,7 @@ describe('health-store', () => {
 
     expect(finalHp).toBe(0);
     expect(useHealthStore.getState().getHealth('npc-1')?.isEliminated).toBe(true);
+    expect(requestInjurySoundMock).toHaveBeenCalledTimes(3);
 
     useHealthStore.getState().resetAll();
     expect(useHealthStore.getState().getHealth('npc-1')).toBeUndefined();

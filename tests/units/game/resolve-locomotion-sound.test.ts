@@ -19,4 +19,8 @@ describe('resolveLocomotionSound', () => {
     expect(resolveLocomotionSound('run', 'jumpIdle')).toBeNull();
     expect(resolveLocomotionSound('walk', 'dying')).toBeNull();
   });
+
+  it('keeps the gait SFX under non-blocking poses', () => {
+    expect(resolveLocomotionSound('run', 'shooting')).toBe('run');
+  });
 });

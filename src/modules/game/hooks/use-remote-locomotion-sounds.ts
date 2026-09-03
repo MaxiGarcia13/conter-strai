@@ -8,7 +8,6 @@ import { useEffect, useRef } from 'react';
 import { Vector3 } from 'three';
 import { useMultiplayerStore } from '@/modules/multiplayer/stores/multiplayer-store';
 import {
-  resolveRemoteLocomotionForAnimation,
   resolveRemotePlayback,
   updateRemoteMotion,
 } from '@/modules/multiplayer/utils/resolve-remote-locomotion';
@@ -110,8 +109,9 @@ export function useRemoteLocomotionSounds(): void {
       tracker.heldOneShot = playback.heldOneShot;
       trackers.set(sessionId, tracker);
 
-      const locomotion = resolveRemoteLocomotionForAnimation(tracker.motion, entry.pose, now);
-      const sound = resolveLocomotionSound(locomotion, playback.pose);
+      // Prefer the sender's synced clip so 20 Hz position inference cannot
+      // restart the same walk/run loop every packet.
+      const sound = resolveLocomotionSound(playback.locomotion, playback.pose);
 
       let remote = loopsBySession.get(sessionId);
       if (!remote) {
